@@ -66,7 +66,7 @@ export const blueprint: Blueprint = {
 		await self.trigger(Ability.Cast);
 		owner.forceTarget = undefined;
 
-		assert.equal(target?.attack, originalTargetHealth! + 1);
+		assert.equal(target?.attack, originalTargetAttack! + 1);
 		assert.equal(target?.health, originalTargetHealth! + 2);
 	},
 };

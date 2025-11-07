@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		await host.removeStats(1, 2);
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

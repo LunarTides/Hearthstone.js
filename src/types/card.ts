@@ -212,6 +212,7 @@ export enum Ability {
 
 	EnchantmentApply = "enchantmentApply",
 	EnchantmentRemove = "enchantmentRemove",
+	EnchantmentSetup = "enchantmentSetup",
 	Placeholders = "placeholders",
 	Condition = "condition",
 	Remove = "remove",
@@ -252,6 +253,7 @@ export type AbilityCallbacks = {
 	[Ability.Deathrattle]: AbilityCallback;
 	[Ability.EnchantmentApply]: EnchantmentAbilityCallback;
 	[Ability.EnchantmentRemove]: EnchantmentAbilityCallback;
+	[Ability.EnchantmentSetup]: EnchantmentAbilityCallback;
 	[Ability.Finale]: AbilityCallback;
 	[Ability.Frenzy]: AbilityCallback;
 	[Ability.HandPassive]: AbilityCallback;

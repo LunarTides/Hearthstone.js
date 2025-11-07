@@ -1,3 +1,5 @@
+// FIXME: Incredibly unstable after #400.
+
 import process from "node:process";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";

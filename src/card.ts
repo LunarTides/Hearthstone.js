@@ -249,7 +249,6 @@ export class Card {
 
 	/**
 	 * The card's active enchantments.
-	 * ```
 	 */
 	activeEnchantments: EnchantmentDefinition[] = [];
 
@@ -1414,7 +1413,7 @@ export class Card {
 					);
 				}
 
-				return priorityA - priorityB;
+				return priorityB - priorityA;
 			});
 		}
 
@@ -1448,7 +1447,8 @@ export class Card {
 		await callOnActiveEnchantments(async (enchantment, applied, i) => {
 			if (applied) {
 				await enchantment._trigger(Ability.EnchantmentRemove, this);
-				this.activeEnchantments[i].applied = false;
+			} else {
+				await enchantment._trigger(Ability.EnchantmentSetup, this);
 			}
 		});
 
@@ -1524,7 +1524,7 @@ export class Card {
 		);
 
 		game.functions.util.remove(this.activeEnchantments, activeEnchantment);
-		activeEnchantment.enchantment.removeFromPlay();
+		await activeEnchantment.enchantment.removeFromPlay();
 
 		await this.refreshEnchantments();
 		return true;

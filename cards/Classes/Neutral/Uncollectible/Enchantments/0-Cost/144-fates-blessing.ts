@@ -24,6 +24,14 @@ export const blueprint: Blueprint = {
 
 	enchantmentPriority: EnchantmentPriority.High,
 
+	async enchantmentSetup(self, owner, host) {
+		// This card costs (0) mana.
+
+		// FIXME: Doesn't work since the cost can be changed by other enchantments. Figure out a solution.
+		// self.setStorage(self.uuid, "originalCost", host.cost);
+		self.setStorage(self.uuid, "originalCost", host.backups.init.cost);
+	},
+
 	async enchantmentApply(self, owner, host) {
 		// This card costs (0) mana.
 		host.cost = 0;
@@ -31,6 +39,7 @@ export const blueprint: Blueprint = {
 
 	async enchantmentRemove(self, owner, host) {
 		// This card costs (0) mana.
+		host.cost = self.getStorage(self.uuid, "originalCost")!;
 	},
 
 	async test(self, owner) {

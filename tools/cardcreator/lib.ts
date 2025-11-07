@@ -332,9 +332,20 @@ ${runes}${keywords}
 			case "spellSchool":
 				returnValue = `SpellSchool.${value}`;
 				break;
-			case "enchantmentPriority":
-				returnValue = `EnchantmentPriority.${EnchantmentPriority[value]}`;
+			case "enchantmentPriority": {
+				let priority =
+					typeof value === "number" ? value : Number.parseInt(`${value}`);
+
+				if (
+					Number.isNaN(priority) ||
+					EnchantmentPriority[priority] === undefined
+				) {
+					priority = EnchantmentPriority.Normal;
+				}
+
+				returnValue = `EnchantmentPriority.${EnchantmentPriority[priority]}`;
 				break;
+			}
 
 			default:
 				if (typeof value === "string") {
