@@ -1,6 +1,7 @@
 import {
 	type Blueprint,
 	Class,
+	EnchantmentPriority,
 	type MinionTribe,
 	Rarity,
 	SpellSchool,
@@ -144,7 +145,10 @@ export async function create(
 		}
 
 		case Type.Enchantment: {
-			// TODO: Do something here.
+			blueprint = Object.assign(blueprint, {
+				enchantmentPriority: EnchantmentPriority.Normal,
+			});
+
 			break;
 		}
 
