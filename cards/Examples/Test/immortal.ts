@@ -31,13 +31,13 @@ export const blueprint: Blueprint = {
 
 		/*
 		 * The key is the reason for removing the card.
-		 * It can currently only be "DestroyCard" or "SilenceCard"
+		 * It can currently only be "destroy" or "silence"
 		 */
-		if (key === "DestroyCard") {
+		if (key === "destroy") {
 			return false;
 		}
 
-		if (key === "SilenceCard") {
+		if (key === "silence") {
 			return true;
 		}
 

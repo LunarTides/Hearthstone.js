@@ -1787,7 +1787,7 @@ export class Game {
 				}
 
 				// Calmly tell the minion that it is going to die
-				const removeReturn = await card.trigger(Ability.Remove, "DestroyCard");
+				const removeReturn = await card.trigger(Ability.Remove, "destroy");
 
 				// If the "remove" ability returns false, the card is not removed from the board
 				if (Array.isArray(removeReturn) && removeReturn[0] === false) {

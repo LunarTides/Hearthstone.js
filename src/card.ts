@@ -11,7 +11,6 @@ import {
 	type EnchantmentDefinition,
 	type EnchantmentPriority,
 	Event,
-	type EventValue,
 	type GameAttackFlags,
 	type GameConfig,
 	Keyword,
@@ -1159,7 +1158,7 @@ export class Card {
 		 * The false tells the minion that this is the last time it will call remove
 		 * so it should finish whatever it is doing.
 		 */
-		const removeReturn = await this.trigger(Ability.Remove, "SilenceCard");
+		const removeReturn = await this.trigger(Ability.Remove, "silence");
 
 		// If the remove function returned false, then we should not silence.
 		if (Array.isArray(removeReturn) && removeReturn[0] === false) {
@@ -1258,7 +1257,7 @@ export class Card {
 	 *
 	 * @returns All the return values of the abilities.
 	 */
-	async _trigger(
+	async trigger(
 		name: Ability,
 		...parameters: any[]
 	): Promise<unknown[] | typeof Card.REFUND | false> {
@@ -1311,25 +1310,6 @@ export class Card {
 		}
 
 		return returnValue;
-	}
-
-	/**
-	 * Trigger one of this card's abilities.
-	 *
-	 * @param name The ability to trigger.
-	 * @param key The key of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 * @param value The raw value of the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 * @param eventPlayer The player who caused the event. ONLY PASS THIS IN PASSIVE, REMOVE, OR TICK ABILITIES.
-	 *
-	 * @returns All the return values of the abilities.
-	 */
-	async trigger<E extends Event>(
-		name: Ability,
-		key?: E | string,
-		value?: EventValue<E>,
-		eventPlayer?: Player,
-	): Promise<unknown[] | typeof Card.REFUND | false> {
-		return this._trigger(name, key, value, eventPlayer);
 	}
 
 	/**
@@ -1446,15 +1426,15 @@ export class Card {
 		// Remove ALL enchantment effects.
 		await callOnActiveEnchantments(async (enchantment, applied, i) => {
 			if (applied) {
-				await enchantment._trigger(Ability.EnchantmentRemove, this);
+				await enchantment.trigger(Ability.EnchantmentRemove, this);
 			} else {
-				await enchantment._trigger(Ability.EnchantmentSetup, this);
+				await enchantment.trigger(Ability.EnchantmentSetup, this);
 			}
 		});
 
 		// Re-add ALL enchantment effects.
 		await callOnActiveEnchantments(async (enchantment, _, i) => {
-			await enchantment._trigger(Ability.EnchantmentApply, this);
+			await enchantment.trigger(Ability.EnchantmentApply, this);
 			this.activeEnchantments[i].applied = true;
 		});
 
@@ -1518,7 +1498,7 @@ export class Card {
 		}
 
 		// Trigger remove.
-		await activeEnchantment.enchantment._trigger(
+		await activeEnchantment.enchantment.trigger(
 			Ability.EnchantmentRemove,
 			this,
 		);

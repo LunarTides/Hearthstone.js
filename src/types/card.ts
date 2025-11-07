@@ -229,6 +229,15 @@ export enum Ability {
 export type AbilityCallback = (
 	self: Card,
 	owner: Player,
+	_?: unknown,
+) => Promise<unknown>;
+
+/**
+ * The ability callback used by event-based abilities.
+ */
+export type EventAbilityCallback = (
+	self: Card,
+	owner: Player,
 	key?: Event,
 	value?: unknown,
 	eventPlayer?: Player,
@@ -256,8 +265,8 @@ export type AbilityCallbacks = {
 	[Ability.EnchantmentSetup]: EnchantmentAbilityCallback;
 	[Ability.Finale]: AbilityCallback;
 	[Ability.Frenzy]: AbilityCallback;
-	[Ability.HandPassive]: AbilityCallback;
-	[Ability.HandTick]: AbilityCallback;
+	[Ability.HandPassive]: EventAbilityCallback;
+	[Ability.HandTick]: EventAbilityCallback;
 	[Ability.HeroPower]: AbilityCallback;
 	[Ability.HonorableKill]: AbilityCallback;
 	[Ability.Infuse]: AbilityCallback;
@@ -266,13 +275,17 @@ export type AbilityCallbacks = {
 	[Ability.Outcast]: AbilityCallback;
 	[Ability.Overheal]: AbilityCallback;
 	[Ability.Overkill]: AbilityCallback;
-	[Ability.Passive]: AbilityCallback;
+	[Ability.Passive]: EventAbilityCallback;
 	[Ability.Placeholders]: AbilityCallback;
-	[Ability.Remove]: AbilityCallback;
+	[Ability.Remove]: (
+		self: Card,
+		owner: Player,
+		key: "destroy" | "silence",
+	) => Promise<unknown>;
 	[Ability.Spellburst]: AbilityCallback;
 	[Ability.StartOfGame]: AbilityCallback;
 	[Ability.Test]: AbilityCallback;
-	[Ability.Tick]: AbilityCallback;
+	[Ability.Tick]: EventAbilityCallback;
 	[Ability.Use]: AbilityCallback;
 };
 
