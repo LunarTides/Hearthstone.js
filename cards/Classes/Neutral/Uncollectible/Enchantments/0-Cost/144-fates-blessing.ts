@@ -11,28 +11,29 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	name: "Enchantment Test",
-	text: "<b>+1 Attack. +2 Health</b>",
+	// TODO: This isn't the actual name and text, but I don't know what is...
+	name: "Fate's Blessing",
+	text: "This card costs (0) mana.",
 	cost: 0,
 	type: Type.Enchantment,
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 142,
+	id: 144,
 
-	enchantmentPriority: EnchantmentPriority.Normal,
+	enchantmentPriority: EnchantmentPriority.High,
 
 	async enchantmentApply(self, owner, host) {
-		// FIXME: Doesn't properly set maxHealth.
-		await host.addStats(1, 2);
+		// This card costs (0) mana.
+		host.cost = 0;
 	},
 
 	async enchantmentRemove(self, owner, host) {
-		await host.removeStats(1, 2);
+		// This card costs (0) mana.
 	},
 
-	async test(owner, self) {
+	async test(self, owner) {
 		// TODO: Add proper tests. #325
 		return EventListenerMessage.Skip;
 	},

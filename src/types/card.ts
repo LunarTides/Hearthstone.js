@@ -237,8 +237,8 @@ export type AbilityCallback = (
  * The ability callback used by the enchantment abilities.
  */
 export type EnchantmentAbilityCallback = (
-	owner: Player,
 	self: Card,
+	owner: Player,
 	host: Card,
 ) => Promise<unknown>;
 

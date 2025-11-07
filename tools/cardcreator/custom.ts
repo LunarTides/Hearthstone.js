@@ -247,11 +247,16 @@ const cardTypeFunctions: {
 	},
 
 	async Enchantment(): Promise<Blueprint> {
+		// TODO: Remove when this no longer applies.
+		console.log(
+			"<yellow>Creating enchantments is currently WIP. You need to manually add the 'enchantmentRemove' ability.</yellow>",
+		);
+
 		const card = await common();
 
 		const enchantmentPriority = Number.parseInt(
 			await input(
-				"EnchantmentPriority (-2: lowest | -1: low | 0: normal | -1: high | -2: highest): ",
+				"Enchantment Priority (-2: lowest | -1: low | 0: normal | 1: high | 2: highest): ",
 			),
 		) as EnchantmentPriority;
 

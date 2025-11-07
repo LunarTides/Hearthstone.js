@@ -1205,7 +1205,7 @@ export class Card {
 
 		// Remove active enchantments.
 		this.activeEnchantments = [];
-		await this.applyEnchantments();
+		await this.refreshEnchantments();
 
 		await game.event.broadcast(Event.SilenceCard, this, this.owner);
 
@@ -1392,29 +1392,31 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async applyEnchantments(): Promise<boolean> {
+	async refreshEnchantments(): Promise<boolean> {
 		// Don't waste resources if this card doesn't have any enchantments, this gets called every tick after all.
 		if (this.activeEnchantments.length <= 0) {
 			return false;
 		}
 
-		this.activeEnchantments.sort((aeA, aeB) => {
-			const priorityA = aeA.enchantment.enchantmentPriority;
-			if (priorityA === undefined) {
-				throw new Error(
-					`Enchantment with id ${aeA.enchantment.id} does not specify a priority.`,
-				);
-			}
+		if (this.activeEnchantments.length > 1) {
+			this.activeEnchantments.sort((aeA, aeB) => {
+				const priorityA = aeA.enchantment.enchantmentPriority;
+				if (priorityA === undefined) {
+					throw new Error(
+						`Enchantment with id ${aeA.enchantment.id} does not specify a priority.`,
+					);
+				}
 
-			const priorityB = aeB.enchantment.enchantmentPriority;
-			if (priorityB === undefined) {
-				throw new Error(
-					`Enchantment with id ${aeB.enchantment.id} does not specify a priority.`,
-				);
-			}
+				const priorityB = aeB.enchantment.enchantmentPriority;
+				if (priorityB === undefined) {
+					throw new Error(
+						`Enchantment with id ${aeB.enchantment.id} does not specify a priority.`,
+					);
+				}
 
-			return priorityA - priorityB;
-		});
+				return priorityA - priorityB;
+			});
+		}
 
 		const callOnActiveEnchantments = async (
 			callback: (
@@ -1480,7 +1482,7 @@ export class Card {
 			owner,
 			applied: false,
 		});
-		await this.applyEnchantments();
+		await this.refreshEnchantments();
 		return true;
 	}
 
@@ -1515,10 +1517,16 @@ export class Card {
 			return false;
 		}
 
+		// Trigger remove.
+		await activeEnchantment.enchantment._trigger(
+			Ability.EnchantmentRemove,
+			this,
+		);
+
 		game.functions.util.remove(this.activeEnchantments, activeEnchantment);
 		activeEnchantment.enchantment.removeFromPlay();
 
-		await this.applyEnchantments();
+		await this.refreshEnchantments();
 		return true;
 	}
 
@@ -1788,7 +1796,7 @@ export class Card {
 			// Check for a TypeError and ignore it
 			try {
 				p += `${index + 1}: ${value[0]}; ${value[1]},\n`;
-			} catch { }
+			} catch {}
 		}
 
 		p = p.slice(0, -2);
@@ -2044,15 +2052,15 @@ export class Card {
 
 			sb += titan
 				? game.functions.color.if(
-					!this.sleepy,
-					"bright:green",
-					` [${titan.length} Abilities Left]`,
-				)
+						!this.sleepy,
+						"bright:green",
+						` [${titan.length} Abilities Left]`,
+					)
 				: game.functions.color.if(
-					this.canAttack(),
-					"bright:green",
-					` [${this.attack} / ${this.health}]`,
-				);
+						this.canAttack(),
+						"bright:green",
+						` [${this.attack} / ${this.health}]`,
+					);
 		} else if (this.type === Type.Location) {
 			const { durability } = this;
 			const maxDurability = this.backups.init.durability;

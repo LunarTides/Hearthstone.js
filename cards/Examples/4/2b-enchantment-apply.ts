@@ -10,8 +10,8 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	name: "Enchantment Example",
-	text: "Your cards cost 1 less.",
+	name: "Enchantment Apply Example",
+	text: "Your cards cost (1) less.",
 	cost: 1,
 	type: Type.Minion,
 	classes: [Class.Neutral],
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	 * More on ticks in '4-5'
 	 */
 	async tick(self, owner, key, value) {
-		// Your cards cost 1 less.
+		// Your cards cost (1) less.
 
 		/*
 		 * When changing cost of a card USE THE ENCHANTMENT SYSTEM. This will ensure that mutliple cards can change the cost of cards without interfering with each other.
@@ -37,15 +37,13 @@ export const blueprint: Blueprint = {
 		 */
 
 		for (const card of owner.hand) {
-			// If the card was already given the "-1 cost" enchantment from this card, ignore it.
-			if (card.enchantmentExists("-1 cost", self)) {
+			// If the card was already given the enchantment from this card, ignore it.
+			if (card.enchantmentExists(game.cardIds.enchantmentTest_146, self)) {
 				continue;
 			}
 
-			// Give the card the "-1 cost" enchantment.
-			await card.addEnchantment("-1 cost", self);
-
-			// You can also give "+x cost", or "cost = x" enchantments.
+			// Give the card the enchantment.
+			await card.addEnchantment(game.cardIds.enchantmentTest_146, self);
 		}
 	},
 
@@ -54,11 +52,11 @@ export const blueprint: Blueprint = {
 	 * It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
 	 */
 	async remove(self, owner) {
-		// Remove the "-1 cost" enchantments that was given by this card from all cards in the player's hand.
+		// Remove the enchantment that was given by this card from all cards in the player's hand.
 
 		for (const card of owner.hand) {
-			// Only remove the "-1 cost" enchantment given by this card.
-			await card.removeEnchantment("-1 cost", self);
+			// Only remove the enchantment given by this card.
+			await card.removeEnchantment(game.cardIds.enchantmentTest_146, self);
 		}
 	},
 
