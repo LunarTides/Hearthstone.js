@@ -27,11 +27,11 @@ export const blueprint: Blueprint = {
 	async tick(self, owner) {
 		// Disable your hero power.
 
-		owner.disableHeroPower = true;
+		owner.disableHeroPower(self.uuid);
 	},
 
 	async remove(self, owner) {
-		owner.disableHeroPower = false;
+		owner.enableHeroPower(self.uuid);
 	},
 
 	async test(self, owner) {

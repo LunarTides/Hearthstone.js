@@ -73,7 +73,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		if (game.player.disableHeroPower) {
+		if (game.player.heroPowerBlockers.length > 0) {
 			await game.pause("<red>Your hero power is currently disabled.</red>\n");
 			return false;
 		}

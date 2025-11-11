@@ -525,6 +525,9 @@ describe("src/player", () => {
 		expect(player.mana).toBe(player.emptyMana - player.hero.heropower!.cost);
 	});
 
+	test.todo("disableHeroPower", async () => {});
+	test.todo("enableHeroPower", async () => {});
+
 	test("tradeCorpses", async () => {
 		const player = new Player();
 
@@ -586,8 +589,9 @@ describe("src/player", () => {
 		player.hasUsedHeroPowerThisTurn = true;
 		expect(player.canUseHeroPower()).toBe(false);
 		player.hasUsedHeroPowerThisTurn = false;
-		player.disableHeroPower = true;
+		player.disableHeroPower(player.id);
 		expect(player.canUseHeroPower()).toBe(false);
+		player.enableHeroPower(player.id);
 	});
 
 	test("isAlive", async () => {

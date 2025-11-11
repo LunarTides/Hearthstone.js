@@ -193,11 +193,9 @@ export class Player {
 	hasUsedHeroPowerThisTurn = false;
 
 	/**
-	 * If the player's hero power is disabled.
-	 *
-	 * This has to manually be set.
+	 * The playerId / card uuids of the entities blocking this players hero power. Use the {@link disableHeroPower} and {@link enableHeroPower} functions.
 	 */
-	disableHeroPower = false;
+	heroPowerBlockers: (string | number)[] = [];
 
 	/**
 	 * The player's weapon. Functions like any other card.
@@ -917,6 +915,33 @@ export class Player {
 		return true;
 	}
 
+	/**
+	 * Disable this player's hero power.
+	 *
+	 * @param blockerId Pass the card's uuid or the player's id, depending who's calling this function.
+	 * @returns Returns false if the hero power has already been blocked by this source.
+	 */
+	disableHeroPower(blockerId: string | number): boolean {
+		if (this.heroPowerBlockers.includes(blockerId)) {
+			return false;
+		}
+
+		this.heroPowerBlockers.push(blockerId);
+		return true;
+	}
+
+	/**
+	 * Enables this player's hero power.
+	 *
+	 * If the hero power is being blocked by something else, it will remain blocked.
+	 *
+	 * @param blockerId Pass the card's uuid or the player's id, depending who's calling this function.
+	 * @returns Returns false if this card wasn't blocked by that source.
+	 */
+	enableHeroPower(blockerId: string | number): boolean {
+		return game.functions.util.remove(this.heroPowerBlockers, blockerId);
+	}
+
 	// Other
 
 	/**
@@ -970,7 +995,7 @@ export class Player {
 		return (
 			this.mana >= this.hero.heropower!.cost &&
 			!this.hasUsedHeroPowerThisTurn &&
-			!this.disableHeroPower
+			this.heroPowerBlockers.length <= 0
 		);
 	}
 
