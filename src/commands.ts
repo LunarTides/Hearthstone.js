@@ -604,7 +604,7 @@ export const debugCommands: CommandList = {
 		}
 
 		const code = await game.functions.util.parseEvalArgs(args);
-		console.log(`Running: ${code}\n`);
+		console.log(`\`\`\`\nawait ${code}\n\`\`\`\n`);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.

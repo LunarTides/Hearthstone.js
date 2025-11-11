@@ -119,10 +119,10 @@ describe("src/functions/util", () => {
 	test("parseEvalArgs", async () => {
 		expect(
 			await utilFunctions.parseEvalArgs(["console.log('Hello World')"]),
-		).toEqual("(async () => { console.log('Hello World') })()");
+		).toEqual("(async () => {\n\t// Code\n\tconsole.log('Hello World')\n})();");
 
 		expect(await utilFunctions.parseEvalArgs(["log", '"Hello World"'])).toEqual(
-			'(async () => { console.log("Hello World");await game.pause(); })()',
+			'(async () => {\n\t// Code\n\tconsole.log("Hello World");\n\tawait game.pause();\n})();',
 		);
 
 		expect(
@@ -132,74 +132,85 @@ describe("src/functions/util", () => {
 				"game.functions.util.parseEvalArgs([\"console.log('hi')\"])",
 			]),
 		).toEqual(
-			"(async () => { console.log(await game.functions.util.parseEvalArgs([\"console.log('hi')\"]));await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(await game.functions.util.parseEvalArgs([\"console.log('hi')\"]));\n\tawait game.pause();\n})();",
 		);
 
 		// @
 		expect(
 			await utilFunctions.parseEvalArgs(["log", "@Player1.getName()"]),
 		).toEqual(
-			"(async () => { console.log(game.player1.getName());await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.getName());\n\tawait game.pause();\n})();",
 		);
 
 		expect(
 			await utilFunctions.parseEvalArgs(["log", "@Player2.getName()"]),
 		).toEqual(
-			"(async () => { console.log(game.player2.getName());await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player2.getName());\n\tawait game.pause();\n})();",
 		);
 
 		expect(
 			await utilFunctions.parseEvalArgs(["log", "@Player.getName()"]),
 		).toEqual(
-			"(async () => { console.log(game.player.getName());await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.getName());\n\tawait game.pause();\n})();",
 		);
 
 		// Location codes
 		expect(await utilFunctions.parseEvalArgs(["log", "h#c#1.name"])).toEqual(
-			"(async () => { console.log(game.player1.hand[1 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "h#c#2.name"])).toEqual(
-			"(async () => { console.log(game.player1.hand[2 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.hand[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "h#o#1.name"])).toEqual(
-			"(async () => { console.log(game.player2.hand[1 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player2.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "d#c#1.name"])).toEqual(
-			"(async () => { console.log(game.player1.deck[1 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.deck[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "d#o#2.name"])).toEqual(
-			"(async () => { console.log(game.player2.deck[2 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player2.deck[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "b#c#1.name"])).toEqual(
-			"(async () => { console.log(game.player1.board[1 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.board[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "b#o#5.name"])).toEqual(
-			"(async () => { console.log(game.player2.board[5 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player2.board[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "g#c#1.name"])).toEqual(
-			"(async () => { console.log(game.player1.graveyard[1 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player1.graveyard[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		expect(await utilFunctions.parseEvalArgs(["log", "g#o#5.name"])).toEqual(
-			"(async () => { console.log(game.player2.graveyard[5 - 1].name);await game.pause(); })()",
+			"(async () => {\n\t// Code\n\tconsole.log(game.player2.graveyard[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		// UUID
 		expect(await utilFunctions.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
-			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(__card.name);await game.pause(); })()',
+			'(async () => {\n\t// Variables\n\tconst __card_ffffff = Card.fromUUID("ffffff");\n\tif (!__card_ffffff) throw new Error("Card with uuid \\"ffffff\\" not found");\n\n\t// Code\n\tconsole.log(__card_ffffff.name);\n\tawait game.pause();\n})();',
 		);
 
 		expect(
 			await utilFunctions.parseEvalArgs(["log", "await", "@ffffff.readable()"]),
 		).toEqual(
-			'(async () => { let __card = Card.fromUUID("ffffff");if (!__card) throw new Error("Card with uuid \\"ffffff\\" not found");console.log(await __card.readable());await game.pause(); })()',
+			'(async () => {\n\t// Variables\n\tconst __card_ffffff = Card.fromUUID("ffffff");\n\tif (!__card_ffffff) throw new Error("Card with uuid \\"ffffff\\" not found");\n\n\t// Code\n\tconsole.log(await __card_ffffff.readable());\n\tawait game.pause();\n})();',
+		);
+
+		expect(
+			await utilFunctions.parseEvalArgs([
+				"await",
+				// biome-ignore lint/suspicious/noTemplateCurlyInString: testing code generation
+				"game.pause(`${@abcdefg.uuid} ||| ${@1234567.uuid}`)",
+			]),
+		).toEqual(
+			// biome-ignore lint/suspicious/noTemplateCurlyInString: testing code generation
+			'(async () => {\n\t// Variables\n\tconst __card_abcdefg = Card.fromUUID("abcdefg");\n\tif (!__card_abcdefg) throw new Error("Card with uuid \\"abcdefg\\" not found");\n\tconst __card_1234567 = Card.fromUUID("1234567");\n\tif (!__card_1234567) throw new Error("Card with uuid \\"1234567\\" not found");\n\n\t// Code\n\tawait game.pause(`${__card_abcdefg.uuid} ||| ${__card_1234567.uuid}`)\n})();',
 		);
 	});
 });

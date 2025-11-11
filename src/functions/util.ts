@@ -648,48 +648,33 @@ ${mainContent}
 		}
 
 		let log = false;
-		let useAwait = false;
-		let hasUsedAwait = false;
-
 		if (args[0] === "log") {
 			log = true;
 			args.shift();
 		}
 
-		// Make sure the await keyword is in the right place.
-		if (args[0] === "await") {
-			useAwait = true;
-			args.shift();
-		}
-
+		const variables: string[] = [];
 		let code = args.join(" ");
 
 		// Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
 		code = code.replaceAll("@Player", "game.player");
 
-		let trueLog = false;
-
+		// Replace @abcdefg with a new variable "__card_abcdefg" which contains the card with that uuid.
+		const uuidsProcessed: string[] = [];
 		const uuidRegex = /@\w+/g;
 		for (const match of code.matchAll(uuidRegex)) {
 			const uuid = match[0].slice(1);
 
-			// HACK: Do this or logging doesn't work.
-			if (log) {
-				code = code.replace(
-					`@${uuid}`,
-					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");console.log(${useAwait ? "await " : ""}__card`,
-				);
-
-				log = false;
-				trueLog = true;
-			} else {
-				code = code.replace(
-					`@${uuid}`,
-					`let __card = Card.fromUUID("${uuid}");if (!__card) throw new Error("Card with uuid \\"${uuid}\\" not found");${useAwait ? "await " : ""}__card`,
-				);
+			if (uuidsProcessed.includes(uuid)) {
+				continue;
 			}
+			uuidsProcessed.push(uuid);
 
-			hasUsedAwait = true;
+			variables.push(`const __card_${uuid} = Card.fromUUID("${uuid}");`);
+			variables.push(
+				`if (!__card_${uuid}) throw new Error("Card with uuid \\"${uuid}\\" not found");`,
+			);
+			code = code.replaceAll(`@${uuid}`, `__card_${uuid}`);
 		}
 
 		/*
@@ -738,18 +723,21 @@ ${mainContent}
 				code = code.slice(0, -1);
 			}
 
-			code = `console.log(${useAwait ? "await " : ""}${code});await game.pause();`;
-			hasUsedAwait = true;
+			code = `console.log(${code});await game.pause();`;
 		}
 
-		if (trueLog) {
-			if (code.at(-1) === ";") {
-				code = code.slice(0, -1);
-			}
+		const variablesString =
+			variables.length > 0
+				? `\n\t// Variables\n\t${variables.join("\n\t")}\n`
+				: "";
 
-			code = `${code});await game.pause();`;
+		let codeJoined = code.split(";").join(";\n\t");
+		if (codeJoined.endsWith("\n\t")) {
+			codeJoined = codeJoined.slice(0, -2);
 		}
 
-		return `(async () => { ${!useAwait || hasUsedAwait ? "" : "await "}${code} })()`;
+		const codeString = `\n\t// Code\n\t${codeJoined}\n`;
+
+		return `(async () => {${variablesString}${codeString}})();`;
 	},
 };
