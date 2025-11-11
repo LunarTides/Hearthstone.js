@@ -167,6 +167,7 @@ export async function create(
 	 * TODO: Search for *keywords* in the card text and don't add a passive ability if one was found. And vice versa. #277
 	 * TODO: Look for placeholders in the text and add a placeholder ability if it finds one. #277
 	 */
+	blueprint = game.lodash.clone(blueprint);
 
 	// Validate
 	if (
@@ -189,24 +190,27 @@ export async function create(
 
 	// Add create ability if the card has text.
 	const runes = blueprint.runes
-		? `        self.runes = "${blueprint.runes}"\n`
+		? `\t\tself.runes = "${blueprint.runes}"\n`
 		: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
 			// 8 spaces
-			keywords += `        self.addKeyword(Keyword.${keyword});\n`;
+			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "_")});\n`;
 		}
 
 		// Remove the last newline.
 		keywords = keywords.slice(0, -1);
 	}
 
-	if (blueprint.text) {
+	if (
+		(blueprint.text || blueprint.keywords || runes) &&
+		blueprint.type !== Type.Enchantment
+	) {
 		abilitiesTexts.push(`async create(self, owner) {
 		// ${cleanedDescription}
-		${runes}${keywords}
+${runes}${keywords}
 	},`);
 	}
 
