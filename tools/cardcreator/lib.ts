@@ -1,4 +1,5 @@
 import {
+	Ability,
 	type BlueprintWithOptional,
 	EnchantmentPriority,
 	Type,
@@ -19,49 +20,65 @@ export enum CCType {
  * Returns the ability of a card based on its type.
  *
  * @param blueprint The blueprint of the card
- * @returns The ability of the card.
+ * @returns The abilities of the card.
  */
-function getCardAbility(blueprint: BlueprintWithOptional): string {
+function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 	switch (blueprint.type) {
 		case Type.Spell: {
-			return "cast";
+			return [Ability.Cast];
 		}
 
 		case Type.Hero: {
-			return "battlecry";
+			return [Ability.Battlecry];
 		}
 
 		case Type.Location: {
-			return "use";
+			return [Ability.Use];
 		}
 
 		case Type.HeroPower: {
-			return "heropower";
+			return [Ability.HeroPower];
 		}
 
 		case Type.Enchantment: {
-			// TODO: Also add `EnchantmentRemove`.
-			return "enchantmentApply";
+			return [
+				Ability.EnchantmentSetup,
+				Ability.EnchantmentApply,
+				Ability.EnchantmentRemove,
+			];
 		}
 
 		case Type.Minion:
 		case Type.Weapon: {
-			// Try to extract an ability from the card's description
-			const reg = /([A-Z][a-z].*?):/g;
-			const foundAbility = reg.exec(blueprint.text);
+			// Try to extract the abilities from the card's description
+			const reg = /(?:^|\. )(?:<.*?>)?([A-Z][a-z].*?):/g;
+			const foundAbilities = blueprint.text.match(reg);
 
 			if (!blueprint.text) {
 				// If the card doesn't have a description, it doesn't get an ability.
-				return "";
+				return [];
 			}
 
-			if (foundAbility) {
+			if (foundAbilities) {
 				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
-				return foundAbility[1];
+				const extracted = foundAbilities.map((s) =>
+					s
+						.replace(/:$/, "")
+						.replace(/^\. /, "")
+						.replace(/^<.*?>/, "")
+						.toLowerCase(),
+				);
+
+				// Only use valid abilities.
+				const validAbilities = extracted.filter((ability) =>
+					Object.values(Ability).includes(ability as Ability),
+				) as Ability[];
+
+				return validAbilities.length > 0 ? validAbilities : [Ability.Passive];
 			}
 
 			// If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
-			return "passive";
+			return [Ability.Passive];
 		}
 
 		case Type.Undefined: {
@@ -147,16 +164,15 @@ export async function create(
 	debug?: boolean,
 ): Promise<string> {
 	/*
-	 * TODO: Search for keywords in the card text and don't add a passive ability if one was found. And vice versa. #277
+	 * TODO: Search for *keywords* in the card text and don't add a passive ability if one was found. And vice versa. #277
 	 * TODO: Look for placeholders in the text and add a placeholder ability if it finds one. #277
 	 */
+	blueprint = game.lodash.clone(blueprint);
 
 	// Validate
 	if (
 		// TODO: Why can't we validate Hero Powers?
-		blueprint.type !== Type.HeroPower &&
-		// TODO: Remove when ability to add 2 abilities is added.
-		blueprint.type !== Type.Enchantment
+		blueprint.type !== Type.HeroPower
 	) {
 		const error = game.functions.card.validateBlueprint(blueprint);
 		if (error !== true) {
@@ -167,86 +183,105 @@ export async function create(
 
 	const debugMode = debug || mainDebugSwitch;
 
-	let ability = getCardAbility(blueprint);
+	const abilities = getCardAbilities(blueprint);
+	const abilitiesTexts = [];
 
-	// Here it creates a default function signature
-	let extraTriggerText = "";
+	const cleanedDescription = game.functions.color.stripTags(blueprint.text);
 
-	const isPassive = ability === "passive";
-	if (isPassive) {
-		extraTriggerText = ", key, value, eventPlayer";
-	}
-
-	const isEnchantmentAbility =
-		ability === "enchantmentApply" || ability === "enchantmentRemove";
-	if (isEnchantmentAbility) {
-		extraTriggerText = ", host";
-	}
-
-	let extraPassiveCode = "";
-	if (isPassive) {
-		extraPassiveCode = `
-
-        // Only proceed if the correct event key was broadcast
-        if (!game.event.is(key, value, Event.ChangeMe)) {
-            return;
-        }`;
-	}
-
-	// If the text has `<b>Battlecry:</b> Dredge.`, add `// Dredge.` to the battlecry ability
-	const cleanedDescription = game.functions.color
-		.stripTags(blueprint.text)
-		.replace(new RegExp(`${ability}: `, "i"), "");
-
-	// `create` ability
+	// Add create ability if the card has text.
 	const runes = blueprint.runes
-		? `        self.runes = "${blueprint.runes}"\n`
+		? `\t\tself.runes = "${blueprint.runes}"\n`
 		: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
 			// 8 spaces
-			keywords += `        self.addKeyword(Keyword.${keyword});\n`;
+			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "_")});\n`;
 		}
 
 		// Remove the last newline.
 		keywords = keywords.slice(0, -1);
 	}
 
-	// Do this here because of the `blueprint.keywords = undefined` line below.
-	const keywordImport =
-		(blueprint.keywords?.length ?? 0) > 0 ? "\n\tKeyword," : "";
-	const createAbility = blueprint.text
-		? `
-    async create(self, owner) {
-        // Add additional fields here
+	if (
+		(blueprint.text || blueprint.keywords || runes) &&
+		blueprint.type !== Type.Enchantment
+	) {
+		abilitiesTexts.push(`async create(self, owner) {
+		// ${cleanedDescription}
 ${runes}${keywords}
-    },`
-		: "";
+	},`);
+	}
+
+	for (const ability of abilities) {
+		if (ability === Ability.Passive) {
+			abilitiesTexts.push(`async ${ability}(self, owner, key, value, eventPlayer) {
+		// ${cleanedDescription}
+
+		// Only proceed if the correct event key was broadcast
+        if (!game.event.is(key, value, Event.ChangeMe)) {
+            return;
+        };
+	},`);
+			continue;
+		}
+
+		if (
+			[
+				Ability.EnchantmentSetup,
+				Ability.EnchantmentApply,
+				Ability.EnchantmentRemove,
+			].includes(ability)
+		) {
+			abilitiesTexts.push(`async ${ability}(self, owner, host) {
+		// ${cleanedDescription}
+
+	},`);
+
+			continue;
+		}
+
+		abilitiesTexts.push(`async ${ability}(self, owner) {
+		// ${cleanedDescription}
+
+	},`);
+	}
+
+	abilitiesTexts.push(`async test(self, owner) {
+		// Unit testing
+		return EventListenerMessage.Skip;
+	},`);
+
+	// Imports
+	const imports = [];
+	if ((blueprint.keywords?.length ?? 0) > 0) {
+		imports.push("Keyword");
+	}
+	if (abilities.includes(Ability.Passive)) {
+		imports.push("Event");
+	}
+
+	switch (blueprint.type) {
+		case Type.Minion:
+			imports.push("MinionTribe");
+			break;
+		case Type.Spell:
+			imports.push("SpellSchool");
+			break;
+		case Type.Enchantment:
+			imports.push("EnchantmentPriority");
+			break;
+		case Type.Weapon:
+		case Type.Location:
+		case Type.Hero:
+		case Type.HeroPower:
+		case Type.Undefined:
+			break;
+	}
 
 	blueprint.runes = undefined;
 	blueprint.keywords = undefined;
-
-	/*
-	 * Normal ability
-	 * Example 1: '\n\n    passive(self, owner, key, value, eventPlayer) {\n        // Your battlecries trigger twice.\n        ...\n    }',
-	 * Example 2: '\n\n    battlecry(self, owner) {\n        // Deal 2 damage to the opponent.\n        \n    }'
-	 */
-	if (ability) {
-		const extraNewline = extraPassiveCode ? "" : "\n";
-
-		ability = `
-
-    async ${ability}(self, owner${extraTriggerText}) {
-        // ${cleanedDescription}${extraPassiveCode}${extraNewline}
-    },
-
-    async test(self, owner) {
-        // Unit testing
-        return EventListenerMessage.Skip;
-    },`;
-	}
 
 	// Get the latest card-id
 	const id = (await getLatestId()) + 1;
@@ -317,7 +352,6 @@ ${runes}${keywords}
 		}
 
 		// If the value is a string, put "value"
-		// if (typeof value === "string") {
 		switch (key) {
 			case "type":
 				returnValue = `Type.${value}`;
@@ -353,7 +387,6 @@ ${runes}${keywords}
 				}
 				break;
 		}
-		// }
 
 		// Turn the value into a string.
 		if (returnValue || returnValue === 0 || returnValue === false) {
@@ -379,44 +412,26 @@ ${runes}${keywords}
 		return returnValue;
 	});
 
-	// If the function is passive, add `Event` to the list of imports
-	const passiveImport = isPassive ? "\n\tEvent," : "";
-	const tagImport = usesTags ? "\n\tCardTag," : "";
-	let typeImport = "\n\t";
-
-	switch (blueprint.type) {
-		case Type.Minion:
-			typeImport += "MinionTribe,";
-			break;
-		case Type.Spell:
-			typeImport += "SpellSchool,";
-			break;
-		case Type.Enchantment:
-			typeImport += "EnchantmentPriority,";
-			break;
-		case Type.Weapon:
-		case Type.Location:
-		case Type.Hero:
-		case Type.HeroPower:
-		case Type.Undefined:
-			typeImport = "";
-			break;
+	if (usesTags) {
+		imports.push("CardTag");
 	}
 
 	// Add the content
 	const content = `// Created by the ${creatorType} Card Creator
 
 import {
-	type Blueprint,${tagImport}
-	Class,${passiveImport}
-	EventListenerMessage,${typeImport}${keywordImport}
-	Rarity,
-	Type,
+\ttype Blueprint,
+\tClass,
+\tEventListenerMessage,
+\tRarity,
+\tType,
+\t${imports.join("\n\t")}
 } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
-    ${contentArray.join("")}${createAbility}${ability}
+\t${contentArray.join("")}
+\t${abilitiesTexts.join("\n\n\t")}
 };
 `;
 
@@ -477,7 +492,7 @@ export const blueprint: Blueprint = {
 	await game.functions.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
-	if (ability && !debugMode) {
+	if (abilities.length > 0 && !debugMode) {
 		game.functions.util.runCommand(
 			`${game.config.general.editor} "${filePath}"`,
 		);
