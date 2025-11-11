@@ -7,7 +7,7 @@ import {
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
-const mainDebugSwitch = true;
+const mainDebugSwitch = false;
 
 export enum CCType {
 	Unknown = "Unknown",
@@ -20,7 +20,7 @@ export enum CCType {
  * Returns the ability of a card based on its type.
  *
  * @param blueprint The blueprint of the card
- * @returns The ability of the card.
+ * @returns The abilities of the card.
  */
 function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 	switch (blueprint.type) {
@@ -51,8 +51,7 @@ function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 		case Type.Minion:
 		case Type.Weapon: {
 			// Try to extract the abilities from the card's description
-			// TODO: no workie... Battlecry: Hi. Deathrattle: Die.
-			const reg = /(?:^|\. )(?:<.*>)?([A-Z][a-z].*?):/g;
+			const reg = /(?:^|\. )(?:<.*?>)?([A-Z][a-z].*?):/g;
 			const foundAbilites = blueprint.text.match(reg);
 
 			if (!blueprint.text) {
@@ -63,7 +62,11 @@ function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 			if (foundAbilites) {
 				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
 				return foundAbilites.map((s) =>
-					s.replace(/:$/, "").replace(/^\. /, "").toLowerCase(),
+					s
+						.replace(/:$/, "")
+						.replace(/^\. /, "")
+						.replace(/^<.*?>/, "")
+						.toLowerCase(),
 				) as Ability[];
 			}
 
@@ -228,9 +231,8 @@ export async function create(
 			continue;
 		}
 
-		// TODO: no workie... replacing regex...
 		abilitiesTexts.push(`async ${ability}(self, owner) {
-		// ${cleanedDescription.replace(new RegExp(`${ability}: (.*?)(?:${abilities.join("|")}).*`, "i"), "$1").trim()}
+		// ${cleanedDescription}
 
 	},`);
 	}
@@ -479,7 +481,7 @@ export const blueprint: Blueprint = {
 	await game.functions.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
-	if (abilities && !debugMode) {
+	if (abilities.length > 0 && !debugMode) {
 		game.functions.util.runCommand(
 			`${game.config.general.editor} "${filePath}"`,
 		);
