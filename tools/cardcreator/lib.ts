@@ -52,22 +52,29 @@ function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 		case Type.Weapon: {
 			// Try to extract the abilities from the card's description
 			const reg = /(?:^|\. )(?:<.*?>)?([A-Z][a-z].*?):/g;
-			const foundAbilites = blueprint.text.match(reg);
+			const foundAbilities = blueprint.text.match(reg);
 
 			if (!blueprint.text) {
 				// If the card doesn't have a description, it doesn't get an ability.
 				return [];
 			}
 
-			if (foundAbilites) {
+			if (foundAbilities) {
 				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
-				return foundAbilites.map((s) =>
+				const extracted = foundAbilities.map((s) =>
 					s
 						.replace(/:$/, "")
 						.replace(/^\. /, "")
 						.replace(/^<.*?>/, "")
 						.toLowerCase(),
+				);
+
+				// Only use valid abilities.
+				const validAbilities = extracted.filter((ability) =>
+					Object.values(Ability).includes(ability as Ability),
 				) as Ability[];
+
+				return validAbilities.length > 0 ? validAbilities : [Ability.Passive];
 			}
 
 			// If it didn't find an ability, but the card has text in it's description, the ability is 'passive'
