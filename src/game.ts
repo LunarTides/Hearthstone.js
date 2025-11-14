@@ -894,26 +894,13 @@ const playCard = {
 	},
 
 	async _hasCapacity(card: Card, player: Player): Promise<boolean> {
-		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (
-			player.board.length < game.config.general.maxBoardSpace ||
-			!card.canBeOnBoard()
-		) {
+		// Cards that aren't summoned to the board bypass this condition.
+		// This is so that you can play, for example, spells while the board is full.
+		if (!card.canBeOnBoard()) {
 			return true;
 		}
 
-		// Refund
-		await game.event.withSuppressed(Event.AddCardToHand, async () =>
-			player.addToHand(card),
-		);
-
-		if (card.costType === "mana") {
-			player.refreshMana(card.cost);
-		} else {
-			player[card.costType] += card.cost;
-		}
-
-		return false;
+		return player.board.length < game.config.general.maxBoardSpace;
 	},
 
 	async _condition(card: Card, player: Player): Promise<boolean> {
