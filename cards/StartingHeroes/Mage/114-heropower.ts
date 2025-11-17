@@ -18,10 +18,7 @@ export const blueprint: Blueprint = {
 	async heropower(self, owner) {
 		// Deal 1 damage.
 
-		const target = await game.functions.interact.prompt.target(
-			"Deal 1 damage.",
-			self,
-		);
+		const target = await game.prompt.target("Deal 1 damage.", self);
 
 		// If no target was selected, refund the hero power
 		if (!target) {

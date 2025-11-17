@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		// Give a friendly minion +1 Attack and Rush.
 
 		// Prompt the user to select a friendly minion
-		const target = await game.functions.interact.prompt.targetCard(
+		const target = await game.prompt.targetCard(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
 			{ alignment: "friendly" },

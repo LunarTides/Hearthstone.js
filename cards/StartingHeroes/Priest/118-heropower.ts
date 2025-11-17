@@ -18,10 +18,7 @@ export const blueprint: Blueprint = {
 	async heropower(self, owner) {
 		// Restore 2 Health.
 
-		const target = await game.functions.interact.prompt.target(
-			"Restore 2 health.",
-			self,
-		);
+		const target = await game.prompt.target("Restore 2 health.", self);
 
 		// If no target was selected, refund the hero power
 		if (!target) {

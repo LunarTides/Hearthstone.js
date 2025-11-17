@@ -820,7 +820,7 @@ const playCard = {
 			q = player.ai.trade(card);
 		} else {
 			await game.functions.interact.print.gameState(player);
-			q = await game.functions.interact.prompt.yesNo(
+			q = await game.prompt.yesNo(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
 			);
@@ -867,7 +867,7 @@ const playCard = {
 			q = player.ai.forge(card);
 		} else {
 			await game.functions.interact.print.gameState(player);
-			q = await game.functions.interact.prompt.yesNo(
+			q = await game.prompt.yesNo(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
 			);
@@ -920,10 +920,7 @@ const playCard = {
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
 		await game.functions.interact.print.gameState(player);
-		const warn = await game.functions.interact.prompt.yesNo(
-			warnMessage,
-			player,
-		);
+		const warn = await game.prompt.yesNo(warnMessage, player);
 
 		if (!warn) {
 			return false;
@@ -1014,7 +1011,7 @@ const playCard = {
 		}
 
 		// I'm using while loops to prevent a million indents
-		const mech = await game.functions.interact.prompt.targetCard(
+		const mech = await game.prompt.targetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
 			{ alignment: "friendly" },
@@ -1066,6 +1063,11 @@ export class Game {
 	 * Look in here for more.
 	 */
 	functions = functions;
+
+	/**
+	 * Shortcut for `game.functions.interact.prompt`.
+	 */
+	prompt = functions.interact.prompt;
 
 	/**
 	 * The player that starts first.

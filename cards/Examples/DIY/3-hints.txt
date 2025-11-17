@@ -146,8 +146,8 @@ SPOILERS FURTHER DOWN. BE WARNED!
 
 
 
-`game.functions.interact.prompt.target` or `game.functions.interact.prompt.targetCard` is the method to use.
-(you can replace `game.functions.interact.prompt.target` with `game.functions.interact.prompt.targetCard`, it is what i recommend in this situation)
+`game.prompt.target` or `game.prompt.targetCard` is the method to use.
+(you can replace `game.prompt.target` with `game.prompt.targetCard`, it is what i recommend in this situation)
 
 Make sure to set the `target` to the return value.
 

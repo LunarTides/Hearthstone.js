@@ -27,15 +27,15 @@ export const blueprint: Blueprint = {
 	async battlecry(self, owner) {
 		// Dredge.
 
-		// "game.functions.interact" is an instance of the interact object as defined in `src/functions/interact.ts`.
-		await game.functions.interact.prompt.dredge();
+		// "game.prompt" links to "game.functions.interact.prompt", which is an instance of the interact object as defined in `src/functions/interact.ts`.
+		await game.prompt.dredge();
 	},
 
 	// Ignore this
 	async test(self, owner) {
 		// Makes the player answer "1" to the next question
 		owner.inputQueue = ["1"];
-		const card = await game.functions.interact.prompt.dredge();
+		const card = await game.prompt.dredge();
 
 		// Check if the top card of the player's deck is the card that was dredged
 		assert.equal(game.lodash.last(owner.deck), card);

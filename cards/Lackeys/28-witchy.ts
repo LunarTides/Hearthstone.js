@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 		// Transform a friendly minion into one that costs (1) more.
 
 		// Ask the user which minion to transform
-		const target = await game.functions.interact.prompt.targetCard(
+		const target = await game.prompt.targetCard(
 			"Transform a friendly minion into one that costs (1) more.",
 			self,
 			{ alignment: "friendly" },

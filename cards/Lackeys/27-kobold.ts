@@ -31,10 +31,7 @@ export const blueprint: Blueprint = {
 		// Deal 2 damage.
 
 		// Select a target
-		const target = await game.functions.interact.prompt.target(
-			"Deal 2 damage.",
-			self,
-		);
+		const target = await game.prompt.target("Deal 2 damage.", self);
 
 		// If no target was selected, refund
 		if (!target) {

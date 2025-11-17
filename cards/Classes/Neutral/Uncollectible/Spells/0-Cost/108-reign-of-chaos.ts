@@ -28,11 +28,9 @@ export const blueprint: Blueprint = {
 
 	async cast(self, owner) {
 		// Take control of an enemy minion.
-		const card = await game.functions.interact.prompt.targetCard(
-			self.text,
-			self,
-			{ alignment: "enemy" },
-		);
+		const card = await game.prompt.targetCard(self.text, self, {
+			alignment: "enemy",
+		});
 		if (!card) {
 			return Card.REFUND;
 		}

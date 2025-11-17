@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	async cast(self, owner) {
 		// Choose One - Summon a 6/6 Orca with Taunt; or six 1/1 Otters with Rush.
-		await game.functions.interact.prompt.chooseOne(
+		await game.prompt.chooseOne(
 			1,
 			[
 				"Summon a 6/6 Orca with <b>Taunt</b>",

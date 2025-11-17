@@ -38,7 +38,7 @@ export async function main(): Promise<void> {
 		}
 
 		// Put this in a while loop to make sure the function repeats if it fails.
-		while (!(await game.functions.interact.prompt.deckcode(player))) {
+		while (!(await game.prompt.deckcode(player))) {
 			// Pass
 		}
 	}
@@ -50,8 +50,8 @@ export async function main(): Promise<void> {
 	game.interest("Starting game...OK");
 
 	game.interest("Performing mulligan...");
-	await game.functions.interact.prompt.mulligan(player1);
-	await game.functions.interact.prompt.mulligan(player2);
+	await game.prompt.mulligan(player1);
+	await game.prompt.mulligan(player2);
 	game.interest("Performing mulligan...OK");
 
 	game.interest("Finished setting up game.");

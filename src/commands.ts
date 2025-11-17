@@ -79,7 +79,7 @@ export const commands: CommandList = {
 		}
 
 		await game.functions.interact.print.gameState(game.player);
-		const ask = await game.functions.interact.prompt.yesNo(
+		const ask = await game.prompt.yesNo(
 			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
 			game.player,
 		);
@@ -94,13 +94,13 @@ export const commands: CommandList = {
 	},
 
 	async attack(): Promise<boolean> {
-		await game.functions.interact.prompt.gameloopAttack();
+		await game.prompt.gameloopAttack();
 		return true;
 	},
 
 	async use(): Promise<boolean> {
 		// Use location
-		const errorCode = await game.functions.interact.prompt.useLocation();
+		const errorCode = await game.prompt.useLocation();
 		if (
 			errorCode === UseLocationError.Success ||
 			errorCode === UseLocationError.Refund ||
@@ -140,7 +140,7 @@ export const commands: CommandList = {
 
 	async titan(): Promise<boolean> {
 		// Use titan card
-		const card = await game.functions.interact.prompt.targetCard(
+		const card = await game.prompt.targetCard(
 			"Which card do you want to use?",
 			undefined,
 			{ alignment: "friendly" },
@@ -268,7 +268,7 @@ export const commands: CommandList = {
 	async concede(): Promise<boolean> {
 		await game.functions.interact.print.gameState(game.player);
 
-		const confirmation = await game.functions.interact.prompt.yesNo(
+		const confirmation = await game.prompt.yesNo(
 			"Are you sure you want to concede?",
 			game.player,
 		);
@@ -370,7 +370,7 @@ export const commands: CommandList = {
 			console.log(game.config.info.versionText);
 		}
 
-		const openIssues = await game.functions.interact.prompt.yesNo(
+		const openIssues = await game.prompt.yesNo(
 			"Do you want to open the todo list in your browser?",
 			game.player,
 		);

@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 	async cast(self, owner) {
 		// Select a friendly minion. Give it +1 Attack and +2 Health.
 
-		const target = await game.functions.interact.prompt.targetCard(
+		const target = await game.prompt.targetCard(
 			"Give +1 Attack and +2 Health.",
 			self,
 			{ alignment: "friendly" },

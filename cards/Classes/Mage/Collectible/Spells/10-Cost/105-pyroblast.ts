@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	async cast(self, owner) {
 		// Deal $10 damage.
-		const target = await game.functions.interact.prompt.target(self.text, self);
+		const target = await game.prompt.target(self.text, self);
 		if (!target) {
 			return Card.REFUND;
 		}

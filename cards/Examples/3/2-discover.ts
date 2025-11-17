@@ -39,10 +39,7 @@ export const blueprint: Blueprint = {
 		pool = pool.filter((c) => c.type === Type.Spell);
 
 		// discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
-		const spell = await game.functions.interact.prompt.discover(
-			"Discover a spell.",
-			pool,
-		);
+		const spell = await game.prompt.discover("Discover a spell.", pool);
 
 		// If no card was chosen, refund.
 		if (!spell) {

@@ -281,7 +281,7 @@ export class Player {
 	 * # Example
 	 * ```
 	 * player.forceTarget = target;
-	 * const chosen = await game.functions.interact.prompt.target("Example", null);
+	 * const chosen = await game.prompt.target("Example", null);
 	 * player.forceTarget = undefined;
 	 *
 	 * assert.equal(chosen, target);

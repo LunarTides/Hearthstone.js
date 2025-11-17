@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	async cast(self, owner) {
 		// Choose One - Gain an empty Mana Crystal; or Draw a card.
-		await game.functions.interact.prompt.chooseOne(
+		await game.prompt.chooseOne(
 			1,
 			[
 				"Gain an empty Mana Crystal",
