@@ -9,10 +9,7 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	/*
-	 * Look in `corrupt.ts` first.
-	 * This is just an ordinary card.
-	 */
+	// This is just an ordinary card.
 	name: "Corrupted Example",
 	text: "Corrupted.",
 	cost: 0,

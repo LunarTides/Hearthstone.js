@@ -1050,6 +1050,56 @@ export class Card {
 	}
 
 	/**
+	 * Moves this card to its corresponding owner's locations.
+	 *
+	 * If this card is in its owner's opponent's hand, move it to it's owner's hand.
+	 *
+	 * @returns If it moved the card.
+	 */
+	async confirmAlignment(): Promise<boolean> {
+		const opponent = this.owner.getOpponent();
+
+		if (opponent.board.includes(this)) {
+			game.functions.util.remove(opponent.board, this);
+
+			await game.event.withSuppressed(Event.SummonCard, async () => {
+				await this.owner.summon(this);
+			});
+
+			return true;
+		}
+
+		if (opponent.hand.includes(this)) {
+			game.functions.util.remove(opponent.hand, this);
+
+			await game.event.withSuppressed(Event.AddCardToHand, async () => {
+				await this.owner.addToHand(this);
+			});
+
+			return true;
+		}
+
+		if (opponent.deck.includes(this)) {
+			game.functions.util.remove(opponent.deck, this);
+
+			await game.event.withSuppressed(Event.AddCardToDeck, async () => {
+				await this.owner.shuffleIntoDeck(this);
+			});
+
+			return true;
+		}
+
+		if (opponent.graveyard.includes(this)) {
+			game.functions.util.remove(opponent.graveyard, this);
+			this.owner.graveyard.push(this);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * @returns If this card can attack.
 	 */
 	canAttack(): boolean {

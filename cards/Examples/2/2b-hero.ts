@@ -7,7 +7,10 @@ export const blueprint: Blueprint = {
 	name: "Hero Example",
 	text: "<b>Battlecry:</b> Restore your hero to full health.",
 	cost: 1,
+
+	// Remember to use the correct type.
 	type: Type.Hero,
+
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
@@ -23,6 +26,9 @@ export const blueprint: Blueprint = {
 	 * The `game.cardIds` object contains the ids of every card in the game.
 	 * It exists because doing `heropowerId: 130` is not very readable.
 	 * The `game.cardIds` representation of the card is its name, followed by its id.
+	 *
+	 * The `cardIds` object will be refreshed when you run the game.
+	 * So if you get an error here, try launching the game and see if it fixes it.
 	 */
 	heropowerId: game.cardIds.heropowerExample_130,
 

@@ -11,7 +11,6 @@ import {
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
-	// Look in `titan.ts` first.
 	name: "Ability 2",
 	text: "Heal 3 damage.",
 	cost: 0,

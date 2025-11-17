@@ -9,10 +9,7 @@ import {
 } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
-	/*
-	 * Look in `forge.ts` first.
-	 * This is just an ordinary card.
-	 */
+	// This is just an ordinary card.
 	name: "Forged Example",
 	text: "",
 	cost: 1,

@@ -326,6 +326,7 @@ describe("src/card", () => {
 		expect(game.activeCards).not.toContain(card);
 	});
 
+	test.todo("confirmAlignment", async () => {});
 	test.todo("canAttack", async () => {});
 	test.todo("canBeAttacked", async () => {});
 	test.todo("createBackup", async () => {});
