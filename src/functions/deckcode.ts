@@ -7,6 +7,7 @@ import {
 	type FunctionsExportDeckError,
 	type GameConfig,
 	Rarity,
+	Rune,
 	type VanillaCard,
 } from "@Game/types.ts";
 
@@ -23,6 +24,7 @@ export const deckcodeFunctions = {
 	 * @returns The deck
 	 */
 	async import(player: Player, code: string): Promise<Card[] | undefined> {
+		// TODO: Replace this with throwing errors.
 		const panic = async (errorCode: string, cardName?: string) => {
 			console.log(
 				"<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>",
@@ -87,7 +89,15 @@ export const deckcodeFunctions = {
 
 		const addRunes = async (runes: string) => {
 			if (runeClass) {
-				player.runes = runes;
+				const actualRunes = runes
+					.split("")
+					.map((char) =>
+						Object.values(Rune).find((rune) => rune.startsWith(char)),
+					)
+					// TODO: Maybe throw an error if this fails?
+					.filter((r) => r !== undefined);
+
+				player.runes = actualRunes;
 			} else {
 				await game.pause(
 					`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>.\n`,
@@ -308,14 +318,14 @@ export const deckcodeFunctions = {
 	 *
 	 * @param deck The deck to create a deckcode from
 	 * @param heroClass The class of the deck. Example: "Priest"
-	 * @param runes The runes of the deck. Example: "BFU"
+	 * @param runes The runes of the deck.
 	 *
 	 * @returns The deckcode, An error message alongside any additional information.
 	 */
 	export(
 		deck: CardLike[],
 		heroClass: string,
-		runes: string,
+		runes: Rune[],
 	): { code: string; error: FunctionsExportDeckError } {
 		let error: FunctionsExportDeckError;
 
@@ -344,10 +354,12 @@ export const deckcodeFunctions = {
 
 		let deckcode = `${heroClass} `;
 
-		if (runes) {
+		if (runes.length > 0) {
 			// If the runes is 3 of one type, write, for example, 3B instead of BBB
 			deckcode +=
-				new Set(...runes).size === 1 ? `[3${runes[0]}] ` : `[${runes}] `;
+				new Set(runes).size === 1
+					? `[3${runes[0][0]}] `
+					: `[${runes.map((r) => r[0]).join("")}] `;
 		}
 
 		deckcode += "/";
@@ -724,7 +736,7 @@ export const deckcodeFunctions = {
 					continue;
 				}
 
-				runes += card.runes;
+				runes += card.runes.map((r) => r[0]).join("");
 			}
 
 			let sortedRunes = "";

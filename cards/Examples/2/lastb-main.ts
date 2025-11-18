@@ -7,6 +7,7 @@ import {
 	Keyword,
 	MinionTribe,
 	Rarity,
+	Rune,
 	Type,
 } from "@Game/types.ts";
 
@@ -26,7 +27,7 @@ export const blueprint: Blueprint = {
 	tribes: [MinionTribe.None],
 
 	async create(self, owner) {
-		self.runes = "BBB";
+		self.runes = [Rune.Blood, Rune.Blood, Rune.Blood];
 
 		self.addKeyword(Keyword.Colossal, [
 			game.cardIds.leftArm_46,

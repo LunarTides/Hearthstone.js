@@ -185,6 +185,15 @@ export enum CardTag {
 	Quest = "Quest",
 }
 
+/**
+ * Runes.
+ */
+export enum Rune {
+	Blood = "Blood",
+	Frost = "Frost",
+	Unholy = "Unholy",
+}
+
 /*
  * These are the abilities that cards can have.
  */
@@ -408,6 +417,6 @@ export interface Blueprint extends BlueprintAbilities {
 }
 
 export type BlueprintWithOptional = Blueprint & {
-	runes?: string;
+	runes?: Rune[];
 	keywords?: Keyword[];
 };

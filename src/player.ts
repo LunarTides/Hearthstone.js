@@ -12,6 +12,7 @@ import {
 	type QuestCallback,
 	type QuestObject,
 	QuestType,
+	Rune,
 	type Target,
 	Type,
 } from "@Game/types.ts";
@@ -271,9 +272,9 @@ export class Player {
 	corpses = 0;
 
 	/**
-	 * A three letter rune combination. For example "BBB" for 3 blood runes, or "BFU" for one of each rune.
+	 * The runes that the player has.
 	 */
-	runes = "";
+	runes: Rune[] = [];
 
 	/**
 	 * If this is not null, it will automatically choose this target when asked instead of asking the player.
@@ -1027,26 +1028,18 @@ export class Player {
 	 *
 	 * @returns Whether or not the player has the correct runes
 	 */
-	testRunes(runes: string): boolean {
-		const charCount = (text: string, letter: string) => {
-			let letterCount = 0;
+	testRunes(runes: Rune[]): boolean {
+		if (runes.length <= 0 || this.runes.length <= 0) {
+			return false;
+		}
 
-			for (let i = 0; i < text.length; i++) {
-				if (text.charAt(i) === letter) {
-					letterCount++;
-				}
-			}
+		const requiredBlood = runes.filter((r) => r === Rune.Blood).length;
+		const requiredFrost = runes.filter((r) => r === Rune.Frost).length;
+		const requiredUnholy = runes.filter((r) => r === Rune.Unholy).length;
 
-			return letterCount;
-		};
-
-		const requiredBlood = charCount(runes, "B");
-		const requiredFrost = charCount(runes, "F");
-		const requiredUnholy = charCount(runes, "U");
-
-		const blood = charCount(this.runes, "B");
-		const frost = charCount(this.runes, "F");
-		const unholy = charCount(this.runes, "U");
+		const blood = this.runes.filter((r) => r === Rune.Blood).length;
+		const frost = this.runes.filter((r) => r === Rune.Frost).length;
+		const unholy = this.runes.filter((r) => r === Rune.Unholy).length;
 
 		if (
 			requiredBlood > blood ||

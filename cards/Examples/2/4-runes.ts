@@ -6,6 +6,7 @@ import {
 	EventListenerMessage,
 	MinionTribe,
 	Rarity,
+	Rune,
 	Type,
 } from "@Game/types.ts";
 
@@ -26,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// You need 2 frost runes and 1 blood rune to use this card.
-		self.runes = "FFB";
+		self.runes = [Rune.Frost, Rune.Frost, Rune.Blood];
 	},
 
 	async test(self, owner) {

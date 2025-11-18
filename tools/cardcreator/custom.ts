@@ -6,6 +6,7 @@ import {
 	type Keyword,
 	MinionTribe,
 	Rarity,
+	Rune,
 	SpellSchool,
 	Type,
 } from "@Game/types.ts";
@@ -117,12 +118,27 @@ async function common(): Promise<BlueprintWithOptional> {
 			.map((k) => game.lodash.startCase(k) as Keyword);
 	}
 
-	let runes = "";
+	let runes: Rune[] = [];
 	for (const c of realClasses) {
 		player1.heroClass = c;
 
 		if (player1.canUseRunes()) {
-			runes = await input("Runes: ");
+			const runesString = await input(
+				`Runes (${Object.values(Rune)
+					.map((rune) => rune[0])
+					.join("")}): `,
+			);
+			const runesArray = runesString
+				.toUpperCase()
+				.split("")
+				.map((char) =>
+					Object.values(Rune).find((rune) => rune.startsWith(char)),
+				);
+			if (runesArray.some((rune) => rune === undefined)) {
+				throw new Error("Invalid rune found.");
+			}
+
+			runes = runesArray as Rune[];
 			break;
 		}
 	}

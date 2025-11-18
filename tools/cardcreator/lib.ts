@@ -190,7 +190,7 @@ export async function create(
 
 	// Add create ability if the card has text.
 	const runes = blueprint.runes
-		? `\t\tself.runes = "${blueprint.runes}"\n`
+		? `\t\tself.runes = [ ${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")} ];\n`
 		: "";
 	let keywords = "";
 
@@ -257,6 +257,9 @@ ${runes}${keywords}
 	const imports = [];
 	if ((blueprint.keywords?.length ?? 0) > 0) {
 		imports.push("Keyword");
+	}
+	if ((blueprint.runes?.length ?? 0) > 0) {
+		imports.push("Rune");
 	}
 	if (abilities.includes(Ability.Passive)) {
 		imports.push("Event");

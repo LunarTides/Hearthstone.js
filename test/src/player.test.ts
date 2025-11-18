@@ -10,6 +10,7 @@ import {
 	Location,
 	QuestType,
 	Rarity,
+	Rune,
 	SpellSchool,
 	type Target,
 	Type,
@@ -636,44 +637,50 @@ describe("src/player", () => {
 
 	test("testRunes", async () => {
 		const player = new Player();
-		player.runes = "BFU";
+		player.runes = [Rune.Blood, Rune.Frost, Rune.Unholy];
 
-		expect(player.testRunes("BFU")).toBe(true);
-		expect(player.testRunes("BF")).toBe(true);
-		expect(player.testRunes("B")).toBe(true);
-		expect(player.testRunes("BU")).toBe(true);
-		expect(player.testRunes("FU")).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Frost, Rune.Unholy])).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Frost])).toBe(true);
+		expect(player.testRunes([Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Unholy])).toBe(true);
+		expect(player.testRunes([Rune.Frost, Rune.Unholy])).toBe(true);
 
-		expect(player.testRunes("BBF")).toBe(false);
-		expect(player.testRunes("BFF")).toBe(false);
-		expect(player.testRunes("BUU")).toBe(false);
-		expect(player.testRunes("FUF")).toBe(false);
-		expect(player.testRunes("FFU")).toBe(false);
-		expect(player.testRunes("FFF")).toBe(false);
+		expect(player.testRunes([Rune.Blood, Rune.Blood, Rune.Unholy])).toBe(false);
+		expect(player.testRunes([Rune.Blood, Rune.Frost, Rune.Frost])).toBe(false);
+		expect(player.testRunes([Rune.Blood, Rune.Unholy, Rune.Unholy])).toBe(
+			false,
+		);
+		expect(player.testRunes([Rune.Frost, Rune.Unholy, Rune.Frost])).toBe(false);
+		expect(player.testRunes([Rune.Frost, Rune.Frost, Rune.Unholy])).toBe(false);
+		expect(player.testRunes([Rune.Frost, Rune.Frost, Rune.Frost])).toBe(false);
 
-		player.runes = "BBU";
+		player.runes = [Rune.Blood, Rune.Blood, Rune.Unholy];
 
-		expect(player.testRunes("BBU")).toBe(true);
-		expect(player.testRunes("BB")).toBe(true);
-		expect(player.testRunes("B")).toBe(true);
-		expect(player.testRunes("BU")).toBe(true);
-		expect(player.testRunes("UB")).toBe(true);
-		expect(player.testRunes("U")).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Blood, Rune.Unholy])).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Unholy])).toBe(true);
+		expect(player.testRunes([Rune.Unholy, Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Unholy])).toBe(true);
 
-		expect(player.testRunes("F")).toBe(false);
-		expect(player.testRunes("FU")).toBe(false);
-		expect(player.testRunes("UBU")).toBe(false);
+		expect(player.testRunes([Rune.Frost])).toBe(false);
+		expect(player.testRunes([Rune.Frost, Rune.Unholy])).toBe(false);
+		expect(player.testRunes([Rune.Unholy, Rune.Blood, Rune.Unholy])).toBe(
+			false,
+		);
 
-		player.runes = "BBB";
+		player.runes = [Rune.Blood, Rune.Blood, Rune.Blood];
 
-		expect(player.testRunes("BBB")).toBe(true);
-		expect(player.testRunes("BB")).toBe(true);
-		expect(player.testRunes("B")).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Blood, Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Blood, Rune.Blood])).toBe(true);
+		expect(player.testRunes([Rune.Blood])).toBe(true);
 
-		expect(player.testRunes("F")).toBe(false);
-		expect(player.testRunes("FU")).toBe(false);
-		expect(player.testRunes("UBU")).toBe(false);
-		expect(player.testRunes("U")).toBe(false);
+		expect(player.testRunes([Rune.Frost])).toBe(false);
+		expect(player.testRunes([Rune.Frost, Rune.Unholy])).toBe(false);
+		expect(player.testRunes([Rune.Unholy, Rune.Blood, Rune.Unholy])).toBe(
+			false,
+		);
+		expect(player.testRunes([Rune.Unholy])).toBe(false);
 	});
 
 	test.todo("mulligan", async () => {});
