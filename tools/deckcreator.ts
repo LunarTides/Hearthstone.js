@@ -109,7 +109,7 @@ async function askClass(): Promise<Class> {
 			return askClass();
 		}
 
-		heroClass = Class[cl as Class];
+		heroClass = cl as Class;
 	}
 
 	if (!heroClass) {

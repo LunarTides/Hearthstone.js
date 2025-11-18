@@ -129,6 +129,7 @@ async function common(): Promise<BlueprintWithOptional> {
 					.join("")}): `,
 			);
 			const runesArray = runesString
+				.toUpperCase()
 				.split("")
 				.map((char) =>
 					Object.values(Rune).find((rune) => rune.startsWith(char)),
@@ -137,7 +138,7 @@ async function common(): Promise<BlueprintWithOptional> {
 				throw new Error("Invalid rune found.");
 			}
 
-			runes = runesArray.filter((rune) => rune !== undefined);
+			runes = runesArray as Rune[];
 			break;
 		}
 	}

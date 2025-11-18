@@ -318,7 +318,7 @@ export const deckcodeFunctions = {
 	 *
 	 * @param deck The deck to create a deckcode from
 	 * @param heroClass The class of the deck. Example: "Priest"
-	 * @param runes The runes of the deck. Example: "BFU"
+	 * @param runes The runes of the deck.
 	 *
 	 * @returns The deckcode, An error message alongside any additional information.
 	 */
@@ -354,7 +354,7 @@ export const deckcodeFunctions = {
 
 		let deckcode = `${heroClass} `;
 
-		if (runes) {
+		if (runes.length > 0) {
 			// If the runes is 3 of one type, write, for example, 3B instead of BBB
 			deckcode +=
 				new Set(runes).size === 1
@@ -736,7 +736,7 @@ export const deckcodeFunctions = {
 					continue;
 				}
 
-				runes += card.runes.map((r) => r[0]);
+				runes += card.runes.map((r) => r[0]).join("");
 			}
 
 			let sortedRunes = "";
