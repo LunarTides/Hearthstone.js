@@ -17,6 +17,7 @@ import {
 	Location,
 	type MinionTribe,
 	Rarity,
+	type Rune,
 	type SpellSchool,
 	type Target,
 	Type,
@@ -300,7 +301,7 @@ export class Card {
 	/**
 	 * The runes of the card.
 	 */
-	runes?: string;
+	runes?: Rune[];
 
 	/**
 	 * The amount of spell damage the card has.

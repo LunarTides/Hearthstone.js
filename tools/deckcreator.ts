@@ -5,6 +5,7 @@ import {
 	Event,
 	type GameConfig,
 	Rarity,
+	Rune,
 } from "@Game/types.ts";
 import util from "node:util";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
@@ -37,7 +38,7 @@ let chosenClass: Class;
 let filteredCards: Card[] = [];
 
 let deck: Card[] = [];
-let runes = "";
+let runes: Rune[] = [];
 
 const warnings = {
 	latestCard: true,
@@ -93,43 +94,60 @@ function watermark(): void {
 async function askClass(): Promise<Class> {
 	watermark();
 
-	let heroClass = await game.input(
+	const heroClassString = await game.input(
 		`What class do you want to choose?\n${classes.join(", ")}\n`,
 	);
+	let heroClass: Class | undefined;
 
-	if (heroClass) {
-		heroClass = game.lodash.startCase(heroClass);
+	if (heroClassString) {
+		const cl = classes.find(
+			(c) =>
+				c.toLowerCase() === heroClassString.replaceAll(" ", "").toLowerCase(),
+		);
+		if (!cl) {
+			await game.pause("\n<red>Invalid class.</red>");
+			return askClass();
+		}
+
+		heroClass = Class[cl as Class];
 	}
 
-	if (!classes.includes(heroClass)) {
-		return askClass();
+	if (!heroClass) {
+		throw new TypeError(
+			"heroClass is undefined even though cl was found. This should be impossible.",
+		);
 	}
 
-	const actualClass = game.lodash.startCase(heroClass) as Class;
-	player1.heroClass = actualClass;
+	player1.heroClass = heroClass;
 
 	if (player1.canUseRunes()) {
-		runes = "";
+		runes = [];
 
 		while (runes.length < 3) {
 			watermark();
 
-			const rune = await game.inputTranslate(
-				"What runes do you want to add (%s more)\nBlood, Frost, Unholy\n",
+			const runeChar = await game.inputTranslate(
+				`What runes do you want to add (%s more)\n${Object.values(Rune).join(", ")}\n`,
 				3 - runes.length,
 			);
-
-			if (!rune || !["B", "F", "U"].includes(rune[0].toUpperCase())) {
+			if (!runeChar) {
 				continue;
 			}
 
-			runes += rune[0].toUpperCase();
+			const rune = Object.values(Rune).find((r) =>
+				r.startsWith(runeChar[0].toUpperCase()),
+			);
+			if (!rune) {
+				continue;
+			}
+
+			runes.push(rune);
 		}
 
 		player1.runes = runes;
 	}
 
-	return actualClass;
+	return heroClass;
 }
 
 /**
