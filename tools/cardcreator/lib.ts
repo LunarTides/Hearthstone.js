@@ -17,7 +17,7 @@ export enum CCType {
 }
 
 /**
- * Returns the ability of a card based on its type.
+ * Returns the abilities of a card based on its type.
  *
  * @param blueprint The blueprint of the card
  * @returns The abilities of the card.
@@ -26,10 +26,6 @@ function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 	switch (blueprint.type) {
 		case Type.Spell: {
 			return [Ability.Cast];
-		}
-
-		case Type.Hero: {
-			return [Ability.Battlecry];
 		}
 
 		case Type.Location: {
@@ -49,18 +45,21 @@ function getCardAbilities(blueprint: BlueprintWithOptional): Ability[] {
 		}
 
 		case Type.Minion:
-		case Type.Weapon: {
-			// Try to extract the abilities from the card's description
-			const reg = /(?:^|\. )(?:<.*?>)?([A-Z][a-z].*?):/g;
-			const foundAbilities = blueprint.text.match(reg);
-
+		case Type.Weapon:
+		case Type.Hero: {
 			if (!blueprint.text) {
 				// If the card doesn't have a description, it doesn't get an ability.
 				return [];
 			}
 
+			// Try to extract the abilities from the card's description
+			const reg = /(?:^|\. )(?:<.*?>)?([A-Z][a-z].*?):/g;
+			const foundAbilities = blueprint.text.match(reg);
+
 			if (foundAbilities) {
-				// If it found an ability, and the card has a description, the ability is the ability it found in the description.
+				// If it found an ability in the description, use it.
+				//
+				// Remove artifacts.
 				const extracted = foundAbilities.map((s) =>
 					s
 						.replace(/:$/, "")
@@ -101,16 +100,19 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 
 	// You can change everything below this comment
 	const classesString = blueprint.classes.join("/");
+	const type = blueprint.type;
 
-	let { type } = blueprint;
+	let typeString: string = type;
 
 	// If the card has the word "Secret" in its description, put it in the ".../Secrets/..." folder.
 	if (blueprint.text.includes("Secret:")) {
-		type = "Secret" as Type;
+		typeString = "Secret";
 	}
 
 	// If the type is Hero, we want the card to go to '.../Heroes/...' and not to '.../Heros/...'
-	const typeString = type === Type.Hero ? "Heroe" : type;
+	if (type === Type.Hero) {
+		typeString = "Heroe";
+	}
 
 	const collectibleString = blueprint.collectible
 		? "Collectible"
@@ -190,14 +192,13 @@ export async function create(
 
 	// Add create ability if the card has text.
 	const runes = blueprint.runes
-		? `\t\tself.runes = [ ${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")} ];\n`
+		? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
 		: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {
 		for (const keyword of blueprint.keywords) {
-			// 8 spaces
-			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "_")});\n`;
+			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "")});\n`;
 		}
 
 		// Remove the last newline.
