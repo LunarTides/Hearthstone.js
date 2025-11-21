@@ -30,7 +30,8 @@ enum DeckcodeFormat {
 	JS = "JS",
 }
 
-const { config, player1 } = game;
+const config = game.config;
+const player = game.player;
 const classes = await game.functions.card.getClasses();
 const cards = await Card.all(game.config.advanced.dcShowUncollectible);
 
@@ -118,9 +119,9 @@ async function askClass(): Promise<Class> {
 		);
 	}
 
-	player1.heroClass = heroClass;
+	player.heroClass = heroClass;
 
-	if (player1.canUseRunes()) {
+	if (player.canUseRunes()) {
 		runes = [];
 
 		while (runes.length < 3) {
@@ -144,7 +145,7 @@ async function askClass(): Promise<Class> {
 			runes.push(rune);
 		}
 
-		player1.runes = runes;
+		player.runes = runes;
 	}
 
 	return heroClass;
@@ -163,7 +164,8 @@ function sortCards(_cards: Card[]): Card[] {
 		settings.sort.order = defaultSettings.sort.order;
 	}
 
-	const { type, order } = settings.sort;
+	const type = settings.sort.type;
+	const order = settings.sort.order;
 
 	const calcOrder = (a: number, b: number) => {
 		if (order === SortOrder.Ascending) {
@@ -364,7 +366,7 @@ async function showCards(): Promise<void> {
 
 	// Filter away cards that aren't in the chosen class
 	for (const card of Object.values(cards)) {
-		if (card.runes && !player1.testRunes(card.runes)) {
+		if (card.runes && !player.testRunes(card.runes)) {
 			continue;
 		}
 
@@ -385,8 +387,8 @@ async function showCards(): Promise<void> {
 		);
 	}
 
-	const { cpp: cardsPerPage } = settings.view;
-	let { page } = settings.view;
+	const cardsPerPage = settings.view.cpp;
+	let page = settings.view.page;
 
 	// Search
 	if (settings.search.query.length > 0) {
@@ -678,7 +680,7 @@ async function showDeck(): Promise<void> {
  */
 async function generateDeckcode(parseVanillaOnPseudo = false) {
 	const deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
-	const { error } = deckcode;
+	const error = deckcode.error;
 
 	if (error) {
 		let log = "<yellow>WARNING: ";
@@ -738,7 +740,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 		}
 
 		deckcode.code = await game.functions.deckcode.toVanilla(
-			player1,
+			player,
 			deckcode.code,
 		);
 	}
@@ -1149,7 +1151,7 @@ const commands: CommandList = {
 		const deckcode = args.join(" ");
 
 		config.decks.validate = false;
-		let newDeck = await game.functions.deckcode.import(player1, deckcode);
+		let newDeck = await game.functions.deckcode.import(player, deckcode);
 		config.decks.validate = true;
 
 		if (!newDeck) {
@@ -1161,8 +1163,8 @@ const commands: CommandList = {
 		deck = [];
 
 		// Update the filtered cards
-		chosenClass = player1.heroClass;
-		runes = player1.runes;
+		chosenClass = player.heroClass;
+		runes = player.runes;
 		await showCards();
 
 		/*

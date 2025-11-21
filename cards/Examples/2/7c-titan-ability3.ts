@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 		owner.mana = 5;
 		owner.emptyMana = 10;
 
-		const { mana } = owner;
+		const mana = owner.mana;
 		await self.trigger(Ability.Cast);
 
 		assert.equal(owner.mana, mana + 2);

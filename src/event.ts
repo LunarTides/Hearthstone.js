@@ -165,7 +165,7 @@ export const eventManager = {
 				await card.trigger(Ability.Passive, key, value, player);
 			}
 
-			const { weapon } = pI;
+			const weapon = pI.weapon;
 			if (!weapon) {
 				continue;
 			}

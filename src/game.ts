@@ -529,7 +529,7 @@ const attack = {
 		attacker: Player,
 		target: Target,
 	): Promise<void> {
-		const { weapon } = attacker;
+		const weapon = attacker.weapon;
 		if (!weapon) {
 			attacker.canAttack = false;
 			return;
@@ -1525,7 +1525,8 @@ export class Game {
 	 */
 	async endTurn(): Promise<boolean> {
 		// Everything after this comment happens when the player's turn ends
-		const { player, opponent } = this;
+		const player = this.player;
+		const opponent = this.opponent;
 
 		// Ready the minions for the next turn.
 		for (const card of player.board) {

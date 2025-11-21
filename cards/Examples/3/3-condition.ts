@@ -56,7 +56,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const { length } = owner.deck;
+		const deckLength = owner.deck.length;
 		owner.hand = [];
 
 		// The player shouldn't fulfill the condition
@@ -64,7 +64,7 @@ export const blueprint: Blueprint = {
 		await self.trigger(Ability.Battlecry);
 
 		// Assert that the player didn't draw a card
-		assert.equal(owner.deck.length, length);
+		assert.equal(owner.deck.length, deckLength);
 		assert.equal(owner.hand.length, 0);
 
 		// The player should fulfill the condition

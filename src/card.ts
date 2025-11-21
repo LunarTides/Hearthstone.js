@@ -2055,14 +2055,12 @@ export class Card {
 			}
 		}
 
-		const { name } = this;
-
 		if (i !== -1) {
 			sb += `[${i}] `;
 		}
 
 		sb += cost;
-		sb += this.colorFromRarity(name);
+		sb += this.colorFromRarity(this.name);
 
 		if (game.config.general.debug) {
 			sb += " (";
@@ -2093,7 +2091,7 @@ export class Card {
 						` [${this.attack} / ${this.health}]`,
 					);
 		} else if (this.type === Type.Location) {
-			const { durability } = this;
+			const durability = this.durability;
 			const maxDurability = this.backups.init.durability;
 			const maxCooldown = this.backups.init.cooldown!;
 

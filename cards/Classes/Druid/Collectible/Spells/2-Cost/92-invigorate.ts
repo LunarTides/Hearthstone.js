@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// Gain an empty Mana Crystal
-		const { emptyMana } = owner;
+		const emptyMana = owner.emptyMana;
 
 		owner.inputQueue = ["1"];
 		await self.trigger(Ability.Cast);

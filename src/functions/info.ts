@@ -38,31 +38,37 @@ export const infoFunctions = {
 		const actualVersionGetter =
 			versionGetter === undefined ? this.version : versionGetter;
 
-		const { version: ver, branch, build } = actualVersionGetter();
+		const { version, branch, build } = actualVersionGetter();
 
 		switch (detail) {
 			case 1: {
-				return format("%s", ver);
+				return format("%s", version);
 			}
 
 			case 2: {
-				return format("%s-%s", ver, branch);
+				return format("%s-%s", version, branch);
 			}
 
 			case 3: {
 				if (build === 0) {
-					return format("%s-%s", ver, branch);
+					return format("%s-%s", version, branch);
 				}
 
-				return format("%s-%s.%s", ver, branch, build);
+				return format("%s-%s.%s", version, branch, build);
 			}
 
 			case 4: {
 				if (build === 0) {
-					return format("%s-%s (%s)", ver, branch, this.latestCommit());
+					return format("%s-%s (%s)", version, branch, this.latestCommit());
 				}
 
-				return format("%s-%s.%s (%s)", ver, branch, build, this.latestCommit());
+				return format(
+					"%s-%s.%s (%s)",
+					version,
+					branch,
+					build,
+					this.latestCommit(),
+				);
 			}
 
 			default: {

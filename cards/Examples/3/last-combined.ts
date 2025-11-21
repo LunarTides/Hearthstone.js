@@ -79,7 +79,7 @@ export const blueprint: Blueprint = {
 		};
 
 		// The condition is not cleared
-		let { mana } = owner;
+		let mana = owner.mana;
 		assert.equal(turn(), 1);
 		await self.trigger(Ability.Cast);
 

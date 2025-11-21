@@ -147,6 +147,37 @@ export async function getLatestId(): Promise<number> {
 	);
 }
 
+async function getCreateAbility(
+	blueprint: BlueprintWithOptional,
+	cleanedDescription: string,
+) {
+	const runes = blueprint.runes
+		? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
+		: "";
+	let keywords = "";
+
+	if (blueprint.keywords) {
+		for (const keyword of blueprint.keywords) {
+			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "")});\n`;
+		}
+
+		// Remove the last newline.
+		keywords = keywords.slice(0, -1);
+	}
+
+	if (
+		(blueprint.text || blueprint.keywords || runes) &&
+		blueprint.type !== Type.Enchantment
+	) {
+		return `async create(self, owner) {
+		// ${cleanedDescription}
+${runes}${keywords}
+	},`;
+	}
+
+	return null;
+}
+
 /**
  * Generates a new card based on the provided arguments and saves it to a file.
  *
@@ -190,31 +221,16 @@ export async function create(
 
 	const cleanedDescription = game.functions.color.stripTags(blueprint.text);
 
-	// Add create ability if the card has text.
-	const runes = blueprint.runes
-		? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
-		: "";
-	let keywords = "";
+	// Add create ability
+	{
+		const createAbility = await getCreateAbility(blueprint, cleanedDescription);
 
-	if (blueprint.keywords) {
-		for (const keyword of blueprint.keywords) {
-			keywords += `\t\tself.addKeyword(Keyword.${keyword.replaceAll(" ", "")});\n`;
+		if (createAbility) {
+			abilitiesTexts.push(createAbility);
 		}
-
-		// Remove the last newline.
-		keywords = keywords.slice(0, -1);
 	}
 
-	if (
-		(blueprint.text || blueprint.keywords || runes) &&
-		blueprint.type !== Type.Enchantment
-	) {
-		abilitiesTexts.push(`async create(self, owner) {
-		// ${cleanedDescription}
-${runes}${keywords}
-	},`);
-	}
-
+	// Add other abilities.
 	for (const ability of abilities) {
 		if (ability === Ability.Passive) {
 			abilitiesTexts.push(`async ${ability}(self, owner, key, value, eventPlayer) {

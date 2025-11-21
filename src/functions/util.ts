@@ -70,12 +70,12 @@ export const utilFunctions = {
 		for (const column of columns) {
 			const columnSplit = column.split(sep);
 
-			const { length } = game.functions.color.stripAll(columnSplit[0]);
-			if (length <= longestColumn[1]) {
+			const columnLength = game.functions.color.stripAll(columnSplit[0]).length;
+			if (columnLength <= longestColumn[1]) {
 				continue;
 			}
 
-			longestColumn = [column, length];
+			longestColumn = [column, columnLength];
 		}
 
 		const alignedColumns: string[] = [];

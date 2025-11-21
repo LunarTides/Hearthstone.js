@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, handSize + 1);
 
 		// Gain an empty Mana Crystal
-		const { emptyMana } = owner;
+		const emptyMana = owner.emptyMana;
 
 		owner.inputQueue = ["2"];
 		await self.trigger(Ability.HeroPower);

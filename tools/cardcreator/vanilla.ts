@@ -25,7 +25,7 @@ export async function create(
 	let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as Class;
 	const collectible = card.collectible ?? false;
 	const cost = card.cost ?? 0;
-	const { name } = card;
+	const name = card.name;
 	let rarity = Rarity.Free;
 	if (card.rarity) {
 		rarity = game.lodash.capitalize(card.rarity) as Rarity;

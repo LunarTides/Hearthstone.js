@@ -97,7 +97,7 @@ export const deckcodeFunctions = {
 					// TODO: Maybe throw an error if this fails?
 					.filter((r) => r !== undefined);
 
-				player.runes = actualRunes;
+				player.runes = actualRunes as Rune[];
 			} else {
 				await game.pause(
 					`<yellow>WARNING: This deck has runes in it, but the class is <bright:yellow>${hero}</bright:yellow>.\n`,
@@ -327,6 +327,7 @@ export const deckcodeFunctions = {
 		heroClass: string,
 		runes: Rune[],
 	): { code: string; error: FunctionsExportDeckError } {
+		// TODO: Throw an error instead maybe>
 		let error: FunctionsExportDeckError;
 
 		if (deck.length < game.config.decks.minLength) {

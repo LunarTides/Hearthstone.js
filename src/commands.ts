@@ -384,7 +384,7 @@ export const commands: CommandList = {
 
 	async history(_, flags): Promise<string> {
 		// History
-		const { history } = game.event;
+		const history = game.event.history;
 		let finished = "";
 
 		const showCard = async (value: Card) =>

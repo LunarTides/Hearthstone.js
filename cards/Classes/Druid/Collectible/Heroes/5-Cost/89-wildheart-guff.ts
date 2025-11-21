@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		const handSize = owner.hand.length;
-		const { emptyMana } = owner;
+		const emptyMana = owner.emptyMana;
 
 		// Update if changing the default max mana.
 		assert.equal(owner.maxMana, 10);
