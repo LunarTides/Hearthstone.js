@@ -12,7 +12,10 @@ import type {
  * Game events.
  */
 export type EventManagerEvents = {
-	[key in Event]?: [[[EventValue<key>, number]], [[EventValue<key>, number]]];
+	[key in Event]?: [
+		[[EventValue<key> | null, number]],
+		[[EventValue<key> | null, number]],
+	];
 };
 
 /**

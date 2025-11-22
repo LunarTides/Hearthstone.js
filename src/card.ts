@@ -1395,16 +1395,18 @@ export class Card {
 	/**
 	 * Checks if the condition is met, and if it is, adds `(Condition cleared!)` to the description
 	 *
+	 * @param [overrideHandCheck=false] If this is true, it will add the condition cleared text even when the card isn't in the player's hand.
+	 *
 	 * @returns If the condition is met
 	 */
-	async condition(): Promise<boolean> {
+	async condition(overrideHandCheck = false): Promise<boolean> {
 		const clearedText = " <bright:green>(Condition cleared!)</bright:green>";
 		const clearedTextAlternative =
 			"<bright:green>Condition cleared!</bright:green>";
 
 		// Remove the (Condition cleared!) from the description
-		this.text = this.text.replace(clearedText, "");
-		this.text = this.text.replace(clearedTextAlternative, "");
+		this.text = this.text.replaceAll(clearedText, "");
+		this.text = this.text.replaceAll(clearedTextAlternative, "");
 
 		// Check if the condition is met
 		const condition = await this.trigger(Ability.Condition);
@@ -1412,8 +1414,10 @@ export class Card {
 			return false;
 		}
 
-		// Add the (Condition cleared!) to the description
-		this.text += this.text ? clearedText : clearedTextAlternative;
+		if (this.location === Location.Hand || overrideHandCheck) {
+			// Add the (Condition cleared!) to the description
+			this.text += this.text ? clearedText : clearedTextAlternative;
+		}
 
 		return true;
 	}

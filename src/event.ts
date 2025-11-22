@@ -296,6 +296,11 @@ export const eventManager = {
 			return false;
 		}
 
+		if (!this.events[key]) {
+			// This fixes #422
+			this.events[key] = [[[null, 0]], [[null, 0]]];
+		}
+
 		this.events[key]?.[player.id].push([value as any, game.turn]);
 
 		await this.cardUpdate(key, value, player);

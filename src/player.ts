@@ -1042,7 +1042,11 @@ export class Player {
 	 * @returns A list of all the cards that this player has played.
 	 */
 	getPlayedCards(): Card[] {
-		return game.event.events.PlayCard?.[this.id].map((a) => a[0]) ?? [];
+		return (
+			game.event.events.PlayCard?.[this.id]
+				.map((a) => a[0])
+				.filter((c) => c !== null) ?? []
+		);
 	}
 
 	/**

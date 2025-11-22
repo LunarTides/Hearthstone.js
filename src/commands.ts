@@ -699,7 +699,7 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
-		let card = game.lodash.last(playedCards);
+		const card = game.lodash.last(playedCards);
 		if (!card) {
 			await game.pause("<red>No cards found.</red>\n");
 			return false;
@@ -719,8 +719,6 @@ export const debugCommands: CommandList = {
 				card.durability = card.backups.init.durability;
 			}
 		}
-
-		card = card.perfectCopy();
 
 		// If the card is a weapon, destroy it before adding it to the player's hand.
 		if (card.type === Type.Weapon) {
