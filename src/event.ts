@@ -165,6 +165,13 @@ export const eventManager = {
 				await card.trigger(Ability.Passive, key, value, player);
 			}
 
+			// Trigger the hero's passive ability.
+			// NOTE: The hero *can* be uninitialized very early on.
+			if (pI.hero) {
+				await pI.hero.trigger(Ability.Passive, key, value, player);
+			}
+
+			// Trigger the weapon's passive ability.
 			const weapon = pI.weapon;
 			if (!weapon) {
 				continue;

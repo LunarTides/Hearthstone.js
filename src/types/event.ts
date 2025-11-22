@@ -103,6 +103,7 @@ export enum Event {
 	AddCardToHand = "AddCardToHand",
 	DrawCard = "DrawCard",
 	ChangeLocation = "ChangeLocation",
+	ChangeHero = "ChangeHero",
 	SpellDealsDamage = "SpellDealsDamage",
 	Attack = "Attack",
 	HeroPower = "HeroPower",
@@ -250,67 +251,72 @@ export type EventValue<Key extends Event> =
 																											Key extends Event.ChangeLocation
 																											? [Card, Location]
 																											: /**
-																												 * The target, and the amount of damage
+																												 * The old hero, the new hero
 																												 */
-																												Key extends Event.SpellDealsDamage
-																												? [Target, number]
+																												Key extends Event.ChangeHero
+																												? [Card, Card]
 																												: /**
-																													 * The attacker, and the target
+																													 * The target, and the amount of damage
 																													 */
-																													Key extends Event.Attack
-																													? [
-																															Target,
-																															Target,
-																															GameAttackFlags,
-																														]
+																													Key extends Event.SpellDealsDamage
+																													? [Target, number]
 																													: /**
-																														 * The hero power card
+																														 * The attacker, and the target
 																														 */
-																														Key extends Event.HeroPower
-																														? Card
+																														Key extends Event.Attack
+																														? [
+																																Target,
+																																Target,
+																																GameAttackFlags,
+																															]
 																														: /**
-																															 * The card, some information about the event
+																															 * The hero power card
 																															 */
-																															Key extends Event.CardEvent
-																															? [Card, string]
+																															Key extends Event.HeroPower
+																															? Card
 																															: /**
-																																 * The code to evaluate
+																																 * The card, some information about the event
 																																 */
-																																Key extends Event.Eval
-																																? string
+																																Key extends Event.CardEvent
+																																? [Card, string]
 																																: /**
-																																	 * The input
+																																	 * The code to evaluate
 																																	 */
-																																	Key extends Event.Input
+																																	Key extends Event.Eval
 																																	? string
 																																	: /**
-																																		 * The prompt, the card that requested target selection, and the flags.
+																																		 * The input
 																																		 */
-																																		Key extends Event.TargetSelectionStarts
-																																		? [
-																																				string,
-																																				(
-																																					| Card
-																																					| undefined
-																																				),
-																																				TargetFlags,
-																																			]
+																																		Key extends Event.Input
+																																		? string
 																																		: /**
-																																			 * The card that requested target selection, and the target
+																																			 * The prompt, the card that requested target selection, and the flags.
 																																			 */
-																																			Key extends Event.TargetSelected
+																																			Key extends Event.TargetSelectionStarts
 																																			? [
+																																					string,
 																																					(
 																																						| Card
 																																						| undefined
 																																					),
-																																					Target,
+																																					TargetFlags,
 																																				]
 																																			: /**
-																																				 * The turn that the gameloop happened on.
+																																				 * The card that requested target selection, and the target
 																																				 */
-																																				Key extends Event.GameLoop
-																																				? number
-																																				: Key extends Event.Dummy
-																																					? undefined
-																																					: never;
+																																				Key extends Event.TargetSelected
+																																				? [
+																																						(
+																																							| Card
+																																							| undefined
+																																						),
+																																						Target,
+																																					]
+																																				: /**
+																																					 * The turn that the gameloop happened on.
+																																					 */
+																																					Key extends Event.GameLoop
+																																					? number
+																																					: Key extends Event.Dummy
+																																						? undefined
+																																						: never;

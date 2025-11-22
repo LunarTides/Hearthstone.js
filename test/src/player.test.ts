@@ -481,7 +481,7 @@ describe("src/player", () => {
 		expect(player.hero).not.toBe(hero);
 		expect(player.armor).toBe(0);
 
-		player.setHero(hero);
+		await player.setHero(hero);
 
 		expect(player.hero).toBe(hero);
 		expect(player.armor).toBe(5);
@@ -493,7 +493,7 @@ describe("src/player", () => {
 		const hero = await Card.create(game.cardIds.jainaProudmoore_4, player);
 		hero.id = -1;
 
-		player.setHero(hero);
+		await player.setHero(hero);
 
 		expect(player.hero).toBe(hero);
 		expect(player.hero.id).toBe(-1);

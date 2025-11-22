@@ -780,7 +780,7 @@ const playCard = {
 				return GamePlayCardReturn.Refund;
 			}
 
-			player.setHero(card);
+			await player.setHero(card);
 			return GamePlayCardReturn.Success;
 		},
 

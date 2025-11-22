@@ -847,12 +847,27 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
-	setHero(hero: Card, setHeroClass = true): boolean {
+	async setHero(hero: Card, setHeroClass = true): Promise<boolean> {
+		if (setHeroClass && hero.classes.includes(Class.Neutral)) {
+			game.interest(
+				"Setting player's class to Neutral. This may cause issues.",
+			);
+		}
+
 		if (this.hero) {
+			// Ask the hero if its okay with dying.
+			const removeReturn = await this.hero.trigger(Ability.Remove, "destroy");
+
+			// If the "remove" ability returns false, the hero is NOT replaced.
+			if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+				return false;
+			}
+
 			// Set the previous hero's location to None.
 			this.hero.setLocation(Location.None);
 		}
 
+		const previousHero = this.hero;
 		this.hero = hero;
 		this.hero.setLocation(Location.Hero);
 
@@ -861,6 +876,8 @@ export class Player {
 		}
 
 		this.armor += hero.armor!;
+
+		await game.event.broadcast(Event.ChangeHero, [previousHero, hero], this);
 		return true;
 	}
 

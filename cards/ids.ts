@@ -149,4 +149,5 @@ export const cardIds = {
 	galakrondsBlessing_145: 145,
 	enchantmentExample_146: 146,
 	combinedExample4Enchantment_147: 147,
+	heroPassiveTest_148: 148,
 };

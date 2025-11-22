@@ -247,9 +247,9 @@ export type AbilityCallback = (
 export type EventAbilityCallback = (
 	self: Card,
 	owner: Player,
-	key?: Event,
-	value?: unknown,
-	eventPlayer?: Player,
+	key: Event,
+	value: unknown,
+	eventPlayer: Player,
 ) => Promise<unknown>;
 
 /**
