@@ -35,12 +35,11 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const spells: Card[] | undefined = game.event.events.PlayCard?.[owner.id]
+		const spells: Card[] | undefined = owner
+			.getPlayedCards()
 			.filter(
-				(object) => object[0].type === Type.Spell && object[1] === game.turn,
-			)
-			.map((object) => object[0] as Card);
-
+				(card) => card.type === Type.Spell && card.turnPlayed === game.turn,
+			);
 		if (!spells || spells.length <= 0) {
 			return;
 		}

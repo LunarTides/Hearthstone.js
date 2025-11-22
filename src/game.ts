@@ -712,6 +712,8 @@ const playCard = {
 			return result;
 		}
 
+		card.turnPlayed = game.turn;
+
 		// Add the `PlayCardUnsafe` event to the history, now that it's safe to do so
 		game.event.addHistory(Event.PlayCardUnsafe, card, player);
 
@@ -955,19 +957,19 @@ const playCard = {
 	},
 
 	async _combo(card: Card, player: Player): Promise<boolean> {
-		if (!game.event.events.PlayCard) {
+		const playedCards = player.getPlayedCards();
+		if (playedCards.length <= 0) {
 			return false;
 		}
 
 		// Get the player's PlayCard event history
-		const stat = game.event.events.PlayCard[player.id];
-		const latest = game.lodash.last(stat);
+		const latest = game.lodash.last(playedCards);
 		if (!latest) {
 			return false;
 		}
 
 		// If the previous card played was played on the same turn as this one, activate combo
-		if (latest[0].turn === game.turn) {
+		if (latest.turnCreated === game.turn) {
 			await card.trigger(Ability.Combo);
 		}
 
@@ -1588,7 +1590,7 @@ export class Game {
 				 * Set the card's turn to this turn.
 				 * TODO: Should this happen? #277
 				 */
-				card.turn = this.turn;
+				// card.turnCreated = this.turn;
 
 				// HACK: If the battlecry use a function that depends on `game.player`
 				this.player = opponent;

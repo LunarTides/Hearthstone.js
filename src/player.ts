@@ -1039,6 +1039,13 @@ export class Player {
 	}
 
 	/**
+	 * @returns A list of all the cards that this player has played.
+	 */
+	getPlayedCards(): Card[] {
+		return game.event.events.PlayCard?.[this.id].map((a) => a[0]) ?? [];
+	}
+
+	/**
 	 * Returns true if the player has the correct runes
 	 *
 	 * @param runes The runes to test against

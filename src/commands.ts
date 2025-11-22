@@ -693,21 +693,13 @@ export const debugCommands: CommandList = {
 
 	async undo(): Promise<boolean> {
 		// Get the last played card
-		if (
-			!game.event.events.PlayCard ||
-			game.event.events.PlayCard[game.player.id].length <= 0
-		) {
+		const playedCards = game.player.getPlayedCards();
+		if (!game.event.events.PlayCard || playedCards.length <= 0) {
 			await game.pause("<red>No cards to undo.</red>\n");
 			return false;
 		}
 
-		const eventCards = game.event.events.PlayCard[game.player.id];
-		if (eventCards.length <= 0) {
-			await game.pause("<red>No cards to undo.</red>\n");
-			return false;
-		}
-
-		let card = game.lodash.last(eventCards)?.[0];
+		let card = game.lodash.last(playedCards);
 		if (!card) {
 			await game.pause("<red>No cards found.</red>\n");
 			return false;

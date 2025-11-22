@@ -243,9 +243,19 @@ export class Card {
 	storage: Record<string, Record<string, any>> = {};
 
 	/**
-	 * The turn that the card was played / created.
+	 * The turn that the card was created.
 	 */
-	turn: number;
+	turnCreated: number;
+
+	/**
+	 * The turn that the card was played.
+	 */
+	turnPlayed: number;
+
+	/**
+	 * The turn that the card was killed.
+	 */
+	turnKilled: number;
 
 	/**
 	 * The card's active enchantments.
@@ -288,15 +298,6 @@ export class Card {
 	 * Where the card currently is.
 	 */
 	location: Location = Location.None;
-
-	// Could be null
-
-	/**
-	 * The turn that the card was killed.
-	 *
-	 * Set to -1 if the card is not dead.
-	 */
-	turnKilled?: number;
 
 	/**
 	 * The runes of the card.
@@ -345,7 +346,7 @@ export class Card {
 		this.name = blueprint.name;
 
 		// The turn the card was played
-		this.turn = game.turn;
+		this.turnCreated = game.turn;
 
 		// Redundant, makes the TypeScript compiler shut up
 		this.type = this.blueprint.type;
@@ -1702,7 +1703,7 @@ export class Card {
 
 		clone.randomizeUUID();
 		clone.sleepy = true;
-		clone.turn = game.turn;
+		clone.turnCreated = game.turn;
 
 		game.activeCards.push(clone);
 		return clone;
