@@ -4,8 +4,8 @@ import {
 	type Blueprint,
 	Class,
 	EventListenerMessage,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	/*
 	 * `tick` works the same as passive, except it's called more often, and isn't dependent on events.

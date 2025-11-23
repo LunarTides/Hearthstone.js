@@ -2,13 +2,13 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
 	QuestType,
 	Rarity,
 	SpellSchool,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Legendary,
 	collectible: false,
-	tags: [CardTag.Quest],
+	tags: [Tag.Quest],
 	id: 60,
 
 	spellSchools: [SpellSchool.None],

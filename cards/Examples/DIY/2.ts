@@ -2,10 +2,10 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Rarity,
 	SpellSchool,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.DIY],
+	tags: [Tag.DIY],
 	id: 62,
 
 	spellSchools: [SpellSchool.None],

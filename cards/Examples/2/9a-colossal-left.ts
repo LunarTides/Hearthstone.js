@@ -1,12 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	MinionTribe,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	// This will be summoned above the main minion
@@ -22,5 +16,5 @@ export const blueprint: Blueprint = {
 
 	attack: 2,
 	health: 1,
-	tribes: [MinionTribe.Beast],
+	tribes: [Tribe.Beast],
 };

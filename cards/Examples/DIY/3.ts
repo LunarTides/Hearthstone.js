@@ -3,12 +3,12 @@
 import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
 	Rarity,
 	SpellSchool,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.DIY],
+	tags: [Tag.DIY],
 	id: 63,
 
 	spellSchools: [SpellSchool.None],

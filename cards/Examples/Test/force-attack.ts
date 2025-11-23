@@ -5,8 +5,8 @@ import {
 	type Blueprint,
 	Class,
 	Event,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async create(self, owner) {
 		// Store the attacker / target combo in storage.

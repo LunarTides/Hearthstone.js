@@ -5,8 +5,8 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	attack: 5,
 	health: 2,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async battlecry(self, owner) {
 		// If your deck has no duplicates, draw a card.

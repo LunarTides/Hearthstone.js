@@ -3,7 +3,6 @@ import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
-	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
@@ -12,6 +11,7 @@ import {
 	Rarity,
 	Rune,
 	SpellSchool,
+	Tag,
 	type Target,
 	Type,
 } from "@Game/types.ts";
@@ -24,12 +24,16 @@ import { describe, expect, test } from "bun:test";
 await createGame();
 
 describe("src/player", () => {
-	test("fromID - static", async () => {
-		expect(Player.fromID(0)).toEqual(game.player1);
-		expect(Player.fromID(1)).toEqual(game.player2);
-		// This is so that Player.fromID always returns Player instead of Player | undefined
-		expect(Player.fromID(2)).toEqual(game.player2);
+	describe("static", () => {
+		test("fromID", async () => {
+			expect(Player.fromID(0)).toEqual(game.player1);
+			expect(Player.fromID(1)).toEqual(game.player2);
+			// This is so that Player.fromID always returns Player instead of Player | undefined
+			expect(Player.fromID(2)).toEqual(game.player2);
+		});
 	});
+
+	test.todo("getName", async () => {});
 
 	test("getOpponent", async () => {
 		expect(game.player1.getOpponent()).toEqual(game.player2);
@@ -635,6 +639,8 @@ describe("src/player", () => {
 		}
 	});
 
+	test.todo("getPlayedCards", async () => {});
+
 	test("testRunes", async () => {
 		const player = new Player();
 		player.runes = [Rune.Blood, Rune.Frost, Rune.Unholy];
@@ -754,7 +760,7 @@ describe("src/player", () => {
 			classes: [Class.Neutral],
 			rarity: Rarity.Free,
 			collectible: false,
-			tags: [CardTag.Quest],
+			tags: [Tag.Quest],
 			id: -1,
 
 			spellSchools: [SpellSchool.None],

@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { type Blueprint, CardTag, Class, Rarity, Type } from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tag, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Illidan Stormrage",
@@ -10,7 +10,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.DemonHunter],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.StartingHero],
+	tags: [Tag.StartingHero],
 	id: 13,
 
 	armor: 0,

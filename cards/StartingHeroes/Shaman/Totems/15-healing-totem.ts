@@ -3,11 +3,11 @@
 import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -20,12 +20,12 @@ export const blueprint: Blueprint = {
 	classes: [Class.Shaman],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.Totem],
+	tags: [Tag.Totem],
 	id: 15,
 
 	attack: 0,
 	health: 2,
-	tribes: [MinionTribe.Totem],
+	tribes: [Tribe.Totem],
 
 	async passive(self, owner, key, value, eventPlayer) {
 		// At the end of your turn, restore 1 Health to all friendly minions.

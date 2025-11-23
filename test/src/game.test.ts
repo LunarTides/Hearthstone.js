@@ -12,11 +12,18 @@ await createGame();
 describe("src/game", () => {
 	test.todo("input", async () => {});
 	test.todo("pause", async () => {});
+	test.todo("interest", async () => {});
+	test.todo("translate", async () => {});
+	test.todo("logTranslate", async () => {});
+	test.todo("inputTranslate", async () => {});
+	test.todo("inputTranslateWithOptions", async () => {});
+	test.todo("pauseTranslate", async () => {});
 	test.todo("doConfigAi", async () => {});
-	test.todo("triggerEventListeners", async () => {});
+	test.todo("isEventActive", async () => {});
 	test.todo("startGame", async () => {});
 	test.todo("endGame", async () => {});
 	test.todo("endTurn", async () => {});
+	test.todo("summon", async () => {});
 	test.todo("killCardsOnBoard", async () => {});
 	test.todo("createGame", async () => {});
 	test.todo("attack", async () => {});
@@ -76,6 +83,4 @@ describe("src/game", () => {
 			game.config.general.maxBoardSpace,
 		);
 	});
-
-	test.todo("summon", async () => {});
 });

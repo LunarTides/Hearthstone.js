@@ -855,13 +855,13 @@ const print = {
 	/**
 	 * Prints the "watermark" border.
 	 */
-	watermark(): void {
+	watermark() {
 		game.functions.interact.cls();
 
 		const versionDetail =
 			game.player.detailedView || game.config.general.debug ? 4 : 3;
 
-		const eventEmojis = game.functions.util.getCurrentPrideEmojis();
+		const eventEmojis = game.functions.util.getCurrentEventEmojis();
 		let eventEmojisText = eventEmojis.join("");
 		if (eventEmojis.length > 0) {
 			eventEmojisText += " ";
@@ -926,7 +926,7 @@ const print = {
 	 *
 	 * @param disappear If this is true, "This will disappear once you end your turn" will show up.
 	 */
-	license(disappear = true): void {
+	license(disappear = true) {
 		if (game.config.general.debug) {
 			return;
 		}

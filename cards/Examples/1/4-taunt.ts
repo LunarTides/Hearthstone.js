@@ -4,8 +4,8 @@ import {
 	type Blueprint,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	cost: 1,
 	type: Type.Minion,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,

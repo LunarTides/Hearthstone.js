@@ -3,7 +3,6 @@ import { Card } from "@Game/card.ts";
 
 import {
 	Ability,
-	CardTag,
 	Class,
 	Event,
 	type GameAttackFlags,
@@ -12,7 +11,9 @@ import {
 	type QuestCallback,
 	type QuestObject,
 	QuestType,
+	RemoveReason,
 	Rune,
+	Tag,
 	type Target,
 	Type,
 } from "@Game/types.ts";
@@ -855,11 +856,14 @@ export class Player {
 		}
 
 		if (this.hero) {
-			// Ask the hero if its okay with dying.
-			const removeReturn = await this.hero.trigger(Ability.Remove, "destroy");
+			// Ask the hero if it's okay with dying.
+			const removeReturn = await this.hero.trigger(
+				Ability.Remove,
+				RemoveReason.Destroy,
+			);
 
 			// If the "remove" ability returns false, the hero is NOT replaced.
-			if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+			if (Array.isArray(removeReturn) && removeReturn.includes(false)) {
 				return false;
 			}
 
@@ -889,7 +893,7 @@ export class Player {
 	 * @returns Success
 	 */
 	async setToStartingHero(heroClass = this.heroClass): Promise<boolean> {
-		const hero = (await Card.allWithTags(CardTag.StartingHero)).find((card) =>
+		const hero = (await Card.allWithTags(Tag.StartingHero)).find((card) =>
 			card.classes.includes(heroClass),
 		);
 
@@ -1282,14 +1286,14 @@ export class Player {
 	 * @returns Success
 	 */
 	async invoke(): Promise<boolean> {
-		const isCurrentlyGalakrond = this.hero.tags.includes(CardTag.Galakrond);
+		const isCurrentlyGalakrond = this.hero.tags.includes(Tag.Galakrond);
 
 		const hasGalakrondInDeck = this.deck.find((c) =>
-			c.tags.includes(CardTag.Galakrond),
+			c.tags.includes(Tag.Galakrond),
 		);
 
 		const hasGalakrondInHand = this.hand.find((c) =>
-			c.tags.includes(CardTag.Galakrond),
+			c.tags.includes(Tag.Galakrond),
 		);
 
 		if (!hasGalakrondInDeck && !hasGalakrondInHand && !isCurrentlyGalakrond) {
@@ -1456,7 +1460,7 @@ export class Player {
 			return;
 		}
 
-		const list = await Card.allWithTags(CardTag.DIY);
+		const list = await Card.allWithTags(Tag.DIY);
 
 		const card = game.lodash.sample(list);
 		if (!card) {

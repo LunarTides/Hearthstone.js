@@ -8,8 +8,8 @@ import {
 	Event,
 	EventListenerMessage,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -26,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async create(self, owner) {
 		// Add additional fields here

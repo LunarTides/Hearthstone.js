@@ -2,34 +2,37 @@
 import { describe, test } from "bun:test";
 
 describe("src/functions/interact", () => {
-	test.todo("prompt > deckcode", async () => {});
-	test.todo("prompt > chooseOne", async () => {});
-	test.todo("prompt > chooseFromList", async () => {});
-	test.todo("prompt > yesNo", async () => {});
-	test.todo("prompt > targetPlayer", async () => {});
-	test.todo("prompt > targetCard", async () => {});
-	test.todo("prompt > target", async () => {});
-	test.todo("prompt > _target", async () => {});
-	test.todo("prompt > useLocation", async () => {});
-	test.todo("prompt > mulligan", async () => {});
-	test.todo("prompt > dredge", async () => {});
-	test.todo("prompt > discover", async () => {});
-	test.todo("prompt > gameloopAttack", async () => {});
-	test.todo("print > watermark", async () => {});
-	test.todo("print > license", async () => {});
-	test.todo("print > gameState", async () => {});
-	test.todo("print > playerStats", async () => {});
-	test.todo("print > board", async () => {});
-	test.todo("print > hand", async () => {});
+	describe("prompt", () => {
+		test.todo("deckcode", async () => {});
+		test.todo("chooseOne", async () => {});
+		test.todo("chooseFromList", async () => {});
+		test.todo("yesNo", async () => {});
+		test.todo("targetPlayer", async () => {});
+		test.todo("targetCard", async () => {});
+		test.todo("target", async () => {});
+		test.todo("useLocation", async () => {});
+		test.todo("mulligan", async () => {});
+		test.todo("dredge", async () => {});
+		test.todo("discover", async () => {});
+		test.todo("gameloopAttack", async () => {});
+	});
+
+	describe("print", () => {
+		test.todo("watermark", async () => {});
+		test.todo("license", async () => {});
+		test.todo("gameState", async () => {});
+		test.todo("playerStats", async () => {});
+		test.todo("board", async () => {});
+		test.todo("hand", async () => {});
+	});
+
 	test.todo("isInputExit", async () => {});
 	test.todo("cls", async () => {});
 	test.todo("withStatus", async () => {});
 	test.todo("input", async () => {});
-	test.todo("_logWrapper", async () => {});
 	test.todo("log", async () => {});
 	test.todo("logError", async () => {});
 	test.todo("logWarn", async () => {});
 	test.todo("processCommand", async () => {});
-	test.todo("_gameloopHandleInput", async () => {});
 	test.todo("gameloop", async () => {});
 });

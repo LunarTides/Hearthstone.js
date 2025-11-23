@@ -4,7 +4,6 @@ import {
 	type AbilityCallback,
 	type Blueprint,
 	type CardBackup,
-	type CardTag,
 	Class,
 	CostType,
 	DeckValidationError,
@@ -15,11 +14,13 @@ import {
 	type GameConfig,
 	Keyword,
 	Location,
-	type MinionTribe,
 	Rarity,
+	RemoveReason,
 	type Rune,
 	type SpellSchool,
+	type Tag,
 	type Target,
+	type Tribe,
 	Type,
 } from "@Game/types.ts";
 import { randomUUID } from "node:crypto";
@@ -109,11 +110,11 @@ export class Card {
 	/**
 	 * Any tags that should be applied to the card.
 	 * Tags are used to group cards together.
-	 * E.g. CardTag.Lackey
+	 * E.g. Tag.Lackey
 	 *
-	 * This can be queried like this: `Card.allWithTags(CardTag.Lackey);`
+	 * This can be queried like this: `Card.allWithTags(Tag.Lackey);`
 	 */
-	tags: CardTag[] = [];
+	tags: Tag[] = [];
 
 	/**
 	 * The card's blueprint. This is the baseline of the card.
@@ -128,7 +129,7 @@ export class Card {
 	/**
 	 * The tribes the card belongs to.
 	 */
-	tribes?: MinionTribe[];
+	tribes?: Tribe[];
 
 	/**
 	 * The number of times a minion can attack in a turn;
@@ -464,7 +465,7 @@ export class Card {
 	 * @param tags The tags to filter the cards by.
 	 * @returns An array of cards that have all of the specified tags.
 	 */
-	static async allWithTags(...tags: CardTag[]): Promise<Card[]> {
+	static async allWithTags(...tags: Tag[]): Promise<Card[]> {
 		return (await Card.all(true)).filter((c) =>
 			tags.every((tag) => c.tags.includes(tag)),
 		);
@@ -756,7 +757,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	decAttack(): boolean {
+	decrementAttackTimes(): boolean {
 		if (!this.attackTimes) {
 			return false;
 		}
@@ -1210,10 +1211,13 @@ export class Card {
 		 * The false tells the minion that this is the last time it will call remove
 		 * so it should finish whatever it is doing.
 		 */
-		const removeReturn = await this.trigger(Ability.Remove, "silence");
+		const removeReturn = await this.trigger(
+			Ability.Remove,
+			RemoveReason.Silence,
+		);
 
 		// If the remove function returned false, then we should not silence.
-		if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+		if (Array.isArray(removeReturn) && removeReturn.includes(false)) {
 			return false;
 		}
 
@@ -1410,7 +1414,7 @@ export class Card {
 
 		// Check if the condition is met
 		const condition = await this.trigger(Ability.Condition);
-		if (!Array.isArray(condition) || condition[0] === false) {
+		if (!Array.isArray(condition) || condition.includes(false)) {
 			return false;
 		}
 
@@ -1526,13 +1530,13 @@ export class Card {
 	 * Checks if an enchantment exists.
 	 *
 	 * @param enchantmentId The id of the enchantment to check for.
-	 * @param card The owner of the enchantment. This needs to be correct to find the right enchantment.
+	 * @param owner The owner of the enchantment. This needs to be correct to find the right enchantment.
 	 *
 	 * @returns If the enchantment exists
 	 */
-	enchantmentExists(enchantmentId: number, card: Card): boolean {
+	enchantmentExists(enchantmentId: number, owner: Card): boolean {
 		return this.activeEnchantments.some(
-			(c) => c.enchantment.id === enchantmentId && c.owner === card,
+			(c) => c.enchantment.id === enchantmentId && c.owner === owner,
 		);
 	}
 
@@ -1540,13 +1544,16 @@ export class Card {
 	 * Removes an enchantment.
 	 *
 	 * @param enchantmentId The id of the enchantment to remove
-	 * @param card The owner of the enchantment.
+	 * @param owner The owner of the enchantment.
 	 *
 	 * @returns Success
 	 */
-	async removeEnchantment(enchantmentId: number, card: Card): Promise<boolean> {
+	async removeEnchantment(
+		enchantmentId: number,
+		owner: Card,
+	): Promise<boolean> {
 		const activeEnchantment = this.activeEnchantments.find(
-			(c) => c.enchantment.id === enchantmentId && c.owner === card,
+			(c) => c.enchantment.id === enchantmentId && c.owner === owner,
 		);
 
 		if (!activeEnchantment) {

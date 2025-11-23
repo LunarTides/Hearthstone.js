@@ -2,10 +2,10 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -17,10 +17,10 @@ export const blueprint: Blueprint = {
 	classes: [Class.Shaman],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.Totem],
+	tags: [Tag.Totem],
 	id: 16,
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.Totem],
+	tribes: [Tribe.Totem],
 };

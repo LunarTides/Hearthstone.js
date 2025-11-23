@@ -6,8 +6,8 @@ import {
 	type Blueprint,
 	Class,
 	EventListenerMessage,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async battlecry(self, owner) {
 		// Cast a random spell for each spell you've cast this game (targets chosen randomly).

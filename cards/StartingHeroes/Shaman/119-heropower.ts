@@ -4,9 +4,9 @@ import { Card, CardError } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
-	CardTag,
 	Class,
 	Rarity,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	async heropower(self, owner) {
 		// Filter away totem cards that is already on the player's side of the board.
-		const filteredTotemCards = (await Card.allWithTags(CardTag.Totem)).filter(
+		const filteredTotemCards = (await Card.allWithTags(Tag.Totem)).filter(
 			(card) => !owner.board.some((c) => c.id === card.id),
 		);
 
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const totemCards = await Card.allWithTags(CardTag.Totem);
+		const totemCards = await Card.allWithTags(Tag.Totem);
 		const checkForTotemCard = (amount: number) =>
 			owner.board.filter((card) =>
 				totemCards.map((c) => c.id).includes(card.id),

@@ -2,10 +2,10 @@ import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
-	MinionTribe,
+	Tag,
+	Tribe,
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
@@ -173,22 +173,22 @@ export const cardFunctions = {
 	 * Returns if the `cardTribes` includes `tribe` or 'All'
 	 *
 	 * @example
-	 * assert.equal(card.tribes, [MinionTribe.Beast]);
+	 * assert.equal(card.tribes, [Tribe.Beast]);
 	 *
 	 * // This should return true
-	 * const result = matchTribe(card.tribes, MinionTribe.Beast);
+	 * const result = matchTribe(card.tribes, Tribe.Beast);
 	 * assert.equal(result, true);
 	 *
 	 * @example
-	 * assert.equal(card.tribes, MinionTribe.All);
+	 * assert.equal(card.tribes, Tribe.All);
 	 *
 	 * // This should return true
-	 * const result = matchTribe(card.tribes, MinionTribe.Beast);
+	 * const result = matchTribe(card.tribes, Tribe.Beast);
 	 * assert.equal(result, true);
 	 */
-	matchTribe(cardTribes: MinionTribe[], tribe: MinionTribe): boolean {
+	matchTribe(cardTribes: Tribe[], tribe: Tribe): boolean {
 		// I'm not sure why you would set `tribe` to `All`, but I'll support it anyway.
-		if (cardTribes.includes(MinionTribe.All) || tribe === MinionTribe.All) {
+		if (cardTribes.includes(Tribe.All) || tribe === Tribe.All) {
 			return true;
 		}
 
@@ -230,7 +230,7 @@ export const cardFunctions = {
 	 */
 	async getClasses(): Promise<string[]> {
 		const cards = await Promise.all(
-			(await Card.allWithTags(CardTag.StartingHero)).map(async (hero) => {
+			(await Card.allWithTags(Tag.StartingHero)).map(async (hero) => {
 				const unsuppress = game.event.suppress(Event.CreateCard);
 				const card = await hero.imperfectCopy();
 				unsuppress();

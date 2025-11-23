@@ -2,11 +2,11 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -18,12 +18,12 @@ export const blueprint: Blueprint = {
 	classes: [Class.Shaman],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.Totem],
+	tags: [Tag.Totem],
 	id: 17,
 
 	attack: 0,
 	health: 2,
-	tribes: [MinionTribe.Totem],
+	tribes: [Tribe.Totem],
 
 	async create(self, owner) {
 		self.addKeyword(Keyword.Taunt);

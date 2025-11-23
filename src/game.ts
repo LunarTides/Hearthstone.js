@@ -6,21 +6,20 @@ import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	type Blueprint,
-	CardTag,
 	Event,
-	type EventValue,
 	type GameAttackFlags,
 	GameAttackReturn,
 	type GameConfig,
 	GamePlayCardReturn,
 	Keyword,
 	Location,
-	MinionTribe,
+	RemoveReason,
+	Tag,
 	type Target,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import { format } from "node:util";
-import { format as formatDate } from "date-and-time";
 import _ from "lodash";
 import { cardIds } from "../cards/ids.ts";
 
@@ -334,7 +333,7 @@ const attack = {
 		await attack.attack(attacker.attack ?? 0, target);
 
 		// Remember this attack
-		attacker.decAttack();
+		attacker.decrementAttackTimes();
 
 		await game.event.broadcast(
 			Event.Attack,
@@ -394,7 +393,7 @@ const attack = {
 		// Cleave
 		await attack._cleave(attacker, target);
 
-		attacker.decAttack();
+		attacker.decrementAttackTimes();
 		attacker.removeKeyword(Keyword.Stealth);
 
 		const shouldDamage = attack._cardAttackHelper(attacker);
@@ -537,7 +536,7 @@ const attack = {
 
 		// If the weapon would be part of the attack, remove 1 durability
 		if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.attack) {
-			weapon.decAttack();
+			weapon.decrementAttackTimes();
 
 			// Only remove 1 durability if the weapon is not unbreakable
 			if (!weapon.hasKeyword(Keyword.Unbreakable)) {
@@ -912,7 +911,7 @@ const playCard = {
 		}
 
 		// This is if the condition is cleared
-		const cleared = condition[0] as boolean;
+		const cleared = !condition.includes(false);
 		if (cleared) {
 			return true;
 		}
@@ -1007,7 +1006,7 @@ const playCard = {
 		}
 
 		// Find the mechs on the board
-		const mechs = board.filter((m) => m.tribes?.includes(MinionTribe.Mech));
+		const mechs = board.filter((m) => m.tribes?.includes(Tribe.Mech));
 		if (mechs.length <= 0) {
 			return false;
 		}
@@ -1023,7 +1022,7 @@ const playCard = {
 			return false;
 		}
 
-		if (!mech.tribes?.includes(MinionTribe.Mech)) {
+		if (!mech.tribes?.includes(Tribe.Mech)) {
 			console.log("That minion is not a Mech.");
 			return playCard._magnetize(card, player);
 		}
@@ -1235,9 +1234,7 @@ export class Game {
 		// Check if the date is the 14th of February
 		const currentDate = new Date();
 		this.time.year = currentDate.getFullYear();
-
-		this.time.events.anniversary = formatDate(currentDate, "DD/MM") === "14/02";
-		this.functions.util.setupPrideEvents(currentDate);
+		this.functions.util.setupTimeEvents(currentDate);
 
 		// this.time.events.anniversary = true;
 		// this.time.events.pride.month = true;
@@ -1402,24 +1399,6 @@ export class Game {
 		return event && !this.config.general.disableEvents;
 	}
 
-	/**
-	 * Broadcast event to event listeners
-	 *
-	 * @param key The name of the event (see `EventKey`)
-	 * @param value The value of the event
-	 *
-	 * @returns Return values of all the executed functions
-	 */
-	async triggerEventListeners<E extends Event>(
-		key: E,
-		value: EventValue<E>,
-		player: Player,
-	): Promise<void> {
-		for (const eventListener of Object.values(this.event.listeners)) {
-			await eventListener(key, value, player);
-		}
-	}
-
 	// Start / End
 
 	/**
@@ -1449,7 +1428,7 @@ export class Game {
 			 * Add quest cards to the player's hand.
 			 */
 			for (const card of player.deck) {
-				if (card.tags.includes(CardTag.Quest)) {
+				if (card.tags.includes(Tag.Quest)) {
 					await player.drawSpecific(card);
 				}
 			}
@@ -1779,10 +1758,13 @@ export class Game {
 				}
 
 				// Calmly tell the minion that it is going to die
-				const removeReturn = await card.trigger(Ability.Remove, "destroy");
+				const removeReturn = await card.trigger(
+					Ability.Remove,
+					RemoveReason.Destroy,
+				);
 
 				// If the "remove" ability returns false, the card is not removed from the board
-				if (Array.isArray(removeReturn) && removeReturn[0] === false) {
+				if (Array.isArray(removeReturn) && removeReturn.includes(false)) {
 					spared.push(card);
 					continue;
 				}

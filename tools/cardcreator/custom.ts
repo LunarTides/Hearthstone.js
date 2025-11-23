@@ -4,10 +4,10 @@ import {
 	Class,
 	EnchantmentPriority,
 	type Keyword,
-	MinionTribe,
 	Rarity,
 	Rune,
 	SpellSchool,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import * as lib from "./lib.ts";
@@ -58,7 +58,7 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 
 			attack: 1,
 			health: 1,
-			tribes: [MinionTribe.None],
+			tribes: [Tribe.None],
 			spellSchools: [SpellSchool.None],
 			armor: 5,
 			heropowerId: game.cardIds.null_0,
@@ -168,11 +168,11 @@ const cardTypeFunctions: {
 		const health = game.lodash.parseInt(await input("Health: "));
 		const tribes = await input("Tribes: ");
 
-		let realTribes: MinionTribe[] = [];
+		let realTribes: Tribe[] = [];
 		if (tribes) {
 			realTribes = tribes
 				.split(", ")
-				.map((k) => game.lodash.startCase(k) as MinionTribe);
+				.map((k) => game.lodash.startCase(k) as Tribe);
 		}
 
 		return applyCard({
@@ -263,11 +263,6 @@ const cardTypeFunctions: {
 	},
 
 	async Enchantment(): Promise<Blueprint> {
-		// TODO: Remove when this no longer applies.
-		console.log(
-			"<yellow>Creating enchantments is currently WIP. You need to manually add the 'enchantmentRemove' ability.</yellow>",
-		);
-
 		const card = await common();
 
 		const enchantmentPriority = Number.parseInt(

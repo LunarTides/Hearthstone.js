@@ -1,10 +1,4 @@
-import {
-	type Blueprint,
-	CardTag,
-	type Class,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import * as lib from "./lib.ts";
 
 /**
@@ -61,7 +55,7 @@ export async function main(
 		classes: [game.lodash.startCase(className) as Class],
 		rarity: Rarity.Free,
 		collectible: false,
-		tags: [CardTag.StartingHero],
+		tags: [Tag.StartingHero],
 		// This will be overwritten by the library
 		id: 0,
 

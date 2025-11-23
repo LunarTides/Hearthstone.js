@@ -4,8 +4,8 @@ import {
 	Ability,
 	type Blueprint,
 	Class,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	/*
 	 * Here we put the name of the ability we want to add.

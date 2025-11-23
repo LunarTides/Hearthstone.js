@@ -2,10 +2,10 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -17,12 +17,12 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.DIY],
+	tags: [Tag.DIY],
 	id: 61,
 
 	attack: 0,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async battlecry(self, owner) {
 		// Give this minion +1/+1.

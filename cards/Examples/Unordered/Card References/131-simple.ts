@@ -5,8 +5,8 @@ import {
 	type Blueprint,
 	Class,
 	EventListenerMessage,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async create(self, owner) {
 		// Store a coin for later

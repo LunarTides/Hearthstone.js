@@ -2,16 +2,19 @@ import { cardFunctions } from "@Game/functions/card.ts";
 import {
 	type Blueprint,
 	Class,
-	MinionTribe,
+	EnchantmentPriority,
 	Rarity,
 	SpellSchool,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import { describe, expect, test } from "bun:test";
 
 describe("src/functions/card", () => {
-	test.todo("vanilla > getAll", async () => {});
-	test.todo("vanilla > filter", async () => {});
+	describe("vanilla", () => {
+		test.todo("getAll", async () => {});
+		test.todo("filter", async () => {});
+	});
 
 	test("validateClasses", async () => {
 		expect(cardFunctions.validateClasses([Class.Mage], Class.Druid)).toEqual(
@@ -29,18 +32,10 @@ describe("src/functions/card", () => {
 	});
 
 	test("matchTribe", async () => {
-		expect(
-			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.Demon),
-		).toEqual(false);
-		expect(
-			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.Beast),
-		).toEqual(true);
-		expect(
-			cardFunctions.matchTribe([MinionTribe.All], MinionTribe.Beast),
-		).toEqual(true);
-		expect(
-			cardFunctions.matchTribe([MinionTribe.Beast], MinionTribe.All),
-		).toEqual(true);
+		expect(cardFunctions.matchTribe([Tribe.Beast], Tribe.Demon)).toEqual(false);
+		expect(cardFunctions.matchTribe([Tribe.Beast], Tribe.Beast)).toEqual(true);
+		expect(cardFunctions.matchTribe([Tribe.All], Tribe.Beast)).toEqual(true);
+		expect(cardFunctions.matchTribe([Tribe.Beast], Tribe.All)).toEqual(true);
 	});
 
 	test.todo("runBlueprintValidator", async () => {});
@@ -87,7 +82,7 @@ describe("src/functions/card", () => {
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'tribes' DOES NOT</bold> exist for that card.",
 		);
-		card.tribes = [MinionTribe.Beast];
+		card.tribes = [Tribe.Beast];
 
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'health' DOES NOT</bold> exist for that card.",
@@ -194,6 +189,31 @@ describe("src/functions/card", () => {
 		card.attack = 1;
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'attack' SHOULD NOT</bold> exist on card type HeroPower.",
+		);
+
+		// Enchantment
+		reset(Type.Enchantment);
+
+		expect(cardFunctions.validateBlueprint(card)).toEqual(
+			"<bold>'enchantmentRemove' DOES NOT</bold> exist for that card.",
+		);
+		card.enchantmentRemove = async () => {};
+
+		expect(cardFunctions.validateBlueprint(card)).toEqual(
+			"<bold>'enchantmentApply' DOES NOT</bold> exist for that card.",
+		);
+		card.enchantmentApply = async () => {};
+
+		expect(cardFunctions.validateBlueprint(card)).toEqual(
+			"<bold>'enchantmentPriority' DOES NOT</bold> exist for that card.",
+		);
+		card.enchantmentPriority = EnchantmentPriority.Normal;
+
+		expect(cardFunctions.validateBlueprint(card)).toEqual(true);
+
+		card.attack = 1;
+		expect(cardFunctions.validateBlueprint(card)).toEqual(
+			"<bold>'attack' SHOULD NOT</bold> exist on card type Enchantment.",
 		);
 
 		// Undefined

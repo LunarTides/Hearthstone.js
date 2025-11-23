@@ -6,8 +6,8 @@ import {
 	type Blueprint,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 6,
 	health: 6,
-	tribes: [MinionTribe.Beast],
+	tribes: [Tribe.Beast],
 
 	async create(self, owner) {
 		// Add additional fields here

@@ -5,8 +5,8 @@ import {
 	type Blueprint,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 	health: 4,
 
 	// You can set the tribe to "All" to mean "This has all minion types."
-	tribes: [MinionTribe.All],
+	tribes: [Tribe.All],
 
 	async create(self, owner) {
 		// Taunt, Divine Shield

@@ -2,11 +2,11 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -18,12 +18,12 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.DIY],
+	tags: [Tag.DIY],
 	id: 64,
 
 	attack: 0,
 	health: 10,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async passive(self, owner, key, value, eventPlayer) {
 		// Whenever a minion dies, Resurrect it with 1/1 stats.

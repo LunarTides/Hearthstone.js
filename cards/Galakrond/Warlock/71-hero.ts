@@ -3,11 +3,11 @@
 import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	EventListenerMessage,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Warlock],
 	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: [CardTag.Galakrond],
+	tags: [Tag.Galakrond],
 	id: 71,
 
 	armor: 5,
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 				return false;
 			}
 
-			return game.functions.card.matchTribe(card.tribes, MinionTribe.Demon);
+			return game.functions.card.matchTribe(card.tribes, Tribe.Demon);
 		};
 
 		for (let i = 0; i < amount; i++) {

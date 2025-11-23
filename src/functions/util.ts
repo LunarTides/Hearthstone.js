@@ -577,13 +577,16 @@ ${mainContent}
 	},
 
 	/**
-	 * Sets the values in `game.time.events.pride` to be accurate.
+	 * Sets the values in `game.time.events` to be accurate.
 	 */
-	setupPrideEvents(currentDate: Date) {
-		// https://en.wikipedia.org/wiki/List_of_LGBTQ_awareness_periods
+	setupTimeEvents(currentDate: Date) {
 		const m = formatDate(currentDate, "MM");
 		const d = formatDate(currentDate, "DD/MM");
 
+		game.time.events.anniversary = d === "14/02";
+
+		// Pride
+		// https://en.wikipedia.org/wiki/List_of_LGBTQ_awareness_periods
 		game.time.events.pride.month = m === "06";
 		game.time.events.pride.agender = d === "19/05";
 		game.time.events.pride.aro = d === "05/06";
@@ -601,9 +604,9 @@ ${mainContent}
 	},
 
 	/**
-	 * @returns A list of emojis that correspond to the active pride events.
+	 * @returns A list of emojis that correspond to the active time-based events.
 	 */
-	getCurrentPrideEmojis(): string[] {
+	getCurrentEventEmojis(): string[] {
 		const eventEmojis = [];
 
 		if (game.isEventActive(game.time.events.anniversary)) {

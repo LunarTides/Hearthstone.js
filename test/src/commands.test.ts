@@ -13,12 +13,15 @@ describe("src/commands", () => {
 	test.todo("license", async () => {});
 	test.todo("version", async () => {});
 	test.todo("history", async () => {});
-	test.todo("debug > give", async () => {});
-	test.todo("debug > exit", async () => {});
-	test.todo("debug > eval", async () => {});
-	test.todo("debug > rl", async () => {});
-	test.todo("debug > undo", async () => {});
-	test.todo("debug > ai", async () => {});
-	test.todo("debug > history", async () => {});
-	test.todo("debug > frl", async () => {});
+
+	describe("debug", () => {
+		test.todo("give", async () => {});
+		test.todo("exit", async () => {});
+		test.todo("eval", async () => {});
+		test.todo("rl", async () => {});
+		test.todo("undo", async () => {});
+		test.todo("ai", async () => {});
+		test.todo("history", async () => {});
+		test.todo("frl", async () => {});
+	});
 });

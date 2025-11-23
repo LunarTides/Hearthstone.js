@@ -7,8 +7,8 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	attack: 2,
 	health: 6,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async passive(self, owner, key, value) {
 		// At the end of your turn, cast a spell you've cast this turn (targets are random).

@@ -120,7 +120,7 @@ export enum SpellSchool {
 /**
  * The tribe of the minion.
  */
-export enum MinionTribe {
+export enum Tribe {
 	None = "None",
 	All = "All",
 	Beast = "Beast",
@@ -176,7 +176,7 @@ export enum Keyword {
 /**
  * Card tags.
  */
-export enum CardTag {
+export enum Tag {
 	StartingHero = "StartingHero",
 	Galakrond = "Galakrond",
 	Totem = "Totem",
@@ -192,6 +192,11 @@ export enum Rune {
 	Blood = "Blood",
 	Frost = "Frost",
 	Unholy = "Unholy",
+}
+
+export enum RemoveReason {
+	Silence = "Silence",
+	Destroy = "Destroy",
 }
 
 /*
@@ -289,7 +294,7 @@ export type AbilityCallbacks = {
 	[Ability.Remove]: (
 		self: Card,
 		owner: Player,
-		key: "destroy" | "silence",
+		key: RemoveReason,
 	) => Promise<unknown>;
 	[Ability.Spellburst]: AbilityCallback;
 	[Ability.StartOfGame]: AbilityCallback;
@@ -331,7 +336,7 @@ export interface Blueprint extends BlueprintAbilities {
 	/** The rarity of the card. This doesn't really do much in this game since there isn't any lootbox mechanics here. Examples of rarities: "Legendary", "Epic", "Free", etc... */
 	rarity: Rarity;
 	/** The tags of the card. */
-	tags: CardTag[];
+	tags: Tag[];
 	/** If the card should be allowed in decks / card pools. */
 	collectible: boolean;
 	/**
@@ -361,7 +366,7 @@ export interface Blueprint extends BlueprintAbilities {
 	 *
 	 * The tribes of the card. For example; "Beast", "Naga", "All", "None", etc...
 	 */
-	tribes?: MinionTribe[];
+	tribes?: Tribe[];
 
 	/**
 	 * ### This is required for Spells

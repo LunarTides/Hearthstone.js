@@ -3,10 +3,10 @@
 import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	EventListenerMessage,
 	Rarity,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Shaman],
 	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: [CardTag.Galakrond],
+	tags: [Tag.Galakrond],
 	id: 68,
 
 	armor: 5,

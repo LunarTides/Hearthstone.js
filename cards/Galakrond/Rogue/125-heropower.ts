@@ -3,10 +3,10 @@
 import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	EventListenerMessage,
 	Rarity,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	async heropower(self, owner) {
 		// Add a lacky to your hand.
-		const lackey = game.lodash.sample(await Card.allWithTags(CardTag.Lackey));
+		const lackey = game.lodash.sample(await Card.allWithTags(Tag.Lackey));
 		if (!lackey) {
 			return;
 		}

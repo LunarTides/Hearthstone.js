@@ -1,12 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import {
-	type Blueprint,
-	Class,
-	MinionTribe,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Silver Hand Recruit",
@@ -21,5 +15,5 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 };

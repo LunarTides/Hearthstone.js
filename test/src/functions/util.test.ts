@@ -74,7 +74,6 @@ describe("src/functions/util", () => {
 
 	test.todo("getCachedLanguageMap", async () => {});
 	test.todo("importLanguageMap", async () => {});
-	test.todo("translate", async () => {});
 	test.todo("fs", async () => {});
 	test.todo("searchCardsFolder", async () => {});
 
@@ -115,6 +114,9 @@ describe("src/functions/util", () => {
 
 	test.todo("dirname", async () => {});
 	test.todo("getRandomTarget", async () => {});
+	test.todo("getRandomTargetRelative", async () => {});
+	test.todo("setupTimeEvents", async () => {});
+	test.todo("getCurrentEventEmojis", async () => {});
 
 	test("parseEvalArgs", async () => {
 		expect(

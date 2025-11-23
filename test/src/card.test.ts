@@ -10,15 +10,18 @@ import { describe, expect, test } from "bun:test";
 await createGame();
 
 describe("src/card", () => {
-	test.todo("allFromName - static", async () => {});
-	test.todo("create - static", async () => {});
-	test.todo("fromName - static", async () => {});
-	test.todo("fromID - static", async () => {});
-	test.todo("all - static", async () => {});
-	test.todo("allWithTags - static", async () => {});
-	test.todo("fromUUID - static", async () => {});
-	test.todo("registerAll - static", async () => {});
-	test.todo("reloadAll - static", async () => {});
+	describe("static", () => {
+		test.todo("allFromName", async () => {});
+		test.todo("create", async () => {});
+		test.todo("fromName", async () => {});
+		test.todo("fromID", async () => {});
+		test.todo("all", async () => {});
+		test.todo("allWithTags", async () => {});
+		test.todo("fromUUID", async () => {});
+		test.todo("registerAll", async () => {});
+		test.todo("reloadAll", async () => {});
+	});
+
 	test.todo("setup", async () => {});
 	test.todo("randomizeUUID", async () => {});
 	test.todo("doBlueprint", async () => {});
@@ -102,28 +105,28 @@ describe("src/card", () => {
 		expect(card.hasKeyword(Keyword.Frozen)).toBe(true);
 	});
 
-	test("decAttack", async () => {
+	test("decrementAttackTimes", async () => {
 		const card = await Card.create(game.cardIds.sheep_1, game.player);
 		expect(card.attackTimes).toBe(1);
 
-		expect(card.decAttack()).toBe(true);
+		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(0);
 		expect(card.sleepy).toBe(true);
 
 		card.sleepy = false;
 
-		expect(card.decAttack()).toBe(false);
+		expect(card.decrementAttackTimes()).toBe(false);
 
 		card.attackTimes = 2;
-		expect(card.decAttack()).toBe(true);
+		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(1);
 		expect(card.sleepy).toBe(false);
 
-		expect(card.decAttack()).toBe(true);
+		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(0);
 		expect(card.sleepy).toBe(true);
 
-		expect(card.decAttack()).toBe(false);
+		expect(card.decrementAttackTimes()).toBe(false);
 	});
 
 	test("ready", async () => {
@@ -341,12 +344,13 @@ describe("src/card", () => {
 	test.todo("manathirst", async () => {});
 	test.todo("discard", async () => {});
 	test.todo("condition", async () => {});
-	test.todo("getEnchantmentInfo", async () => {});
-	test.todo("applyEnchantments", async () => {});
+	test.todo("refreshEnchantments", async () => {});
 	test.todo("addEnchantment", async () => {});
 	test.todo("enchantmentExists", async () => {});
 	test.todo("removeEnchantment", async () => {});
 	test.todo("replacePlaceholders", async () => {});
+	test.todo("setStorage", async () => {});
+	test.todo("getStorage", async () => {});
 	test.todo("perfectCopy", async () => {});
 	test.todo("imperfectCopy", async () => {});
 	test.todo("canBeOnBoard", async () => {});
@@ -361,5 +365,4 @@ describe("src/card", () => {
 	test.todo("takeControl", async () => {});
 	test.todo("attackTarget", async () => {});
 	test.todo("readable", async () => {});
-	test.todo("view", async () => {});
 });

@@ -4,11 +4,11 @@ import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type Blueprint,
-	CardTag,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -21,12 +21,12 @@ export const blueprint: Blueprint = {
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [CardTag.Lackey],
+	tags: [Tag.Lackey],
 	id: 26,
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async battlecry(self, owner) {
 		// Give a friendly minion +1 Attack and Rush.

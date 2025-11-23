@@ -2,10 +2,10 @@
 
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	EventListenerMessage,
 	Rarity,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -17,7 +17,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Warrior],
 	rarity: Rarity.Legendary,
 	collectible: true,
-	tags: [CardTag.Galakrond],
+	tags: [Tag.Galakrond],
 	id: 69,
 
 	armor: 5,

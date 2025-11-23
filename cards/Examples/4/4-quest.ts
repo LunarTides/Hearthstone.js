@@ -3,13 +3,13 @@
 import type { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
-	CardTag,
 	Class,
 	Event,
 	EventListenerMessage,
 	QuestType,
 	Rarity,
 	SpellSchool,
+	Tag,
 	Type,
 } from "@Game/types.ts";
 
@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 	 * DON'T add it to sidequest cards though.
 	 * Otherwise, the game won't add it to the player's hand at the start of the game.
 	 */
-	tags: [CardTag.Quest],
+	tags: [Tag.Quest],
 
 	id: 58,
 

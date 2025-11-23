@@ -3,8 +3,9 @@
 import {
 	type Blueprint,
 	Class,
-	MinionTribe,
 	Rarity,
+	RemoveReason,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -22,22 +23,18 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async remove(self, owner, key) {
 		// This minion cannot be removed from the battlefield.
 
 		// If you return false in the `remove` ability, the card will not be removed.
-
-		/*
-		 * The key is the reason for removing the card.
-		 * It can currently only be "destroy" or "silence"
-		 */
-		if (key === "destroy") {
+		// The key is the reason for removing the card.
+		if (key === RemoveReason.Destroy) {
 			return false;
 		}
 
-		if (key === "silence") {
+		if (key === RemoveReason.Silence) {
 			return true;
 		}
 

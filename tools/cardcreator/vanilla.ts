@@ -2,9 +2,9 @@ import {
 	type Blueprint,
 	Class,
 	EnchantmentPriority,
-	type MinionTribe,
 	Rarity,
 	SpellSchool,
+	type Tribe,
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
@@ -42,9 +42,9 @@ export async function create(
 	// Minion info
 	const attack = card.attack ?? -1;
 	const health = card.health ?? -1;
-	let races: MinionTribe[] = [];
+	let races: Tribe[] = [];
 	if (card.races) {
-		races = card.races.map((r) => game.lodash.startCase(r) as MinionTribe);
+		races = card.races.map((r) => game.lodash.startCase(r) as Tribe);
 	}
 
 	// Spell info

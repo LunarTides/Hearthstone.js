@@ -5,9 +5,9 @@ import {
 	Class,
 	EventListenerMessage,
 	Keyword,
-	MinionTribe,
 	Rarity,
 	Rune,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 5,
 	health: 3,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async create(self, owner) {
 		self.runes = [Rune.Blood, Rune.Blood, Rune.Blood];

@@ -202,22 +202,27 @@ export async function create(
 	 */
 	blueprint = game.lodash.clone(blueprint);
 
+	const debugMode = debug || mainDebugSwitch;
+
+	const abilities = getCardAbilities(blueprint);
+	const abilitiesTexts = [];
+
 	// Validate
 	if (
 		// TODO: Why can't we validate Hero Powers?
 		blueprint.type !== Type.HeroPower
 	) {
-		const error = game.functions.card.validateBlueprint(blueprint);
+		const validationBlueprint = game.lodash.clone(blueprint);
+		for (const ability of abilities) {
+			validationBlueprint[ability] = async () => {};
+		}
+
+		const error = game.functions.card.validateBlueprint(validationBlueprint);
 		if (error !== true) {
 			console.error(error);
 			return "";
 		}
 	}
-
-	const debugMode = debug || mainDebugSwitch;
-
-	const abilities = getCardAbilities(blueprint);
-	const abilitiesTexts = [];
 
 	const cleanedDescription = game.functions.color.stripTags(blueprint.text);
 
@@ -284,7 +289,7 @@ export async function create(
 
 	switch (blueprint.type) {
 		case Type.Minion:
-			imports.push("MinionTribe");
+			imports.push("Tribe");
 			break;
 		case Type.Spell:
 			imports.push("SpellSchool");
@@ -354,10 +359,10 @@ export async function create(
 								return `Class.${v.replaceAll(" ", "")}`;
 							case "tags":
 								usesTags = true;
-								return `CardTag.${v.replaceAll(" ", "")}`;
+								return `Tag.${v.replaceAll(" ", "")}`;
 
 							case "tribes":
-								return `MinionTribe.${v.replaceAll(" ", "")}`;
+								return `Tribe.${v.replaceAll(" ", "")}`;
 							case "spellSchools":
 								return `SpellSchool.${v.replaceAll(" ", "")}`;
 
@@ -381,7 +386,7 @@ export async function create(
 				break;
 
 			case "tribe":
-				returnValue = `MinionTribe.${value}`;
+				returnValue = `Tribe.${value}`;
 				break;
 			case "spellSchool":
 				returnValue = `SpellSchool.${value}`;
@@ -433,7 +438,7 @@ export async function create(
 	});
 
 	if (usesTags) {
-		imports.push("CardTag");
+		imports.push("Tag");
 	}
 
 	// Add the content

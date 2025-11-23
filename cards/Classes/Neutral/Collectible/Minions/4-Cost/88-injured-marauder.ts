@@ -5,8 +5,8 @@ import {
 	type Blueprint,
 	Class,
 	Keyword,
-	MinionTribe,
 	Rarity,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -24,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 5,
 	health: 10,
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 
 	async create(self, owner) {
 		// Add additional fields here

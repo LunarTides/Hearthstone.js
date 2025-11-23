@@ -180,7 +180,11 @@ export const eventManager = {
 			await weapon.trigger(Ability.Passive, key, value, player);
 		}
 
-		await game.triggerEventListeners(key, value, player);
+		// Trigger event listeners.
+		for (const eventListener of Object.values(game.event.listeners)) {
+			await eventListener(key, value, player);
+		}
+
 		return true;
 	},
 

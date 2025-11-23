@@ -1,12 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	MinionTribe,
-	Rarity,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	/*
@@ -43,9 +37,9 @@ export const blueprint: Blueprint = {
 	/**
 	 * Any tags that should be applied to the card.
 	 * Tags are used to group cards together.
-	 * E.g. `CardTag.Lackey`, `CardTag.Galakrond`, `CardTag.StartingHero`, etc...
+	 * E.g. `Tag.Lackey`, `Tag.Galakrond`, `Tag.StartingHero`, etc...
 	 *
-	 * This can be queried like this: `Card.allWithTags(CardTag.Lackey);`
+	 * This can be queried like this: `Card.allWithTags(Tag.Lackey);`
 	 */
 	tags: [],
 
@@ -67,5 +61,5 @@ export const blueprint: Blueprint = {
 	health: 1,
 
 	// The tribes of the minion. E.g. `Undead`, `Naga`, `Beast`, etc...
-	tribes: [MinionTribe.None],
+	tribes: [Tribe.None],
 };
