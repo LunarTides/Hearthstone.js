@@ -51,12 +51,11 @@ export const blueprint: Blueprint = {
 
 		/*
 		 * 8   self.ready();
-		 * 9   self.resetAttackTimes();
 		 */
 
 		/*
-		 * 10    await game.attack(self, owner.getOpponent());
-		 * 11 }
+		 * 9    await game.attack(self, owner.getOpponent());
+		 * 10 }
 		 */
 
 		// assert(!sheep.isAlive());

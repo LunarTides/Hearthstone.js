@@ -138,15 +138,10 @@ export class Card {
 	 * - With Mega-Windfury: 4
 	 *
 	 * This decreases every time the minion attacks, and is reset at the end of the player's turn.
-	 */
-	attackTimes?: number = 1;
-
-	/**
-	 * If this is true, the card is exhausted and so can't attack this turn.
 	 *
-	 * Automatically gets set to true when the card attacks, and gets set to false at the end of the player's turn.
+	 * If this is 0, the card is exhausted and so can't attack. Use {@link exhaust} instead of setting this to 0.
 	 */
-	sleepy?: boolean = true;
+	attackTimes: number = 0;
 
 	/**
 	 * The maximum health of the card.
@@ -669,14 +664,13 @@ export class Card {
 			}
 
 			case Keyword.CantAttack: {
-				this.sleepy = true;
+				this.exhaust();
 
 				break;
 			}
 
 			case Keyword.UnlimitedAttacks: {
 				this.ready();
-				this.resetAttackTimes();
 
 				if (this.owner.weapon === this) {
 					this.owner.canAttack = true;
@@ -770,16 +764,19 @@ export class Card {
 
 		const shouldExhaust = this.attackTimes <= 0;
 		if (shouldExhaust) {
-			this.sleepy = true;
+			this.exhaust();
 		}
 
 		return true;
 	}
 
 	/**
-	 * Makes this minion ready for attack. Use this instead of `sleepy = false`.
+	 * Makes this minion ready for attack.
 	 *
-	 * You might have to run `resetAttackTimes` after this if you want the card to be able to attack again. Be careful with that.
+	 * Sets the attack times of a card to;
+	 * 1 if doesn't have windfury,
+	 * 2 if it does,
+	 * 4 if it has mega-windfury.
 	 *
 	 * @returns Success
 	 */
@@ -792,8 +789,24 @@ export class Card {
 			return false;
 		}
 
-		this.sleepy = false;
+		this.attackTimes = 1;
+
+		if (this.hasKeyword(Keyword.Windfury)) {
+			this.attackTimes = 2;
+		}
+
+		if (this.hasKeyword(Keyword.MegaWindfury)) {
+			this.attackTimes = 4;
+		}
+
 		return true;
+	}
+
+	/**
+	 * Make this card exhausted. It can't attack anymore this turn.
+	 */
+	exhaust() {
+		this.attackTimes = 0;
 	}
 
 	// Change stats
@@ -1010,28 +1023,6 @@ export class Card {
 	}
 
 	/**
-	 * Sets the attack times of a card to;
-	 * 1 if doesn't have windfury,
-	 * 2 if it does,
-	 * 4 if it has mega-windfury.
-	 *
-	 * @returns Success
-	 */
-	resetAttackTimes(): boolean {
-		this.attackTimes = 1;
-
-		if (this.hasKeyword(Keyword.Windfury)) {
-			this.attackTimes = 2;
-		}
-
-		if (this.hasKeyword(Keyword.MegaWindfury)) {
-			this.attackTimes = 4;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Sets the location of the card.
 	 *
 	 * @param location The new location of the card.
@@ -1120,7 +1111,7 @@ export class Card {
 		}
 
 		const booleans =
-			!this.sleepy &&
+			this.attackTimes > 0 &&
 			!this.hasKeyword(Keyword.Frozen) &&
 			!this.hasKeyword(Keyword.Dormant) &&
 			!this.hasKeyword(Keyword.CantAttack);
@@ -1231,7 +1222,7 @@ export class Card {
 				continue;
 			}
 
-			if (key === "sleepy" || key === "attackTimes") {
+			if (key === "attackTimes") {
 				continue;
 			}
 
@@ -1713,7 +1704,7 @@ export class Card {
 		const clone = game.lodash.clone(this);
 
 		clone.randomizeUUID();
-		clone.sleepy = true;
+		clone.exhaust();
 		clone.turnCreated = game.turn;
 
 		game.activeCards.push(clone);
@@ -2093,7 +2084,7 @@ export class Card {
 
 			sb += titan
 				? game.functions.color.if(
-						!this.sleepy,
+						this.attackTimes > 0,
 						"bright:green",
 						` [${titan.length} Abilities Left]`,
 					)

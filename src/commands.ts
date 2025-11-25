@@ -150,7 +150,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		if (card.sleepy) {
+		if (card.attackTimes <= 0) {
 			await game.pause("<red>That card is exhausted.</red>\n");
 			return false;
 		}
@@ -201,7 +201,7 @@ export const commands: CommandList = {
 		if (titanIds.length <= 0) {
 			card.removeKeyword(Keyword.Titan);
 		} else {
-			card.sleepy = true;
+			card.exhaust();
 		}
 
 		await game.event.broadcast(Event.Titan, [card, ability], game.player);

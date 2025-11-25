@@ -34,13 +34,13 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		await owner.summon(self);
 
-		// The card should be sleepy by default
-		assert.ok(self.sleepy);
+		// The card should be exhausted by default.
+		assert.equal(self.attackTimes, 0);
 
 		await game.endTurn();
 		await game.endTurn();
 
-		// But the card should still be sleepy on the next turn
-		assert.ok(self.sleepy);
+		// But the card should still be exhausted on the next turn.
+		assert.equal(self.attackTimes, 0);
 	},
 };

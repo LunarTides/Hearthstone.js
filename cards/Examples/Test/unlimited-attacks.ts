@@ -36,14 +36,13 @@ export const blueprint: Blueprint = {
 		await owner.summon(self);
 
 		self.ready();
-		self.resetAttackTimes();
 
-		// The card should be not be sleepy
-		assert.ok(!self.sleepy);
+		// The card should be not be exhausted.
+		assert.notEqual(self.attackTimes, 0);
 
 		await game.attack(self, owner.getOpponent());
 
-		// The card should still not be sleepy
-		assert.ok(!self.sleepy);
+		// The card should still not be exhausted.
+		assert.notEqual(self.attackTimes, 0);
 	},
 };

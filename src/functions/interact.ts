@@ -810,7 +810,7 @@ const prompt = {
 				break;
 			}
 
-			case GameAttackReturn.Sleepy: {
+			case GameAttackReturn.Exhausted: {
 				error = "That minion is exhausted";
 				break;
 			}

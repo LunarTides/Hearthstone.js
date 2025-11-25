@@ -40,30 +40,27 @@ describe("src/card", () => {
 		expect(card.addKeyword(Keyword.Dormant)).toBe(true);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
 
-		card.attackTimes = 0;
+		card.exhaust();
 
-		expect(card.sleepy).toBe(true);
-		expect(card.addKeyword(Keyword.Charge)).toBe(true);
 		expect(card.attackTimes).toBe(0);
-		expect(card.sleepy).toBe(false);
+		expect(card.addKeyword(Keyword.Charge)).toBe(true);
+		expect(card.attackTimes).toBe(1);
 		expect(card.canAttackHero).toBe(true);
 
-		card.sleepy = true;
+		card.exhaust();
 		expect(card.addKeyword(Keyword.Rush)).toBe(true);
-		expect(card.attackTimes).toBe(0);
-		expect(card.sleepy).toBe(false);
+		expect(card.attackTimes).toBe(1);
 		expect(card.canAttackHero).toBe(false);
 
 		expect(card.addKeyword(Keyword.CantAttack)).toBe(true);
-		expect(card.sleepy).toBe(true);
+		expect(card.attackTimes).toBe(0);
 
 		expect(card.removeKeyword(Keyword.CantAttack)).toBe(true);
-		// removeKeyword shouldn't reverse the effect of addKeyword.
-		expect(card.sleepy).toBe(true);
+		// removeKeyword doesn't reverse the effect of addKeyword.
+		expect(card.attackTimes).toBe(0);
 
 		expect(card.addKeyword(Keyword.UnlimitedAttacks)).toBe(true);
 		expect(card.attackTimes).toBe(1);
-		expect(card.sleepy).toBe(false);
 	});
 
 	test("removeKeyword", async () => {
@@ -107,41 +104,57 @@ describe("src/card", () => {
 
 	test("decrementAttackTimes", async () => {
 		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		expect(card.attackTimes).toBe(0);
+		card.ready();
 		expect(card.attackTimes).toBe(1);
 
 		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(0);
-		expect(card.sleepy).toBe(true);
-
-		card.sleepy = false;
 
 		expect(card.decrementAttackTimes()).toBe(false);
 
+		card.ready();
 		card.attackTimes = 2;
 		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(1);
-		expect(card.sleepy).toBe(false);
 
 		expect(card.decrementAttackTimes()).toBe(true);
 		expect(card.attackTimes).toBe(0);
-		expect(card.sleepy).toBe(true);
 
 		expect(card.decrementAttackTimes()).toBe(false);
 	});
 
 	test("ready", async () => {
 		const card = await Card.create(game.cardIds.sheep_1, game.player);
-		expect(card.sleepy).toBe(true);
+		expect(card.attackTimes).toBe(0);
 
 		card.ready();
-		expect(card.sleepy).toBe(false);
+		expect(card.attackTimes).toBe(1);
 
-		card.sleepy = true;
+		card.exhaust();
+		expect(card.attackTimes).toBe(0);
 
 		card.addKeyword(Keyword.CantAttack);
 		expect(card.ready()).toBe(false);
-		expect(card.sleepy).toBe(true);
+		expect(card.attackTimes).toBe(0);
+		card.removeKeyword(Keyword.CantAttack);
+
+		card.addKeyword(Keyword.Windfury);
+		card.ready();
+		expect(card.attackTimes).toBe(2);
+
+		card.addKeyword(Keyword.MegaWindfury);
+		card.ready();
+		expect(card.attackTimes).toBe(4);
+
+		card.removeKeyword(Keyword.Windfury);
+		card.removeKeyword(Keyword.MegaWindfury);
+
+		card.ready();
+		expect(card.attackTimes).toBe(1);
 	});
+
+	test.todo("exhaust", async () => {});
 
 	test("setStats", async () => {
 		const card = await Card.create(game.cardIds.sheep_1, game.player);
@@ -294,25 +307,6 @@ describe("src/card", () => {
 
 		card.setStealthDuration(1);
 		expect(card.stealthDuration).toBe(game.turn + 1);
-	});
-
-	test("resetAttackTimes", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
-		expect(card.attackTimes).toBe(1);
-
-		card.addKeyword(Keyword.Windfury);
-		card.resetAttackTimes();
-		expect(card.attackTimes).toBe(2);
-
-		card.addKeyword(Keyword.MegaWindfury);
-		card.resetAttackTimes();
-		expect(card.attackTimes).toBe(4);
-
-		card.removeKeyword(Keyword.Windfury);
-		card.removeKeyword(Keyword.MegaWindfury);
-
-		card.resetAttackTimes();
-		expect(card.attackTimes).toBe(1);
 	});
 
 	test("setLocation", async () => {

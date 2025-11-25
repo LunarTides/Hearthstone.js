@@ -272,8 +272,8 @@ const attack = {
 				return GameAttackReturn.CardNoAttack;
 			}
 
-			if (attacker.sleepy) {
-				return GameAttackReturn.Sleepy;
+			if (attacker.attackTimes <= 0) {
+				return GameAttackReturn.Exhausted;
 			}
 
 			if (await this._forgetful(attacker, flags)) {
@@ -1512,7 +1512,6 @@ export class Game {
 		// Ready the minions for the next turn.
 		for (const card of player.board) {
 			card.ready();
-			card.resetAttackTimes();
 		}
 
 		// Remove echo cards
@@ -1538,7 +1537,7 @@ export class Game {
 		// Weapon stuff
 		if (opponent.weapon?.attack && opponent.weapon.attack > 0) {
 			opponent.attack = opponent.weapon.attack;
-			opponent.weapon.resetAttackTimes();
+			opponent.weapon.ready();
 		}
 
 		// Chance to spawn in a diy card
@@ -1563,7 +1562,7 @@ export class Game {
 
 				// Remove dormant
 				card.removeKeyword(Keyword.Dormant);
-				card.sleepy = true;
+				card.exhaust();
 
 				/*
 				 * Set the card's turn to this turn.
@@ -1583,7 +1582,6 @@ export class Game {
 			card.removeKeyword(Keyword.Frozen);
 
 			card.ready();
-			card.resetAttackTimes();
 
 			// Stealth duration
 			if (
@@ -1641,14 +1639,15 @@ export class Game {
 
 		player.spellDamage = 0;
 
-		if (card.hasKeyword(Keyword.Charge) || card.hasKeyword(Keyword.Titan)) {
+		if (
+			card.hasKeyword(Keyword.Charge) ||
+			card.hasKeyword(Keyword.Rush) ||
+			card.hasKeyword(Keyword.Titan)
+		) {
 			card.ready();
-			card.resetAttackTimes();
 		}
 
 		if (card.hasKeyword(Keyword.Rush)) {
-			card.ready();
-			card.resetAttackTimes();
 			card.canAttackHero = false;
 		}
 
@@ -1706,7 +1705,6 @@ export class Game {
 
 			// TODO: Why are we readying the dormant minion? #277
 			card.ready();
-			card.resetAttackTimes();
 		}
 
 		player.board.push(card);

@@ -32,7 +32,7 @@ export enum GameAttackReturn {
 	CardNoAttack = "CardNoAttack",
 	PlayerHasAttacked = "PlayerHasAttacked",
 	CardHasAttacked = "CardHasAttacked",
-	Sleepy = "Sleepy",
+	Exhausted = "Exhausted",
 	CantAttackHero = "CantAttackHero",
 	Immune = "Immune",
 	Dormant = "Dormant",
