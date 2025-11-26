@@ -69,7 +69,7 @@ export type QuestCallback<E extends Event> = (
  */
 export type QuestObject<E extends Event> = {
 	type: QuestType;
-	name: string;
+	card: Card;
 	progress: [number, number];
 	key: E;
 	value: number;

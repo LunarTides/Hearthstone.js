@@ -1183,13 +1183,13 @@ export class Player {
 	/**
 	 * Progress a quest by a value
 	 *
-	 * @param name The name of the quest
+	 * @param uuid The uuid of the quest
 	 * @param value The amount to progress the quest by
 	 *
 	 * @returns The new progress
 	 */
-	progressQuest(name: string, value = 1): number | undefined {
-		const quest = this.quests.find((s) => s.name === name);
+	progressQuest(uuid: string, value = 1): number | undefined {
+		const quest = this.quests.find((s) => s.card.uuid === uuid);
 		if (!quest) {
 			return undefined;
 		}
@@ -1222,7 +1222,7 @@ export class Player {
 			(type === QuestType.Quest && this.quests.length > 0) ||
 			((type === QuestType.Secret || type === QuestType.Sidequest) &&
 				(this.quests.length >= 3 ||
-					this.quests.some((s) => s.name === card.name)))
+					this.quests.some((s) => s.card.name === card.name)))
 		) {
 			await this.addToHand(card);
 			this[card.costType] += card.cost;
@@ -1231,7 +1231,7 @@ export class Player {
 
 		this.quests.push({
 			type,
-			name: card.name,
+			card,
 			progress: [0, amount],
 			key,
 			value: amount,

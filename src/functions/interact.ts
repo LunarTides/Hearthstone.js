@@ -1024,6 +1024,8 @@ const print = {
 		const colorIf = game.functions.color.if;
 		const detail = (noDetail: string, detail: string) =>
 			currentPlayer.detailedView ? detail : noDetail;
+		const detailCard = async (card: Card) =>
+			detail(card.colorFromRarity(), await card.readable());
 
 		// Mana
 		await doStat(
@@ -1051,7 +1053,13 @@ const print = {
 				`{${player.hero.heropower?.cost}}`,
 			);
 
-			return `Hero Power: ${heroPowerCost} ${player.hero.name}`;
+			return `Hero Power: ${heroPowerCost} ${detail(
+				player.hero.name,
+				(await player.hero.heropower?.readable())
+					// Remove the mana cost from the readable version.
+					// This gives the illusion that the code was well written :)
+					?.replace(/\{.*?\} /, "") ?? "No hero power.",
+			)}`;
 		});
 
 		// Weapon
@@ -1060,10 +1068,8 @@ const print = {
 				return "";
 			}
 
-			return `Weapon: ${detail(player.weapon.colorFromRarity(), await player.weapon.readable())}`;
+			return `Weapon: ${await detailCard(player.weapon)}`;
 		});
-
-		// TODO: Add quests, secrets, etc... #277
 
 		// Attack
 		await doStat(async (player) => {
@@ -1084,6 +1090,23 @@ const print = {
 			return `Corpses: <gray>${player.corpses}</gray>`;
 		});
 
+		// Quests
+		await doStat(async (player) => {
+			if (player.quests.length <= 0) {
+				return "";
+			}
+
+			return `Quests: ${(
+				await Promise.all(
+					player.quests.map(
+						async (q) =>
+							`${await detailCard(q.card)} @ [${q.progress.join("/")}] (${q.type})`,
+					),
+				)
+			).join(", ")}`;
+		});
+
+		// --- Finished ---
 		console.log(align(finished));
 
 		if (game.isEventActive(game.time.events.anniversary)) {

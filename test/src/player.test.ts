@@ -788,10 +788,10 @@ describe("src/player", () => {
 		expect(player.quests.length).toBe(1);
 		expect(player.quests[0].progress).toEqual([0, 3]);
 
-		expect(player.progressQuest(card.name, 1)).toBe(1);
+		expect(player.progressQuest(card.uuid, 1)).toBe(1);
 		expect(player.quests[0].progress).toEqual([1, 3]);
 
-		expect(player.progressQuest(card.name, 2)).toBe(3);
+		expect(player.progressQuest(card.uuid, 2)).toBe(3);
 		expect(player.quests[0].progress).toEqual([3, 3]);
 
 		expect(await game.event.broadcastDummy(player)).toBe(true);
