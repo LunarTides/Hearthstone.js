@@ -189,7 +189,7 @@ export const eventManager = {
 	},
 
 	/**
-	 * Update quests and secrets
+	 * Update quests and secrets.
 	 *
 	 * @param questType The type of quest to update
 	 * @param key The key of the event
@@ -204,15 +204,10 @@ export const eventManager = {
 		value: EventValue<E>,
 		player: Player,
 	): Promise<boolean> {
-		const questsName = `${questType.toLowerCase()}s` as
-			| "quests"
-			| "sidequests"
-			| "secrets";
-
 		const removeQuest = async (quest: QuestObject<Event>) => {
-			game.functions.util.remove(player[questsName], quest);
+			game.functions.util.remove(player.quests, quest);
 
-			if (questsName === "secrets") {
+			if (quest.type === QuestType.Secret) {
 				await game.pause(`\nYou triggered the opponents's '${quest.name}'.\n`);
 			}
 
@@ -222,8 +217,8 @@ export const eventManager = {
 			}
 		};
 
-		for (const quest of player[questsName]) {
-			if (quest.key !== key) {
+		for (const quest of player.quests) {
+			if (quest.key !== key || quest.type !== questType) {
 				continue;
 			}
 
@@ -243,7 +238,7 @@ export const eventManager = {
 					quest.progress = [0, max];
 					continue;
 				case EventListenerMessage.Destroy:
-					player[questsName].splice(player[questsName].indexOf(quest), 1);
+					game.functions.util.remove(player.quests, quest);
 					continue;
 				case EventListenerMessage.Success:
 					break;

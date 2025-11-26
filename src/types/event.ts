@@ -68,6 +68,7 @@ export type QuestCallback<E extends Event> = (
  * The backend of a quest.
  */
 export type QuestObject<E extends Event> = {
+	type: QuestType;
 	name: string;
 	progress: [number, number];
 	key: E;

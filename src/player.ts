@@ -246,17 +246,9 @@ export class Player {
 	counter: Type[] = [];
 
 	/**
-	 * The secrets that the player has.
-	 */
-	secrets: QuestObject<Event>[] = [];
-
-	/**
-	 * The sidequests that the player has.
-	 */
-	sidequests: QuestObject<Event>[] = [];
-
-	/**
 	 * The quest that the player has.
+	 *
+	 * Includes sidequests and secrets.
 	 */
 	quests: QuestObject<Event>[] = [];
 
@@ -1197,21 +1189,12 @@ export class Player {
 	 * @returns The new progress
 	 */
 	progressQuest(name: string, value = 1): number | undefined {
-		let quest = this.secrets.find((s) => s.name === name);
-		if (!quest) {
-			quest = this.sidequests.find((s) => s.name === name);
-		}
-
-		if (!quest) {
-			quest = this.quests.find((s) => s.name === name);
-		}
-
+		const quest = this.quests.find((s) => s.name === name);
 		if (!quest) {
 			return undefined;
 		}
 
 		quest.progress[0] += value;
-
 		return quest.progress[0];
 	}
 
@@ -1235,40 +1218,19 @@ export class Player {
 		callback: QuestCallback<E>,
 		next?: number,
 	): Promise<boolean> {
-		let quests: QuestObject<E>[];
-
-		switch (type) {
-			case QuestType.Quest: {
-				quests = this.quests as QuestObject<E>[];
-				break;
-			}
-
-			case QuestType.Sidequest: {
-				quests = this.sidequests as QuestObject<E>[];
-				break;
-			}
-
-			case QuestType.Secret: {
-				quests = this.secrets as QuestObject<E>[];
-				break;
-			}
-
-			default: {
-				return false;
-			}
-		}
-
 		if (
-			(type === QuestType.Quest && quests.length > 0) ||
+			(type === QuestType.Quest && this.quests.length > 0) ||
 			((type === QuestType.Secret || type === QuestType.Sidequest) &&
-				(quests.length >= 3 || quests.some((s) => s.name === card.name)))
+				(this.quests.length >= 3 ||
+					this.quests.some((s) => s.name === card.name)))
 		) {
 			await this.addToHand(card);
 			this[card.costType] += card.cost;
 			return false;
 		}
 
-		quests.push({
+		this.quests.push({
+			type,
 			name: card.name,
 			progress: [0, amount],
 			key,

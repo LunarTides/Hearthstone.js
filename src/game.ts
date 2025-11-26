@@ -1113,14 +1113,14 @@ export class Game {
 	 * All of the blueprints cards that have been implemented so far.
 	 * Don't use this if you don't know what you're doing.
 	 *
-	 * Use `functions.card.getAll()` instead.
+	 * Use `Card.all()` instead.
 	 */
 	blueprints: Blueprint[] = [];
 
 	/**
 	 * All of the cards that have been implemented so far.
 	 *
-	 * Use `functions.card.getAll()` instead.
+	 * Use `Card.all()` instead.
 	 */
 	cards: Card[] = [];
 
