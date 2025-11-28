@@ -1224,8 +1224,6 @@ export class Player {
 				(this.quests.length >= 3 ||
 					this.quests.some((s) => s.card.name === card.name)))
 		) {
-			await this.addToHand(card);
-			this[card.costType] += card.cost;
 			return false;
 		}
 

@@ -1,5 +1,6 @@
 // Created by Hand
 
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	Class,
@@ -27,7 +28,7 @@ export const blueprint: Blueprint = {
 	spellSchools: [SpellSchool.None],
 
 	async cast(self, owner) {
-		await owner.addQuest(
+		const success = await owner.addQuest(
 			QuestType.Quest,
 			self,
 			Event.PlayCard,
@@ -121,6 +122,13 @@ export const blueprint: Blueprint = {
 				return EventListenerMessage.Success;
 			},
 		);
+
+		// If the quest couldn't be added, refund this card.
+		if (!success) {
+			return Card.REFUND;
+		}
+
+		return true;
 	},
 
 	async test(self, owner) {

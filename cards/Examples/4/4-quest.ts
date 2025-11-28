@@ -1,6 +1,6 @@
 // Created by Hand
 
-import type { Card } from "@Game/card.ts";
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	Class,
@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
 		 *     ) -> a message to deliver to the event manager
 		 * );
 		 */
-		await owner.addQuest(
+		const success = await owner.addQuest(
 			QuestType.Quest,
 			self,
 			Event.PlayCard,
@@ -113,6 +113,13 @@ export const blueprint: Blueprint = {
 			},
 			// Put the id of a spell here to make a questline. When the quest gets completed, a card with that id gets created and the game immediately activates its cast ability.
 		);
+
+		// If the quest couldn't be added, refund this card.
+		if (!success) {
+			return Card.REFUND;
+		}
+
+		return true;
 	},
 
 	async test(self, owner) {
