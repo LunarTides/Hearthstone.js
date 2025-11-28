@@ -1296,23 +1296,28 @@ export class Card {
 	/**
 	 * Trigger one of this card's abilities.
 	 *
-	 * @param name The ability to trigger.
+	 * @param key The ability to trigger.
 	 * @param parameters The parameters to pass to the ability callback.
 	 *
 	 * @returns All the return values of the abilities.
 	 */
 	async trigger(
-		name: Ability,
+		key: Ability,
 		...parameters: any[]
 	): Promise<unknown[] | typeof Card.REFUND | false> {
 		/*
 		 * Example: trigger(Ability.Cast)
 		 * Does: this.cast.forEach(castFunc => castFunc(card, owner))
 		 */
-		const abilities: AbilityCallback[] | undefined = this.abilities[name];
+		const abilities: AbilityCallback[] | undefined = this.abilities[key];
 		if (!abilities) {
 			return false;
 		}
+
+		const uncancellable =
+			game.config.advanced.uncancellableAbilities.includes(key);
+		const noBounceOnCancel =
+			game.config.advanced.noBounceOnCancelAbilities.includes(key);
 
 		let returnValue: unknown[] | typeof Card.REFUND = [];
 
@@ -1323,34 +1328,34 @@ export class Card {
 
 			const result = await ability(this, this.owner, ...parameters);
 
+			// Add result to the returnValue.
 			if (Array.isArray(returnValue)) {
-				returnValue.push(result);
+				if (result === Card.REFUND && uncancellable) {
+					returnValue.push("bypass cancel");
+				} else {
+					returnValue.push(result);
+				}
 			}
 
-			// Deathrattle isn't cancellable
-			if (result !== Card.REFUND || name === "deathrattle") {
+			if (result !== Card.REFUND || uncancellable) {
 				continue;
 			}
 
-			// If the return value is Card.REFUND, refund the card and stop the for loop
-			await game.event.broadcast(Event.CancelCard, [this, name], this.owner);
+			// If the return value is Card.REFUND, refund the card.
+			await game.event.broadcast(Event.CancelCard, [this, key], this.owner);
 
 			returnValue = Card.REFUND;
-
-			// These abilities shouldn't "refund" the card, just stop execution.
-			if (["use", "heropower"].includes(name)) {
-				continue;
-			}
-
-			/*
-			 * We have to suppress inside the loop in order to not have the event suppressed when calling the ability
-			 * It's a bit hacky, and not very efficient, but it works
-			 */
-			await game.event.withSuppressed(Event.AddCardToHand, async () =>
-				this.owner.addToHand(this),
-			);
-
 			this.owner[this.costType] += this.cost;
+
+			if (!noBounceOnCancel) {
+				/*
+				 * We have to suppress inside the loop in order to not have the event suppressed when calling the ability
+				 * It's a bit hacky, and not very efficient, but it works
+				 */
+				await game.event.withSuppressed(Event.AddCardToHand, async () =>
+					this.owner.addToHand(this),
+				);
+			}
 		}
 
 		return returnValue;

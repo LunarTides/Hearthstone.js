@@ -1,6 +1,6 @@
 import type { Card } from "@Game/card.ts";
 import type { Player } from "@Game/player.ts";
-import type { Blueprint, Event } from "@Game/types.ts";
+import type { Ability, Blueprint, Event } from "@Game/types.ts";
 
 /**
  * Game.play return value
@@ -173,6 +173,8 @@ export type GameConfig = {
 
 		forgetfulRandomTargetFailAmount: number;
 
+		uncancellableAbilities: Ability[];
+		noBounceOnCancelAbilities: Ability[];
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
 	};

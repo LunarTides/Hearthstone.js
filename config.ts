@@ -1,4 +1,4 @@
-import { Event, type GameConfig } from "@Game/types.ts";
+import { Ability, Event, type GameConfig } from "@Game/types.ts";
 
 export const config: GameConfig = {
 	general: {
@@ -238,6 +238,23 @@ export const config: GameConfig = {
 		 * This is to prevent the game from getting stuck in an endless loop if none of the possible targets can be attacked.
 		 */
 		forgetfulRandomTargetFailAmount: 25,
+
+		/**
+		 * These abilities can't be cancelled. They ignore the `Card.REFUND` return value.
+		 */
+		uncancellableAbilities: [Ability.Deathrattle],
+
+		/**
+		 * These abilities don't add the cancelled card to the player's hand when the card is cancelled.
+		 */
+		noBounceOnCancelAbilities: [
+			Ability.Create,
+			Ability.Use,
+			Ability.HeroPower,
+			Ability.EnchantmentSetup,
+			Ability.EnchantmentApply,
+			Ability.EnchantmentRemove,
+		],
 
 		/*
 		 * These are the keys that will show up when running the history command.
