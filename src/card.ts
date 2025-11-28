@@ -528,15 +528,12 @@ export class Card {
 		await this.doBlueprint(false);
 		await this.trigger(Ability.Create);
 
-		let unsuppress: undefined | (() => boolean);
 		if (suppressEvent) {
-			unsuppress = game.event.suppress(Event.CreateCard);
-		}
-
-		await game.event.broadcast(Event.CreateCard, this, this.owner);
-
-		if (unsuppress) {
-			unsuppress();
+			await game.event.withSuppressed(Event.CreateCard, async () => {
+				await game.event.broadcast(Event.CreateCard, this, this.owner);
+			});
+		} else {
+			await game.event.broadcast(Event.CreateCard, this, this.owner);
 		}
 
 		/*
@@ -1501,12 +1498,7 @@ export class Card {
 	 * @returns Success
 	 */
 	async addEnchantment(enchantmentId: number, owner: Card): Promise<boolean> {
-		const enchantment = await Card.fromID(enchantmentId);
-		if (!enchantment) {
-			throw new Error(
-				`Failed when adding enchantment. A card with an id of ${enchantmentId} does not exist.`,
-			);
-		}
+		const enchantment = await Card.create(enchantmentId, owner.owner);
 
 		this.activeEnchantments.push({
 			enchantment: await enchantment.imperfectCopy(),

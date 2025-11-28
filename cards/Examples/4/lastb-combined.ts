@@ -45,26 +45,36 @@ export const blueprint: Blueprint = {
 				 * The quest is done.
 				 * Add the enchantment constantly.
 				 */
-				const unhook = game.event.hookToTick(async () => {
-					// Only add the enchantment to minions
-					for (const minion of owner.hand.filter(
-						(card) => card.type === Type.Minion,
-					)) {
+				const unhook = game.event.hookToTick(
+					async (key, value, eventPlayer) => {
+						// addEnchantment broadcasts the CreateCard event. Return here to avoid an infinite loop.
 						if (
-							minion.enchantmentExists(
-								game.cardIds.combinedExample4Enchantment_147,
-								self,
-							)
+							game.event.is(key, value, Event.CreateCard) &&
+							value.id === game.cardIds.combinedExample4Enchantment_147
 						) {
-							continue;
+							return;
 						}
 
-						await minion.addEnchantment(
-							game.cardIds.combinedExample4Enchantment_147,
-							self,
-						);
-					}
-				});
+						// Only add the enchantment to minions
+						for (const minion of owner.hand.filter(
+							(card) => card.type === Type.Minion,
+						)) {
+							if (
+								minion.enchantmentExists(
+									game.cardIds.combinedExample4Enchantment_147,
+									self,
+								)
+							) {
+								continue;
+							}
+
+							await minion.addEnchantment(
+								game.cardIds.combinedExample4Enchantment_147,
+								self,
+							);
+						}
+					},
+				);
 
 				// Add an event listener to check if you've played 10 cards
 				let amount = 0;

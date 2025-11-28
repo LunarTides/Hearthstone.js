@@ -1,5 +1,3 @@
-// FIXME: Incredibly unstable after #400.
-
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";

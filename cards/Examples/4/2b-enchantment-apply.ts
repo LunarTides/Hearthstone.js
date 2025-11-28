@@ -3,6 +3,7 @@
 import {
 	type Blueprint,
 	Class,
+	Event,
 	EventListenerMessage,
 	Rarity,
 	Tribe,
@@ -30,6 +31,14 @@ export const blueprint: Blueprint = {
 	 */
 	async tick(self, owner, key, value) {
 		// Your cards cost (1) less.
+
+		// addEnchantment broadcasts the CreateCard event. Return here to avoid an infinite loop.
+		if (
+			game.event.is(key, value, Event.CreateCard) &&
+			value.id === game.cardIds.enchantmentExample_146
+		) {
+			return;
+		}
 
 		/*
 		 * When changing cost of a card USE THE ENCHANTMENT SYSTEM. This will ensure that mutliple cards can change the cost of cards without interfering with each other.
