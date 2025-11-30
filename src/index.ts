@@ -3,7 +3,6 @@
  */
 
 import { createGame } from "@Game/game.ts";
-import { validate as validateIds } from "../scripts/id/lib.ts";
 
 /**
  * Starts the game.
@@ -13,21 +12,6 @@ export async function main(): Promise<void> {
 	game.interest("Creating game...OK");
 
 	game.functions.interact.print.watermark();
-
-	// Find holes and dupes in the ids
-	console.warn("\nValidating ids...");
-	game.interest("Validating ids...");
-
-	const [holes, dupes] = await validateIds(true);
-	game.interest(`Validating ids...${holes} holes, ${dupes} duplicates`);
-
-	if (holes > 0 || dupes > 0) {
-		/*
-		 * If there were holes or dupes, pause the game so that the user gets a
-		 * chance to see what the problem was
-		 */
-		await game.pause();
-	}
 
 	// Ask the players for deck codes.
 	game.interest("Asking players for deck codes...");

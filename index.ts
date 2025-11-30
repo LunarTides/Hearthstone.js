@@ -4,7 +4,7 @@
 
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
-
+import { validate as validateIds } from "./scripts/id/lib.ts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
@@ -65,6 +65,23 @@ const watermark = () => {
 
 	console.log();
 };
+
+watermark();
+
+// Find holes and dupes in the ids
+game.interest("Validating ids...");
+
+const [holes, dupes] = await validateIds(true, false);
+game.interest(`Validating ids...${holes} holes, ${dupes} duplicates`);
+
+if (holes > 0 || dupes > 0) {
+	/*
+	 * If there were holes or dupes, pause the game so that the user gets a
+	 * chance to see what the problem was
+	 */
+	console.log();
+	await game.pause();
+}
 
 /**
  * Creates a user input loop.

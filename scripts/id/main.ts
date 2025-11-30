@@ -76,7 +76,7 @@ while (running) {
 		}
 
 		case Commands.Validate: {
-			await lib.validate(true);
+			await lib.validate(true, true);
 			break;
 		}
 

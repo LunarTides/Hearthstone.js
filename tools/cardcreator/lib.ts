@@ -241,7 +241,7 @@ export async function create(
 			abilitiesTexts.push(`async ${ability}(self, owner, key, value, eventPlayer) {
 		// ${cleanedDescription}
 
-		// Only proceed if the correct event key was broadcast
+		// Only proceed if the correct event key was broadcast.
         if (!game.event.is(key, value, Event.ChangeMe)) {
             return;
         };
@@ -271,7 +271,7 @@ export async function create(
 	}
 
 	abilitiesTexts.push(`async test(self, owner) {
-		// Unit testing
+		// Unit testing.
 		return EventListenerMessage.Skip;
 	},`);
 
@@ -450,7 +450,7 @@ import {
 \tEventListenerMessage,
 \tRarity,
 \tType,
-\t${imports.join("\n\t")}
+\t${imports.join(",\n\t")}
 } from "@Game/types.ts";
 import assert from "node:assert";
 

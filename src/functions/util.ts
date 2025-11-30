@@ -463,11 +463,19 @@ ${mainContent}
 			files
 				.filter(
 					(file: Dirent<string>) =>
-						file.isFile() && file.name.endsWith(extension),
+						file.isFile() &&
+						file.name.endsWith(extension) &&
+						!file.name.startsWith("ids"),
 				)
 				.map(async (file) => {
 					const fullPath = resolve(actualPath, file.parentPath, file.name);
-					const content = (await this.fs("readFile", fullPath)) as string;
+					const content = (await this.fs(
+						"readFile",
+						fullPath,
+						{},
+						// Don't cache cards here.
+						{ invalidateCache: true },
+					)) as string;
 
 					return callback(fullPath, content, file);
 				}),

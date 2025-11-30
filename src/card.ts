@@ -1572,8 +1572,8 @@ export class Card {
 	 * ### Performance Note
 	 * This calls `refreshEnchantments`, which is a heavy function call. Be careful not to call this too often.
 	 *
-	 * @param key
-	 * @returns
+	 * @param key The key to index by.
+	 * @returns The unaltered value.
 	 */
 	async getFixedValue<T extends keyof Card>(key: T): Promise<Card[T]> {
 		let ret: Card[T] | "__HJS_UNDEFINED__" = "__HJS_UNDEFINED__";

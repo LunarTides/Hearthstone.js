@@ -137,11 +137,15 @@ export async function increment(
  * If there is a card with an id of 58 and a card with an id of 60, but no card with an id of 59, that is a hole.
  * If there are more than 1 card with an id of 60, that is a duplicate.
  *
- * @param log If it should log what it's doing. This should probably be false when using this as a library.
+ * @param logFailure If it should log when it encounters a problem. This should probably be `true` when using this as a library.
+ * @param logSuccess If it should log when it doesn't encounter a problem. This should probably be `false` when using this as a library.
  *
  * @returns Amount of holes, and amount of duplicates
  */
-export async function validate(log: boolean): Promise<[number, number]> {
+export async function validate(
+	logFailure: boolean,
+	logSuccess: boolean,
+): Promise<[number, number]> {
 	const ids: [[number, string]] = [[-1, ""]];
 
 	await searchCards((path, content, id) => {
@@ -161,7 +165,7 @@ export async function validate(log: boolean): Promise<[number, number]> {
 		}
 
 		if (id === currentId) {
-			if (log) {
+			if (logFailure) {
 				console.error(
 					`<bright:yellow>Duplicate id in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change one of these ids.</green bright:yellow>`,
 				);
@@ -169,7 +173,7 @@ export async function validate(log: boolean): Promise<[number, number]> {
 
 			duplicates++;
 		} else if (id !== currentId + 1) {
-			if (log) {
+			if (logFailure) {
 				console.error(
 					`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`,
 				);
@@ -189,7 +193,7 @@ export async function validate(log: boolean): Promise<[number, number]> {
 	);
 
 	if (latestId !== currentId) {
-		if (log) {
+		if (logFailure) {
 			console.log(
 				"<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>",
 				currentId,
@@ -204,16 +208,22 @@ export async function validate(log: boolean): Promise<[number, number]> {
 		);
 	}
 
-	if (log) {
+	if (logFailure) {
 		if (holes > 0) {
-			console.log("<yellow>Found %s holes.</yellow>", holes);
-		} else {
-			console.log("<bright:green>No holes found.</bright:green>");
+			console.log("<yellow>Found %s hole(s).</yellow>", holes);
 		}
 
 		if (duplicates > 0) {
-			console.log("<yellow>Found %s duplicates.</yellow>", duplicates);
-		} else {
+			console.log("<yellow>Found %s duplicate(s).</yellow>", duplicates);
+		}
+	}
+
+	if (logSuccess) {
+		if (holes <= 0) {
+			console.log("<bright:green>No holes found.</bright:green>");
+		}
+
+		if (duplicates <= 0) {
 			console.log("<bright:green>No duplicates found.</bright:green>");
 		}
 
