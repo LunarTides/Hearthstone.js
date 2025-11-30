@@ -327,7 +327,7 @@ export const deckcodeFunctions = {
 		heroClass: string,
 		runes: Rune[],
 	): { code: string; error: FunctionsExportDeckError } {
-		// TODO: Throw an error instead maybe>
+		// TODO: Throw an error instead maybe?
 		let error: FunctionsExportDeckError;
 
 		if (deck.length < game.config.decks.minLength) {

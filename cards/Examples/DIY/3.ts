@@ -50,10 +50,7 @@ export const blueprint: Blueprint = {
 		 * so if you don't want to see it, don't scroll down
 		 */
 
-		/*
-		 * Testing your solution.
-		 * TODO: All this code is bad. Please fix it. #330
-		 */
+		// Testing your solution.
 		let target = self;
 		let correctParameters = false;
 		let potentiallyCancelled = false;

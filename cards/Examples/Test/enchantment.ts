@@ -23,7 +23,6 @@ export const blueprint: Blueprint = {
 	enchantmentPriority: EnchantmentPriority.Normal,
 
 	async enchantmentApply(self, owner, host) {
-		// FIXME: Doesn't properly set maxHealth.
 		await host.addStats(1, 2);
 	},
 

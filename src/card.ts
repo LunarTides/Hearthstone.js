@@ -1422,9 +1422,12 @@ export class Card {
 	/**
 	 * Runs through this card's enchantments list and applies each enchantment based on their priorities.
 	 *
+	 * @param [inbetweenCallback=() => {}] This gets called inbetween removing and adding the enchantments.
 	 * @returns Success
 	 */
-	async refreshEnchantments(): Promise<boolean> {
+	async refreshEnchantments(
+		inbetweenCallback = async () => {},
+	): Promise<boolean> {
 		// Don't waste resources if this card doesn't have any enchantments, this gets called every tick after all.
 		if (this.activeEnchantments.length <= 0) {
 			return false;
@@ -1460,7 +1463,7 @@ export class Card {
 			let i = 0;
 			for (const activeEnchantment of this.activeEnchantments) {
 				// const owner = activeEnchantment.owner;
-				const applied = activeEnchantment.applied;
+				const applied = activeEnchantment.hasBeenSetUp;
 				const enchantment = activeEnchantment.enchantment;
 				const priority = enchantment.enchantmentPriority;
 
@@ -1481,14 +1484,16 @@ export class Card {
 			if (applied) {
 				await enchantment.trigger(Ability.EnchantmentRemove, this);
 			} else {
+				this.activeEnchantments[i].hasBeenSetUp = true;
 				await enchantment.trigger(Ability.EnchantmentSetup, this);
 			}
 		});
 
+		await inbetweenCallback();
+
 		// Re-add ALL enchantment effects.
 		await callOnActiveEnchantments(async (enchantment, _, i) => {
 			await enchantment.trigger(Ability.EnchantmentApply, this);
-			this.activeEnchantments[i].applied = true;
 		});
 
 		return true;
@@ -1508,7 +1513,7 @@ export class Card {
 		this.activeEnchantments.push({
 			enchantment: await enchantment.imperfectCopy(),
 			owner,
-			applied: false,
+			hasBeenSetUp: false,
 		});
 		await this.refreshEnchantments();
 		return true;
@@ -1559,6 +1564,29 @@ export class Card {
 
 		await this.refreshEnchantments();
 		return true;
+	}
+
+	/**
+	 * Gets the value indexed by `key` before enchantments are applied.
+	 *
+	 * ### Performance Note
+	 * This calls `refreshEnchantments`, which is a heavy function call. Be careful not to call this too often.
+	 *
+	 * @param key
+	 * @returns
+	 */
+	async getFixedValue<T extends keyof Card>(key: T): Promise<Card[T]> {
+		let ret: Card[T] | "__HJS_UNDEFINED__" = "__HJS_UNDEFINED__";
+
+		await this.refreshEnchantments(async () => {
+			ret = this[key];
+		});
+
+		if (ret === "__HJS_UNDEFINED__") {
+			throw new Error("Unable to set ret in 'getFixedValue'.");
+		}
+
+		return ret;
 	}
 
 	/**

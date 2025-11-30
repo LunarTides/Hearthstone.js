@@ -342,6 +342,7 @@ describe("src/card", () => {
 	test.todo("addEnchantment", async () => {});
 	test.todo("enchantmentExists", async () => {});
 	test.todo("removeEnchantment", async () => {});
+	test.todo("getFixedValue", async () => {});
 	test.todo("replacePlaceholders", async () => {});
 	test.todo("setStorage", async () => {});
 	test.todo("getStorage", async () => {});
