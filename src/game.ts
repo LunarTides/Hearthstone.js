@@ -1,4 +1,4 @@
-import { Ai } from "@Game/ai.ts";
+import { AI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { eventManager } from "@Game/event.ts";
 import { functions } from "@Game/functions/index.ts";
@@ -1400,12 +1400,12 @@ export class Game {
 
 			// HACK: Use of never. Might not update correctly if the config format is changed
 			if (this.config.ai[`player${player.id + 1}` as never]) {
-				player.ai = new Ai(player);
+				player.ai = new AI(player);
 			}
 
 			if (this.config.ai.random && !setRandomAI && this.lodash.random() > 0.5) {
 				setRandomAI = true;
-				player.ai = new Ai(player);
+				player.ai = new AI(player);
 			}
 		}
 

@@ -20,7 +20,7 @@ import {
  *
  * **Don't directly call any methods in this class since they get called automatically in various function in-game that requires player input.**
  */
-export class Ai {
+export class AI {
 	/**
 	 * The history of the AI. Also known as its "logs".
 	 */

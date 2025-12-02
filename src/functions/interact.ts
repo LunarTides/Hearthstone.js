@@ -1,4 +1,4 @@
-import type { Ai } from "@Game/ai.ts";
+import type { AI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { commands, debugCommands } from "@Game/commands.ts";
 import type { Player } from "@Game/player.ts";
@@ -739,7 +739,7 @@ const prompt = {
 			const alternativeModel = `legacyAttack${game.config.ai.attackModel}`;
 
 			// Run the correct ai attack model
-			const model = game.player.ai[alternativeModel as keyof Ai];
+			const model = game.player.ai[alternativeModel as keyof AI];
 			const aiSelections = model
 				? (model as () => Array<-1 | Target>)()
 				: game.player.ai.attack();
