@@ -9,6 +9,7 @@ import {
 	Rarity,
 	SpellSchool,
 	Tag,
+	TargetType,
 	Type,
 } from "@Game/types.ts";
 
@@ -65,7 +66,7 @@ export const blueprint: Blueprint = {
 				correctParameters =
 					card === self &&
 					flags.alignment === undefined &&
-					flags.class === "card";
+					flags.targetType === TargetType.Card;
 
 				// The `TargetSelectionStarts` event fired. This means that the card has a chance of being cancelled.
 				potentiallyCancelled = true;

@@ -3,6 +3,7 @@
 import { Card } from "@Game/card.ts";
 import {
 	Ability,
+	Alignment,
 	type Blueprint,
 	Class,
 	Keyword,
@@ -39,12 +40,12 @@ export const blueprint: Blueprint = {
 		 * Select a target to freeze (and silence)
 		 * The first argument is the prompt to ask the user.
 		 * The second argument is this card (aka `self`).
-		 * The third argument is an options object with targeting flags. For example, if `alignment` is set to "enemy", the user can only select enemy targets, if it's "friendly", the user can only select friendly targets, if it's omitted, the user can select any target.
+		 * The third argument is an options object with targeting flags. For example, if `alignment` is set to Enemy, the user can only select enemy targets, if it's Friendly, the user can only select friendly targets, if it's omitted, the user can select any target.
 		 *
 		 * Ask the user to select a target based on the `prompt`, the user can only select enemy minions
 		 */
 		const target = await game.prompt.targetCard(prompt, self, {
-			alignment: "enemy",
+			alignment: Alignment.Enemy,
 		});
 
 		/*

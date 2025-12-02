@@ -2,6 +2,7 @@ import { Card } from "@Game/card.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
+	Alignment,
 	type CommandList,
 	Event,
 	Keyword,
@@ -143,7 +144,7 @@ export const commands: CommandList = {
 		const card = await game.prompt.targetCard(
 			"Which card do you want to use?",
 			undefined,
-			{ alignment: "friendly" },
+			{ alignment: Alignment.Friendly },
 		);
 
 		if (!card) {

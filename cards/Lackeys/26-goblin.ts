@@ -3,6 +3,7 @@
 import { Card } from "@Game/card.ts";
 import {
 	Ability,
+	Alignment,
 	type Blueprint,
 	Class,
 	Keyword,
@@ -35,7 +36,7 @@ export const blueprint: Blueprint = {
 		const target = await game.prompt.targetCard(
 			"Give a friendly minion +1 Attack and Rush",
 			self,
-			{ alignment: "friendly" },
+			{ alignment: Alignment.Friendly },
 		);
 
 		// If no target was selected, refund

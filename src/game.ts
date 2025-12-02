@@ -5,6 +5,7 @@ import { functions } from "@Game/functions/index.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
+	Alignment,
 	type Blueprint,
 	Event,
 	type GameAttackFlags,
@@ -1015,7 +1016,7 @@ const playCard = {
 		const mech = await game.prompt.targetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,
-			{ alignment: "friendly" },
+			{ alignment: Alignment.Friendly },
 		);
 
 		if (!mech) {

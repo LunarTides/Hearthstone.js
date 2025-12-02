@@ -5,6 +5,7 @@
 import { Card } from "@Game/card.ts";
 import {
 	Ability,
+	Alignment,
 	type Blueprint,
 	Class,
 	Rarity,
@@ -29,7 +30,7 @@ export const blueprint: Blueprint = {
 	async cast(self, owner) {
 		// Take control of an enemy minion.
 		const card = await game.prompt.targetCard(self.text, self, {
-			alignment: "enemy",
+			alignment: Alignment.Enemy,
 		});
 		if (!card) {
 			return Card.REFUND;

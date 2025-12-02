@@ -4,12 +4,14 @@ import { commands, debugCommands } from "@Game/commands.ts";
 import type { Player } from "@Game/player.ts";
 import {
 	Ability,
+	Alignment,
 	Event,
 	GameAttackReturn,
 	GamePlayCardReturn,
 	Keyword,
 	type Target,
 	type TargetFlags,
+	TargetType,
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
@@ -258,7 +260,7 @@ const prompt = {
 	): Promise<Player | null> {
 		return (await this.target(prompt, card, {
 			...flags,
-			class: "player",
+			targetType: TargetType.Player,
 		})) as Player | null;
 	},
 
@@ -274,7 +276,7 @@ const prompt = {
 	): Promise<Card | null> {
 		return (await this.target(prompt, card, {
 			...flags,
-			class: "card",
+			targetType: TargetType.Card,
 		})) as Card | null;
 	},
 
@@ -353,13 +355,13 @@ const prompt = {
 		}
 
 		// If the player is forced to select a player
-		if (flags.class === "player") {
+		if (flags.targetType === TargetType.Player) {
 			// You shouldn't really force a side while forcing a player, but it should still work
-			if (flags.alignment === "enemy") {
+			if (flags.alignment === Alignment.Enemy) {
 				return game.opponent;
 			}
 
-			if (flags.alignment === "friendly") {
+			if (flags.alignment === Alignment.Friendly) {
 				return game.player;
 			}
 
@@ -378,8 +380,9 @@ const prompt = {
 
 		// Ask the player to choose a target.
 		let p = `\n${newPrompt} (`;
-		if (!flags.class) {
-			let possibleHeroes = flags.alignment === "enemy" ? "the enemy" : "your";
+		if (!flags.targetType) {
+			let possibleHeroes =
+				flags.alignment === Alignment.Enemy ? "the enemy" : "your";
 			possibleHeroes = !flags.alignment ? "a" : possibleHeroes;
 
 			p += `type 'face' to select ${possibleHeroes} hero | `;
@@ -396,8 +399,11 @@ const prompt = {
 		}
 
 		// If the player chose to target a player, it will ask which player.
-		if (target.startsWith("face") && flags.class !== "card") {
-			return this._target(newPrompt, card, { ...flags, class: "player" });
+		if (target.startsWith("face") && flags.targetType !== TargetType.Card) {
+			return this._target(newPrompt, card, {
+				...flags,
+				targetType: TargetType.Player,
+			});
 		}
 
 		// From this point, the player has chosen a minion.
@@ -465,7 +471,9 @@ const prompt = {
 			 * Select the minion on the correct side of the board.
 			 */
 			minion =
-				flags.alignment === "enemy" ? boardOpponentTarget : boardFriendlyTarget;
+				flags.alignment === Alignment.Enemy
+					? boardOpponentTarget
+					: boardFriendlyTarget;
 		}
 
 		// If you didn't select a valid minion, return.
@@ -517,7 +525,7 @@ const prompt = {
 			"Which location do you want to use?",
 			undefined,
 			{
-				alignment: "friendly",
+				alignment: Alignment.Friendly,
 				allowLocations: true,
 			},
 		);
@@ -747,7 +755,7 @@ const prompt = {
 			attacker = await this.target(
 				"Which minion do you want to attack with?",
 				undefined,
-				{ alignment: "friendly" },
+				{ alignment: Alignment.Friendly },
 			);
 
 			if (!attacker) {
@@ -757,7 +765,7 @@ const prompt = {
 			target = await this.target(
 				"Which minion do you want to attack?",
 				undefined,
-				{ alignment: "enemy" },
+				{ alignment: Alignment.Enemy },
 			);
 
 			if (!target) {

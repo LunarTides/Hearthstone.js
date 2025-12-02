@@ -4,10 +4,12 @@ import {
 	AiCalcMoveMessage,
 	type AiCalcMoveOption,
 	type AiHistory,
+	Alignment,
 	Keyword,
 	type ScoredCard,
 	type Target,
 	type TargetFlags,
+	TargetType,
 	Type,
 } from "@Game/types.ts";
 
@@ -288,7 +290,7 @@ export class Ai {
 		card: Card | undefined,
 		flags: TargetFlags,
 	): Target | null {
-		if (flags.allowLocations && flags.class !== "player") {
+		if (flags.allowLocations && flags.targetType !== TargetType.Player) {
 			const locations = this.player.board.filter(
 				(m) =>
 					m.type === Type.Location &&
@@ -304,34 +306,35 @@ export class Ai {
 
 		const opponent = this.player.getOpponent();
 
-		let alignment: "friendly" | "enemy" | null = null;
+		let alignment: Alignment | null = null;
 
 		const score = this.analyzePositive(prompt, false);
 
 		if (score > 0) {
-			alignment = "friendly";
+			alignment = Alignment.Friendly;
 		} else if (score < 0) {
-			alignment = "enemy";
+			alignment = Alignment.Enemy;
 		}
 
 		if (flags.alignment) {
 			alignment = flags.alignment;
 		}
 
-		const sidePlayer = alignment === "friendly" ? this.player : opponent;
+		const sidePlayer =
+			alignment === Alignment.Friendly ? this.player : opponent;
 
-		if (sidePlayer.board.length <= 0 && flags.class === "card") {
+		if (sidePlayer.board.length <= 0 && flags.targetType === TargetType.Card) {
 			this.history.push({ type: "selectTarget", data: "0,1" });
 
 			return null;
 		}
 
-		if (flags.class === "player") {
+		if (flags.targetType === TargetType.Player) {
 			let returnValue: Player | null = null;
 
-			if (alignment === "friendly") {
+			if (alignment === Alignment.Friendly) {
 				returnValue = this.player;
-			} else if (alignment === "enemy") {
+			} else if (alignment === Alignment.Enemy) {
 				returnValue = opponent;
 			}
 
@@ -347,7 +350,7 @@ export class Ai {
 		if (sidePlayer.board.length <= 0) {
 			let returnValue: Player | null = null;
 
-			if (flags.class === "card") {
+			if (flags.targetType === TargetType.Card) {
 				this.history.push({ type: "selectTarget", data: -1 });
 			} else {
 				returnValue = sidePlayer;

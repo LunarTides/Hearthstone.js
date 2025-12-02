@@ -69,9 +69,25 @@ export enum AiCalcMoveMessage {
  */
 export type AiCalcMoveOption = Card | AiCalcMoveMessage;
 
+/**
+ * The alignment of a Card or Player.
+ */
+export enum Alignment {
+	Friendly,
+	Enemy,
+}
+
+/**
+ * The possible types of targets.
+ */
+export enum TargetType {
+	Player,
+	Card,
+}
+
 export interface TargetFlags {
-	alignment?: "friendly" | "enemy";
-	class?: "player" | "card";
+	alignment?: Alignment;
+	targetType?: TargetType;
 	allowLocations?: boolean;
 	forceElusive?: boolean;
 }
