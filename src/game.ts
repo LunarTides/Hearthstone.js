@@ -1391,14 +1391,20 @@ export class Game {
 	 * @returns Success
 	 */
 	doConfigAi(): boolean {
+		let setRandomAI = false;
+
 		for (const player of [this.player1, this.player2]) {
-			// HACK: Use of never. Might not update correctly if the config format is changed
-			if (!this.config.ai[`player${player.id + 1}` as never]) {
-				player.ai = undefined;
+			if (player.ai) {
 				continue;
 			}
 
-			if (!player.ai) {
+			// HACK: Use of never. Might not update correctly if the config format is changed
+			if (this.config.ai[`player${player.id + 1}` as never]) {
+				player.ai = new Ai(player);
+			}
+
+			if (this.config.ai.random && !setRandomAI && this.lodash.random() > 0.5) {
+				setRandomAI = true;
 				player.ai = new Ai(player);
 			}
 		}

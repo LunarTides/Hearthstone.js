@@ -166,6 +166,7 @@ export type GameConfig = {
 	ai: {
 		player1: boolean;
 		player2: boolean;
+		random: boolean;
 
 		contextAnalysis: boolean;
 		attackModel: number;

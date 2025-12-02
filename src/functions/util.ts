@@ -172,7 +172,11 @@ ${error.stack}
 		const configContent = `\n-- Config --\n${config}\n-- Config --`;
 
 		let mainContent = debugLogContent + historyContent;
-		if (game.config.ai.player1 || game.config.ai.player2) {
+		if (
+			game.config.ai.player1 ||
+			game.config.ai.player2 ||
+			game.config.ai.random
+		) {
 			mainContent += aiContent;
 		}
 

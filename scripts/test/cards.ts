@@ -38,6 +38,7 @@ export async function main(): Promise<void> {
 		game.blueprints = blueprints;
 		game.config.ai.player1 = false;
 		game.config.ai.player2 = false;
+		game.config.ai.random = false;
 		player1.ai = undefined;
 		player2.ai = undefined;
 
