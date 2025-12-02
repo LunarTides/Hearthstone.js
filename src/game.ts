@@ -1400,6 +1400,10 @@ export class Game {
 		return event && !this.config.general.disableEvents;
 	}
 
+	isDebugSettingEnabled(setting: boolean): boolean {
+		return setting || this.config.debug.all;
+	}
+
 	// Start / End
 
 	/**

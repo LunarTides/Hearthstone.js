@@ -2029,15 +2029,8 @@ export class Card {
 	 * @returns The human readable card string
 	 */
 	async readable(i = -1, _depth = 0): Promise<string> {
-		const { branch } = game.functions.info.version();
-
-		/**
-		 * If it should show detailed errors regarding depth.
-		 */
-		const showDetailedError: boolean =
-			game.config.general.debug ||
-			branch !== "stable" ||
-			game.player.detailedView;
+		// If it should show detailed errors regarding depth.
+		const showDetailedError: boolean = game.player.detailedView;
 
 		if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
 			if (showDetailedError) {
@@ -2090,7 +2083,9 @@ export class Card {
 		sb += cost;
 		sb += this.colorFromRarity(this.name);
 
-		if (game.config.general.debug) {
+		if (
+			game.isDebugSettingEnabled(game.config.debug.additionalInfoInReadable)
+		) {
 			sb += " (";
 
 			const idHex = (this.id + 1000).toString(16).repeat(6).slice(0, 6);

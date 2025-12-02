@@ -72,7 +72,8 @@ const prompt = {
 		 */
 		// I want to be able to test without debug mode on a non-stable branch
 		const allowTestDeck: boolean =
-			game.config.general.debug || branch !== "stable";
+			game.isDebugSettingEnabled(game.config.debug.allowTestDeck) ||
+			branch !== "stable";
 
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
@@ -566,7 +567,9 @@ const prompt = {
 		await game.functions.interact.print.gameState(player);
 
 		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
-		if (!game.config.general.debug) {
+		if (
+			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
+		) {
 			sb +=
 				"<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
 		}
@@ -867,7 +870,10 @@ const print = {
 		game.functions.interact.cls();
 
 		const versionDetail =
-			game.player.detailedView || game.config.general.debug ? 4 : 3;
+			game.player.detailedView ||
+			game.isDebugSettingEnabled(game.config.debug.showCommitHash)
+				? 4
+				: 3;
 
 		const eventEmojis = game.functions.util.getCurrentEventEmojis();
 		let eventEmojisText = eventEmojis.join("");
@@ -935,7 +941,7 @@ const print = {
 	 * @param disappear If this is true, "This will disappear once you end your turn" will show up.
 	 */
 	license(disappear = true) {
-		if (game.config.general.debug) {
+		if (game.isDebugSettingEnabled(game.config.debug.hideLicense)) {
 			return;
 		}
 
@@ -968,7 +974,10 @@ const print = {
 		this.watermark();
 		console.log();
 
-		if (game.turn <= 2 && !game.config.general.debug) {
+		if (
+			game.turn <= 2 &&
+			!game.isDebugSettingEnabled(game.config.debug.hideLicense)
+		) {
 			this.license();
 			console.log();
 		}
@@ -1154,7 +1163,9 @@ const print = {
 	async hand(player: Player): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.getName(), player.heroClass);
 
-		const debugInfo = game.config.general.debug
+		const debugInfo = game.isDebugSettingEnabled(
+			game.config.debug.additionalInfoInReadable,
+		)
 			? "(<gray>Debug Info -></gray> #id @uuid <gray>[tags]</gray>) "
 			: "";
 
@@ -1331,7 +1342,8 @@ export const interactFunctions = {
 		const args = cmd.split(" ");
 		const name = args.shift()?.toLowerCase();
 		if (!name) {
-			await game.pause("<red>Invalid command.</red>\n");
+			console.log("<red>Invalid command.</red>");
+			await game.pause("");
 			return false;
 		}
 
@@ -1364,7 +1376,7 @@ export const interactFunctions = {
 		);
 
 		if (debugCommandName) {
-			if (!game.config.general.debug) {
+			if (!game.isDebugSettingEnabled(game.config.debug.commands)) {
 				await game.pause(
 					"<red>You are not allowed to use this command.</red>\n",
 				);
@@ -1436,7 +1448,10 @@ export const interactFunctions = {
 		console.log();
 
 		let input = "Which card do you want to play? ";
-		if (game.turn <= 2 && !game.config.general.debug) {
+		if (
+			game.turn <= 2 &&
+			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
+		) {
 			input +=
 				"(type 'help' for further information <- This will disappear once you end your turn) ";
 		}

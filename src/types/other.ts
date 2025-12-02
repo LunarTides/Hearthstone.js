@@ -137,7 +137,6 @@ export type AiHistory = {
 export type GameConfig = {
 	general: {
 		locale: string;
-		debug: boolean;
 		editor: string;
 		topicBranchWarning: boolean;
 		maxBoardSpace: number;
@@ -152,6 +151,16 @@ export type GameConfig = {
 		maxLength: number;
 		maxOfOneCard: number;
 		maxOfOneLegendary: number;
+	};
+
+	debug: {
+		all: boolean;
+		commands: boolean;
+		allowTestDeck: boolean;
+		hideRedundantInformation: boolean;
+		hideLicense: boolean;
+		additionalInfoInReadable: boolean;
+		showCommitHash: boolean;
 	};
 
 	ai: {

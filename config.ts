@@ -6,12 +6,6 @@ export const config: GameConfig = {
 		locale: "en_US",
 
 		/*
-		 * Debug mode enables debug commands, and hides redundant information.
-		 * Only enable this if you want to test the game / add cards.
-		 */
-		debug: true,
-
-		/*
 		 * The editor that gets launched whenever the game wants to launch an editor.
 		 * This happens after creating a card using the Custom Card Creator, for example.
 		 * You can set this to any path you want. (e.g. /usr/bin/code or vim)
@@ -61,12 +55,66 @@ export const config: GameConfig = {
 		maxOfOneLegendary: 1,
 	},
 
+	debug: {
+		/*
+		 * If this is enabled, ALL debug settings under this category gets enabled.
+		 *
+		 * Disable this to pick and choose which debug settings to enable.
+		 */
+		all: true,
+
+		/*
+		 * If debug commands should be enabled.
+		 *
+		 * This enables commands like "/give", "/eval", and "/history".
+		 */
+		commands: false,
+
+		/*
+		 * If it should allow players using the test deck.
+		 *
+		 * If this is enabled, and you don't input a deckcode when prompted, you will get a deck filled with 30 Sheep.
+		 *
+		 * If you're not on a stable branch, this gets overriden to `true`.
+		 */
+		allowTestDeck: false,
+
+		/*
+		 * This hides information that you don't need after you've played for a while.
+		 *
+		 * When enabled, this hides the mulligan help message, and the "type 'help' for further information" message.
+		 */
+		hideRedundantInformation: false,
+
+		/*
+		 * If this is enabled, it doesn't show the license when you play.
+		 */
+		hideLicense: false,
+
+		/*
+		 * If cards should show additional information. (id, uuid, tags, etc...)
+		 */
+		additionalInfoInReadable: false,
+
+		/*
+		 * If this is enabled, it shows the commit hash in the version of the watermark.
+		 */
+		showCommitHash: false,
+	},
+
 	ai: {
 		// If the starting player should be assigned an AI.
 		player1: false,
 
 		// If the player that starts with the coin should be assigned an AI.
 		player2: true,
+
+		/*
+		 * If this is true, it assigns an AI to a random player.
+		 *
+		 * `AI > Player 1` and `AI > Player 2` should probably be disabled when this is enabled, unless you want to pit two AIs against each other.
+		 */
+		random: false,
 
 		// If the ai should look at the context of a card's description in order to judge more accurately.
 		contextAnalysis: true,
@@ -96,7 +144,7 @@ export const config: GameConfig = {
 		 * How much the ai dislikes mana cost.
 		 * The formula is: score -= cost * costBias
 		 */
-		costBias: 0.75,
+		costBias: 0.333,
 
 		/*
 		 * How much the ai values spells. This exists for equality with minions, since minions gets stats.
@@ -141,7 +189,7 @@ export const config: GameConfig = {
 				 * Any number with a plus in front of it.
 				 * For example, +1
 				 */
-				"\\x\\d+": 1,
+				"\\+\\d+": 1,
 
 				/*
 				 * Anything formed like this "d/d" where "d" is a number.

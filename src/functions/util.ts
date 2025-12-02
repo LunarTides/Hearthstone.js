@@ -148,7 +148,7 @@ export const utilFunctions = {
 		 * AI log
 		 * Do this so it can actually run '/ai'
 		 */
-		game.config.general.debug = true;
+		game.config.debug.commands = true;
 		const aiHistory = await game.functions.interact.processCommand("/ai", {
 			echo: false,
 		});

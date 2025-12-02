@@ -234,15 +234,19 @@ export const commands: CommandList = {
 			console.log(alignedColumn);
 		}
 
+		const isDebugCommandsEnabled = game.isDebugSettingEnabled(
+			game.config.debug.commands,
+		);
+
 		const condColor = (text: string) =>
 			// We can't use `game.functions.color.if` here since the text should be uncolored if the condition is met.
-			game.config.general.debug ? text : `<gray>${text}</gray>`;
+			isDebugCommandsEnabled ? text : `<gray>${text}</gray>`;
 
-		const debugEnabled = game.config.general.debug
+		const debugEnabledText = isDebugCommandsEnabled
 			? "<bright:green>ON</bright:green>"
 			: "<red>OFF</red>";
 
-		console.log(condColor(`\n--- Debug Commands (${debugEnabled}) ---`));
+		console.log(condColor(`\n--- Debug Commands (${debugEnabledText}) ---`));
 
 		// Debug Commands
 		for (const alignedColumn of debugAlignedColumns) {
@@ -253,7 +257,7 @@ export const commands: CommandList = {
 
 		console.log(
 			condColor(
-				`---------------------------${game.config.general.debug ? "" : "-"}`,
+				`---------------------------${isDebugCommandsEnabled ? "" : "-"}`,
 			),
 		);
 
@@ -324,15 +328,7 @@ export const commands: CommandList = {
 		}
 
 		strbuilder += `, on build <yellow>${build}</yellow>`;
-		strbuilder += `, with latest commit hash <yellow>${game.functions.info.latestCommit()}</yellow>,`;
-
-		if (game.config.general.debug && game.config.ai.player2) {
-			strbuilder += " using the <yellow>debug settings</yellow> preset";
-		} else if (!game.config.general.debug && !game.config.ai.player2) {
-			strbuilder += " using the <yellow>recommended settings</yellow> preset";
-		} else {
-			strbuilder += " using custom settings";
-		}
+		strbuilder += `, with latest commit hash <yellow>${game.functions.info.latestCommit()}</yellow>.`;
 
 		console.log(`${strbuilder}.\n`);
 		console.log("Version Description:");
