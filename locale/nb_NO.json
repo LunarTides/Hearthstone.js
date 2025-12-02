@@ -10,5 +10,7 @@
 	"Which card do you want to play? ": "Hvilket kort vil du spille? ",
 	"----- Board (You) ------": "------ Bord (Deg) ------",
 	"--- Board (Opponent) ---": "--- Bord (Motstander) --",
-	"<gray>Empty</gray>": "<gray>Ingenting</gray>"
+	"<gray>Empty</gray>": "<gray>Ingenting</gray>",
+
+	"<red>Invalid command.</red>": "<red>Ugyldig kommando.</red>"
 }

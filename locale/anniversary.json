@@ -8,5 +8,5 @@
 	"<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red>: ": "<green>Create a (C)ustom Card</green>, <blue>Import a (V)anilla Card</blue>, <red>Go (B)ack</red> [Anniversary edition 🎉🎉🎉]: ",
 
 	"Player %s, please type in your deckcode%s: ": "Player %s, please type in your deckcode%s [Decks existed since the beginning, but you couldn't use a deckcode since (<cyan>917c4dd</cyan>) - Anniversary edition 🎉🎉🎉]: ",
-	"\nChoose the cards to mulligan (1, 2, 3, ...):\n": "\nChoose the cards to mulligan (1, 2, 3, ...): [Mulligan was added very late in development. (<cyan>c9db935</cyan>, commit no 105) - Anniversary edition 🎉🎉🎉]:\n"
+	"Choose the cards to mulligan (1, 2, 3, ...):": "Choose the cards to mulligan (1, 2, 3, ...): [Mulligan was added pretty late in development. (<cyan>c9db935</cyan>, commit no 105) - Anniversary edition 🎉🎉🎉]:"
 }

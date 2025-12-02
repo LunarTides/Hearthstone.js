@@ -1307,7 +1307,23 @@ export class Game {
 	 * @returns The translated text or the original text if no translation is found
 	 */
 	translate(text: string, ...args: unknown[]): string {
-		const newText = this.functions.util.getCachedLanguageMap()?.[text] || text;
+		// Ignore starting and ending newlines.
+		let start = "";
+		if (text.startsWith("\n")) {
+			start += "\n";
+			text = text.slice(1);
+		}
+
+		let end = "";
+		if (text.endsWith("\n")) {
+			end += "\n";
+			text = text.slice(0, -1);
+		}
+
+		const newText =
+			start +
+			(this.functions.util.getCachedLanguageMap()?.[text] || text) +
+			end;
 
 		return format(newText, ...args);
 	}
