@@ -6,7 +6,6 @@ import {
 	type CommandList,
 	Event,
 	Keyword,
-	type TargetFlags,
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
@@ -402,6 +401,11 @@ export const commands: CommandList = {
 			}
 
 			if (!(value instanceof Card)) {
+				if (!Array.isArray(value)) {
+					// Stringify it to show '{}' instead of '[object Object]'.
+					return JSON.stringify(value);
+				}
+
 				// Return value as-is if it is not a card / player
 				return value;
 			}
@@ -525,29 +529,21 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				let newValue = (await doValue(
-					value,
-					game.player,
-					shouldHide,
-				)) as unknown;
+				let newValue: string | undefined = "";
 
-				if (Array.isArray(newValue)) {
-					let strbuilder = "";
-
-					for (let v of newValue) {
-						v = (await doValue(v, game.player, shouldHide)) as
-							| string
-							| number
-							| Player
-							| Card
-							| TargetFlags
-							| undefined;
-
-						strbuilder += `${v?.toString()}, `;
-					}
-
-					strbuilder = strbuilder.slice(0, -2);
-					newValue = strbuilder;
+				if (Array.isArray(value)) {
+					newValue = (
+						await Promise.all(
+							value.map(
+								async (element) =>
+									await doValue(element, game.player, shouldHide),
+							),
+						)
+					).join(", ");
+				} else {
+					newValue = (
+						await doValue(value, game.player, shouldHide)
+					)?.toString();
 				}
 
 				finished += `${key}: ${newValue?.toString()}\n`;

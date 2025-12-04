@@ -381,10 +381,10 @@ const prompt = {
 
 		// Ask the player to choose a target.
 		let p = `\n${newPrompt} (`;
-		if (!flags.targetType) {
+		if (flags.targetType === undefined) {
 			let possibleHeroes =
 				flags.alignment === Alignment.Enemy ? "the enemy" : "your";
-			possibleHeroes = !flags.alignment ? "a" : possibleHeroes;
+			possibleHeroes = flags.alignment === undefined ? "a" : possibleHeroes;
 
 			p += `type 'face' to select ${possibleHeroes} hero | `;
 		}
@@ -430,7 +430,7 @@ const prompt = {
 			return this._target(newPrompt, card, flags);
 		}
 
-		if (!flags.alignment) {
+		if (flags.alignment === undefined) {
 			/*
 			 * If both players have a minion with the same index,
 			 * ask them which minion to select
