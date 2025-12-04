@@ -20,7 +20,7 @@ const idRegex = /id: (\d+)/;
 async function searchCards(
 	callback: (path: string, content: string, id: number) => void,
 ): Promise<void> {
-	await game.functions.util.searchCardsFolder((fullPath, content) => {
+	await game.functions.util.searchCardsFolder(async (fullPath, content) => {
 		const idMatch = idRegex.exec(content);
 		if (!idMatch) {
 			console.error(`No id found in ${fullPath}`);

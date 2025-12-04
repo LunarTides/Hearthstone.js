@@ -1,3 +1,4 @@
+import { Card } from "@Game/card.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
@@ -61,7 +62,7 @@ export async function main(
 
 		armor: 0,
 		// We do +2 since the hero card will be created first (+1), then the heropower (+1)
-		heropowerId: (await lib.getLatestId()) + 2,
+		heropowerId: (await Card.latestId()) + 2,
 	};
 
 	const heropowerBlueprint: Blueprint = {
@@ -108,7 +109,7 @@ export async function main(
 	console.log(
 		"2. Open 'cards/StartingHeroes/%s/%s-heropower.ts' and add logic to the 'cast' function.",
 		game.lodash.startCase(className),
-		await lib.getLatestId(),
+		await Card.latestId(),
 	);
 
 	console.log(

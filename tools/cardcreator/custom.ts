@@ -1,3 +1,4 @@
+import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	type BlueprintWithOptional,
@@ -234,7 +235,7 @@ const cardTypeFunctions: {
 		return applyCard({
 			...card,
 			armor,
-			heropowerId: heropowerId || (await lib.getLatestId()),
+			heropowerId: heropowerId || (await Card.latestId()),
 		});
 	},
 
