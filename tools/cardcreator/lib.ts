@@ -502,16 +502,6 @@ export const blueprint: Blueprint = {
 		await game.functions.util.fs("writeFile", filePath, content);
 
 		console.log(`File created at: "${filePath}"`);
-
-		// TODO: Fix this. #382
-		// console.log("Trying to compile...");
-		// if (game.functions.util.tryCompile()) {
-		// 	console.log("<bright:green>Success!</bright:green>");
-		// } else {
-		// 	console.error(
-		// 		"<yellow>WARNING: Compiler error occurred. Please fix the errors in the card.</yellow>",
-		// 	);
-		// }
 	}
 
 	await game.functions.card.generateIdsFile();

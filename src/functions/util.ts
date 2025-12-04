@@ -291,28 +291,6 @@ ${mainContent}
 	},
 
 	/**
-	 * Tries to compile the project.
-	 *
-	 * ### Broken
-	 * Currently broken as of 04/12/25 (DD/MM/YY).
-	 *
-	 * @returns If the compilation was successful
-	 */
-	tryCompile(): boolean {
-		try {
-			this.runCommand("bunx tsc");
-			return true;
-		} catch (error) {
-			// Status 2 means compiler error
-			if (error.status === 2) {
-				return false;
-			}
-
-			throw error;
-		}
-	},
-
-	/**
 	 * Open the provided link in the users browser.
 	 *
 	 * This uses the "open" command in Mac, the "start" command in Windows, and the "xdg-open" command in Linux

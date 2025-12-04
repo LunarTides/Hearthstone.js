@@ -47,7 +47,6 @@ describe("src/functions/util", () => {
 		expect(result).toStartWith(Bun.version);
 	});
 
-	test.todo("tryCompile", async () => {});
 	test.todo("openInBrowser", async () => {});
 
 	test("getTraditionalTurnCounter", async () => {
