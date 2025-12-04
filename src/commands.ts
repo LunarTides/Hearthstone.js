@@ -426,8 +426,6 @@ export const commands: CommandList = {
 					}
 
 					const [key, newValue] = historyKey;
-
-					// TODO: This shouldn't happen?
 					if (!newValue) {
 						continue;
 					}
@@ -477,7 +475,6 @@ export const commands: CommandList = {
 			for (const [historyIndex, historyKey] of historyList.entries()) {
 				const [key, value, player] = historyKey;
 				if (!player) {
-					// TODO: Maybe throw an error. #277
 					continue;
 				}
 
@@ -578,8 +575,26 @@ export const debugCommands: CommandList = {
 
 		const cardName = args.join(" ");
 
-		// TODO: Get all cards from the name and ask the user which one they want. #277
-		const card = await Card.fromName(cardName, game.player);
+		const cards = await Card.allFromName(cardName);
+		let card = cards[0];
+
+		// If there are multiple cards with the same name, ask the user to choose one.
+		if (cards.length > 1) {
+			const i = parseInt(
+				await game.input(
+					`<yellow>Multiple cards with the name '</yellow>${cardName}<yellow>' found. Which one will you select?</yellow>\n${(await Promise.all(cards.map(async (c, i) => await c.readable(i + 1)))).join("\n")}\n`,
+				),
+				10,
+			);
+
+			if (Number.isNaN(i) || i <= 0 || i > cards.length) {
+				await game.pause("<red>Invalid choice.</red>\n");
+				return false;
+			}
+
+			card = cards[i - 1];
+		}
+
 		if (!card) {
 			await game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
 			return false;

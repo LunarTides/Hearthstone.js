@@ -6,6 +6,7 @@ import {
 	Class,
 	Event,
 	EventListenerMessage,
+	GamePlayCardReturn,
 	Location,
 	QuestType,
 	Rarity,
@@ -33,7 +34,19 @@ describe("src/player", () => {
 		});
 	});
 
-	test.todo("getName", async () => {});
+	test("getName", async () => {
+		expect(game.player1.getName()).toEqual("Player 1");
+		expect(game.player2.getName()).toEqual("Player 2");
+
+		game.player1.id = 1;
+		game.player2.id = 0;
+
+		expect(game.player1.getName()).toEqual("Player 2");
+		expect(game.player2.getName()).toEqual("Player 1");
+
+		game.player1.id = 0;
+		game.player2.id = 1;
+	});
 
 	test("getOpponent", async () => {
 		expect(game.player1.getOpponent()).toEqual(game.player2);
@@ -528,10 +541,33 @@ describe("src/player", () => {
 
 		expect(opponent.health).toBe(opponent.maxHealth - 1);
 		expect(player.mana).toBe(player.emptyMana - player.hero.heropower!.cost);
+
+		// Reset to make future tests work. Kinda ugly, but whatever...
+		player.hasUsedHeroPowerThisTurn = false;
 	});
 
-	test.todo("disableHeroPower", async () => {});
-	test.todo("enableHeroPower", async () => {});
+	test("(disable/enable)HeroPower", async () => {
+		game.player.mana = 10;
+		expect(game.player.canUseHeroPower()).toBeTrue();
+
+		expect(game.player.disableHeroPower(game.player.id)).toBeTrue();
+		expect(game.player.disableHeroPower(game.player.id)).toBeFalse();
+		expect(game.player.canUseHeroPower()).toBeFalse();
+
+		expect(
+			game.player.enableHeroPower(game.player.getOpponent().id),
+		).toBeFalse();
+		expect(
+			game.player.disableHeroPower(game.player.getOpponent().id),
+		).toBeTrue();
+		expect(
+			game.player.enableHeroPower(game.player.getOpponent().id),
+		).toBeTrue();
+		expect(game.player.canUseHeroPower()).toBeFalse();
+
+		expect(game.player.enableHeroPower(game.player.id)).toBeTrue();
+		expect(game.player.canUseHeroPower()).toBeTrue();
+	});
 
 	test("tradeCorpses", async () => {
 		const player = new Player();
@@ -639,7 +675,15 @@ describe("src/player", () => {
 		}
 	});
 
-	test.todo("getPlayedCards", async () => {});
+	test("getPlayedCards", async () => {
+		const sheep = await Card.create(game.cardIds.sheep_1, game.player);
+
+		expect(game.player.getPlayedCards()).not.toContain(sheep);
+		expect(await game.play(sheep, game.player)).toEqual(
+			GamePlayCardReturn.Success,
+		);
+		expect(game.player.getPlayedCards()).toContain(sheep);
+	});
 
 	test("testRunes", async () => {
 		const player = new Player();
@@ -802,7 +846,12 @@ describe("src/player", () => {
 	test.todo("invoke", async () => {});
 	test.todo("recruit", async () => {});
 	test.todo("joust", async () => {});
-	test.todo("summon", async () => {});
-	test.todo("attackTarget", async () => {});
+
+	// This is the same as `game.summon`.
+	// test.todo("summon", async () => {});
+
+	// This is the same as `game.attack`.
+	// test.todo("attackTarget", async () => {});
+
 	test.todo("spawnInDIYCard", async () => {});
 });

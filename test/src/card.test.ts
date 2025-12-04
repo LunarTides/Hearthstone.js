@@ -154,7 +154,16 @@ describe("src/card", () => {
 		expect(card.attackTimes).toBe(1);
 	});
 
-	test.todo("exhaust", async () => {});
+	test("exhaust", async () => {
+		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		expect(card.attackTimes).toBe(0);
+
+		card.ready();
+		expect(card.attackTimes).toBe(1);
+
+		card.exhaust();
+		expect(card.attackTimes).toBe(0);
+	});
 
 	test("setStats", async () => {
 		const card = await Card.create(game.cardIds.sheep_1, game.player);

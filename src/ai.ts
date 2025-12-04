@@ -1121,7 +1121,7 @@ export class AI {
 
 		const attacker = lowestScore[0];
 
-		// TODO: Does this never fail? #277
+		// If an attacker wasn't found, attacking using the player.
 		if (!attacker && this.player.attack > 0 && this.player.canAttack) {
 			return this.player;
 		}

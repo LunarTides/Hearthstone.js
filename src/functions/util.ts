@@ -291,7 +291,10 @@ ${mainContent}
 	},
 
 	/**
-	 * Tries to compile the project
+	 * Tries to compile the project.
+	 *
+	 * ### Broken
+	 * Currently broken as of 04/12/25 (DD/MM/YY).
 	 *
 	 * @returns If the compilation was successful
 	 */

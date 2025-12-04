@@ -1509,6 +1509,9 @@ export class Card {
 	 */
 	async addEnchantment(enchantmentId: number, owner: Card): Promise<boolean> {
 		const enchantment = await Card.create(enchantmentId, owner.owner);
+		if (enchantment.type !== Type.Enchantment) {
+			return false;
+		}
 
 		this.activeEnchantments.push({
 			enchantment: await enchantment.imperfectCopy(),
