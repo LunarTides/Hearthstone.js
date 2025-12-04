@@ -156,40 +156,40 @@ describe("src/functions/util", () => {
 		);
 
 		// Location codes
-		expect(await utilFunctions.parseEvalArgs(["log", "h#c#1.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player1.hand[1 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#ph1.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "h#c#2.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player1.hand[2 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#ch2.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.hand[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "h#o#1.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player2.hand[1 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#oh1.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "d#c#1.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player1.deck[1 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#pd1.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.deck[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "d#o#2.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player2.deck[2 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#od2.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.deck[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "b#c#1.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player1.board[1 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#pb1.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.board[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "b#o#5.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player2.board[5 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#ob5.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.board[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "g#c#1.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player1.graveyard[1 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#pg1.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.player.graveyard[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "g#o#5.name"])).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(game.player2.graveyard[5 - 1].name);\n\tawait game.pause();\n})();",
+		expect(await utilFunctions.parseEvalArgs(["log", "#og5.name"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.graveyard[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		// UUID

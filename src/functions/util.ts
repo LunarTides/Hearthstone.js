@@ -677,40 +677,35 @@ ${mainContent}
 		 * Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
 		 * ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
 		 */
-		const indexBasedRegex = /([hbdg])#([co])#(\d+)/g;
+		const indexBasedRegex = /#([pco])([hbdg])(\d+)/g;
 		for (const match of code.matchAll(indexBasedRegex)) {
-			let [line, where, side, index] = match;
+			const [line, side, where, index] = match;
+
+			let locationString = `game.${["p", "c"].includes(side) ? "player" : "opponent"}.`;
 
 			switch (where) {
 				case "h": {
-					where = "game.player[x].hand";
+					locationString += "hand";
 					break;
 				}
 
 				case "d": {
-					where = "game.player[x].deck";
+					locationString += "deck";
 					break;
 				}
 
 				case "b": {
-					where = "game.player[x].board";
+					locationString += "board";
 					break;
 				}
 
 				case "g": {
-					where = "game.player[x].graveyard";
+					locationString += "graveyard";
 					break;
 				}
 			}
 
-			side =
-				side === "c"
-					? (game.player.id + 1).toString()
-					: (game.opponent.id + 1).toString();
-
-			where = where.replaceAll("[x]", side);
-
-			code = code.replace(line, `${where}[${index} - 1]`);
+			code = code.replace(line, `${locationString}[${index} - 1]`);
 		}
 
 		if (log) {
