@@ -401,13 +401,8 @@ export const commands: CommandList = {
 			}
 
 			if (!(value instanceof Card)) {
-				if (!Array.isArray(value)) {
-					// Stringify it to show '{}' instead of '[object Object]'.
-					return JSON.stringify(value);
-				}
-
-				// Return value as-is if it is not a card / player
-				return value;
+				// Stringify it to show '{}' instead of '[object Object]'.
+				return JSON.stringify(value);
 			}
 
 			// If the card is not hidden, or the card belongs to the current player, show it

@@ -1,3 +1,4 @@
+import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type BlueprintWithOptional,
@@ -124,27 +125,9 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	 * By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
 	 * This path can be overridden by passing `overridePath` in the create function.
 	 */
-	const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
+	const dynamicPath = `Custom/Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
 
 	return staticPath + dynamicPath;
-}
-
-/**
- * Returns the latest ID from the file '/cards/.latestId'.
- *
- * @returns The latest ID.
- */
-export async function getLatestId(): Promise<number> {
-	return game.lodash.parseInt(
-		(await game.functions.util.fs(
-			"readFile",
-			"/cards/.latestId",
-			{},
-			{
-				invalidateCache: true,
-			},
-		)) as string,
-	);
 }
 
 async function getCreateAbility(
@@ -309,7 +292,7 @@ export async function create(
 	blueprint.keywords = undefined;
 
 	// Get the latest card-id
-	const id = (await getLatestId()) + 1;
+	const id = (await Card.latestId()) + 1;
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");

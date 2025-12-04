@@ -467,6 +467,22 @@ export class Card {
 	}
 
 	/**
+	 * @returns The latest id used by a card.
+	 */
+	static async latestId(): Promise<number> {
+		return game.lodash.parseInt(
+			(await game.functions.util.fs(
+				"readFile",
+				"/cards/.latestId",
+				{},
+				{
+					invalidateCache: true,
+				},
+			)) as string,
+		);
+	}
+
+	/**
 	 * Returns the card with the given UUID wherever it is.
 	 *
 	 * @param uuid The UUID to search for. This matches if the card's UUID starts with the given UUID (this).

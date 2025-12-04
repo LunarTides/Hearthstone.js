@@ -7,6 +7,7 @@ import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
+import * as pkgr from "./tools/packager.ts"; // Packager
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -128,7 +129,7 @@ export async function cardCreator() {
  */
 export async function devmode() {
 	await userInputLoop(
-		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <red>Go (B)ack to Normal Mode</red>: ",
+		"<green>Create a (C)ard</green>, <blue>Create a Clas(s)</blue>, <yellow>Start (P)ackager</yellow>, <red>Go (B)ack to Normal Mode</red>: ",
 		"b",
 		async (input) => {
 			const command = input[0].toLowerCase();
@@ -145,6 +146,13 @@ export async function devmode() {
 					game.interest("Starting Class Creator...");
 					await clc.main();
 					game.interest("Starting Class Creator...OK");
+					break;
+				}
+
+				case "p": {
+					game.interest("Starting Packager...");
+					await pkgr.main();
+					game.interest("Starting Packager...OK");
 					break;
 				}
 			}

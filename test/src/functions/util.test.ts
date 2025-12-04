@@ -74,6 +74,7 @@ describe("src/functions/util", () => {
 	test.todo("getCachedLanguageMap", async () => {});
 	test.todo("importLanguageMap", async () => {});
 	test.todo("fs", async () => {});
+	test.todo("searchFolder", async () => {});
 	test.todo("searchCardsFolder", async () => {});
 
 	test("restrictPath", async () => {

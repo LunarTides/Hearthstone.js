@@ -17,6 +17,7 @@ describe("src/card", () => {
 		test.todo("fromID", async () => {});
 		test.todo("all", async () => {});
 		test.todo("allWithTags", async () => {});
+		test.todo("getLatestId", async () => {});
 		test.todo("fromUUID", async () => {});
 		test.todo("registerAll", async () => {});
 		test.todo("reloadAll", async () => {});

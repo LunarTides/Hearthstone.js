@@ -424,15 +424,19 @@ ${mainContent}
 	},
 
 	/**
-	 * Calls `callback` on all cards in the cards folder.
+	 * Reursively calls `callback` on all files / folders in the specified path.
 	 *
-	 * @param path By default, this is the cards folder (not in dist)
-	 * @param extension The extension to look for in cards. By default, this is ".ts"
+	 * @param path The path to search in.
+	 * @param callback The callback to run on the files / folders.
 	 */
-	async searchCardsFolder(
-		callback: (path: string, content: string, file: Dirent<string>) => void,
-		path = "/cards",
-		extension = ".ts",
+	async searchFolder(
+		path: string,
+		callback: (
+			index: number,
+			path: string,
+			file: Dirent<string>,
+			fileContent?: string,
+		) => Promise<void>,
 	): Promise<void> {
 		const actualPath = this.restrictPath(path);
 
@@ -445,25 +449,53 @@ ${mainContent}
 
 		// Use Promise.all to read all the files in parallel
 		await Promise.all(
-			files
-				.filter(
-					(file: Dirent<string>) =>
-						file.isFile() &&
-						file.name.endsWith(extension) &&
-						!file.name.startsWith("ids"),
-				)
-				.map(async (file) => {
-					const fullPath = resolve(actualPath, file.parentPath, file.name);
-					const content = (await this.fs(
+			files.map(async (file, i) => {
+				const fullPath = resolve(actualPath, file.parentPath, file.name);
+				let fileContent: string | undefined;
+
+				if (file.isFile()) {
+					fileContent = (await this.fs(
 						"readFile",
 						fullPath,
 						{},
 						// Don't cache cards here.
 						{ invalidateCache: true },
 					)) as string;
+				}
 
-					return callback(fullPath, content, file);
-				}),
+				return await callback(i, fullPath, file, fileContent);
+			}),
+		);
+	},
+
+	/**
+	 * Calls `callback` on all cards in the cards folder.
+	 *
+	 * @param path By default, this is the cards folder (not in dist)
+	 * @param extension The extension to look for in cards. By default, this is ".ts"
+	 */
+	async searchCardsFolder(
+		callback: (
+			path: string,
+			content: string,
+			file: Dirent<string>,
+			index: number,
+		) => Promise<void>,
+		path = "/cards",
+		extension = ".ts",
+	): Promise<void> {
+		await this.searchFolder(
+			path,
+			async (index, fullPath, file, fileContent) => {
+				if (
+					fileContent &&
+					file.isFile() &&
+					file.name.endsWith(extension) &&
+					!file.name.startsWith("ids")
+				) {
+					return await callback(fullPath, fileContent, file, index);
+				}
+			},
 		);
 	},
 
