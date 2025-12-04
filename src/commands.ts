@@ -596,7 +596,7 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
-		await game.player.addToHand(card);
+		await game.player.addToHand(await card.imperfectCopy());
 		return true;
 	},
 

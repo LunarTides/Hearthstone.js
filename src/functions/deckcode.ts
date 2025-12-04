@@ -384,6 +384,23 @@ export const deckcodeFunctions = {
 		for (const cardObject of cards) {
 			const [card, copies] = cardObject;
 
+			if (
+				copies > game.config.decks.maxOfOneLegendary &&
+				card.rarity === Rarity.Legendary
+			) {
+				error = {
+					msg: "TooManyLegendaryCopies",
+					info: { card, amount: copies },
+					recoverable: true,
+				};
+			} else if (copies > game.config.decks.maxOfOneCard) {
+				error = {
+					msg: "TooManyCopies",
+					info: { card, amount: copies },
+					recoverable: true,
+				};
+			}
+
 			if (copies === lastCopy) {
 				continue;
 			}
@@ -406,23 +423,6 @@ export const deckcodeFunctions = {
 			lastCopy = copies;
 
 			deckcode += last ? copies : `${copies}:${amount},`;
-
-			if (
-				copies > game.config.decks.maxOfOneLegendary &&
-				card.rarity === Rarity.Legendary
-			) {
-				error = {
-					msg: "TooManyLegendaryCopies",
-					info: { card, amount: copies },
-					recoverable: true,
-				};
-			} else if (copies > game.config.decks.maxOfOneCard) {
-				error = {
-					msg: "TooManyCopies",
-					info: { card, amount: copies },
-					recoverable: true,
-				};
-			}
 		}
 
 		deckcode += "/ ";

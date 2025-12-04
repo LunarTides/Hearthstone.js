@@ -359,7 +359,7 @@ export class Card {
 	static REFUND: -1 = -1;
 
 	/**
-	 * Returns all cards with the name `name`.
+	 * Returns all cards with the name `name`. USE `imperfectCopy` OR `perfectCopy` ON THE CARDS.
 	 *
 	 * @param refer If this should call `getCardById` if it doesn't find the card from the name
 	 *
