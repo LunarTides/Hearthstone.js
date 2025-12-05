@@ -12,6 +12,9 @@ const { game } = await createGame();
 
 const metadataVersion = 1;
 
+// This will be set to true after changing a metadata configuration value.
+let dirty = false;
+
 interface Metadata {
 	versions: {
 		metadata: number;
@@ -83,8 +86,8 @@ async function parseMetadataFile(pack: string) {
 	return true;
 }
 
-async function importPackage() {
-	// FIXME: Importing the same package twice breaks ids.
+async function importPack() {
+	// FIXME: Importing the same pack twice breaks ids.
 	while (true) {
 		hub.watermark(false);
 
@@ -118,6 +121,8 @@ async function importPackage() {
 			{
 				message: "Choose a Pack",
 				choices,
+				loop: false,
+				pageSize: 12,
 			},
 			{ clearPromptOnDone: true },
 		);
@@ -126,14 +131,7 @@ async function importPackage() {
 			break;
 		}
 
-		// console.log(packs.map((p, i) => `${i + 1}: ${p}`).join("\n"));
-
 		const index = parseInt(answer, 10);
-		// if (Number.isNaN(index) || index <= 0 || index > packs.length) {
-		// 	await game.pause("Invalid index.");
-		// 	return await importPackage();
-		// }
-
 		const pack = packs[index];
 
 		// Read and validate metadata.
@@ -153,7 +151,7 @@ async function importPackage() {
 				let newContent = content;
 				let fileName = file.name;
 
-				// Only change the id of there isn't an old version of the file already exists (package upgrade).
+				// Only change the id of there isn't an old version of the file already exists (pack upgrade).
 				if (
 					!(await game.functions.util.fs(
 						"exists",
@@ -199,48 +197,129 @@ async function importPackage() {
 	}
 }
 
-async function exportPackage() {
-	const uuid = randomUUID();
+async function exportPack() {
+	while (true) {
+		hub.watermark(false);
+		dirty = false;
 
-	const metadata: Metadata = {
-		versions: {
-			metadata: metadataVersion,
-			game: game.functions.info.version().version,
-			pack: "1.0.0",
-		},
-		name: "",
-		authors: [],
-		links: {},
-		requires: {
-			packs: [],
-			cards: [],
-			classes: [],
-			// Add tribes, etc...
-		},
-	};
+		const packs: string[] = [];
 
-	await configureMetadata(metadata);
+		await game.functions.util.searchFolder(
+			"/packs",
+			async (index, path, file) => {
+				if (!file.parentPath.endsWith("/packs") || !file.isDirectory()) {
+					return;
+				}
 
-	await game.functions.util.fs("mkdir", `/packs/${uuid}`, { recursive: true });
-	await game.functions.util.searchCardsFolder(async (path, content, file) => {
-		if (path.includes("/Custom")) {
-			await game.functions.util.fs(
-				"cp",
-				path,
-				game.functions.util.restrictPath(`/packs/${uuid}/${file.name}`),
-			);
+				packs.push(file.name);
+			},
+		);
+
+		const choices = [];
+		for (const [i, pack] of Object.entries(packs)) {
+			choices.push({
+				name: pack,
+				value: i,
+			});
 		}
-	});
+		choices.push({
+			name: "New",
+			value: "new",
+		});
+		choices.push(new Separator());
+		choices.push({
+			name: "Done",
+			value: "done",
+		});
 
-	await game.functions.util.fs(
-		"writeFile",
-		`/packs/${uuid}/meta.jsonc`,
-		JSON.stringify(metadata, null, 4),
-	);
+		const answer = await select(
+			{
+				message: "Choose a Pack",
+				choices,
+				loop: false,
+				pageSize: 12,
+			},
+			{ clearPromptOnDone: true },
+		);
 
-	await game.pause(
-		`Done.\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the package.\n2. Compress the 'packs/${uuid}' folder.\n3. Send the compressed file to whoever you'd like.\n`,
-	);
+		if (answer === "done") {
+			break;
+		}
+
+		const index = parseInt(answer, 10);
+
+		let uuid: string;
+		let metadata: Metadata;
+
+		if (!Number.isNaN(index)) {
+			const pack = packs[index];
+
+			if (
+				!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))
+			) {
+				game.input(
+					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
+				);
+				continue;
+			}
+
+			uuid = pack;
+			metadata = JSON.parse(
+				(await game.functions.util.fs(
+					"readFile",
+					`/packs/${pack}/meta.jsonc`,
+					"utf8",
+				)) as string,
+			);
+		} else {
+			uuid = randomUUID();
+
+			metadata = {
+				versions: {
+					metadata: metadataVersion,
+					game: game.functions.info.version().version,
+					pack: "1.0.0",
+				},
+				name: "",
+				authors: [],
+				links: {},
+				requires: {
+					packs: [],
+					cards: [],
+					classes: [],
+					// Add tribes, etc...
+				},
+			};
+		}
+
+		// If the configuration was cancelled, don't export the pack.
+		if (!(await configureMetadata(metadata))) {
+			continue;
+		}
+
+		await game.functions.util.fs("mkdir", `/packs/${uuid}`, {
+			recursive: true,
+		});
+		await game.functions.util.searchCardsFolder(async (path, content, file) => {
+			if (path.includes("/Custom")) {
+				await game.functions.util.fs(
+					"cp",
+					path,
+					game.functions.util.restrictPath(`/packs/${uuid}/${file.name}`),
+				);
+			}
+		});
+
+		await game.functions.util.fs(
+			"writeFile",
+			`/packs/${uuid}/meta.jsonc`,
+			JSON.stringify(metadata, null, 4),
+		);
+
+		await game.pause(
+			`Done.\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Compress the 'packs/${uuid}' folder.\n3. Send the compressed file to whoever you'd like.\n`,
+		);
+	}
 }
 
 async function configureMetadataArray(array: string[]) {
@@ -276,6 +355,7 @@ async function configureMetadataArray(array: string[]) {
 				message: "Configure Array",
 				choices,
 				loop: false,
+				pageSize: 12,
 			},
 			{ clearPromptOnDone: true },
 		);
@@ -286,9 +366,11 @@ async function configureMetadataArray(array: string[]) {
 			});
 
 			array.push(value);
+			dirty = true;
 			continue;
 		} else if (answer === "delete") {
 			array.pop();
+			dirty = true;
 			continue;
 		} else if (answer === "done") {
 			break;
@@ -302,6 +384,7 @@ async function configureMetadataArray(array: string[]) {
 		});
 
 		array[index] = newValue;
+		dirty = true;
 	}
 }
 
@@ -343,6 +426,7 @@ async function configureMetadataObject(
 				message: "Configure Object",
 				choices,
 				loop: false,
+				pageSize: 12,
 			},
 			{ clearPromptOnDone: true },
 		);
@@ -363,6 +447,7 @@ async function configureMetadataObject(
 				);
 
 				object[key] = value;
+				dirty = true;
 				continue;
 			} else if (answer === "delete") {
 				const key = await input(
@@ -373,6 +458,7 @@ async function configureMetadataObject(
 				);
 
 				delete object[key];
+				dirty = true;
 				continue;
 			}
 		}
@@ -394,6 +480,7 @@ async function configureMetadataObject(
 		});
 
 		object[key] = newValue;
+		dirty = true;
 	}
 }
 
@@ -435,11 +522,18 @@ async function configureMetadata(metadata: Metadata) {
 					},
 					new Separator(),
 					{
+						name: "Cancel",
+						value: "cancel",
+						description: "Cancel changes to the metadata.",
+					},
+					{
 						name: "Done",
 						value: "done",
 						description: "Done configuring metadata.",
 					},
 				],
+				loop: false,
+				pageSize: 12,
 			},
 			{ clearPromptOnDone: true },
 		);
@@ -450,25 +544,50 @@ async function configureMetadata(metadata: Metadata) {
 				default: metadata.versions.pack,
 				validate: (value) => semver.satisfies(value, ">0.0.0"),
 			});
+
+			dirty = true;
 		} else if (answer === "name") {
 			metadata.name = await input({
 				message: "Set the name of the pack. This must be unique.",
 				default: metadata.name,
 			});
+
+			dirty = true;
 		} else if (answer === "authors") {
 			await configureMetadataArray(metadata.authors);
 		} else if (answer === "links") {
 			await configureMetadataObject(metadata.links);
 		} else if (answer === "requires") {
 			await configureMetadataObject(metadata.requires, false);
-		} else if (answer === "done") {
-			const done = await confirm({
-				message: "Are you sure you are done configuring the metadata?",
-				default: false,
-			});
+		} else if (answer === "cancel") {
+			if (!dirty) {
+				// No changes have been made.
+				return false;
+			}
+
+			const done = await confirm(
+				{
+					message:
+						"Are you sure you want to cancel configuring the metadata? Your changes will be lost.",
+					default: false,
+				},
+				{ clearPromptOnDone: true },
+			);
 
 			if (done) {
-				break;
+				return false;
+			}
+		} else if (answer === "done") {
+			const done = await confirm(
+				{
+					message: "Are you sure you are done configuring the metadata?",
+					default: false,
+				},
+				{ clearPromptOnDone: true },
+			);
+
+			if (done) {
+				return true;
 			}
 		}
 	}
@@ -476,19 +595,19 @@ async function configureMetadata(metadata: Metadata) {
 
 export async function main() {
 	await hub.userInputLoop(
-		"<green>(E)xport a package</green>, <blue>(I)mport a package</blue>, <red>(B)ack</red>: ",
+		"<green>(E)xport a pack</green>, <blue>(I)mport a pack</blue>, <red>(B)ack</red>: ",
 		"b",
 		async (input) => {
 			const command = input[0].toLowerCase();
 
 			if (command === "e") {
-				await exportPackage();
+				await exportPack();
 			} else if (command === "i") {
 				await game.pause(
 					"Extract and drag the folder into '/packs/. Press enter when you're done.",
 				);
 
-				await importPackage();
+				await importPack();
 			}
 		},
 	);
