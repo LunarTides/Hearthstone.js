@@ -61,7 +61,7 @@ export const config: GameConfig = {
 		 *
 		 * Disable this to pick and choose which debug settings to enable.
 		 */
-		all: true,
+		all: false,
 
 		/*
 		 * If debug commands should be enabled.

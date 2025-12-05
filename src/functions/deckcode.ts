@@ -170,7 +170,7 @@ export const deckcodeFunctions = {
 				const card = await Card.create(blueprint.id, player, true);
 
 				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
-					newDeck.push(card.perfectCopy());
+					newDeck.push(card);
 				}
 
 				if (card.deckSettings) {

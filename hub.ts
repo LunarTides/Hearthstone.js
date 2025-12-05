@@ -2,14 +2,11 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  */
 import { Card } from "@Game/card.ts";
-// import { createGame } from "@Game/game.ts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
-
-// const { game } = await createGame();
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
