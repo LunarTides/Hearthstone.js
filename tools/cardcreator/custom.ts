@@ -302,7 +302,7 @@ export async function main({
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
 
-	hub.watermark();
+	hub.watermark(false);
 	console.log("type 'back' at any step to cancel.\n");
 
 	if (overrideCardType) {

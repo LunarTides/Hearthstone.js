@@ -1,53 +1,118 @@
 # Hearthstone.js
 
+<img width="1363" height="596" alt="Game faded from bottom to top" src="https://github.com/user-attachments/assets/12699101-463a-446b-801f-96429be16546" />
+
 Hearthstone.js is a console-based clone of Hearthstone.
 
-### Prerequisites
+## Features
+
+- Most of Hearthstone's features before 2025!
+- Create your own cards. Minimal programming knowledge required!
+- No known limitations to what cards can do!
+- Make your own decks.
+- A great developer experience!
+- A relatively clean codebase which is easy to mod!
+- 50+ configurable settings to change how the game works!
+- An AI you can play against!
+- Import cards directly from Hearthstone!
+- Localization support.
+- ~150 pre-built cards. (26 Collectible.)
+- GPL-3.0 License.
+
+> [!NOTE]
+> Hearthstone.js is a hobby project I'm working on in my free time. I don't
+> always have the time nor energy to work on it. Therefore, I can't guarantee
+> that updates will be released in a reasonable timeframe. Update 2.0 took ~4
+> months to come out, whereas 3.0 has taken >23 months. I work in my own pace,
+> so don't expect constant updates.
+>
+> If you notice any issues, or want to request a new feature, open an
+> [issue](https://github.com/LunarTides/Hearthstone.js/issues). I'll try to
+> respond as soon as I'm able. You're free to open pull requests, but I can't
+> guarantee that they'll be merged.
+
+## Running
+
 You need to have [Bun](https://bun.sh) installed.
 
-### Running
-#### Simple
-If you are on Windows, open `setup.bat`, then `run.bat`.
+- If you are on Windows, open `setup.bat`, then `run.bat`.
+- Otherwise, open a console / terminal, then run `bun install`, and `bun .`
+  (This works on all platforms.)
 
-#### Advanced
-This works on all platforms.
+## Images
 
-In a console / terminal, run `bun install`, then `bun .`
+Here's what you can expect from Hearthstone.js
 
-### Images
+### HUB
 
-#### HUB
-![0_hub](https://github.com/LunarTides/Hearthstone.js/assets/31688109/7db26409-3704-440a-87c2-b769b5750e1d)
+<img width="1363" height="596" alt="Screenshot of the HUB" src="https://github.com/user-attachments/assets/c4a4cab7-e041-4531-89b3-631b81041fc0" />
 
-#### Generic game
-![1_game](https://github.com/LunarTides/Hearthstone.js/assets/31688109/f095cfba-89f9-42b2-aced-c0480b40a87d)
+This is the hub. It connects the different aspects of Hearthstone.js together,
+allowing you to run the seperate tools seamlessly.
 
-#### Help message in-game
-![2_game_help](https://github.com/LunarTides/Hearthstone.js/assets/31688109/1c25a8eb-ddf9-47c6-83f0-b8ba4cf4c292)
+### Generic game
 
-#### Deck creator (dc)
-![3_dc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/cad52df3-0c21-48d0-b0c8-ec86ee559399)
+<img width="1363" height="596" alt="Screenshot of the game" src="https://github.com/user-attachments/assets/2cb2c764-8ca7-46bb-8011-75e0805a3e59" />
 
-#### Deck creator help message
-![4_dc_help](https://github.com/LunarTides/Hearthstone.js/assets/31688109/0e479ddd-2414-45b2-9653-7ab2a6913e6f)
+This is what the main game looks like. It might look different if the settings
+under the `Debug` category are off.
 
-#### Custom card creator (ccc)
-![5_ccc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/d2de5206-3c9c-4693-b164-77b58dadacdd)
+### Help message in-game
 
-#### Vanilla card creator (vcc)
-![6_vcc](https://github.com/LunarTides/Hearthstone.js/assets/31688109/7e8d2a05-b053-4b26-9b98-bf873c947465)
+<img width="1362" height="882" alt="Screenshot of the help message in-game" src="https://github.com/user-attachments/assets/7937dc0f-8ba6-48ba-b95f-b2299a2639d4" />
 
-#### Custom card creator generated code (no manual lines of code written)
-![7_brann_untouched](https://github.com/LunarTides/Hearthstone.js/assets/31688109/088315b0-0d88-4fbe-8c8b-bcd49c0edd19)
+This is what is shown when you run the `help` command. As you can see, there is
+a lot of commands that can be run.
 
-#### Functional code
-![8_brann_finished](https://github.com/LunarTides/Hearthstone.js/assets/31688109/14777e88-7e85-473a-843f-ed586a3b7acb)
+### Deck Creator
 
-#### Debug history (the normal history command shows less info)
-![9_debug_history](https://github.com/LunarTides/Hearthstone.js/assets/31688109/d9c464bf-bc2b-4bc7-b346-efa0a3cc0e41)
+<img width="1362" height="882" alt="Screenshot of the deck creator" src="https://github.com/user-attachments/assets/9347e736-59c5-4c73-8489-dee653efefd9" />
 
-#### Reloading 1/2
-![10_rl_1](https://github.com/LunarTides/Hearthstone.js/assets/31688109/bd8bcaa7-8e92-4692-b4de-8f4c081f13eb)
+This is what the Deck Creator looks like. This is the tool that lets you create
+a deck, and gives you its corresponding deckcode.
 
-#### Reloading 2/2
-![11_rl_2](https://github.com/LunarTides/Hearthstone.js/assets/31688109/9127347b-e466-436d-967e-4fd99a79555a)
+### Deck Creator help message
+
+<img width="1363" height="1212" alt="Screenshot of the deck creator's help message" src="https://github.com/user-attachments/assets/e5f27ede-83ac-413f-845b-cea8a514d2ab" />
+
+This is what is shown when you run the `help` command in the deck creator. There
+is a lot...
+
+### Custom Card Creator
+
+<img width="1363" height="561" alt="Custom card creator demo" src="https://github.com/user-attachments/assets/72b15ea3-846c-4966-975a-52442a1449e4" />
+
+This is the custom card creator. It allows you to create custom cards. Not much
+else to be said. See the
+[Wiki](https://github.com/LunarTides/Hearthstone.js/wiki/Adding-Cards) for more
+information.
+
+### Vanilla Card Creator
+
+<img width="1365" height="600" alt="Vanilla card creator demo" src="https://github.com/user-attachments/assets/d4e82baf-9662-4064-9201-1448546ac956" />
+
+This is the vanilla card creator. If set up right, it will allow you to import
+_any_ card from Hearthstone, just by typing in its name.
+
+### Vanilla Card Creator generated code (No manual lines of code written)
+
+<img width="600" height="971" alt="Screenshot of the code generated by the vanilla card creator" src="https://github.com/user-attachments/assets/6325a872-f5bc-4cfd-a817-aa136c92a85e" />
+
+This is the code generated by typing in `Brann Bronzebeard` into the vanilla
+card creator. The custom card creator will generate identical code.
+
+### Functional code
+
+<img width="600" height="971" alt="Screenshot of the fixed generated code" src="https://github.com/user-attachments/assets/8a7133b5-255c-4de4-8e01-3eceaec39866" />
+
+This is the same code, but cleaned up. I changed the event from `ChangeMe` to
+`PlayCard`, and added `value.trigger(Ability.Battlecry)`. This makes brann
+bronzebeard work properly.
+
+### Debug history (The normal history command shows less info)
+
+<img width="1363" height="1212" alt="Screenshot of the /history command output" src="https://github.com/user-attachments/assets/dee4065b-37e4-4435-b2a9-e6639628be0b" />
+
+This is the result of running `/history` when debug commands are enabled. It
+shows a log of what has happened since the game started. This is just for
+demonstrating how big Hearthstone.js is.
