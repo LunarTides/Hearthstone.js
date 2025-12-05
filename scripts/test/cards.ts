@@ -17,6 +17,10 @@ function calculatePercentage(x: number, subtract = 0) {
 }
 
 export async function main(): Promise<void> {
+	// Do this, otherwise `game` isn't recognized.
+	const hub = await import("../../hub.ts");
+	hub.watermark(false);
+
 	let passed = 0;
 	let fails = 0;
 	let todos = 0;

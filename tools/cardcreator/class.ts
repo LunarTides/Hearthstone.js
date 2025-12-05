@@ -1,4 +1,5 @@
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
+import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
 /**
@@ -10,8 +11,7 @@ export async function main(
 	overrideType?: lib.CCType,
 ): Promise<void> {
 	const watermark = () => {
-		game.functions.interact.cls();
-		console.log("Hearthstone.js Class Creator (C) 2022\n");
+		hub.watermark(false);
 		console.log("type 'back' at any step to cancel.\n");
 	};
 

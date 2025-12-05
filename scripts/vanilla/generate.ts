@@ -41,6 +41,12 @@ function fetchData(url: string): Promise<any> {
  * @returns Promise that resolves to void.
  */
 async function main(): Promise<void> {
+	// Do this, otherwise `game` isn't recognized.
+	const hub = await import("../../hub.ts");
+	hub.watermark(false);
+
+	console.log("Querying API...");
+
 	await fetchData(API_URL).then(async (r) => {
 		let data = r as VanillaCard[];
 		const oldLength = data.length;

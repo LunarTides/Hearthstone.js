@@ -8,6 +8,7 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
+import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
 /**
@@ -175,12 +176,14 @@ export async function main(
 	debug = false,
 	overrideType?: lib.CCType,
 ): Promise<boolean> {
-	console.log("Hearthstone.js Vanilla Card Creator (C) 2022\n");
+	hub.watermark(false);
 
 	const vanillaCards = await game.functions.card.vanilla.getAll();
 
 	let running = true;
 	while (running) {
+		hub.watermark(false);
+
 		const cardName = await game.input("Name / dbfId (Type 'back' to cancel): ");
 		if (game.functions.interact.isInputExit(cardName)) {
 			running = false;

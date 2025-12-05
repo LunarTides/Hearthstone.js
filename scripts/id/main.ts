@@ -1,3 +1,4 @@
+import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
 // Check if your git is clean
@@ -30,6 +31,8 @@ enum Commands {
 let running = true;
 
 while (running) {
+	hub.watermark(false);
+
 	let func = (
 		await game.input(
 			"What do you want to do? ([i]ncrement, [d]ecrement, [v]alidate, [q]uit): ",
@@ -92,4 +95,10 @@ while (running) {
 	}
 
 	console.log("Done.\n");
+
+	if (running) {
+		await game.pause();
+	}
 }
+
+process.exit();

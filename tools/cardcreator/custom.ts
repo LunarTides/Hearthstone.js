@@ -10,6 +10,7 @@ import {
 	Tribe,
 	Type,
 } from "@Game/types.ts";
+import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
 const player1 = game.player1;
@@ -301,7 +302,7 @@ export async function main({
 	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
 	shouldExit = false;
 
-	console.log("Hearthstone.js Custom Card Creator (C) 2022\n");
+	hub.watermark();
 	console.log("type 'back' at any step to cancel.\n");
 
 	if (overrideCardType) {

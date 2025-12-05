@@ -9,6 +9,7 @@ import {
 } from "@Game/types.ts";
 import util from "node:util";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+import * as hub from "../hub.ts";
 
 enum ViewType {
 	Cards = "Cards",
@@ -82,18 +83,10 @@ const settings = {
 const defaultSettings = game.lodash.cloneDeep(settings);
 
 /**
- * Shows the watermark for the Deck Creator
- */
-function watermark(): void {
-	game.functions.interact.cls();
-	console.log("Hearthstone.js Deck Creator (C) 2022\n");
-}
-
-/**
  * Asks the user which class to choose, and returns it.
  */
 async function askClass(): Promise<Class> {
-	watermark();
+	hub.watermark(false);
 
 	const heroClassString = await game.input(
 		`What class do you want to choose?\n${classes.join(", ")}\n`,
@@ -125,7 +118,7 @@ async function askClass(): Promise<Class> {
 		runes = [];
 
 		while (runes.length < 3) {
-			watermark();
+			hub.watermark(false);
 
 			const runeChar = await game.inputTranslate(
 				`What runes do you want to add (%s more)\n${Object.values(Rune).join(", ")}\n`,
@@ -352,7 +345,7 @@ function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
  */
 async function showCards(): Promise<void> {
 	filteredCards = [];
-	watermark();
+	hub.watermark(false);
 
 	// If the user chose to view an invalid class, reset the viewed class to default.
 	const correctClass = game.functions.card.validateClasses(
@@ -637,7 +630,7 @@ function remove(card: Card): boolean {
  * Shows the cards that are in the users deck. This is a replacement for `showCards`.
  */
 async function showDeck(): Promise<void> {
-	watermark();
+	hub.watermark(false);
 
 	console.log("Deck Size: <yellow>%s</yellow>\n", deck.length);
 
@@ -752,7 +745,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
  * Show the help message. To be used by the "help" command.
  */
 async function help(): Promise<void> {
-	watermark();
+	hub.watermark(false);
 
 	// Commands
 	console.log("<b>Available commands:</b>");
@@ -1049,7 +1042,7 @@ const commands: CommandList = {
 		return true;
 	},
 	async config(): Promise<boolean> {
-		watermark();
+		hub.watermark(false);
 		showRules();
 		await game.pause("\nPress enter to continue...\n");
 

@@ -16,6 +16,10 @@ games = Number.isNaN(games) ? 10 : games;
  * Executes the main function for the program.
  */
 async function main(): Promise<void> {
+	// Do this, otherwise `game` isn't recognized.
+	const hub = await import("../../hub.ts");
+	hub.watermark(false);
+
 	console.warn("Looking for crashes... This might take a while...");
 	if (!gamesEnv) {
 		console.warn(
@@ -24,7 +28,7 @@ async function main(): Promise<void> {
 	}
 
 	console.warn(
-		"NOTE: If you see no progress being made for an extended period of time, chances are that the game got stuck in an infinite loop.",
+		"NOTE: If you see no progress being made for an extended period of time, chances are that the game got stuck in an infinite loop.\n",
 	);
 
 	for (let index = 0; index < games; index++) {
