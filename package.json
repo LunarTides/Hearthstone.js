@@ -1,6 +1,6 @@
 {
 	"name": "hearthstone.js",
-	"version": "3.0.0-stable.0",
+	"version": "4.0.0-beta.0",
 	"description": "A console-based recreation of Hearthstone made in NodeJS",
 	"exports": "./index.ts",
 	"main": "./index.ts",
