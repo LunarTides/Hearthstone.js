@@ -225,7 +225,7 @@ const prompt = {
 	 * @returns `true` if Yes / `false` if No
 	 */
 	async yesNo(prompt: string, player?: Player): Promise<boolean> {
-		const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
+		const ask = `\n${prompt} (<bright:green>Y</bright:green>/<red>N</red>) `;
 
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
