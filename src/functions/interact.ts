@@ -15,13 +15,24 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import readline from "node:readline/promises";
 import { format } from "node:util";
+import { createPrompt, useKeypress, useState } from "@inquirer/core";
 import { parseTags } from "chalk-tags";
 
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
+// Make a custom `input` implementation.
+// This is to remove that stupid padding that comes with the standard implementation.
+const readInput = createPrompt((config: { message: string }, done) => {
+	const [value, setValue] = useState("");
+
+	useKeypress((key, readline) => {
+		if (key.name === "return" || key.name === "enter") {
+			done(value);
+		} else {
+			setValue(readline.line);
+		}
+	});
+
+	return `${config.message}${value}`;
 });
 
 const overrideConsole = {
@@ -43,8 +54,11 @@ console.error = (...data) => {
 };
 
 // Exit on ctrl+c
-rl.on("SIGINT", () => {
-	process.exit();
+process.on("uncaughtException", (error) => {
+	if (error instanceof Error && error.name === "ExitPromptError") {
+	} else {
+		throw error;
+	}
 });
 
 let seenFunFacts: string[] = [];
@@ -1275,7 +1289,7 @@ export const interactFunctions = {
 
 			// Invalid queue
 			if (!Array.isArray(queue)) {
-				return wrapper(await rl.question(question));
+				return wrapper((await readInput({ message: question })) as string);
 			}
 
 			const answer = queue[0];
@@ -1288,7 +1302,7 @@ export const interactFunctions = {
 			return wrapper(answer);
 		}
 
-		return wrapper(await rl.question(question));
+		return wrapper((await readInput({ message: question })) as string);
 	},
 
 	/**
