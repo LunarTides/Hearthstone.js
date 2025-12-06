@@ -49,6 +49,10 @@ export const actions = {
 		await fs.writeFile(tmpPackPath, bytes);
 
 		const files = await seven.list(tmpPackPath);
+		// TODO: Move to settings.
+		if (files.length > 5000) {
+			error(413, { message: "Too many files in archive." });
+		}
 
 		const uncompressedSize = files.map((f) => parseInt(f.size, 10)).reduce((p, c) => p + c, 0);
 		// TODO: Move to settings.
@@ -69,6 +73,7 @@ export const actions = {
 				error(400, { message: "Archive invalid." });
 			}
 
+			// Allow directories.
 			if (!allowedExtensions.some((ext) => file.name.endsWith(ext)) && /\../.test(file.name)) {
 				error(400, { message: "Archive contains illegal file types." });
 			}
@@ -82,15 +87,16 @@ export const actions = {
 			error(400, { message: "'meta.jsonc' not found." });
 		}
 
-		await seven.unpack(tmpPackPath, tmpDirPath);
+		// TODO: This could maybe create symlinks, which would be bad?
+		// TODO: Guard against zip bombs. `ulimit -f`
+		// await seven.unpack(tmpPackPath, tmpDirPath);
+		await seven.cmd(["x", "-snl", "-y", tmpPackPath, "-o" + tmpDirPath]);
 
 		const folderName = file.name.split(".").slice(0, -1).join(".");
-		// if (!await fs.exists(resolve(tmpDirPath, folderName))) {
-		// 	error(400, { message: "Archive invalid." });
-		// }
+		const packPath = resolve(tmpDirPath, folderName);
 
 		try {
-			const folderStats = await fs.stat(resolve(tmpDirPath, folderName));
+			const folderStats = await fs.stat(packPath);
 			if (!folderStats.isDirectory()) {
 				console.log(2);
 				error(400, { message: "Archive invalid." });
@@ -106,12 +112,9 @@ export const actions = {
 		// TODO: Parse meta file.
 
 		const finalPath = `./static/assets/held/packs/${file.name.split(".").slice(0, -1).join(".")}`;
-		// if (!await fs.exists(finalPath)) {
-		// 	await fs.mkdir(finalPath, { recursive: true });
-		// }
 
-		await seven.unpack(tmpPackPath, finalPath);
-		await fs.rm(tmpPackPath, { recursive: true, force: true });
+		await fs.cp(packPath, finalPath, { recursive: true });
+		await fs.rm(packPath, { recursive: true, force: true });
 
 		// TODO: Copy metadata to metadatas folder.
 	},
