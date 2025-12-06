@@ -61,7 +61,10 @@ async function customSelect(
 	message: string,
 	array: string[],
 	arrayTransform:
-		| ((i: number, element: string) => Promise<{ name: string; value: string }>)
+		| ((
+				i: number,
+				element: string,
+		  ) => Promise<{ name: string; value: string; disabled?: boolean }>)
 		| undefined,
 	...otherChoices: (Separator | string | false)[]
 ) {
@@ -205,9 +208,22 @@ async function importPack() {
 					)) as string,
 				);
 
+				let updateText = "";
+				let disabled = false;
+
+				if (o) {
+					if (o.version === metadata.versions.pack) {
+						updateText = ` (Already imported)`;
+						disabled = true;
+					} else {
+						updateText = ` (Update ${o.version} -> ${metadata.versions.pack})`;
+					}
+				}
+
 				return {
-					name: `${pack}${o ? ` (Update ${o.version} -> ${metadata.versions.pack})` : ""}`,
+					name: `${pack}${updateText}`,
 					value: i.toString(),
+					disabled,
 				};
 			},
 			new Separator(),
