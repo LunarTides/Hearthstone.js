@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 72,
+	id: "076a8b11-5f36-4cfa-96f4-70fe117ea6e5",
 
 	attack: 1,
 	health: 2,
@@ -24,7 +24,10 @@ export const blueprint: Blueprint = {
 
 		for (let i = 0; i < 2; i++) {
 			// Create the sheep
-			const sheep = await Card.create(game.cardIds.sheep_1, owner);
+			const sheep = await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				owner,
+			);
 
 			// Summon the sheep
 			await owner.summon(sheep);

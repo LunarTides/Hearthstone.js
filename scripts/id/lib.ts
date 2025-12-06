@@ -6,161 +6,41 @@ import { createGame } from "@Game/game.ts";
 
 const { game } = await createGame();
 
-const idRegex = /id: (\d+)/;
+const idRegex = /id: "([0-9a-f-]+)"/;
 
 /**
- * Searches for cards and calls the callback function for each card found.
+ * Check for duplicates in the ids.
  *
- * @param callback The callback function to be called for each card found.
- *                 It takes three parameters:
- *                 - path: the path of the card file
- *                 - content: the content of the card file
- *                 - id: the ID of the card
- */
-async function searchCards(
-	callback: (path: string, content: string, id: number) => void,
-): Promise<void> {
-	await game.functions.util.searchCardsFolder((fullPath, content) => {
-		const idMatch = idRegex.exec(content);
-		if (!idMatch) {
-			console.error(`No id found in ${fullPath}`);
-			return;
-		}
-
-		const id = Number(idMatch[1]);
-		callback(fullPath, content, id);
-	});
-}
-
-/**
- * Change the ids of cards starting from a given id and apply a callback function to each id.
+ * @param logFailure If it should log when it encounters a duplicate. This should probably be `true` when using this as a library.
+ * @param logSuccess If it should log when it doesn't encounter a duplicate. This should probably be `false` when using this as a library.
  *
- * @param startId The id to start the changes from.
- * @param callback The callback function to apply to each id.
- * @param log Indicates whether to log the changes or not.
- *
- * @returns The number of cards that were updated.
- */
-async function change(
-	startId: number,
-	callback: (id: number) => number,
-	log: boolean,
-): Promise<number> {
-	let updated = 0;
-
-	await searchCards(async (path, content, id) => {
-		if (id < startId) {
-			if (log) {
-				console.log("<bright:yellow>Skipping %s</bright:yellow>", path);
-			}
-
-			return;
-		}
-
-		const newId = callback(id);
-
-		// Set the new id
-		await game.functions.util.fs(
-			"writeFile",
-			path,
-			content.replace(idRegex, `id: ${newId}`),
-		);
-
-		if (log) {
-			console.log("<bright:green>Updated %s</bright:green>", path);
-		}
-
-		updated++;
-	});
-
-	if (updated > 0) {
-		const latestId = Number(
-			await game.functions.util.fs("readFile", "/cards/.latestId"),
-		);
-		const newLatestId = callback(latestId);
-
-		await game.functions.util.fs(
-			"writeFile",
-			"/cards/.latestId",
-			newLatestId.toString(),
-		);
-	}
-
-	if (log) {
-		if (updated > 0) {
-			console.log("<bright:green>Updated %s cards.</bright:green>", updated);
-		} else {
-			console.log("<yellow>No cards were updated.</yellow>");
-		}
-	}
-
-	return updated;
-}
-
-/**
- * Decrement the ids of all cards from a starting id.
- * If the starting id is 50, it will decrement the ids of all cards with an id of 50 or more.
- * This is useful if you delete a card, and want to decrement the ids of the remaining cards to match.
- *
- * @param startId The starting id
- * @param log If it should log what it's doing. This should probably be false when using this as a library.
- *
- * @returns The number of cards that were updated
- */
-export async function decrement(
-	startId: number,
-	log: boolean,
-): Promise<number> {
-	return await change(startId, (id) => id - 1, log);
-}
-
-/**
- * Increment the ids of all cards from a starting id.
- * If the starting id is 50, it will increment the ids of all cards with an id of 50 or more.
- * This is useful if you add a card between two ids, and want to increment the ids of the remaining cards to match.
- *
- * @param startId The starting id
- * @param log If it should log what it's doing. This should probably be false when using this as a library.
- *
- * @returns The number of cards that were updated
- */
-export async function increment(
-	startId: number,
-	log: boolean,
-): Promise<number> {
-	return await change(startId, (id) => id + 1, log);
-}
-
-/**
- * Check for holes and duplicates in the ids.
- *
- * If there is a card with an id of 58 and a card with an id of 60, but no card with an id of 59, that is a hole.
- * If there are more than 1 card with an id of 60, that is a duplicate.
- *
- * @param logFailure If it should log when it encounters a problem. This should probably be `true` when using this as a library.
- * @param logSuccess If it should log when it doesn't encounter a problem. This should probably be `false` when using this as a library.
- *
- * @returns Amount of holes, and amount of duplicates
+ * @returns Amount of duplicates
  */
 export async function validate(
 	logFailure: boolean,
 	logSuccess: boolean,
-): Promise<[number, number]> {
-	const ids: [[number, string]] = [[-1, ""]];
+): Promise<number> {
+	const ids: [[string, string]] = [["", ""]];
 
-	await searchCards((path, content, id) => {
+	await game.functions.util.searchCardsFolder(async (path, content) => {
+		const idMatch = idRegex.exec(content);
+		if (!idMatch) {
+			console.error(`No id found in ${path}`);
+			return;
+		}
+
+		const id = idMatch[1];
 		ids.push([id, path]);
 	});
 
-	ids.sort((a, b) => a[0] - b[0]);
+	ids.sort((a, b) => a[0].toString().localeCompare(b[0].toString()));
 
-	// Check if there are any holes / duplicates.
-	let currentId = 0;
-	let holes = 0;
+	// Check if there are any duplicates.
+	let currentId = "";
 	let duplicates = 0;
 
 	for (const [id, path] of ids) {
-		if (id === -1) {
+		if (id === "") {
 			continue;
 		}
 
@@ -172,65 +52,22 @@ export async function validate(
 			}
 
 			duplicates++;
-		} else if (id !== currentId + 1) {
-			if (logFailure) {
-				console.error(
-					`<bright:yellow>Hole in ${path}. Previous id: ${currentId}. Got id: ${id}. <green>Suggestion: Change card with id ${id} to ${id - 1}</green bright:yellow>`,
-				);
-			}
-
-			holes++;
 		}
 
 		currentId = id;
 	}
 
-	// Check if the .latestId is valid
-	const latestId = game.lodash.parseInt(
-		(
-			(await game.functions.util.fs("readFile", "/cards/.latestId")) as string
-		).trim(),
-	);
-
-	if (latestId !== currentId) {
-		if (logFailure) {
-			console.log(
-				"<yellow>Latest id is invalid. Latest id found: %s, latest id in file: %s. Fixing...</yellow>",
-				currentId,
-				latestId,
-			);
-		}
-
-		await game.functions.util.fs(
-			"writeFile",
-			"/cards/.latestId",
-			currentId.toString(),
-		);
-	}
-
 	if (logFailure) {
-		if (holes > 0) {
-			console.log("<yellow>Found %s hole(s).</yellow>", holes);
-		}
-
 		if (duplicates > 0) {
 			console.log("<yellow>Found %s duplicate(s).</yellow>", duplicates);
 		}
 	}
 
 	if (logSuccess) {
-		if (holes <= 0) {
-			console.log("<bright:green>No holes found.</bright:green>");
-		}
-
 		if (duplicates <= 0) {
 			console.log("<bright:green>No duplicates found.</bright:green>");
 		}
-
-		if (latestId === currentId) {
-			console.log("<bright:green>Latest id up-to-date.</bright:green>");
-		}
 	}
 
-	return [holes, duplicates];
+	return duplicates;
 }

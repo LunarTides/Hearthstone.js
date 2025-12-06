@@ -61,7 +61,7 @@ describe("src/functions/card", () => {
 			rarity: Rarity.Free,
 			collectible: false,
 			tags: [],
-			id: 1,
+			id: game.cardIds.null,
 		};
 
 		const reset = (type: Type) => {
@@ -74,7 +74,7 @@ describe("src/functions/card", () => {
 				rarity: Rarity.Free,
 				collectible: false,
 				tags: [],
-				id: 1,
+				id: game.cardIds.null,
 			};
 		};
 
@@ -142,7 +142,7 @@ describe("src/functions/card", () => {
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'heropowerId' DOES NOT</bold> exist for that card.",
 		);
-		card.heropowerId = 1;
+		card.heropowerId = game.cardIds.null;
 
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'armor' DOES NOT</bold> exist for that card.",

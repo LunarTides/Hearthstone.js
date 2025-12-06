@@ -17,6 +17,7 @@ describe("src/card", () => {
 		test.todo("fromID", async () => {});
 		test.todo("all", async () => {});
 		test.todo("allWithTags", async () => {});
+		test.todo("latestId", async () => {});
 		test.todo("fromUUID", async () => {});
 		test.todo("registerAll", async () => {});
 		test.todo("reloadAll", async () => {});
@@ -28,7 +29,10 @@ describe("src/card", () => {
 	test.todo("addAbility", async () => {});
 
 	test("hasKeyword", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(false);
 
 		card.addKeyword(Keyword.Dormant);
@@ -36,7 +40,10 @@ describe("src/card", () => {
 	});
 
 	test("addKeyword", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.addKeyword(Keyword.Dormant)).toBe(true);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
 
@@ -64,7 +71,10 @@ describe("src/card", () => {
 	});
 
 	test("removeKeyword", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		card.addKeyword(Keyword.Dormant);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(true);
 
@@ -73,7 +83,10 @@ describe("src/card", () => {
 	});
 
 	test("getKeyword", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
 
 		card.addKeyword(Keyword.Dormant);
@@ -84,7 +97,10 @@ describe("src/card", () => {
 	});
 
 	test("setKeyword", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
 
 		card.addKeyword(Keyword.Dormant);
@@ -95,7 +111,10 @@ describe("src/card", () => {
 	});
 
 	test("freeze", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.hasKeyword(Keyword.Frozen)).toBe(false);
 
 		await card.freeze();
@@ -103,7 +122,10 @@ describe("src/card", () => {
 	});
 
 	test("decrementAttackTimes", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attackTimes).toBe(0);
 		card.ready();
 		expect(card.attackTimes).toBe(1);
@@ -125,7 +147,10 @@ describe("src/card", () => {
 	});
 
 	test("ready", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attackTimes).toBe(0);
 
 		card.ready();
@@ -155,7 +180,10 @@ describe("src/card", () => {
 	});
 
 	test("exhaust", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attackTimes).toBe(0);
 
 		card.ready();
@@ -166,7 +194,10 @@ describe("src/card", () => {
 	});
 
 	test("setStats", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attack).toBe(1);
 		expect(card.health).toBe(1);
 
@@ -182,7 +213,10 @@ describe("src/card", () => {
 	});
 
 	test("addStats", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attack).toBe(1);
 		expect(card.health).toBe(1);
 
@@ -193,7 +227,10 @@ describe("src/card", () => {
 	});
 
 	test("removeStats", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.attack).toBe(1);
 		expect(card.health).toBe(1);
 		expect(card.maxHealth).toBe(1);
@@ -205,7 +242,10 @@ describe("src/card", () => {
 	});
 
 	test("addHealth", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.health).toBe(1);
 		await card.addHealth(2);
 		expect(card.health).toBe(1);
@@ -217,7 +257,10 @@ describe("src/card", () => {
 	});
 
 	test("removeHealth", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.health).toBe(1);
 
 		expect(await card.removeHealth(1)).toBe(true);
@@ -249,7 +292,10 @@ describe("src/card", () => {
 		card.removeKeyword(Keyword.Immune);
 
 		// Make sure it DOESN'T destroy the weapon.
-		const weapon = await Card.create(game.cardIds.wickedKnife_22, game.player);
+		const weapon = await Card.create(
+			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+			game.player,
+		);
 		await game.player.setWeapon(weapon);
 		expect(game.player.weapon).not.toBeUndefined();
 		expect(await weapon.removeHealth(9999)).toBe(true);
@@ -259,7 +305,10 @@ describe("src/card", () => {
 	test.todo("confirmAliveness", async () => {});
 
 	test("damage", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.health).toBe(1);
 
 		expect(await card.damage(1)).toBe(true);
@@ -292,7 +341,10 @@ describe("src/card", () => {
 		card.removeKeyword(Keyword.Immune);
 
 		// Check if it actually destroys the weapon.
-		const weapon = await Card.create(game.cardIds.wickedKnife_22, game.player);
+		const weapon = await Card.create(
+			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+			game.player,
+		);
 		await game.player.setWeapon(weapon);
 		expect(game.player.weapon).not.toBeUndefined();
 		expect(await weapon.damage(9999)).toBe(true);
@@ -300,7 +352,10 @@ describe("src/card", () => {
 	});
 
 	test("resetMaxHealth", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.maxHealth).toBe(1);
 
 		card.health = 3;
@@ -309,7 +364,10 @@ describe("src/card", () => {
 	});
 
 	test("setStealthDuration", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.stealthDuration).toBe(0);
 
 		game.turn = 3;
@@ -319,7 +377,10 @@ describe("src/card", () => {
 	});
 
 	test("setLocation", async () => {
-		const card = await Card.create(game.cardIds.sheep_1, game.player);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		expect(card.location).toBe(Location.None);
 
 		await card.setLocation(Location.Board);

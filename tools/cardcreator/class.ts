@@ -57,11 +57,11 @@ export async function main(
 		collectible: false,
 		tags: [Tag.StartingHero],
 		// This will be overwritten by the library
-		id: 0,
+		id: game.cardIds.null,
 
 		armor: 0,
-		// We do +2 since the hero card will be created first (+1), then the heropower (+1)
-		heropowerId: (await lib.getLatestId()) + 2,
+		// TODO: Get heropower id.
+		heropowerId: game.cardIds.null,
 	};
 
 	const heropowerBlueprint: Blueprint = {
@@ -74,7 +74,7 @@ export async function main(
 		collectible: false,
 		tags: [],
 		// This will be overwritten by the library
-		id: 0,
+		id: game.cardIds.null,
 	};
 
 	let cctype: lib.CCType = lib.CCType.Class;
@@ -106,9 +106,9 @@ export async function main(
 	);
 
 	console.log(
-		"2. Open 'cards/StartingHeroes/%s/%s-heropower.ts' and add logic to the 'cast' function.",
+		// TODO: Use heropower id.
+		"2. Open 'cards/StartingHeroes/%s/?-heropower.ts' and add logic to the 'cast' function.",
 		game.lodash.startCase(className),
-		await lib.getLatestId(),
 	);
 
 	console.log(

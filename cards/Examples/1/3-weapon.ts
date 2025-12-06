@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 31,
+	id: "07560f16-bd3d-4f2c-9096-98dc47a4226c",
 
 	// Weapons have attack / health, but no tribe.
 	attack: 5,

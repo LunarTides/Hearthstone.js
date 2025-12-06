@@ -659,7 +659,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.deck.length, 30);
 	 *
-	 * const card = game.createCard(game.cardIds.sheep_1, player);
+	 * const card = game.createCard(game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c, player);
 	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
@@ -1102,7 +1102,10 @@ export class Player {
 
 		for (const card of this.hand) {
 			// The Coin card shouldn't be mulligan'd
-			if (!mulligan.includes(card) || card.id === 2) {
+			if (
+				!mulligan.includes(card) ||
+				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+			) {
 				continue;
 			}
 
@@ -1137,7 +1140,10 @@ export class Player {
 		const count = this.jadeCounter;
 		const cost = count < 10 ? count : 10;
 
-		const jade = await Card.create(game.cardIds.jadeGolem_85, this);
+		const jade = await Card.create(
+			game.cardIds.jadeGolem_cf300193_f06d_4a16_ae3d_0c3b03781b20,
+			this,
+		);
 		await jade.setStats(count, count);
 		jade.cost = cost;
 
@@ -1216,7 +1222,7 @@ export class Player {
 		key: E,
 		amount: number,
 		callback: QuestCallback<E>,
-		next?: number,
+		next?: string,
 	): Promise<boolean> {
 		if (
 			(type === QuestType.Quest && this.quests.length > 0) ||

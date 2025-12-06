@@ -55,6 +55,10 @@ export async function main(): Promise<void> {
 			);
 		}
 
+		if (error.name === "ExitPromptError") {
+			process.exit();
+		}
+
 		game.interest("Starting game loop...OK");
 		game.interest("Crash at game loop.");
 		game.interest("Creating log file...");

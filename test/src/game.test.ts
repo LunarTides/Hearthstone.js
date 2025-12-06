@@ -34,7 +34,10 @@ describe("src/game", () => {
 		// - Cost
 		// - Space
 
-		const sheep = await Card.create(game.cardIds.sheep_1, game.player);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.player,
+		);
 		const play = async (player = game.player) => {
 			const card = await sheep.imperfectCopy();
 			await player.addToHand(card);

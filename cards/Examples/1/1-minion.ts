@@ -47,7 +47,7 @@ export const blueprint: Blueprint = {
 	 * The ID of the card. This is used in deckcodes, and should be unique per blueprint. This gets generated automatically by the card creator.
 	 * If you have debug mode enabled, you can type `/give (id)` to give yourself the card with that id.
 	 */
-	id: 29,
+	id: "5d527ba6-5e65-4938-b866-bf412dee8dc1",
 
 	/*
 	 * After the id property, all properties below (except for abilities) are type-specific

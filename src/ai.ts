@@ -601,7 +601,9 @@ export class AI {
 		let scores = "(";
 
 		for (const card of this.player.hand) {
-			if (card.uuid === "The Coin") {
+			if (
+				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+			) {
 				continue;
 			}
 

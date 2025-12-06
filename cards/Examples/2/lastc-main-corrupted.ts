@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 49,
+	id: "6bc4d4f5-e2fa-4a92-9417-368e1b2fe47d",
 
 	attack: 9,
 	health: 9,
@@ -27,9 +27,9 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_46,
-			game.cardIds.null_0,
-			game.cardIds.rightArm_47,
+			game.cardIds.leftArm_65ff5692_391d_42d0_861d_ef08f156e566,
+			game.cardIds.null,
+			game.cardIds.rightArm_233440a8_4966_4a88_94b0_b964a52ebf30,
 		]);
 
 		self.addKeyword(Keyword.Dormant, 2);

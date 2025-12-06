@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 36,
+	id: "6afe94ae-588d-4ec0-b1bf-77dc6f1a5277",
 
 	// This is the amount of times you can trigger the location card before it breaks.
 	durability: 3,

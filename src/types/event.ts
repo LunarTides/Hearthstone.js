@@ -74,7 +74,7 @@ export type QuestObject<E extends Event> = {
 	key: E;
 	value: number;
 	callback: QuestCallback<E>;
-	next?: number;
+	next?: string;
 };
 
 /**

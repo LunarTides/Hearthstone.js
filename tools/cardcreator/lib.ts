@@ -4,6 +4,7 @@ import {
 	EnchantmentPriority,
 	Type,
 } from "@Game/types.ts";
+import { randomUUID } from "node:crypto";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
@@ -124,27 +125,9 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	 * By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
 	 * This path can be overridden by passing `overridePath` in the create function.
 	 */
-	const dynamicPath = `Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
+	const dynamicPath = `Custom/Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
 
 	return staticPath + dynamicPath;
-}
-
-/**
- * Returns the latest ID from the file '/cards/.latestId'.
- *
- * @returns The latest ID.
- */
-export async function getLatestId(): Promise<number> {
-	return game.lodash.parseInt(
-		(await game.functions.util.fs(
-			"readFile",
-			"/cards/.latestId",
-			{},
-			{
-				invalidateCache: true,
-			},
-		)) as string,
-	);
 }
 
 async function getCreateAbility(
@@ -308,8 +291,8 @@ export async function create(
 	blueprint.runes = undefined;
 	blueprint.keywords = undefined;
 
-	// Get the latest card-id
-	const id = (await getLatestId()) + 1;
+	// Create a random id.
+	const id = randomUUID();
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");
@@ -319,11 +302,11 @@ export async function create(
 		path = game.functions.util.dirname() + overridePath;
 	}
 
-	// Create a filename. Example: "Test Card" -> "test_card.ts"
-	let filename = `${id}-${blueprint.name
+	// Create a filename. Example: "Test Card" -> "test-card-abcdef12.ts"
+	let filename = `${blueprint.name
 		.toLowerCase()
 		.replaceAll(" ", "-")
-		.replaceAll(/[^a-z\d-]/g, "")}.ts`;
+		.replaceAll(/[^a-z\d-]/g, "")}-${id.slice(0, 8)}.ts`;
 
 	// If this function was passed in a filename, use that instead.
 	if (overrideFilename) {
@@ -430,8 +413,10 @@ export async function create(
 		}
 
 		let returnValue = `${key}: ${value},\n\t`;
+
+		// This key should be the key right before id.
 		if (key === "tags") {
-			returnValue += `id: ${id},\n\n\t`;
+			returnValue += `id: "${id}",\n\n\t`;
 		}
 
 		return returnValue;
@@ -466,7 +451,6 @@ export const blueprint: Blueprint = {
 	if (debugMode) {
 		/*
 		 * If debug mode is enabled, just show some information about the card.
-		 * This is the id that would be written to '.latestId'
 		 */
 		console.log();
 
@@ -485,15 +469,6 @@ export const blueprint: Blueprint = {
 		await game.pause();
 	} else {
 		// If debug mode is disabled, write the card to disk.
-
-		// Increment the id in '.latestId' by 1
-		await game.functions.util.fs(
-			"writeFile",
-			"/cards/.latestId",
-			id.toString(),
-		);
-
-		// If the path the card would be written to doesn't exist, create it.
 		if (!(await game.functions.util.fs("exists", path))) {
 			await game.functions.util.fs("mkdir", path, { recursive: true });
 		}

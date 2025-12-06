@@ -15,13 +15,26 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import readline from "node:readline/promises";
 import { format } from "node:util";
+import { createPrompt, useKeypress, useState } from "@inquirer/core";
 import { parseTags } from "chalk-tags";
 
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
+// Make a custom `input` implementation.
+// This is to remove that stupid padding that comes with the standard implementation.
+// TODO: A newline adds 2 newlines? Empty message adds 2 newlines? What??
+// TODO: Add support for up arrow for history.
+const readInput = createPrompt((config: { message: string }, done) => {
+	const [value, setValue] = useState("");
+
+	useKeypress((key, readline) => {
+		if (key.name === "return" || key.name === "enter") {
+			done(value);
+		} else {
+			setValue(readline.line);
+		}
+	});
+
+	return `${config.message}${value}`;
 });
 
 const overrideConsole = {
@@ -43,8 +56,11 @@ console.error = (...data) => {
 };
 
 // Exit on ctrl+c
-rl.on("SIGINT", () => {
-	process.exit();
+process.on("uncaughtException", (error) => {
+	if (error instanceof Error && error.name === "ExitPromptError") {
+	} else {
+		throw error;
+	}
 });
 
 let seenFunFacts: string[] = [];
@@ -108,7 +124,11 @@ const prompt = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
-				const sheep = await Card.create(game.cardIds.sheep_1, player, true);
+				const sheep = await Card.create(
+					game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+					player,
+					true,
+				);
 				player.addToDeck(sheep);
 			}
 
@@ -225,7 +245,7 @@ const prompt = {
 	 * @returns `true` if Yes / `false` if No
 	 */
 	async yesNo(prompt: string, player?: Player): Promise<boolean> {
-		const ask = `\n${prompt} [<bright:green>Y</bright:green> | <red>N</red>] `;
+		const ask = `\n${prompt} (<bright:green>Y</bright:green>/<red>N</red>) `;
 
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
@@ -1275,7 +1295,7 @@ export const interactFunctions = {
 
 			// Invalid queue
 			if (!Array.isArray(queue)) {
-				return wrapper(await rl.question(question));
+				return wrapper((await readInput({ message: question })) as string);
 			}
 
 			const answer = queue[0];
@@ -1288,7 +1308,7 @@ export const interactFunctions = {
 			return wrapper(answer);
 		}
 
-		return wrapper(await rl.question(question));
+		return wrapper((await readInput({ message: question })) as string);
 	},
 
 	/**
