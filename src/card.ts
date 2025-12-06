@@ -88,7 +88,7 @@ export class Card {
 	 * assert.equal(sheep.id, anotherSheep.id);
 	 * assert.notEqual(sheep.id, theCoin.id);
 	 */
-	id = -1;
+	id = "";
 
 	/**
 	 * If the card is collectible.
@@ -165,7 +165,7 @@ export class Card {
 	/**
 	 * The id of the hero power card associated with this hero card.
 	 */
-	heropowerId?: number;
+	heropowerId?: string;
 
 	/**
 	 * The hero power card associated with this hero card.
@@ -327,10 +327,10 @@ export class Card {
 	/**
 	 * **USE `Card.create` INSTEAD.**
 	 *
-	 * @param name The name of this card
-	 * @param owner This card's owner.
+	 * @param id The id of the blueprint.
+	 * @param owner The player that should own this card.
 	 */
-	constructor(id: number, owner: Player) {
+	constructor(id: string, owner: Player) {
 		// Get the blueprint from the cards list
 		const blueprint = game.blueprints.find((c) => c.id === id);
 		if (!blueprint) {
@@ -371,7 +371,7 @@ export class Card {
 	 */
 	static async allFromName(name: string, refer = true): Promise<Card[]> {
 		// First, check if `name` is actually an id instead of a name.
-		const id = await Card.fromID(game.lodash.parseInt(name));
+		const id = await Card.fromID(name);
 
 		/*
 		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
@@ -394,7 +394,7 @@ export class Card {
 	 * @param [suppressEvent=false] If the `CreateCard` event should be suppressed.
 	 */
 	static async create(
-		id: number,
+		id: string,
 		player: Player,
 		suppressEvent = false,
 	): Promise<Card> {
@@ -430,7 +430,7 @@ export class Card {
 	 * assert.ok(card instanceof Card);
 	 * assert.equal(card.name, 'The Coin');
 	 */
-	static async fromID(id: number): Promise<Card | undefined> {
+	static async fromID(id: string): Promise<Card | undefined> {
 		return (await Card.all(true)).find((c) => c.id === id);
 	}
 
@@ -463,22 +463,6 @@ export class Card {
 	static async allWithTags(...tags: Tag[]): Promise<Card[]> {
 		return (await Card.all(true)).filter((c) =>
 			tags.every((tag) => c.tags.includes(tag)),
-		);
-	}
-
-	/**
-	 * @returns The latest id used by a card.
-	 */
-	static async latestId(): Promise<number> {
-		return game.lodash.parseInt(
-			(await game.functions.util.fs(
-				"readFile",
-				"/cards/.latestId",
-				{},
-				{
-					invalidateCache: true,
-				},
-			)) as string,
 		);
 	}
 
@@ -1454,14 +1438,14 @@ export class Card {
 				const priorityA = aeA.enchantment.enchantmentPriority;
 				if (priorityA === undefined) {
 					throw new Error(
-						`Enchantment with id ${aeA.enchantment.id} does not specify a priority.`,
+						`Enchantment with id '${aeA.enchantment.id}' does not specify a priority.`,
 					);
 				}
 
 				const priorityB = aeB.enchantment.enchantmentPriority;
 				if (priorityB === undefined) {
 					throw new Error(
-						`Enchantment with id ${aeB.enchantment.id} does not specify a priority.`,
+						`Enchantment with id '${aeB.enchantment.id}' does not specify a priority.`,
 					);
 				}
 
@@ -1486,7 +1470,7 @@ export class Card {
 				// A priority of 0 (Normal) is valid.
 				if (priority === undefined) {
 					throw new Error(
-						`Enchantment with id ${enchantment.id} does not specify a priority.`,
+						`Enchantment with id '${enchantment.id}' does not specify a priority.`,
 					);
 				}
 
@@ -1523,7 +1507,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
-	async addEnchantment(enchantmentId: number, owner: Card): Promise<boolean> {
+	async addEnchantment(enchantmentId: string, owner: Card): Promise<boolean> {
 		const enchantment = await Card.create(enchantmentId, owner.owner);
 		if (enchantment.type !== Type.Enchantment) {
 			return false;
@@ -1546,7 +1530,7 @@ export class Card {
 	 *
 	 * @returns If the enchantment exists
 	 */
-	enchantmentExists(enchantmentId: number, owner: Card): boolean {
+	enchantmentExists(enchantmentId: string, owner: Card): boolean {
 		return this.activeEnchantments.some(
 			(c) => c.enchantment.id === enchantmentId && c.owner === owner,
 		);
@@ -1561,7 +1545,7 @@ export class Card {
 	 * @returns Success
 	 */
 	async removeEnchantment(
-		enchantmentId: number,
+		enchantmentId: string,
 		owner: Card,
 	): Promise<boolean> {
 		const activeEnchantment = this.activeEnchantments.find(
@@ -2107,7 +2091,7 @@ export class Card {
 		) {
 			sb += " (";
 
-			const idHex = (this.id + 1000).toString(16).repeat(6).slice(0, 6);
+			const idHex = this.id.slice(0, 6);
 			sb += `#<#${idHex}>${this.id}</#>`;
 			sb += ` @${this.coloredUUID()}`;
 

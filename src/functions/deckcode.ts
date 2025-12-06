@@ -157,9 +157,7 @@ export const deckcodeFunctions = {
 
 			const cards = deck.slice(processed, times);
 
-			for (const cardId of cards) {
-				const id = game.lodash.parseInt(cardId, 36);
-
+			for (const id of cards) {
 				const blueprint = await Card.fromID(id);
 				if (!blueprint) {
 					await panic("NONEXISTANTCARD", id.toString());
@@ -427,7 +425,7 @@ export const deckcodeFunctions = {
 
 		deckcode += "/ ";
 
-		deckcode += cards.map((c) => c[0].id.toString(36)).join(",");
+		deckcode += cards.map((c) => c[0].id).join(",");
 
 		return { code: deckcode, error };
 	},
@@ -498,7 +496,7 @@ export const deckcodeFunctions = {
 		// Now it's just the cards left
 		const vanillaCards = await game.functions.card.vanilla.getAll();
 
-		const cardsSplit = cards.split(",").map((i) => game.lodash.parseInt(i, 36));
+		const cardsSplit = cards.split(",");
 		const cardsSplitId = await Promise.all(cardsSplit.map(Card.fromID));
 		const cardsSplitCard = await Promise.all(
 			cardsSplitId.map(async (c) => {
@@ -787,8 +785,7 @@ export const deckcodeFunctions = {
 		}
 
 		deckcode += "/ ";
-
-		deckcode += newDeck.map((c) => c[0].id.toString(36)).join(",");
+		deckcode += newDeck.map((c) => c[0].id).join(",");
 
 		return deckcode;
 	},

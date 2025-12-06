@@ -155,7 +155,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		const titanIds = card.getKeyword(Keyword.Titan) as number[] | undefined;
+		const titanIds = card.getKeyword(Keyword.Titan) as string[] | undefined;
 
 		if (!titanIds) {
 			await game.pause("<red>That card is not a titan.</red>\n");
@@ -649,7 +649,7 @@ export const debugCommands: CommandList = {
 
 				for (const card of game.activeCards) {
 					/*
-					 * For some reason, without this, the game gets stuck on the `Frozen Test` card (id: 74).
+					 * For some reason, without this, the game gets stuck on the `Frozen Test` card.
 					 * It just loops over and over again on the same card with the same uuid,
 					 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
 					 * Very vexing...

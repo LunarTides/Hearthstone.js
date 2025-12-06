@@ -857,7 +857,7 @@ const playCard = {
 	},
 
 	async _forge(card: Card, player: Player): Promise<GamePlayCardReturn> {
-		const forgeId = card.getKeyword(Keyword.Forge) as number | undefined;
+		const forgeId = card.getKeyword(Keyword.Forge) as string | undefined;
 
 		if (!forgeId) {
 			return GamePlayCardReturn.Invalid;
@@ -979,7 +979,7 @@ const playCard = {
 	async _corrupt(card: Card, player: Player): Promise<boolean> {
 		for (const toCorrupt of player.hand) {
 			const corruptId = toCorrupt.getKeyword(Keyword.Corrupt) as
-				| number
+				| string
 				| undefined;
 			if (!corruptId || card.cost <= toCorrupt.cost) {
 				continue;
@@ -1681,7 +1681,7 @@ export class Game {
 		const dormant = card.getKeyword(Keyword.Dormant) as number | undefined;
 
 		const colossalMinionIds = card.getKeyword(Keyword.Colossal) as
-			| number[]
+			| string[]
 			| undefined;
 
 		if (colossalMinionIds && colossal) {
@@ -1694,7 +1694,7 @@ export class Game {
 			const unsuppress = game.event.suppress(Event.SummonCard);
 
 			for (const cardId of colossalMinionIds) {
-				if (cardId <= 0) {
+				if (cardId === Card.NULL_ID) {
 					// Summon this minion without triggering colossal again
 					await player.summon(card, false);
 					continue;

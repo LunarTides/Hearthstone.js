@@ -13,10 +13,10 @@ hub.watermark();
 // Find holes and dupes in the ids
 game.interest("Validating ids...");
 
-const [holes, dupes] = await validateIds(true, false);
-game.interest(`Validating ids...${holes} holes, ${dupes} duplicates`);
+const dupes = await validateIds(true, false);
+game.interest(`Validating ids...${dupes} duplicates`);
 
-if (holes > 0 || dupes > 0) {
+if (dupes > 0) {
 	/*
 	 * If there were holes or dupes, pause the game so that the user gets a
 	 * chance to see what the problem was
