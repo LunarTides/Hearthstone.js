@@ -35,6 +35,9 @@ export const blueprint: Blueprint = {
 
 		// The player should now have the wicked knife weapon
 		assert.ok(owner.weapon);
-		assert.equal(owner.weapon.id, 22);
+		assert.equal(
+			owner.weapon.id,
+			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+		);
 	},
 };

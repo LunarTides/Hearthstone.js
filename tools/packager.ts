@@ -31,6 +31,72 @@ interface Metadata {
 	};
 }
 
+async function getPacks() {
+	const packs: string[] = [];
+
+	await game.functions.util.searchFolder(
+		"/packs",
+		async (index, path, file) => {
+			if (
+				!file.parentPath.endsWith("/packs") ||
+				!file.isDirectory() ||
+				!(await game.functions.util.fs("exists", `${path}/meta.jsonc`))
+			) {
+				return;
+			}
+
+			packs.push(file.name);
+		},
+	);
+
+	return packs;
+}
+
+async function customSelect(
+	message: string,
+	array: string[],
+	arrayTransform:
+		| ((i: number, element: string) => { name: string; value: string })
+		| undefined,
+	...otherChoices: (Separator | string | false)[]
+) {
+	const choices = [];
+	for (const [i, element] of Object.entries(array)) {
+		choices.push(
+			arrayTransform?.(parseInt(i, 10), element) ?? {
+				name: element,
+				value: i,
+			},
+		);
+	}
+
+	for (const element of otherChoices) {
+		// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
+		if (element === false) {
+			continue;
+		}
+
+		if (element instanceof Separator) {
+			choices.push(element);
+			continue;
+		}
+
+		choices.push({
+			name: element,
+			value: element.toLowerCase(),
+		});
+	}
+
+	const answer = await select({
+		message,
+		choices,
+		loop: false,
+		pageSize: 12,
+	});
+
+	return answer;
+}
+
 async function parseMetadataFile(pack: string) {
 	if (!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))) {
 		await game.pause(
@@ -80,43 +146,26 @@ async function parseMetadataFile(pack: string) {
 }
 
 async function importPack() {
-	// FIXME: Importing the same pack twice breaks ids.
 	while (true) {
 		hub.watermark(false);
 
-		const packs: string[] = [];
-
-		await game.functions.util.searchFolder(
-			"/packs",
-			async (index, path, file) => {
-				if (!file.parentPath.endsWith("/packs") || !file.isDirectory()) {
-					return;
-				}
-
-				packs.push(file.name);
-			},
+		console.log(
+			"Extract and drag the folder into '/packs/. Press enter when you're done.\n",
 		);
 
-		const choices = [];
-		for (const [i, pack] of Object.entries(packs)) {
-			choices.push({
-				name: pack,
-				value: i,
-			});
+		const packs = await getPacks();
+		const answer = await customSelect(
+			"Choose a Pack",
+			packs,
+			undefined,
+			new Separator(),
+			"Refresh",
+			"Done",
+		);
+
+		if (answer === "refresh") {
+			continue;
 		}
-		choices.push(new Separator());
-		choices.push({
-			name: "Done",
-			value: "done",
-		});
-
-		const answer = await select({
-			message: "Choose a Pack",
-			choices,
-			loop: false,
-			pageSize: 12,
-		});
-
 		if (answer === "done") {
 			break;
 		}
@@ -167,43 +216,20 @@ async function exportPack() {
 		hub.watermark(false);
 		dirty = false;
 
-		const packs: string[] = [];
-
-		await game.functions.util.searchFolder(
-			"/packs",
-			async (index, path, file) => {
-				if (!file.parentPath.endsWith("/packs") || !file.isDirectory()) {
-					return;
-				}
-
-				packs.push(file.name);
-			},
+		const packs = await getPacks();
+		const answer = await customSelect(
+			"Choose a Pack",
+			packs,
+			undefined,
+			"New",
+			new Separator(),
+			"Refresh",
+			"Done",
 		);
 
-		const choices = [];
-		for (const [i, pack] of Object.entries(packs)) {
-			choices.push({
-				name: pack,
-				value: i,
-			});
+		if (answer === "refresh") {
+			continue;
 		}
-		choices.push({
-			name: "New",
-			value: "new",
-		});
-		choices.push(new Separator());
-		choices.push({
-			name: "Done",
-			value: "done",
-		});
-
-		const answer = await select({
-			message: "Choose a Pack",
-			choices,
-			loop: false,
-			pageSize: 12,
-		});
-
 		if (answer === "done") {
 			break;
 		}
@@ -290,34 +316,16 @@ async function configureMetadataArray(array: string[]) {
 		console.log(JSON.stringify(array, null, 4));
 		console.log();
 
-		const choices = [];
-		for (const i in array) {
-			choices.push({
-				name: `Element ${i}`,
-				value: i,
-			});
-		}
-		choices.push(new Separator());
-		choices.push({
-			name: `New`,
-			value: "new",
-		});
-		choices.push({
-			name: `Delete`,
-			value: "delete",
-		});
-		choices.push(new Separator());
-		choices.push({
-			name: "Done",
-			value: "done",
-		});
-
-		const answer = await select({
-			message: "Configure Array",
-			choices,
-			loop: false,
-			pageSize: 12,
-		});
+		const answer = await customSelect(
+			"Configure Array",
+			array,
+			(i, element) => ({ name: `Element ${i}`, value: i.toString() }),
+			new Separator(),
+			"New",
+			"Delete",
+			new Separator(),
+			"Done",
+		);
 
 		if (answer === "new") {
 			const value = await input({
@@ -356,36 +364,16 @@ async function configureMetadataObject(
 		console.log(JSON.stringify(object, null, 4));
 		console.log();
 
-		const choices = [];
-		for (const v of Object.keys(object)) {
-			choices.push({
-				name: v,
-				value: `element-${v}`,
-			});
-		}
-		if (allowAddingAndDeleting) {
-			choices.push(new Separator());
-			choices.push({
-				name: `New`,
-				value: "new",
-			});
-			choices.push({
-				name: `Delete`,
-				value: "delete",
-			});
-		}
-		choices.push(new Separator());
-		choices.push({
-			name: "Done",
-			value: "done",
-		});
-
-		const answer = await select({
-			message: "Configure Object",
-			choices,
-			loop: false,
-			pageSize: 12,
-		});
+		const answer = await customSelect(
+			"Configure Object",
+			Object.keys(object),
+			(i, element) => ({ name: element, value: `element-${element}` }),
+			allowAddingAndDeleting && new Separator(),
+			allowAddingAndDeleting && "New",
+			allowAddingAndDeleting && "Delete",
+			new Separator(),
+			"Done",
+		);
 
 		if (allowAddingAndDeleting) {
 			if (answer === "new") {
@@ -541,10 +529,6 @@ export async function main() {
 			if (command === "e") {
 				await exportPack();
 			} else if (command === "i") {
-				await game.pause(
-					"Extract and drag the folder into '/packs/. Press enter when you're done.",
-				);
-
 				await importPack();
 			}
 		},
