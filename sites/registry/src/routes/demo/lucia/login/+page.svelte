@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { ActionData } from './$types';
 
@@ -23,10 +23,12 @@
 		/>
 	</label>
 	<button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-		>Login</button>
+		>Login</button
+	>
 	<button
 		formaction="?/register"
 		class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-		>Register</button>
+		>Register</button
+	>
 </form>
-<p style='color: red'>{form?.message ?? ''}</p>
+<p style="color: red">{form?.message ?? ''}</p>
