@@ -18,11 +18,14 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 126,
+	id: "f6ebebb4-606d-4a8a-8f59-41f19ea0948a",
 
 	async heropower(self, owner) {
 		// Summon a 2/1 Elemental with Rush.
-		const card = await Card.create(game.cardIds.windsweptElemental_19, owner);
+		const card = await Card.create(
+			game.cardIds.windsweptElemental_e63b1490_7fb2_4edf_9a24_82742e32bbf4,
+			owner,
+		);
 		if (!card) {
 			return;
 		}

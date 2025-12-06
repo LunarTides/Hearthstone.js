@@ -13,13 +13,16 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 122,
+	id: "7dc5b90e-3ef6-4b2c-a448-f4c5dffe9803",
 
 	async heropower(self, owner) {
 		// Equip a 1/2 Dagger.
 
 		// Create the weapon card
-		const weapon = await Card.create(game.cardIds.wickedKnife_22, owner);
+		const weapon = await Card.create(
+			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+			owner,
+		);
 
 		// Equip the weapon
 		await owner.setWeapon(weapon);

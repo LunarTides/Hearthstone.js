@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Epic,
 	collectible: true,
 	tags: [],
-	id: 86,
+	id: "e5287370-d1cc-41e5-b776-8c9e9a54699c",
 
 	spellSchools: [SpellSchool.None],
 
@@ -58,7 +58,10 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// Summon a Sheep
-		const sheep = await Card.create(game.cardIds.sheep_1, owner);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			owner,
+		);
 		await owner.summon(sheep);
 
 		const handSize = owner.hand.length;

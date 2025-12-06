@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
-	id: 106,
+	id: "25ae4928-8e9b-434f-842a-2259070dcee6",
 
 	attack: 7,
 	health: 5,
@@ -31,9 +31,9 @@ export const blueprint: Blueprint = {
 	async create(self, owner) {
 		// Add additional fields here
 		self.addKeyword(Keyword.Titan, [
-			game.cardIds.induceInsanity_107,
-			game.cardIds.reignOfChaos_108,
-			game.cardIds.tentacleSwarm_109,
+			game.cardIds.induceInsanity_961ce6f6_2963_4ee1_8e25_64a06c9ca714,
+			game.cardIds.reignOfChaos_2ef76c34_54ca_43ca_bde2_15450178fe89,
+			game.cardIds.tentacleSwarm_7816c1c2_46ae_451a_87f9_188707a722f2,
 		]);
 	},
 

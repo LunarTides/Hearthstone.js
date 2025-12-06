@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 66,
+	id: "bffc4f53-881c-46f1-bff0-cf20d6934a09",
 
 	spellSchools: [SpellSchool.None],
 
@@ -51,7 +51,10 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.mana, 10);
 
 		// Play a card to verify that the mana doesn't decrease
-		const card = await Card.create(game.cardIds.sheep_1, owner);
+		const card = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			owner,
+		);
 		const result = await game.play(card, owner);
 
 		assert.equal(result, GamePlayCardReturn.Success);

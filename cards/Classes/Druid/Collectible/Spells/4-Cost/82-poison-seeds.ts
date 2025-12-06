@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
-	id: 82,
+	id: "6758597e-14c8-4465-ba21-61fe1cef1b55",
 
 	spellSchools: [SpellSchool.Nature],
 
@@ -30,7 +30,10 @@ export const blueprint: Blueprint = {
 			for (const card of player.board) {
 				await card.destroy();
 
-				const treant = await Card.create(game.cardIds.treant_83, player);
+				const treant = await Card.create(
+					game.cardIds.treant_478f59ac_1013_4687_ad32_ce4ee7bcf701,
+					player,
+				);
 				await player.summon(treant);
 			}
 		}
@@ -41,7 +44,10 @@ export const blueprint: Blueprint = {
 
 		// Summon some amount of Sheep
 		for (let i = 0; i < amountOfCards; i++) {
-			const sheep = await Card.create(game.cardIds.sheep_1, owner);
+			const sheep = await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				owner,
+			);
 			await owner.summon(sheep);
 		}
 
@@ -52,6 +58,11 @@ export const blueprint: Blueprint = {
 		const board = owner.board;
 
 		assert.equal(board.length, amountOfCards);
-		assert.ok(board.every((card) => card.id === game.cardIds.treant_83));
+		assert.ok(
+			board.every(
+				(card) =>
+					card.id === game.cardIds.treant_478f59ac_1013_4687_ad32_ce4ee7bcf701,
+			),
+		);
 	},
 };

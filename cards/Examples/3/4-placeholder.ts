@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 53,
+	id: "aeba8cb4-9250-4929-9689-962127f2d48a",
 
 	spellSchools: [SpellSchool.None],
 

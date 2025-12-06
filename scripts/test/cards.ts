@@ -53,8 +53,14 @@ export async function main(): Promise<void> {
 		game.opponent = player2;
 
 		for (let i = 0; i < 30; i++) {
-			const sheep1 = await Card.create(game.cardIds.sheep_1, game.player1);
-			const sheep2 = await Card.create(game.cardIds.sheep_1, game.player2);
+			const sheep1 = await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.player1,
+			);
+			const sheep2 = await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.player2,
+			);
 			game.player1.deck.push(sheep1);
 			game.player2.deck.push(sheep2);
 		}

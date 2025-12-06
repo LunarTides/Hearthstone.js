@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
-	id: 100,
+	id: "d6582680-eec2-4796-be1f-244b7a15d273",
 
 	spellSchools: [SpellSchool.None],
 
@@ -29,7 +29,10 @@ export const blueprint: Blueprint = {
 		const remainingBoardSpace = owner.getRemainingBoardSpace();
 
 		for (let index = 0; index < remainingBoardSpace; index++) {
-			const whelp = await Card.create(game.cardIds.onyxianWhelp_99, owner);
+			const whelp = await Card.create(
+				game.cardIds.onyxianWhelp_0875f676_82a3_4b99_b30c_aae1f34cc686,
+				owner,
+			);
 			await owner.summon(whelp);
 		}
 	},
@@ -43,7 +46,11 @@ export const blueprint: Blueprint = {
 
 		// Check if every card on the board is a whelp
 		assert.ok(
-			owner.board.every((card) => card.id === game.cardIds.onyxianWhelp_99),
+			owner.board.every(
+				(card) =>
+					card.id ===
+					game.cardIds.onyxianWhelp_0875f676_82a3_4b99_b30c_aae1f34cc686,
+			),
 		);
 	},
 };

@@ -20,10 +20,11 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [Tag.Galakrond],
-	id: 71,
+	id: "297a74f2-5a6a-4895-9482-28f67dd3c33c",
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsMalice_129,
+	heropowerId:
+		game.cardIds.galakrondsMalice_53dba7b8_d520_4fc5_97d7_4094887f13e1,
 
 	async battlecry(self, owner) {
 		// Summon 1 random Demon.

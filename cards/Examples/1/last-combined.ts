@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 35,
+	id: "4babe170-8744-4c86-9fb8-a029d8e2daee",
 
 	attack: 4,
 	health: 4,

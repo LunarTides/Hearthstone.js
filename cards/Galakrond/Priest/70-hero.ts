@@ -18,10 +18,10 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [Tag.Galakrond],
-	id: 70,
+	id: "7f8f3adf-41d4-4e83-9c4f-5836e740290e",
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsWit_128,
+	heropowerId: game.cardIds.galakrondsWit_def44af8_8a84_41b7_b8ab_837e4c58f58d,
 
 	async battlecry(self, owner) {
 		// Destroy 1 random enemy minion.

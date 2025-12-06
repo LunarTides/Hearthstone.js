@@ -1,10 +1,10 @@
-import { Card } from "@Game/card.ts";
 import {
 	Ability,
 	type BlueprintWithOptional,
 	EnchantmentPriority,
 	Type,
 } from "@Game/types.ts";
+import { randomUUID } from "node:crypto";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
@@ -291,8 +291,8 @@ export async function create(
 	blueprint.runes = undefined;
 	blueprint.keywords = undefined;
 
-	// Get the latest card-id
-	const id = (await Card.latestId()) + 1;
+	// Create a random id.
+	const id = randomUUID();
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");
@@ -303,7 +303,7 @@ export async function create(
 	}
 
 	// Create a filename. Example: "Test Card" -> "test_card.ts"
-	let filename = `${id}-${blueprint.name
+	let filename = `${id.slice(0, 8)}-${blueprint.name
 		.toLowerCase()
 		.replaceAll(" ", "-")
 		.replaceAll(/[^a-z\d-]/g, "")}.ts`;

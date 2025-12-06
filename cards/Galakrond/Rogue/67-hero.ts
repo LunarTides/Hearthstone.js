@@ -18,10 +18,11 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [Tag.Galakrond],
-	id: 67,
+	id: "e176e48c-372d-4342-a7fb-d885b828f4a8",
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsGuile_125,
+	heropowerId:
+		game.cardIds.galakrondsGuile_3a6d5242_4e2d_4092_b997_aaa41ca8cfb5,
 
 	async battlecry(self, owner) {
 		// Draw {amount} cards. They cost (0).
@@ -35,7 +36,10 @@ export const blueprint: Blueprint = {
 
 		for (const card of cards) {
 			// Set the cost to 0
-			await card.addEnchantment(game.cardIds.galakrondsBlessing_145, self);
+			await card.addEnchantment(
+				game.cardIds.galakrondsBlessing_a38a06d4_a803_4582_89f5_43de03e372d6,
+				self,
+			);
 		}
 	},
 

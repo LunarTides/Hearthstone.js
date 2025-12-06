@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 96,
+	id: "56c6c27a-e340-4fce-be4b-b93aa18ffdf3",
 
 	attack: 6,
 	health: 6,

@@ -12,10 +12,10 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
-	id: 89,
+	id: "e899d5f9-34e8-4099-acc6-1ef881f91120",
 
 	armor: 5,
-	heropowerId: game.cardIds.nurture_113,
+	heropowerId: game.cardIds.nurture_6324aae1_bde7_43cc_810f_e1f105d697b8,
 
 	async battlecry(self, owner) {
 		// Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.

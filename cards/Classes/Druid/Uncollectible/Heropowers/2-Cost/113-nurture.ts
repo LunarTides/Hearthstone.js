@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 113,
+	id: "6324aae1-bde7-43cc-810f-e1f105d697b8",
 
 	async heropower(self, owner) {
 		// Choose One - Draw a card; or Gain an empty Mana Crystal.

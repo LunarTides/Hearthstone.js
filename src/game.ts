@@ -1486,7 +1486,10 @@ export class Game {
 		this.player1.mana = 1;
 
 		// Give the coin to the second player
-		const coin = await Card.create(this.cardIds.theCoin_2, this.player2);
+		const coin = await Card.create(
+			this.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f,
+			this.player2,
+		);
 
 		await this.event.withSuppressed(Event.AddCardToHand, async () =>
 			this.player2.addToHand(coin),
@@ -1687,14 +1690,14 @@ export class Game {
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
-			 * example: [game.cardIds.leftArm_36, game.cardIds.null_0, game.cardIds.rightArm_37]
+			 * example: [game.cardIds.leftArm_65ff5692_391d_42d0_861d_ef08f156e566, game.cardIds.null, game.cardIds.rightArm_233440a8_4966_4a88_94b0_b964a52ebf30]
 			 * the null0 / 0 gets replaced with the main minion
 			 */
 
 			const unsuppress = game.event.suppress(Event.SummonCard);
 
 			for (const cardId of colossalMinionIds) {
-				if (cardId === Card.NULL_ID) {
+				if (cardId === this.cardIds.null) {
 					// Summon this minion without triggering colossal again
 					await player.summon(card, false);
 					continue;

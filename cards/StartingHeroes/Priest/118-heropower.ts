@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 118,
+	id: "7b3ef914-5138-4872-93b8-b025a5a3c60a",
 
 	async heropower(self, owner) {
 		// Restore 2 Health.

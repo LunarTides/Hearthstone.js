@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 130,
+	id: "d2ab1def-46dc-407f-8b82-ba347afb63ee",
 
 	// This gets triggered when the player uses their hero power.
 	async heropower(self, owner) {

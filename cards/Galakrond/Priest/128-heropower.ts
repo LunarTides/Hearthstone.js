@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 128,
+	id: "def44af8-8a84-41b7-b8ab-837e4c58f58d",
 
 	async heropower(self, owner) {
 		// Add a random Priest minion to your hand.

@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 143,
+	id: "d697eb1a-3354-40a0-ba56-86071bbf21d5",
 
 	spellSchools: [SpellSchool.None],
 
@@ -40,12 +40,21 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give the enchantment.
-		await target.addEnchantment(game.cardIds.enchantmentTest_142, self);
+		await target.addEnchantment(
+			game.cardIds.enchantmentTest_9737721c_6abd_4817_8aa4_b66cd278de59,
+			self,
+		);
 		return true;
 	},
 
 	async test(self, owner) {
-		await game.summon(await Card.create(game.cardIds.sheep_1, owner), owner);
+		await game.summon(
+			await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				owner,
+			),
+			owner,
+		);
 
 		const target = game.functions.util.getRandomTargetRelative(
 			false,

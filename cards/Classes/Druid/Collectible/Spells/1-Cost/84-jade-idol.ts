@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
-	id: 84,
+	id: "2f0b7c27-b85e-4b7e-9cf6-a9ea0faff2c2",
 
 	spellSchools: [SpellSchool.None],
 
@@ -54,7 +54,11 @@ export const blueprint: Blueprint = {
 
 		// There should be a jade golem
 		assert.ok(
-			owner.board.some((card) => card.id === game.cardIds.jadeGolem_85),
+			owner.board.some(
+				(card) =>
+					card.id ===
+					game.cardIds.jadeGolem_cf300193_f06d_4a16_ae3d_0c3b03781b20,
+			),
 		);
 
 		// Shuffle 3 copies

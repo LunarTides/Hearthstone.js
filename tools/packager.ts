@@ -1,5 +1,4 @@
 // Allows importing / exporting .hspkg files.
-import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import { randomUUID } from "node:crypto";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
@@ -134,37 +133,12 @@ async function importPack() {
 			recursive: true,
 		});
 
-		// Change ids to align with latest id.
-		const latestId = await Card.latestId();
-
 		await game.functions.util.searchCardsFolder(
 			async (path, content, file, index) => {
-				let newContent = content;
-				let fileName = file.name;
-
-				// Only change the id of there isn't an old version of the file already exists (pack upgrade).
-				if (
-					!(await game.functions.util.fs(
-						"exists",
-						`/cards/Packs/${pack}/${file.name}`,
-					))
-				) {
-					newContent = content.replace(
-						/\tid: \d+,/,
-						`\tid: ${latestId + index + 1},`,
-					);
-
-					// If the file name starts with a number then a dash, replace that number with the new id.
-					// This is so that the file name matches the id.
-					if (/^\d+-/.test(fileName)) {
-						fileName = `${latestId + index + 1}-${file.name.split("-").slice(1).join("-")}`;
-					}
-				}
-
 				await game.functions.util.fs(
 					"writeFile",
-					`/cards/Packs/${pack}/${fileName}`,
-					newContent,
+					`/cards/Packs/${pack}/${file.name}`,
+					content,
 				);
 			},
 			`/packs/${pack}`,

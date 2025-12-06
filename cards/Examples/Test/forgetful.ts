@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 138,
+	id: "f55ee12c-0a60-40e9-94f9-76081670865e",
 
 	attack: 5,
 	health: 4,
@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		// 1 await owner.summon(self);
 
 		/*
-		 * 2 const sheep = game.newCard(game.cardIds.sheep_1, owner.getOpponent());
+		 * 2 const sheep = game.newCard(game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c, owner.getOpponent());
 		 * 3 await owner.getOpponent().summon(sheep);
 		 */
 

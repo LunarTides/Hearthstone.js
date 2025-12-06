@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 50,
+	id: "11fca2fe-2bc6-487a-89d0-344b0fd9db38",
 
 	attack: 1,
 	health: 2,
@@ -74,7 +74,10 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const sheep = await Card.create(game.cardIds.sheep_1, owner.getOpponent());
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			owner.getOpponent(),
+		);
 		await sheep.addStats(4, 4);
 		await owner.getOpponent().summon(sheep);
 

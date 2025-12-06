@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 37,
+	id: "ef49bcfa-f80a-4957-9e95-8da515583874",
 
 	// The amount of armor that the player will gain when playing this card.
 	armor: 5,
@@ -24,13 +24,14 @@ export const blueprint: Blueprint = {
 	 * The id of the hero power card. Here we use the `2-heropower.ts` card.
 	 *
 	 * The `game.cardIds` object contains the ids of every card in the game.
-	 * It exists because doing `heropowerId: 130` is not very readable.
+	 * It exists because doing `heropowerId: "d2ab1def-46dc-407f-8b82-ba347afb63ee"` is not very readable.
 	 * The `game.cardIds` representation of the card is its name, followed by its id.
 	 *
 	 * The `cardIds` object will be refreshed when you run the game.
-	 * So if you get an error here, try launching the game and see if it fixes it.
+	 * So if you get an error here, try relaunching the game and see if it fixes it.
 	 */
-	heropowerId: game.cardIds.heropowerExample_130,
+	heropowerId:
+		game.cardIds.heropowerExample_d2ab1def_46dc_407f_8b82_ba347afb63ee,
 
 	async battlecry(self, owner) {
 		// Restore your hero to full health.

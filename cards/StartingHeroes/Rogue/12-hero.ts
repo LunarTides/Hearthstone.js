@@ -11,8 +11,8 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.StartingHero],
-	id: 12,
+	id: "43f35dfc-c0e1-41bb-8d86-c276c29e76f3",
 
 	armor: 0,
-	heropowerId: game.cardIds.daggerMastery_122,
+	heropowerId: game.cardIds.daggerMastery_7dc5b90e_3ef6_4b2c_a448_f4c5dffe9803,
 };

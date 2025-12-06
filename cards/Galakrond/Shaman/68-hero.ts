@@ -19,10 +19,10 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [Tag.Galakrond],
-	id: 68,
+	id: "b02dc2fd-1558-4ba5-8976-4b77f3d4adf3",
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsFury_126,
+	heropowerId: game.cardIds.galakrondsFury_f6ebebb4_606d_4a8a_8f59_41f19ea0948a,
 
 	async battlecry(self, owner) {
 		// Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
@@ -36,7 +36,10 @@ export const blueprint: Blueprint = {
 
 		// Summon the two minions
 		for (let i = 0; i < 2; i++) {
-			const minion = await Card.create(game.cardIds.brewingStorm_112, owner);
+			const minion = await Card.create(
+				game.cardIds.brewingStorm_74238105_ff8b_415e_a5d4_eda223e080ce,
+				owner,
+			);
 			if (!minion) {
 				break;
 			}
@@ -50,7 +53,10 @@ export const blueprint: Blueprint = {
 		}
 
 		// Give the weapon
-		const weapon = await Card.create(game.cardIds.dragonClaw_111, owner);
+		const weapon = await Card.create(
+			game.cardIds.dragonClaw_0dff8f8d_3f00_44bb_b70f_e6d584147554,
+			owner,
+		);
 		await owner.setWeapon(weapon);
 	},
 

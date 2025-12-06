@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [],
-	id: 104,
+	id: "4379b5a1-f26b-4179-959b-ce8b1be7333d",
 
 	attack: 7,
 	health: 5,
@@ -107,13 +107,19 @@ export const blueprint: Blueprint = {
 						continue;
 					}
 
-					await card.addEnchantment(game.cardIds.fatesBlessing_144, self);
+					await card.addEnchantment(
+						game.cardIds.fatesBlessing_0506f2bf_0082_436b_bbe3_2a5d3b0482c1,
+						self,
+					);
 					await owner.addToHand(card);
 				}
 
 				game.event.addListener(Event.EndTurn, async () => {
 					for (const card of owner.hand) {
-						await card.removeEnchantment(game.cardIds.fatesBlessing_144, self);
+						await card.removeEnchantment(
+							game.cardIds.fatesBlessing_0506f2bf_0082_436b_bbe3_2a5d3b0482c1,
+							self,
+						);
 					}
 
 					return EventListenerMessage.Destroy;
@@ -141,7 +147,7 @@ export const blueprint: Blueprint = {
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
 				const oldYogg = await Card.create(
-					game.cardIds.yoggSaronHopesEnd_103,
+					game.cardIds.yoggSaronHopesEnd_5f51da53_4900_425e_8110_d75daf3fd052,
 					owner,
 				);
 				await oldYogg.trigger(Ability.Battlecry);
@@ -151,7 +157,10 @@ export const blueprint: Blueprint = {
 
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
-				const rod = await Card.create(game.cardIds.pyroblast_105, owner);
+				const rod = await Card.create(
+					game.cardIds.pyroblast_712ecd8c_fe48_428c_8ce3_a2012803e59d,
+					owner,
+				);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
 					owner.forceTarget = game.functions.util.getRandomTarget();

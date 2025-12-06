@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 52,
+	id: "d1fb0461-ba50-41e5-9778-9de2539a1e69",
 
 	attack: 5,
 	health: 2,
@@ -68,7 +68,12 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, 0);
 
 		// The player should fulfill the condition
-		owner.deck = [await Card.create(game.cardIds.sheep_1, owner)];
+		owner.deck = [
+			await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				owner,
+			),
+		];
 		assert(owner.highlander());
 		assert.equal(owner.deck.length, 1);
 

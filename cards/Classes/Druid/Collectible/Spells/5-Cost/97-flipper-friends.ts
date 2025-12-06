@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Common,
 	collectible: true,
 	tags: [],
-	id: 97,
+	id: "d4c2ef85-438a-4822-9872-6073a44b9a80",
 
 	spellSchools: [SpellSchool.Nature],
 
@@ -32,7 +32,10 @@ export const blueprint: Blueprint = {
 				"Summon a 6/6 Orca with <b>Taunt</b>",
 				async () => {
 					// Summon a 6/6 Orca with Taunt
-					const orca = await Card.create(game.cardIds.orca_96, owner);
+					const orca = await Card.create(
+						game.cardIds.orca_56c6c27a_e340_4fce_be4b_b93aa18ffdf3,
+						owner,
+					);
 					await owner.summon(orca);
 				},
 			],
@@ -41,7 +44,10 @@ export const blueprint: Blueprint = {
 				async () => {
 					// Summon six 1/1 Otters with Rush
 					for (let index = 0; index < 6; index++) {
-						const otter = await Card.create(game.cardIds.otter_95, owner);
+						const otter = await Card.create(
+							game.cardIds.otter_992de80a_5cde_4447_8d95_77c74d65183c,
+							owner,
+						);
 						await owner.summon(otter);
 					}
 				},
@@ -56,7 +62,10 @@ export const blueprint: Blueprint = {
 
 		// There should be 1 Orca on the board
 		assert.equal(
-			owner.board.filter((card) => card.id === game.cardIds.orca_96).length,
+			owner.board.filter(
+				(card) =>
+					card.id === game.cardIds.orca_56c6c27a_e340_4fce_be4b_b93aa18ffdf3,
+			).length,
 			1,
 		);
 
@@ -69,7 +78,10 @@ export const blueprint: Blueprint = {
 
 		// There should be 6 Otters on the board
 		assert.equal(
-			owner.board.filter((card) => card.id === game.cardIds.otter_95).length,
+			owner.board.filter(
+				(card) =>
+					card.id === game.cardIds.otter_992de80a_5cde_4447_8d95_77c74d65183c,
+			).length,
 			6,
 		);
 	},

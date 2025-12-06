@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.Lackey],
-	id: 28,
+	id: "39591f26-9ab3-455d-b4db-331ca8fca293",
 
 	attack: 1,
 	health: 1,
@@ -75,7 +75,10 @@ export const blueprint: Blueprint = {
 			owner.board.some((card) => card.cost === cost);
 
 		// Summon a sheep
-		const sheep = await Card.create(game.cardIds.sheep_1, owner);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			owner,
+		);
 		await owner.summon(sheep);
 
 		// There shouldn't exist a minion with 1 more cost than the sheep.

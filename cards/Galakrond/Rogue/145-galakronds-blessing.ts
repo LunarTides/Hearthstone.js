@@ -18,7 +18,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 145,
+	id: "a38a06d4-a803-4582-89f5-43de03e372d6",
 
 	enchantmentPriority: EnchantmentPriority.High,
 

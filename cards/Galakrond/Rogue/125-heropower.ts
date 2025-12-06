@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 125,
+	id: "3a6d5242-4e2d-4092-b997-aaa41ca8cfb5",
 
 	async heropower(self, owner) {
 		// Add a lacky to your hand.

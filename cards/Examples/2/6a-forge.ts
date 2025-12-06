@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 75,
+	id: "a40c7cfd-8e84-41b6-b234-3d79f6423e75",
 
 	attack: 1,
 	health: 1,
@@ -27,7 +27,10 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		// Put the id of the forged counterpart, like in corrupt.
-		self.addKeyword(Keyword.Forge, game.cardIds.forgedExample_76);
+		self.addKeyword(
+			Keyword.Forge,
+			game.cardIds.forgedExample_30449537_f8fb_4dc7_9056_ffa98d2c3f75,
+		);
 	},
 
 	async test(self, owner) {

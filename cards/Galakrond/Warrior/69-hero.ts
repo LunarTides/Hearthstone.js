@@ -18,10 +18,11 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: true,
 	tags: [Tag.Galakrond],
-	id: 69,
+	id: "6f79759f-3e52-46cd-871d-d354b71a41ae",
 
 	armor: 5,
-	heropowerId: game.cardIds.galakrondsMight_127,
+	heropowerId:
+		game.cardIds.galakrondsMight_a62285a5_ae61_4e83_bea1_6340b17ff13e,
 
 	async battlecry(self, owner) {
 		// Draw 1 minion. Give them +4/+4.

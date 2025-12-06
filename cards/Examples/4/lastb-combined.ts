@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [Tag.Quest],
-	id: 60,
+	id: "7bdf3eed-ea6e-436c-a531-7e2b3ab15705",
 
 	spellSchools: [SpellSchool.None],
 
@@ -51,7 +51,9 @@ export const blueprint: Blueprint = {
 						// addEnchantment broadcasts the CreateCard event. Return here to avoid an infinite loop.
 						if (
 							game.event.is(key, value, Event.CreateCard) &&
-							value.id === game.cardIds.combinedExample4Enchantment_147
+							value.id ===
+								game.cardIds
+									.combinedExample4Enchantment_9e96a59e_0025_4f9a_acb4_ddd2f142abaf
 						) {
 							return;
 						}
@@ -62,7 +64,8 @@ export const blueprint: Blueprint = {
 						)) {
 							if (
 								minion.enchantmentExists(
-									game.cardIds.combinedExample4Enchantment_147,
+									game.cardIds
+										.combinedExample4Enchantment_9e96a59e_0025_4f9a_acb4_ddd2f142abaf,
 									self,
 								)
 							) {
@@ -70,7 +73,8 @@ export const blueprint: Blueprint = {
 							}
 
 							await minion.addEnchantment(
-								game.cardIds.combinedExample4Enchantment_147,
+								game.cardIds
+									.combinedExample4Enchantment_9e96a59e_0025_4f9a_acb4_ddd2f142abaf,
 								self,
 							);
 						}
@@ -107,7 +111,8 @@ export const blueprint: Blueprint = {
 						 */
 						for (const minion of owner.hand) {
 							await minion.removeEnchantment(
-								game.cardIds.combinedExample4Enchantment_147,
+								game.cardIds
+									.combinedExample4Enchantment_9e96a59e_0025_4f9a_acb4_ddd2f142abaf,
 								self,
 							);
 						}

@@ -22,6 +22,7 @@ import { parseTags } from "chalk-tags";
 // Make a custom `input` implementation.
 // This is to remove that stupid padding that comes with the standard implementation.
 // TODO: A newline adds 2 newlines? Empty message adds 2 newlines? What??
+// TODO: Add support for up arrow for history.
 const readInput = createPrompt((config: { message: string }, done) => {
 	const [value, setValue] = useState("");
 
@@ -123,7 +124,11 @@ const prompt = {
 
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
-				const sheep = await Card.create(game.cardIds.sheep_1, player, true);
+				const sheep = await Card.create(
+					game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+					player,
+					true,
+				);
 				player.addToDeck(sheep);
 			}
 

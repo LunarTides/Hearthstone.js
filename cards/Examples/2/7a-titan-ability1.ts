@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 79,
+	id: "c01749a3-fdf2-4466-8628-858b239ddd92",
 
 	spellSchools: [SpellSchool.None],
 
@@ -51,7 +51,10 @@ export const blueprint: Blueprint = {
 		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
-		const sheep = await Card.create(game.cardIds.sheep_1, opponent);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			opponent,
+		);
 		await opponent.summon(sheep);
 
 		// Kill the sheep

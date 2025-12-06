@@ -11,8 +11,8 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.StartingHero],
-	id: 7,
+	id: "f918b618-d707-4f96-a99d-a1922724446f",
 
 	armor: 0,
-	heropowerId: game.cardIds.armorUp_117,
+	heropowerId: game.cardIds.armorUp_ab216cd7_acda_432e_bde4_d3568846e6f2,
 };

@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 123,
+	id: "eda9ec96-b715-4146-91a9-a9a327ea7989",
 
 	async heropower(self, owner) {
 		// +1 Attack this turn.

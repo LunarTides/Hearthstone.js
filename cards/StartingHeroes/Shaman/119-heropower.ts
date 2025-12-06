@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 119,
+	id: "366a12ef-3958-4329-ad5c-ba740bc7d1a4",
 
 	async heropower(self, owner) {
 		// Filter away totem cards that is already on the player's side of the board.

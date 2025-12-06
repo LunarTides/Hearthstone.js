@@ -566,18 +566,27 @@ export const debugCommands: CommandList = {
 
 		const cardName = args.join(" ");
 
-		const cards = await Card.allFromName(cardName);
-		let card = cards[0];
+		let cards = await Card.allFromName(cardName);
+		if (cards.length <= 0) {
+			// Check to see if there are ids starting with the input.
+			cards = game.cards.filter((c) =>
+				c.id.startsWith(cardName.replace(/^#/, "")),
+			);
+		}
+
+		let card: Card | undefined = cards[0];
 
 		// If there are multiple cards with the same name, ask the user to choose one.
 		if (cards.length > 1) {
-			const i = parseInt(
-				await game.input(
-					`<yellow>Multiple cards with the name '</yellow>${cardName}<yellow>' found. Which one will you select?</yellow>\n${(await Promise.all(cards.map(async (c, i) => await c.readable(i + 1)))).join("\n")}\n`,
-				),
-				10,
+			const user = await game.input(
+				`<yellow>Multiple cards matching the name/id '</yellow>${cardName}<yellow>' found. Which one will you select?</yellow>\n${(await Promise.all(cards.map(async (c, i) => await c.readable(i + 1)))).join("\n")}\n`,
 			);
 
+			if (game.functions.interact.isInputExit(user)) {
+				return false;
+			}
+
+			const i = parseInt(user, 10);
 			if (Number.isNaN(i) || i <= 0 || i > cards.length) {
 				await game.pause("<red>Invalid choice.</red>\n");
 				return false;

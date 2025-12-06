@@ -1,4 +1,3 @@
-import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	Class,
@@ -97,7 +96,7 @@ export async function create(
 		rarity,
 		collectible,
 		tags: [],
-		id: 0,
+		id: game.cardIds.null,
 	};
 
 	switch (type) {
@@ -131,7 +130,8 @@ export async function create(
 		case Type.Hero: {
 			blueprint = Object.assign(blueprint, {
 				armor: card.armor,
-				heropowerId: await Card.latestId(),
+				// TODO: Get heropower id.
+				heropowerId: game.cardIds.null,
 			});
 
 			break;

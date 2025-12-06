@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 108,
+	id: "2ef76c34-54ca-43ca-bde2-15450178fe89",
 
 	spellSchools: [SpellSchool.None],
 
@@ -45,7 +45,10 @@ export const blueprint: Blueprint = {
 		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
-		const sheep = await Card.create(game.cardIds.sheep_1, opponent);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			opponent,
+		);
 		await opponent.summon(sheep);
 
 		// Check if the sheep's owner is the opponent, is on the opponent's side of the board, and not the friendly player's side of the board

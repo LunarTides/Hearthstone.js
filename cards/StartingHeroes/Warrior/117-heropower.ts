@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 117,
+	id: "ab216cd7-acda-432e-bde4-d3568846e6f2",
 
 	async heropower(self, owner) {
 		// Gain 2 Armor.

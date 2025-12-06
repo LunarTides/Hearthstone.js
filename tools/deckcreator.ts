@@ -160,12 +160,24 @@ function sortCards(_cards: Card[]): Card[] {
 	const type = settings.sort.type;
 	const order = settings.sort.order;
 
-	const calcOrder = (a: number, b: number) => {
-		if (order === SortOrder.Ascending) {
-			return a - b;
+	const calcOrder = (a: string | number, b: string | number) => {
+		if (typeof a !== typeof b) {
+			throw new TypeError("A and B are different types.");
 		}
 
-		return b - a;
+		if (order === SortOrder.Ascending) {
+			if (typeof a === "string") {
+				return a.localeCompare(b as string);
+			}
+
+			return a - (b as number);
+		}
+
+		if (typeof a === "string") {
+			return -a.localeCompare(b as string);
+		}
+
+		return (b as number) - a;
 	};
 
 	if (type === "rarity") {
@@ -590,7 +602,7 @@ function findCard(cardName: string): Card | undefined {
 
 	for (const card of Object.values(filteredCards)) {
 		if (
-			card.id === game.lodash.parseInt(cardName) ||
+			card.id === cardName ||
 			(typeof cardName === "string" &&
 				card.name.toLowerCase() === cardName.toLowerCase())
 		) {
@@ -634,7 +646,7 @@ async function showDeck(): Promise<void> {
 
 	console.log("Deck Size: <yellow>%s</yellow>\n", deck.length);
 
-	const cards = deck.reduce<Record<number, [Card, number]>>((acc, card) => {
+	const cards = deck.reduce<Record<string, [Card, number]>>((acc, card) => {
 		acc[card.id] = [card, (acc[card.id]?.[1] ?? 0) + 1];
 		return acc;
 	}, {});

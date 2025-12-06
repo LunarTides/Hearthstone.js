@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.Lackey],
-	id: 26,
+	id: "4cde4d98-b048-4369-9957-2879db026746",
 
 	attack: 1,
 	health: 1,
@@ -54,7 +54,10 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// Summon a sheep
-		const sheep = await Card.create(game.cardIds.sheep_1, owner);
+		const sheep = await Card.create(
+			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			owner,
+		);
 		await owner.summon(sheep);
 
 		// Activate the battlecry, choose the sheep

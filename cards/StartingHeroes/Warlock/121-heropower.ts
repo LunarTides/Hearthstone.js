@@ -12,7 +12,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 121,
+	id: "bdb57b4f-87ab-4586-a5fe-c3ed22ad270b",
 
 	async heropower(self, owner) {
 		// Draw a card and take 2 damage.

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 45,
+	id: "395c8d57-cfca-466e-9896-3ed1a54add04",
 
 	attack: 5,
 	health: 3,
@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		/*
-		 * Put the names of the cards here. The "null0" is this card. You could replace it with `0`, but thats bad practice.
+		 * Put the names of the cards here. The "null" is this card.
 		 *
 		 * The board will look like this
 		 * Left Arm
@@ -35,9 +35,13 @@ export const blueprint: Blueprint = {
 		 * Right Arm
 		 */
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_43,
-			game.cardIds.null_0,
-			game.cardIds.rightArm_44,
+			// Remember to use the right ones.
+			// Right: leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec
+			// Wrong: leftArm_65ff5692_391d_42d0_861d_ef08f156e566
+			// Look in the `9a-colossal-left.ts` file if you're unsure.
+			game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+			game.cardIds.null,
+			game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
 		]);
 	},
 
@@ -46,8 +50,19 @@ export const blueprint: Blueprint = {
 
 		const board = owner.board;
 
-		assert.ok(board.some((card) => card.id === game.cardIds.leftArm_43));
+		assert.ok(
+			board.some(
+				(card) =>
+					card.id === game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+			),
+		);
 		assert.ok(board.some((card) => card.id === self.id));
-		assert.ok(board.some((card) => card.id === game.cardIds.rightArm_44));
+		assert.ok(
+			board.some(
+				(card) =>
+					card.id ===
+					game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
+			),
+		);
 	},
 };

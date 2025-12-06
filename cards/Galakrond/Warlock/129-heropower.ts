@@ -13,12 +13,15 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: 129,
+	id: "53dba7b8-d520-4fc5-97d7-4094887f13e1",
 
 	async heropower(self, owner) {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
-			const card = await Card.create(game.cardIds.draconicImp_21, owner);
+			const card = await Card.create(
+				game.cardIds.draconicImp_a0cb8046_0c55_4ee6_97ab_1f6f6547b1b4,
+				owner,
+			);
 			if (!card) {
 				break;
 			}
@@ -28,7 +31,12 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const countImps = () => owner.board.filter((card) => card.id === 21).length;
+		const countImps = () =>
+			owner.board.filter(
+				(card) =>
+					card.id ===
+					game.cardIds.draconicImp_a0cb8046_0c55_4ee6_97ab_1f6f6547b1b4,
+			).length;
 
 		// There should be 0 imps by default
 		assert.equal(countImps(), 0);

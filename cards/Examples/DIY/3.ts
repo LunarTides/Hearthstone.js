@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.DIY],
-	id: 63,
+	id: "1f9fed1a-f3d3-4a94-9acf-6a250e049614",
 
 	spellSchools: [SpellSchool.None],
 

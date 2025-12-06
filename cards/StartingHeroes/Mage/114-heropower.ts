@@ -13,7 +13,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 114,
+	id: "4b71b3e6-0dcb-4119-9189-5885718bac5b",
 
 	async heropower(self, owner) {
 		// Deal 1 damage.

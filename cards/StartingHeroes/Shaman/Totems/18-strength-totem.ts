@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [Tag.Totem],
-	id: 18,
+	id: "0ab6c884-d9c1-4cb1-8d7f-b531c448f725",
 
 	attack: 0,
 	health: 2,
@@ -52,13 +52,19 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = await Card.create(game.cardIds.sheep_1, owner);
+			const card = await Card.create(
+				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				owner,
+			);
 			await owner.summon(card);
 		}
 
 		const checkSheepAttack = (shouldBeMore: boolean) =>
 			owner.board
-				.filter((card) => card.id === 1)
+				.filter(
+					(card) =>
+						card.id === game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				)
 				.some(
 					(card) =>
 						card.health === 1 &&

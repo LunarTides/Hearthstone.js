@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Rare,
 	collectible: true,
 	tags: [],
-	id: 94,
+	id: "aaeacea4-df38-417d-bc51-4e0948461ff3",
 
 	spellSchools: [SpellSchool.Nature],
 

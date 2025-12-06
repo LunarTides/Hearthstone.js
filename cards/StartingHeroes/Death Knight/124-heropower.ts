@@ -13,13 +13,16 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: 124,
+	id: "f9e328c6-9195-4de0-a14d-02f797d0f3ba",
 
 	async heropower(self, owner) {
 		// Summon a 1/1 Ghoul with Charge. It dies at end of turn.
 
 		// Create the Ghoul
-		const minion = await Card.create(game.cardIds.frailGhoul_23, owner);
+		const minion = await Card.create(
+			game.cardIds.frailGhoul_4ed9bfc1_90f5_417a_b72a_002812cc688d,
+			owner,
+		);
 
 		// Summon the Ghoul
 		await owner.summon(minion);
@@ -28,7 +31,12 @@ export const blueprint: Blueprint = {
 	},
 
 	async test(self, owner) {
-		const lookForMinion = () => owner.board.some((card) => card.id === 23);
+		const lookForMinion = () =>
+			owner.board.some(
+				(card) =>
+					card.id ===
+					game.cardIds.frailGhoul_4ed9bfc1_90f5_417a_b72a_002812cc688d,
+			);
 
 		// The minion shouldn't be on the board at first.
 		assert(!lookForMinion());

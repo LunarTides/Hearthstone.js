@@ -10,7 +10,7 @@
 		"format": "bunx biome check --fix",
 		"ci": "bunx biome ci && bun test && bunx tsc && bun ./scripts/test/cards.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts",
 		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
-		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter",
+		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter"
 	},
 	"repository": {
 		"type": "git",

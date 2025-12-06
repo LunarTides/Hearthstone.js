@@ -1,4 +1,3 @@
-import { Card } from "@Game/card.ts";
 import {
 	type Blueprint,
 	type BlueprintWithOptional,
@@ -56,14 +55,14 @@ function applyCard(_card: BlueprintWithOptional): Blueprint {
 			rarity: Rarity.Free,
 			collectible: false,
 			tags: [],
-			id: 0,
+			id: game.cardIds.null,
 
 			attack: 1,
 			health: 1,
 			tribes: [Tribe.None],
 			spellSchools: [SpellSchool.None],
 			armor: 5,
-			heropowerId: game.cardIds.null_0,
+			heropowerId: game.cardIds.null,
 			durability: 2,
 			cooldown: 2,
 			enchantmentPriority: EnchantmentPriority.Normal,
@@ -156,7 +155,7 @@ async function common(): Promise<BlueprintWithOptional> {
 		keywords: realKeywords,
 		collectible: true,
 		tags: [],
-		id: 0,
+		id: game.cardIds.null,
 	};
 }
 
@@ -221,11 +220,12 @@ const cardTypeFunctions: {
 
 		const armor =
 			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
-		const heropowerId = game.lodash.parseInt(
-			(await input("Hero Power ID (Leave blank to create a new one): ")) || "0",
-		);
+		const heropowerId =
+			(await input("Hero Power ID (Leave blank to create a new one): ")) ||
+			game.cardIds.null;
 
-		if (heropowerId === 0) {
+		if (heropowerId === game.cardIds.null) {
+			// TODO: Get the heropower id.
 			console.log("\n<green bold>Make the Hero Power:<green bold>\n");
 			if (!(await main({ overrideCardType: Type.HeroPower }))) {
 				throw new Error("Failed to create hero power");
@@ -235,7 +235,7 @@ const cardTypeFunctions: {
 		return applyCard({
 			...card,
 			armor,
-			heropowerId: heropowerId || (await Card.latestId()),
+			heropowerId,
 		});
 	},
 
