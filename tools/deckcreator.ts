@@ -602,9 +602,9 @@ function findCard(cardName: string): Card | undefined {
 
 	for (const card of Object.values(filteredCards)) {
 		if (
-			card.id === cardName ||
+			card.id.startsWith(cardName) ||
 			(typeof cardName === "string" &&
-				card.name.toLowerCase() === cardName.toLowerCase())
+				card.name.toLowerCase().startsWith(cardName.toLowerCase()))
 		) {
 			returnCard = card;
 		}
