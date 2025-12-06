@@ -21,6 +21,8 @@ interface Metadata {
 		pack: string;
 	};
 	name: string;
+	description: string;
+	license: string;
 	authors: string[];
 	links: Record<string, string>;
 	requires: {
@@ -269,6 +271,10 @@ async function exportPack() {
 					pack: "1.0.0",
 				},
 				name: "",
+				description: "",
+				// NOTE: Can't legally license this under an open-source license without express consent from the user.
+				// So it defaults to "Proprietary"
+				license: "Proprietary",
 				authors: [],
 				links: {},
 				requires: {
@@ -439,6 +445,17 @@ async function configureMetadata(metadata: Metadata) {
 					description: "The name of the pack. This must be unique.",
 				},
 				{
+					name: "Description",
+					value: "description",
+					description: "The description of the pack.",
+				},
+				{
+					name: "License",
+					value: "license",
+					description:
+						"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
+				},
+				{
 					name: "Authors",
 					value: "authors",
 					description: "The authors of the pack.",
@@ -485,6 +502,63 @@ async function configureMetadata(metadata: Metadata) {
 			});
 
 			dirty = true;
+		} else if (answer === "description") {
+			metadata.description = await input({
+				message: "Set the description of the pack.",
+				default: metadata.description,
+			});
+
+			dirty = true;
+		} else if (answer === "license") {
+			const license = await select({
+				message: "Set the license of the pack.",
+				choices: [
+					{
+						value: "Proprietary",
+						description:
+							"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
+					},
+					new Separator(),
+					{
+						value: "GPL-2.0",
+						description: "GNU General Public License Version 2.0",
+					},
+					{
+						value: "GPL-3.0",
+						description: "GNU General Public License Version 3.0",
+					},
+					{
+						value: "AGPL-3.0",
+						description: "GNU Affero General Public License Version 3.0",
+					},
+					{
+						value: "MIT",
+						description: "MIT License",
+					},
+					{
+						value: "Apache-2.0",
+						description: "Apache License Version 2.0",
+					},
+					new Separator(),
+					{
+						name: "Other",
+						value: "other",
+						description: "Specify another license.",
+					},
+				],
+				default: metadata.license,
+				loop: false,
+				pageSize: 12,
+			});
+
+			if (license === "other") {
+				metadata.license = await input({ message: "License." });
+				dirty = true;
+				continue;
+			}
+
+			metadata.license = license;
+			dirty = true;
 		} else if (answer === "authors") {
 			await configureMetadataArray(metadata.authors);
 		} else if (answer === "links") {
@@ -507,8 +581,16 @@ async function configureMetadata(metadata: Metadata) {
 				return false;
 			}
 		} else if (answer === "done") {
+			let message = "Are you sure you are done configuring the metadata?";
+
+			if (metadata.license === "Proprietary") {
+				message = parseTags(
+					"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?<yellow>",
+				);
+			}
+
 			const done = await confirm({
-				message: "Are you sure you are done configuring the metadata?",
+				message,
 				default: false,
 			});
 
