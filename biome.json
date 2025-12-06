@@ -16,11 +16,6 @@
 		}
 	},
 	"files": {
-		"includes": [
-			"**",
-			"!vanillacards.json",
-			"!cards/ids.ts",
-			"!**/sites"
-		]
+		"includes": ["**", "!vanillacards.json", "!cards/ids.ts", "!**/sites"]
 	}
 }
