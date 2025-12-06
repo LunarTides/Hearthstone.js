@@ -29,7 +29,7 @@ interface Metadata {
 		packs: string[];
 		cards: string[];
 		classes: string[];
-		// Add tribes, etc...
+		// TODO: Add tribes, etc...
 	};
 }
 
@@ -152,7 +152,7 @@ async function importPack() {
 		hub.watermark(false);
 
 		console.log(
-			"Extract and drag the folder into '/packs/. Press enter when you're done.\n",
+			"Download a pack, then drag the extraced folder into '/packs/'.\n",
 		);
 
 		const packs = await getPacks();
@@ -180,19 +180,11 @@ async function importPack() {
 			continue;
 		}
 
-		await game.functions.util.fs("mkdir", `/cards/Packs/${pack}`, {
-			recursive: true,
-		});
-
-		await game.functions.util.searchCardsFolder(
-			async (path, content, file, index) => {
-				await game.functions.util.fs(
-					"writeFile",
-					`/cards/Packs/${pack}/${file.name}`,
-					content,
-				);
-			},
+		await game.functions.util.fs(
+			"cp",
 			`/packs/${pack}`,
+			game.functions.util.restrictPath(`/cards/Packs/${pack}`),
+			{ recursive: true },
 		);
 
 		await validate(false, false);
