@@ -1,4 +1,7 @@
 // Allows importing / exporting .hspkg files.
+// PERF: This tool is *not* performant.
+// But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
+
 import { createGame } from "@Game/game.ts";
 import { randomUUID } from "node:crypto";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
@@ -58,14 +61,14 @@ async function customSelect(
 	message: string,
 	array: string[],
 	arrayTransform:
-		| ((i: number, element: string) => { name: string; value: string })
+		| ((i: number, element: string) => Promise<{ name: string; value: string }>)
 		| undefined,
 	...otherChoices: (Separator | string | false)[]
 ) {
 	const choices = [];
 	for (const [i, element] of Object.entries(array)) {
 		choices.push(
-			arrayTransform?.(parseInt(i, 10), element) ?? {
+			(await arrayTransform?.(parseInt(i, 10), element)) ?? {
 				name: element,
 				value: i,
 			},
@@ -152,14 +155,61 @@ async function importPack() {
 		hub.watermark(false);
 
 		console.log(
-			"Download a pack, then drag the extraced folder into '/packs/'.\n",
+			"Download a pack, then drag the extracted folder into '/packs/'.\n",
 		);
 
 		const packs = await getPacks();
+
+		// Check if the pack already exists. If it does, show "Update ${oldVersion} -> ${newVersion}"
+		const importedPacks: { name: string; version: string }[] = [];
+		if (await game.functions.util.fs("exists", "cards/Packs")) {
+			await game.functions.util.searchFolder(
+				"/cards/Packs",
+				async (index, path, file) => {
+					if (
+						!file.isDirectory() ||
+						!(await game.functions.util.fs("exists", `${path}/meta.jsonc`))
+					) {
+						return;
+					}
+
+					// Get the version.
+					const metadata: Metadata = JSON.parse(
+						(await game.functions.util.fs(
+							"readFile",
+							`${path}/meta.jsonc`,
+							"utf8",
+						)) as string,
+					);
+
+					importedPacks.push({
+						name: file.name,
+						version: metadata.versions.pack,
+					});
+				},
+			);
+		}
+
 		const answer = await customSelect(
 			"Choose a Pack",
 			packs,
-			undefined,
+			async (i, pack) => {
+				const o = importedPacks.find((o) => o.name === pack);
+
+				// Get the new version.
+				const metadata: Metadata = JSON.parse(
+					(await game.functions.util.fs(
+						"readFile",
+						`/packs/${pack}/meta.jsonc`,
+						"utf8",
+					)) as string,
+				);
+
+				return {
+					name: `${pack}${o ? ` (Update ${o.version} -> ${metadata.versions.pack})` : ""}`,
+					value: i.toString(),
+				};
+			},
 			new Separator(),
 			"Refresh",
 			"Done",
@@ -317,7 +367,7 @@ async function configureMetadataArray(array: string[]) {
 		const answer = await customSelect(
 			"Configure Array",
 			array,
-			(i, element) => ({ name: `Element ${i}`, value: i.toString() }),
+			async (i, element) => ({ name: `Element ${i}`, value: i.toString() }),
 			new Separator(),
 			"New",
 			"Delete",
@@ -365,7 +415,7 @@ async function configureMetadataObject(
 		const answer = await customSelect(
 			"Configure Object",
 			Object.keys(object),
-			(i, element) => ({ name: element, value: `element-${element}` }),
+			async (i, element) => ({ name: element, value: `element-${element}` }),
 			allowAddingAndDeleting && new Separator(),
 			allowAddingAndDeleting && "New",
 			allowAddingAndDeleting && "Delete",
