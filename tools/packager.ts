@@ -5,6 +5,7 @@
 import { createGame } from "@Game/game.ts";
 import { randomUUID } from "node:crypto";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
+import seven from "7zip-min";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
@@ -37,20 +38,37 @@ interface Metadata {
 }
 
 async function getPacks() {
-	const packs: string[] = [];
+	const packs: {
+		uuid: string;
+		path: string;
+		parentPath: string;
+		compressed: boolean;
+	}[] = [];
 
 	await game.functions.util.searchFolder(
 		"/packs",
 		async (index, path, file) => {
 			if (
 				!file.parentPath.endsWith("/packs") ||
-				!file.isDirectory() ||
-				!(await game.functions.util.fs("exists", `${path}/meta.jsonc`))
+				!(
+					(file.isFile() && file.name.endsWith(".7z")) ||
+					(file.isDirectory() &&
+						(await game.functions.util.fs("exists", `${path}/meta.jsonc`)))
+				)
 			) {
 				return;
 			}
 
-			packs.push(file.name);
+			const uuid = file.isDirectory()
+				? file.name
+				: file.name.split(".").slice(0, -1).join(".");
+
+			packs.push({
+				uuid,
+				path,
+				parentPath: file.parentPath,
+				compressed: file.name.endsWith(".7z"),
+			});
 		},
 	);
 
@@ -70,6 +88,7 @@ async function parseMetadataFile(pack: string) {
 			"readFile",
 			`/packs/${pack}/meta.jsonc`,
 			"utf8",
+			{ invalidateCache: true },
 		)) as string,
 	);
 
@@ -114,73 +133,10 @@ async function importPack() {
 		);
 
 		const packs = await getPacks();
-
-		// Check if the pack already exists. If it does, show "Update ${oldVersion} -> ${newVersion}"
-		const importedPacks: { name: string; version: string }[] = [];
-		if (await game.functions.util.fs("exists", "cards/Packs")) {
-			await game.functions.util.searchFolder(
-				"/cards/Packs",
-				async (index, path, file) => {
-					if (
-						!file.isDirectory() ||
-						!(await game.functions.util.fs("exists", `${path}/meta.jsonc`))
-					) {
-						return;
-					}
-
-					// Get the version.
-					const metadata: Metadata = JSON.parse(
-						(await game.functions.util.fs(
-							"readFile",
-							`${path}/meta.jsonc`,
-							"utf8",
-						)) as string,
-					);
-
-					importedPacks.push({
-						name: file.name,
-						version: metadata.versions.pack,
-					});
-				},
-			);
-		}
-
-		const answer = await game.prompt.customSelect(
+		const answer = await customSelect(
 			"Choose a Pack",
-			packs,
-			{
-				arrayTransform: async (i, pack) => {
-					const o = importedPacks.find((o) => o.name === pack);
-
-					// Get the new version.
-					const metadata: Metadata = JSON.parse(
-						(await game.functions.util.fs(
-							"readFile",
-							`/packs/${pack}/meta.jsonc`,
-							"utf8",
-						)) as string,
-					);
-
-					let updateText = "";
-					let disabled = false;
-
-					if (o) {
-						if (o.version === metadata.versions.pack) {
-							updateText = ` (Already imported)`;
-							disabled = true;
-						} else {
-							updateText = ` (Update ${o.version} -> ${metadata.versions.pack})`;
-						}
-					}
-
-					return {
-						name: `${pack}${updateText}`,
-						value: i.toString(),
-						disabled,
-					};
-				},
-				hideBack: true,
-			},
+			packs.map((p) => p.uuid),
+			undefined,
 			new Separator(),
 			"Refresh",
 			"Done",
@@ -196,29 +152,37 @@ async function importPack() {
 		const index = parseInt(answer, 10);
 		const pack = packs[index];
 
+		if (pack.compressed) {
+			await seven.unpack(pack.path, pack.parentPath);
+			await game.functions.util.fs("rm", pack.path);
+
+			pack.path = pack.path.split(".").slice(0, -1).join(".");
+			pack.compressed = false;
+		}
+
 		// Read and validate metadata.
-		if (!(await parseMetadataFile(pack))) {
+		if (!(await parseMetadataFile(pack.uuid))) {
 			continue;
 		}
 
 		await game.functions.util.fs(
 			"cp",
-			`/packs/${pack}`,
-			game.functions.util.restrictPath(`/cards/Packs/${pack}`),
+			pack.path,
+			game.functions.util.restrictPath(`/cards/Packs/${pack.uuid}`),
 			{ recursive: true },
 		);
 
 		await validate(false, false);
 
 		console.log(
-			`<green>The pack has been imported into '/cards/Packs/${pack}'.</green>\n`,
+			`<green>The pack has been imported into '/cards/Packs/${pack.uuid}'.</green>\n`,
 		);
 
 		const deleteConfirm = await confirm({
-			message: `Do you want to delete '/packs/${pack}'?`,
+			message: `Do you want to delete '/packs/${pack.uuid}'?`,
 		});
 		if (deleteConfirm) {
-			await game.functions.util.fs("rm", `/packs/${pack}`, {
+			await game.functions.util.fs("rm", pack.path, {
 				recursive: true,
 				force: true,
 			});
@@ -257,8 +221,16 @@ async function exportPack() {
 		if (!Number.isNaN(index)) {
 			const pack = packs[index];
 
+			if (pack.compressed) {
+				await seven.unpack(pack.path, pack.parentPath);
+				await game.functions.util.fs("rm", pack.path);
+
+				pack.path = pack.path.split(".").slice(0, -1).join(".");
+				pack.compressed = false;
+			}
+
 			if (
-				!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))
+				!(await game.functions.util.fs("exists", `${pack.path}/meta.jsonc`))
 			) {
 				await game.pause(
 					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
@@ -266,12 +238,13 @@ async function exportPack() {
 				continue;
 			}
 
-			uuid = pack;
+			uuid = pack.uuid;
 			metadata = JSON.parse(
 				(await game.functions.util.fs(
 					"readFile",
-					`/packs/${pack}/meta.jsonc`,
+					`${pack.path}/meta.jsonc`,
 					"utf8",
+					{ invalidateCache: true },
 				)) as string,
 			);
 		} else {
@@ -324,7 +297,21 @@ async function exportPack() {
 		);
 
 		await game.pause(
-			`Done.\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Compress the 'packs/${uuid}' folder.\n3. Send the compressed file to whoever you'd like.\n`,
+			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
+		);
+
+		await seven.pack(
+			game.functions.util.restrictPath(`/packs/${uuid}`),
+			game.functions.util.restrictPath(`/packs/${uuid}.7z`),
+		);
+
+		await game.functions.util.fs("rm", `/packs/${uuid}`, {
+			recursive: true,
+			force: true,
+		});
+
+		await game.pause(
+			`<green>Done.</green> Send the compressed file to whoever you'd like.\n`,
 		);
 	}
 }
