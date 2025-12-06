@@ -1,14 +1,14 @@
-import { sequence } from '@sveltejs/kit/hooks';
-import * as auth from '$lib/server/auth';
-import type { Handle } from '@sveltejs/kit';
-import { paraglideMiddleware } from '$lib/paraglide/server';
+import { sequence } from "@sveltejs/kit/hooks";
+import * as auth from "$lib/server/auth";
+import type { Handle } from "@sveltejs/kit";
+import { paraglideMiddleware } from "$lib/paraglide/server";
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
 
 		return resolve(event, {
-			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
+			transformPageChunk: ({ html }) => html.replace("%paraglide.lang%", locale),
 		});
 	});
 
