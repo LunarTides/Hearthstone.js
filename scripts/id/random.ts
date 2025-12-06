@@ -2,7 +2,6 @@
  * A collection of functions relating to reading and writing ids of blueprints.
  */
 
-import { input } from "@inquirer/prompts";
 import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
