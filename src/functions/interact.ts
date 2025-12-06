@@ -21,6 +21,7 @@ import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
 // This is to remove that stupid padding that comes with the standard implementation.
+// TODO: A newline adds 2 newlines? Empty message adds 2 newlines? What??
 const readInput = createPrompt((config: { message: string }, done) => {
 	const [value, setValue] = useState("");
 

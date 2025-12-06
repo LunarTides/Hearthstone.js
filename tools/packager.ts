@@ -50,14 +50,11 @@ async function parseMetadataFile(pack: string) {
 
 	// Metadata version
 	if (metadata.versions.metadata !== metadataVersion) {
-		const skip = await confirm(
-			{
-				message: parseTags(
-					"<yellow>Incompatible metadata version. Skip metadata parsing?</yellow>",
-				),
-			},
-			{ clearPromptOnDone: true },
-		);
+		const skip = await confirm({
+			message: parseTags(
+				"<yellow>Incompatible metadata version. Skip metadata parsing?</yellow>",
+			),
+		});
 
 		return skip;
 	}
@@ -69,14 +66,11 @@ async function parseMetadataFile(pack: string) {
 	const metaMajorVersion = metadata.versions.game.split(".")[0];
 
 	if (currentMajorVersion !== metaMajorVersion) {
-		const skip = await confirm(
-			{
-				message: parseTags(
-					"<yellow>Incompatible game version. The pack will likely not work. Skip metadata parsing?</yellow>",
-				),
-			},
-			{ clearPromptOnDone: true },
-		);
+		const skip = await confirm({
+			message: parseTags(
+				"<yellow>Incompatible game version. The pack will likely not work. Skip metadata parsing?</yellow>",
+			),
+		});
 
 		return skip;
 	}
@@ -117,15 +111,12 @@ async function importPack() {
 			value: "done",
 		});
 
-		const answer = await select(
-			{
-				message: "Choose a Pack",
-				choices,
-				loop: false,
-				pageSize: 12,
-			},
-			{ clearPromptOnDone: true },
-		);
+		const answer = await select({
+			message: "Choose a Pack",
+			choices,
+			loop: false,
+			pageSize: 12,
+		});
 
 		if (answer === "done") {
 			break;
@@ -232,15 +223,12 @@ async function exportPack() {
 			value: "done",
 		});
 
-		const answer = await select(
-			{
-				message: "Choose a Pack",
-				choices,
-				loop: false,
-				pageSize: 12,
-			},
-			{ clearPromptOnDone: true },
-		);
+		const answer = await select({
+			message: "Choose a Pack",
+			choices,
+			loop: false,
+			pageSize: 12,
+		});
 
 		if (answer === "done") {
 			break;
@@ -350,15 +338,12 @@ async function configureMetadataArray(array: string[]) {
 			value: "done",
 		});
 
-		const answer = await select(
-			{
-				message: "Configure Array",
-				choices,
-				loop: false,
-				pageSize: 12,
-			},
-			{ clearPromptOnDone: true },
-		);
+		const answer = await select({
+			message: "Configure Array",
+			choices,
+			loop: false,
+			pageSize: 12,
+		});
 
 		if (answer === "new") {
 			const value = await input({
@@ -421,41 +406,29 @@ async function configureMetadataObject(
 			value: "done",
 		});
 
-		const answer = await select(
-			{
-				message: "Configure Object",
-				choices,
-				loop: false,
-				pageSize: 12,
-			},
-			{ clearPromptOnDone: true },
-		);
+		const answer = await select({
+			message: "Configure Object",
+			choices,
+			loop: false,
+			pageSize: 12,
+		});
 
 		if (allowAddingAndDeleting) {
 			if (answer === "new") {
-				const key = await input(
-					{
-						message: "Key.",
-					},
-					{ clearPromptOnDone: true },
-				);
-				const value = await input(
-					{
-						message: "Value.",
-					},
-					{ clearPromptOnDone: true },
-				);
+				const key = await input({
+					message: "Key.",
+				});
+				const value = await input({
+					message: "Value.",
+				});
 
 				object[key] = value;
 				dirty = true;
 				continue;
 			} else if (answer === "delete") {
-				const key = await input(
-					{
-						message: "Key.",
-					},
-					{ clearPromptOnDone: true },
-				);
+				const key = await input({
+					message: "Key.",
+				});
 
 				delete object[key];
 				dirty = true;
@@ -490,53 +463,50 @@ async function configureMetadata(metadata: Metadata) {
 		console.log(JSON.stringify(metadata, null, 4));
 		console.log();
 
-		const answer = await select(
-			{
-				message: "Configure Metadata",
-				choices: [
-					{
-						name: "Version",
-						value: "version",
-						description: "The version of the pack. Uses semver.",
-					},
-					{
-						name: "Name",
-						value: "name",
-						description: "The name of the pack. This must be unique.",
-					},
-					{
-						name: "Authors",
-						value: "authors",
-						description: "The authors of the pack.",
-					},
-					{
-						name: "Links",
-						value: "links",
-						description:
-							"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
-					},
-					{
-						name: "Requires",
-						value: "requires",
-						description: "Pack dependencies.",
-					},
-					new Separator(),
-					{
-						name: "Cancel",
-						value: "cancel",
-						description: "Cancel changes to the metadata.",
-					},
-					{
-						name: "Done",
-						value: "done",
-						description: "Done configuring metadata.",
-					},
-				],
-				loop: false,
-				pageSize: 12,
-			},
-			{ clearPromptOnDone: true },
-		);
+		const answer = await select({
+			message: "Configure Metadata",
+			choices: [
+				{
+					name: "Version",
+					value: "version",
+					description: "The version of the pack. Uses semver.",
+				},
+				{
+					name: "Name",
+					value: "name",
+					description: "The name of the pack. This must be unique.",
+				},
+				{
+					name: "Authors",
+					value: "authors",
+					description: "The authors of the pack.",
+				},
+				{
+					name: "Links",
+					value: "links",
+					description:
+						"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
+				},
+				{
+					name: "Requires",
+					value: "requires",
+					description: "Pack dependencies.",
+				},
+				new Separator(),
+				{
+					name: "Cancel",
+					value: "cancel",
+					description: "Cancel changes to the metadata.",
+				},
+				{
+					name: "Done",
+					value: "done",
+					description: "Done configuring metadata.",
+				},
+			],
+			loop: false,
+			pageSize: 12,
+		});
 
 		if (answer === "version") {
 			metadata.versions.pack = await input({
@@ -565,26 +535,20 @@ async function configureMetadata(metadata: Metadata) {
 				return false;
 			}
 
-			const done = await confirm(
-				{
-					message:
-						"Are you sure you want to cancel configuring the metadata? Your changes will be lost.",
-					default: false,
-				},
-				{ clearPromptOnDone: true },
-			);
+			const done = await confirm({
+				message:
+					"Are you sure you want to cancel configuring the metadata? Your changes will be lost.",
+				default: false,
+			});
 
 			if (done) {
 				return false;
 			}
 		} else if (answer === "done") {
-			const done = await confirm(
-				{
-					message: "Are you sure you are done configuring the metadata?",
-					default: false,
-				},
-				{ clearPromptOnDone: true },
-			);
+			const done = await confirm({
+				message: "Are you sure you are done configuring the metadata?",
+				default: false,
+			});
 
 			if (done) {
 				return true;
