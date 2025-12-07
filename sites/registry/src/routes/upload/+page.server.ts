@@ -5,6 +5,27 @@ import { fileTypeFromBuffer } from "file-type";
 import { join, resolve } from "path";
 import { tmpdir } from "os";
 import { m } from "$lib/paraglide/messages.js";
+import { db } from "$lib/server/db/index.js";
+import { pack } from "$lib/server/db/schema.js";
+
+interface Metadata {
+	versions: {
+		metadata: number;
+		game: string;
+		pack: string;
+	};
+	name: string;
+	description: string;
+	license: string;
+	authors: string[];
+	links: Record<string, string>;
+	requires: {
+		packs: string[];
+		cards: string[];
+		classes: string[];
+		// TODO: Add tribes, etc...
+	};
+}
 
 export const actions = {
 	default: async (event) => {
@@ -111,6 +132,30 @@ export const actions = {
 		}
 
 		// TODO: Parse meta file.
+		const metadataContent = await fs.readFile(`${packPath}/meta.jsonc`, "utf8");
+
+		// TODO: Make sure this works.
+		// TODO: Parse via zod.
+		const metadata: Metadata = JSON.parse(metadataContent);
+
+		await db.insert(pack).values({
+			uuid: folderName,
+			// TODO: Change this.
+			userId: "b4tm4c3oqlsmm6ffojogrdid",
+			metadataVersion: metadata.versions.metadata,
+			gameVersion: metadata.versions.game,
+			packVersion: metadata.versions.pack,
+			name: metadata.name,
+			description: metadata.description,
+			license: metadata.license,
+			authors: metadata.authors,
+
+			// TODO: Add setting for this.
+			approved: false,
+		});
+
+		// TODO: Add links.
+		// TODO: Parse cards.
 
 		const finalPath = `./static/assets/held/packs/${file.name.split(".").slice(0, -1).join(".")}`;
 

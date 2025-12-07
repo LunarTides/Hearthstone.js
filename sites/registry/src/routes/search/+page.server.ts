@@ -1,5 +1,6 @@
-import { error } from "@sveltejs/kit";
-import fs from "fs/promises";
+import { db } from "$lib/server/db/index.js";
+import { pack } from "$lib/server/db/schema.js";
+import { like } from "drizzle-orm";
 
 export const actions = {
 	default: async (event) => {
@@ -9,28 +10,11 @@ export const actions = {
 			return;
 		}
 
-		await fs.read;
+		const packs = await db
+			.select()
+			.from(pack)
+			.where(like(pack.name, `%${query}%`));
 
-		if (!(file instanceof File)) {
-			return;
-		}
-
-		if (
-			![
-				"application/zip",
-				"application/x-zip-compressed",
-				"application/x-7z-compressed",
-				"application/x-tar",
-			].includes(file.type)
-		) {
-			error(415, { message: "Invalid file type." });
-		}
-
-		if (file.size > 10_000_000) {
-			error(413, { message: "Upload too large." });
-		}
-
-		const stream = await file.stream().getReader().read();
-		await fs.writeFile(`./static/assets/held/${file.name}`, stream.value);
+		return { packs };
 	},
 };

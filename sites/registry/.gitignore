@@ -2,6 +2,8 @@ node_modules
 pgdata
 1
 
+static/assets/held/packs/*/**
+
 # Output
 .output
 .vercel
