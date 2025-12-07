@@ -1,4 +1,10 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hello_world": "Hello, {name} from en!",
+	"invalid_file_type": "Invalid file type.",
+	"upload_too_large": "Upload too large.",
+	"archive_too_many_files": "Too many files in archive.",
+	"archive_invalid": "Archive invalid.",
+	"archive_illegal_file_types": "Archive contains illegel file types.",
+	"meta_not_found": "'meta.jsonc' not found."
 }
