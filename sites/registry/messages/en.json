@@ -7,5 +7,7 @@
 	"archive_invalid": "Archive invalid.",
 	"archive_illegal_file_types": "Archive contains illegel file types.",
 	"meta_not_found": "'meta.jsonc' not found.",
-	"pack_not_found": "Pack not found."
+	"pack_not_found": "Pack not found.",
+	"login_required": "Please log in.",
+	"query_not_found": "Please specify a search query."
 }

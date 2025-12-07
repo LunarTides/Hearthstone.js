@@ -29,6 +29,11 @@ interface Metadata {
 
 export const actions = {
 	default: async (event) => {
+		const user = event.locals.user;
+		if (!user) {
+			error(401, { message: m.login_required() });
+		}
+
 		const formData = await event.request.formData();
 		const file = formData.get("file");
 		if (!file) {
@@ -141,8 +146,7 @@ export const actions = {
 
 		await db.insert(pack).values({
 			uuid: folderName,
-			// TODO: Change this.
-			userId: "b4tm4c3oqlsmm6ffojogrdid",
+			userId: user.id,
 			metadataVersion: metadata.versions.metadata,
 			gameVersion: metadata.versions.game,
 			packVersion: metadata.versions.pack,
