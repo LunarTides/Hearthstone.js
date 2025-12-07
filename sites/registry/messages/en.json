@@ -6,5 +6,6 @@
 	"archive_too_many_files": "Too many files in archive.",
 	"archive_invalid": "Archive invalid.",
 	"archive_illegal_file_types": "Archive contains illegel file types.",
-	"meta_not_found": "'meta.jsonc' not found."
+	"meta_not_found": "'meta.jsonc' not found.",
+	"pack_not_found": "Pack not found."
 }

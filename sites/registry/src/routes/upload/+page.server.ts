@@ -136,6 +136,7 @@ export const actions = {
 
 		// TODO: Make sure this works.
 		// TODO: Parse via zod.
+		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
 
 		await db.insert(pack).values({

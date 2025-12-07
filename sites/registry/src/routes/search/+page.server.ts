@@ -10,6 +10,7 @@ export const actions = {
 			return;
 		}
 
+		// TODO: Filter by approved.
 		const packs = await db
 			.select()
 			.from(pack)
