@@ -6,8 +6,8 @@
 
 <p>{m.broad_awake_jay_dial()}</p>
 
-{#await data.card}
+{#await data.cards}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
-{:then card}
-	<pre>{JSON.stringify(card, null, 4)}</pre>
+{:then cards}
+	<pre>{JSON.stringify(cards, null, 4)}</pre>
 {/await}

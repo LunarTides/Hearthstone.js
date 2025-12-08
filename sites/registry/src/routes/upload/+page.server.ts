@@ -8,6 +8,7 @@ import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card, pack } from "$lib/server/db/schema.js";
 import type { InferInsertModel } from "drizzle-orm";
+import { randomUUID } from "crypto";
 
 interface Metadata {
 	versions: {
@@ -184,21 +185,28 @@ export const actions = {
 		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
 
-		// TODO: Delete pack from db if adding cards goes wrong.
-		await db.insert(pack).values({
-			uuid: folderName,
-			userId: user.id,
-			metadataVersion: metadata.versions.metadata,
-			gameVersion: metadata.versions.game,
-			packVersion: metadata.versions.pack,
-			name: metadata.name,
-			description: metadata.description,
-			license: metadata.license,
-			authors: metadata.authors,
+		// TODO: Check if a pack with that name / uuid already exists,
+		// if it does, and the current user is one of that pack's authors, update it.
 
-			// TODO: Add setting for this.
-			approved: false,
-		});
+		// TODO: Delete pack from db if adding cards goes wrong.
+		const packInDB = await db
+			.insert(pack)
+			.values({
+				id: randomUUID(),
+				uuid: folderName,
+				userIds: [user.id],
+				metadataVersion: metadata.versions.metadata,
+				gameVersion: metadata.versions.game,
+				packVersion: metadata.versions.pack,
+				name: metadata.name,
+				description: metadata.description,
+				license: metadata.license,
+				authors: metadata.authors,
+
+				// TODO: Add setting for this.
+				approved: false,
+			})
+			.returning({ id: pack.id });
 
 		// Parse cards.
 		for (const file of files) {
@@ -222,9 +230,10 @@ export const actions = {
 
 			const p = parseCardField.bind(null, content);
 			const c: InferInsertModel<typeof card> = {
+				id: randomUUID(),
 				uuid: p("id"),
 				abilities,
-				packUUID: folderName,
+				packId: packInDB[0].id,
 
 				name: p("name"),
 				text: p("text"),

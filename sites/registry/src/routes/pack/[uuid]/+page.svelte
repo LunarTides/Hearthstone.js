@@ -6,8 +6,8 @@
 
 <p>{m.crisp_misty_grebe_devour()}</p>
 
-{#await data.pack}
+{#await data.packs}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
-{:then pack}
-	<pre>{JSON.stringify(pack, null, 4)}</pre>
+{:then packs}
+	<pre>{JSON.stringify(packs, null, 4)}</pre>
 {/await}

@@ -7,16 +7,19 @@ import { eq } from "drizzle-orm";
 export async function load(event) {
 	const uuid = event.params.uuid;
 
-	const getCard = async () => {
-		const cards = await db.select().from(card).where(eq(card.uuid, uuid)).limit(1);
+	const getCards = async () => {
+		const cards = await db.select().from(card).where(eq(card.uuid, uuid));
 		if (cards.length <= 0) {
 			error(404, { message: m.card_not_found() });
 		}
 
-		return cards[0];
+		return {
+			latest: cards.find((c) => c.isLatestVersion),
+			all: cards,
+		};
 	};
 
 	return {
-		card: getCard(),
+		cards: getCards(),
 	};
 }

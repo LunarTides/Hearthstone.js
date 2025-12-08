@@ -3,13 +3,15 @@
 	import { m } from "$lib/paraglide/messages.js";
 
 	let { data } = $props();
+
+	console.log(data);
 </script>
 
 <div class="flex">
 	<div class="ml-3">
 		<p class="text-xl m-2 ml-0 font-mono">{m.bland_stock_swan_quiz()}</p>
 		<hr />
-		<div class="flex mt-2">
+		<div class="flex mt-2 space-x-1">
 			{#await data.packs}
 				<p>{m.tidy_fancy_mule_prosper()}</p>
 			{:then packs}
@@ -28,7 +30,7 @@
 					</div>
 				{/snippet}
 
-				{#each packs as p (p.uuid)}
+				{#each packs as p (p.id)}
 					{@render pack(p)}
 				{/each}
 			{/await}
@@ -40,7 +42,7 @@
 	<div class="ml-auto mr-3">
 		<p class="text-xl m-2 ml-0 font-mono">{m.weak_drab_otter_aspire()}</p>
 		<hr />
-		<div class="flex mt-2">
+		<div class="flex mt-2 space-x-1">
 			{#await data.cards}
 				<p>{m.tidy_fancy_mule_prosper()}</p>
 			{:then cards}
@@ -59,7 +61,7 @@
 					</div>
 				{/snippet}
 
-				{#each cards as c (c.uuid)}
+				{#each cards as c (c.id)}
 					{@render card(c)}
 				{/each}
 			{/await}

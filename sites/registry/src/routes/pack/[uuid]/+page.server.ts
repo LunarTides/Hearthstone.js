@@ -8,15 +8,18 @@ export async function load(event) {
 	const uuid = event.params.uuid;
 
 	const getPack = async () => {
-		const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
+		const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
 		if (packs.length <= 0) {
 			error(404, { message: m.pack_not_found() });
 		}
 
-		return packs[0];
+		return {
+			latest: packs.find((p) => p.isLatestVersion),
+			all: packs,
+		};
 	};
 
 	return {
-		pack: getPack(),
+		packs: getPack(),
 	};
 }

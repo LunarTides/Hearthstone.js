@@ -20,48 +20,42 @@ export const session = pgTable("session", {
 });
 
 export const pack = pgTable("pack", {
-	uuid: uuid("uuid").primaryKey(),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "set default" }),
+	id: uuid("id").primaryKey().defaultRandom(),
+	uuid: uuid("uuid").notNull(),
+	userIds: text("user_ids").array().notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
 	gameVersion: text("game_version").notNull(),
 	packVersion: text("pack_version").notNull(),
-	name: text("name").notNull().unique(),
+	name: text("name").notNull(),
 	description: text("description").notNull(),
 	license: text("license").notNull(),
 	authors: text("authors").array().notNull(),
-	// links: uuid("links").array().references(() => packLink.id),
 	// TODO: Add requires.
 
+	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean().notNull(),
 });
 
 export const packRelations = relations(pack, ({ many }) => ({
 	links: many(packLink),
 	cards: many(card),
+	users: many(user, { relationName: "user_ids" }),
 }));
 
 export const packLink = pgTable("packLinks", {
 	id: uuid("id").defaultRandom().primaryKey(),
-	packUUID: uuid("pack_uuid").references(() => pack.uuid, { onDelete: "cascade" }),
+	packId: uuid("pack_id").references(() => pack.id, { onDelete: "cascade" }),
 	key: text("key").notNull(),
 	value: text("value").notNull(),
 });
 
-export const packLinkRelations = relations(packLink, ({ one }) => ({
-	pack: one(pack, {
-		fields: [packLink.packUUID],
-		references: [pack.uuid],
-	}),
-}));
-
 export const card = pgTable("card", {
-	uuid: uuid("id").primaryKey(),
+	id: uuid("id").primaryKey(),
+	uuid: uuid("uuid").notNull(),
 	abilities: text("abilities").array().notNull(),
 
-	packUUID: uuid("pack_uuid")
-		.references(() => pack.uuid)
+	packId: uuid("pack_id")
+		.references(() => pack.id)
 		.notNull(),
 
 	name: text("name").notNull(),
@@ -86,16 +80,14 @@ export const card = pgTable("card", {
 	heropowerId: uuid("heropowerId"),
 
 	enchantmentPriority: integer("enchantment_priority"),
+
+	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 });
 
 export const cardRelations = relations(card, ({ one }) => ({
 	heropower: one(card, {
 		fields: [card.heropowerId],
 		references: [card.uuid],
-	}),
-	pack: one(pack, {
-		fields: [card.packUUID],
-		references: [pack.uuid],
 	}),
 }));
 
