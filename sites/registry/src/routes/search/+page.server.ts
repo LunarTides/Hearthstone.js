@@ -24,7 +24,8 @@ export async function load(event) {
 		const cards = await db
 			.select()
 			.from(card)
-			.where(and(like(card.name, `%${query}%`), eq(card.isLatestVersion, true)));
+			.where(and(like(card.name, `%${query}%`), eq(card.isLatestVersion, true)))
+			.innerJoin(pack, eq(card.packId, pack.id));
 
 		return cards;
 	};

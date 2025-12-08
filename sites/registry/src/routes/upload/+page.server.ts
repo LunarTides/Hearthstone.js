@@ -186,6 +186,10 @@ export const actions = {
 		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
 
+		if (!semver.valid(metadata.versions.pack)) {
+			error(400, m.tiny_hotel_fox_tough());
+		}
+
 		// Check if a pack with that name / uuid already exists,
 		// if it does, and the current user is one of that pack's authors, update it.
 		let isLatestVersion = true;
