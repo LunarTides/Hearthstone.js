@@ -7,12 +7,16 @@ import { eq } from "drizzle-orm";
 export async function load(event) {
 	const uuid = event.params.uuid;
 
-	const c = await db.select().from(card).where(eq(card.uuid, uuid)).limit(1);
-	if (c.length <= 0) {
-		error(404, { message: m.card_not_found() });
-	}
+	const getCard = async () => {
+		const cards = await db.select().from(card).where(eq(card.uuid, uuid)).limit(1);
+		if (cards.length <= 0) {
+			error(404, { message: m.card_not_found() });
+		}
+
+		return cards[0];
+	};
 
 	return {
-		card: c[0],
+		card: getCard(),
 	};
 }

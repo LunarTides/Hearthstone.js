@@ -7,12 +7,16 @@ import { eq } from "drizzle-orm";
 export async function load(event) {
 	const uuid = event.params.uuid;
 
-	const p = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
-	if (p.length <= 0) {
-		error(404, { message: m.pack_not_found() });
-	}
+	const getPack = async () => {
+		const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
+		if (packs.length <= 0) {
+			error(404, { message: m.pack_not_found() });
+		}
+
+		return packs[0];
+	};
 
 	return {
-		pack: p[0],
+		pack: getPack(),
 	};
 }

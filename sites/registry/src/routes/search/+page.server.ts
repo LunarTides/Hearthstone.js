@@ -10,16 +10,24 @@ export async function load(event) {
 		error(400, { message: m.query_not_found() });
 	}
 
-	// TODO: Filter by approved.
-	const packs = await db
-		.select()
-		.from(pack)
-		.where(like(pack.name, `%${query}%`));
+	const packs = async () => {
+		// TODO: Filter by approved.
+		const packs = await db
+			.select()
+			.from(pack)
+			.where(like(pack.name, `%${query}%`));
 
-	const cards = await db
-		.select()
-		.from(card)
-		.where(like(card.name, `%${query}%`));
+		return packs;
+	};
 
-	return { packs, cards };
+	const cards = async () => {
+		const cards = await db
+			.select()
+			.from(card)
+			.where(like(card.name, `%${query}%`));
+
+		return cards;
+	};
+
+	return { packs: packs(), cards: cards() };
 }
