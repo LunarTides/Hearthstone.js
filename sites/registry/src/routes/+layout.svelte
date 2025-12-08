@@ -3,6 +3,7 @@
 	import favicon from "$lib/assets/favicon.svg";
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
+	import { getLocale, setLocale, locales } from "$lib/paraglide/runtime";
 
 	let { children, data } = $props();
 
@@ -32,13 +33,12 @@
 			class="text-black rounded-full"
 		/>
 	</form>
-	<!-- <a href="/search">Search</a> -->
 
 	{#if data.user}
 		<a href={resolve("/upload")}>Upload</a>
 	{/if}
 
-	<span class="ml-auto">
+	<span class="flex items-center space-x-2 ml-auto">
 		{#if data.user}
 			<form action="/?/logout" method="post">
 				<button type="submit" class="hover:cursor-pointer">Logout</button>
@@ -46,6 +46,14 @@
 		{:else}
 			<a href={resolve("/login")}>Login</a>
 		{/if}
+
+		<select class="text-black rounded-full">
+			{#each locales as locale (locale)}
+				<option onclick={() => setLocale(locale)} selected={getLocale() === locale}>
+					{locale}
+				</option>
+			{/each}
+		</select>
 	</span>
 </nav>
 
