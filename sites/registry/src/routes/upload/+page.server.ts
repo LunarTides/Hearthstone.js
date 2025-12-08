@@ -7,8 +7,9 @@ import { tmpdir } from "os";
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card, pack } from "$lib/server/db/schema.js";
-import type { InferInsertModel } from "drizzle-orm";
+import { eq, or, type InferInsertModel } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import semver from "semver";
 
 interface Metadata {
 	versions: {
@@ -185,30 +186,63 @@ export const actions = {
 		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
 
-		// TODO: Check if a pack with that name / uuid already exists,
+		// Check if a pack with that name / uuid already exists,
 		// if it does, and the current user is one of that pack's authors, update it.
+		let isLatestVersion = true;
+		// let update = false;
+		let updateDB = async (values: InferInsertModel<typeof pack>) =>
+			db.insert(pack).values(values).returning({ id: pack.id });
+
+		const otherVersions = await db
+			.select()
+			.from(pack)
+			.where(or(eq(pack.uuid, folderName), eq(pack.name, metadata.name)));
+		for (const version of otherVersions) {
+			if (semver.eq(metadata.versions.pack, version.packVersion)) {
+				// TODO: Add ability for the uploader to limit who can edit the pack.
+				if (version.userIds.includes(user.id)) {
+					// Override.
+					updateDB = async (values: InferInsertModel<typeof pack>) =>
+						db.update(pack).set(values).where(eq(pack.id, version.id)).returning({ id: pack.id });
+					// update = true;
+				} else {
+					// No permission.
+					error(403, m.fluffy_bluffy_biome_mall());
+				}
+			}
+
+			// else if (semver.gt(metadata.versions.pack, version.packVersion)) {
+
+			// }
+
+			// If there exists a later version in the db, this version is not the latest one.
+			else if (semver.lt(metadata.versions.pack, version.packVersion)) {
+				isLatestVersion = false;
+			}
+		}
 
 		// TODO: Delete pack from db if adding cards goes wrong.
-		const packInDB = await db
-			.insert(pack)
-			.values({
-				id: randomUUID(),
-				uuid: folderName,
-				userIds: [user.id],
-				metadataVersion: metadata.versions.metadata,
-				gameVersion: metadata.versions.game,
-				packVersion: metadata.versions.pack,
-				name: metadata.name,
-				description: metadata.description,
-				license: metadata.license,
-				authors: metadata.authors,
+		const packInDB = await updateDB({
+			// id: randomUUID(),
+			uuid: folderName,
+			userIds: [user.id],
+			metadataVersion: metadata.versions.metadata,
+			gameVersion: metadata.versions.game,
+			packVersion: metadata.versions.pack,
+			name: metadata.name,
+			description: metadata.description,
+			license: metadata.license,
+			authors: metadata.authors,
 
-				// TODO: Add setting for this.
-				approved: false,
-			})
-			.returning({ id: pack.id });
+			isLatestVersion,
+			// TODO: Add setting for this.
+			approved: false,
+		});
+
+		return;
 
 		// Parse cards.
+		// TODO: Update files when uploading an updated pack.
 		for (const file of files) {
 			if (!file.name.endsWith(".ts")) {
 				continue;
@@ -266,9 +300,11 @@ export const actions = {
 
 		// TODO: Add links.
 
-		const finalPath = `./static/assets/held/packs/${file.name.split(".").slice(0, -1).join(".")}`;
+		const finalPath = `./static/assets/packs/${folderName}/${metadata.versions.pack}`;
+		await fs.mkdir(finalPath, { recursive: true });
 
-		await fs.cp(innerFolderPath, finalPath, { recursive: true });
+		await fs.cp(compressedPath, resolve(finalPath, `${folderName}.7z`));
+		await fs.rm(compressedPath);
 		await fs.rm(innerFolderPath, { recursive: true, force: true });
 	},
 };
