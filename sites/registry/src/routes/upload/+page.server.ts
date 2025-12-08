@@ -243,8 +243,6 @@ export const actions = {
 			approved: false,
 		});
 
-		return;
-
 		// Parse cards.
 		// TODO: Update files when uploading an updated pack.
 		for (const file of files) {
