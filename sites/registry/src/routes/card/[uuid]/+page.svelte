@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { m } from "$lib/paraglide/messages.js";
+
 	let { data } = $props();
 </script>
 
-<p>Card:</p>
+<p>{m.broad_awake_jay_dial()}</p>
 
 {#await data.card}
-	<p>Loading...</p>
+	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then card}
 	<pre>{JSON.stringify(card, null, 4)}</pre>
 {/await}

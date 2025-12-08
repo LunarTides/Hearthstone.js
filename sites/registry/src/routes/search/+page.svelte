@@ -1,19 +1,20 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import { m } from "$lib/paraglide/messages.js";
 
 	let { data } = $props();
 </script>
 
 <div class="flex">
 	<div class="ml-3">
-		<p class="text-xl m-2 ml-0 font-mono">Packs</p>
+		<p class="text-xl m-2 ml-0 font-mono">{m.bland_stock_swan_quiz()}</p>
 		<hr />
 		<div class="flex mt-2">
 			{#await data.packs}
-				<p>Loading...</p>
+				<p>{m.tidy_fancy_mule_prosper()}</p>
 			{:then packs}
 				{#if packs.length <= 0}
-					<p>No results.</p>
+					<p>{m.aloof_true_squid_favor()}</p>
 				{/if}
 
 				{#snippet pack(pack: (typeof packs)[0])}
@@ -37,14 +38,14 @@
 	<div class="border ml-auto h-screen"></div>
 
 	<div class="ml-auto mr-3">
-		<p class="text-xl m-2 ml-0 font-mono">Cards</p>
+		<p class="text-xl m-2 ml-0 font-mono">{m.weak_drab_otter_aspire()}</p>
 		<hr />
 		<div class="flex mt-2">
 			{#await data.cards}
-				<p>Loading...</p>
+				<p>{m.tidy_fancy_mule_prosper()}</p>
 			{:then cards}
 				{#if cards.length <= 0}
-					<p>No results.</p>
+					<p>{m.aloof_true_squid_favor()}</p>
 				{/if}
 
 				{#snippet card(card: (typeof cards)[0])}

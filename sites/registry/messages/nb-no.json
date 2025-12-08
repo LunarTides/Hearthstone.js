@@ -1,4 +1,19 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hallo, {name} fra nb-no!"
+	"hello_world": "Hallo, {name} fra nb-no!",
+	"weak_drab_otter_aspire": "Kort",
+	"aloof_true_squid_favor": "Ingen resultater. ",
+	"tidy_fancy_mule_prosper": "Laster...",
+	"broad_awake_jay_dial": "Kort",
+	"muddy_fluffy_gibbon_prosper": "Log inn",
+	"large_teal_lobster_chop": "Passord",
+	"neat_wise_falcon_conquer": "Brukernavn",
+	"crisp_misty_grebe_devour": "Pakke",
+	"bland_stock_swan_quiz": "Pakker",
+	"tasty_legal_sparrow_promise": "Send inn",
+	"inclusive_quaint_butterfly_push": "Last opp",
+	"bald_trite_myna_pet": "Registriet",
+	"acidic_seemly_marmot_peel": "Søk...",
+	"loose_drab_warthog_cut": "Log ut",
+	"incorrect_login": "Feil brukernavn eller passor"
 }
