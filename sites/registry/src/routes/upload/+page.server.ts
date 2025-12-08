@@ -215,9 +215,29 @@ export const actions = {
 				}
 			}
 
-			// else if (semver.gt(metadata.versions.pack, version.packVersion)) {
+			// TODO: Fix this. It doesn't work.
+			else if (semver.gt(metadata.versions.pack, version.packVersion)) {
+				if (version.isLatestVersion) {
+					await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
 
-			// }
+					const cards = await db.select().from(card).where(eq(card.packId, version.id));
+
+					for (const c of cards) {
+						for (const file of files) {
+							if (!file.name.endsWith(".ts")) {
+								continue;
+							}
+
+							const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
+							const uuid = parseCardField(content, "id");
+
+							if (c.id === uuid) {
+								await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, card.id));
+							}
+						}
+					}
+				}
+			}
 
 			// If there exists a later version in the db, this version is not the latest one.
 			else if (semver.lt(metadata.versions.pack, version.packVersion)) {
