@@ -10,6 +10,7 @@ import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
 import { validate } from "scripts/id/lib.ts";
+import { resolve } from "node:path";
 
 const { game } = await createGame();
 
@@ -49,11 +50,11 @@ async function getPacks() {
 		"/packs",
 		async (index, path, file) => {
 			if (
-				!file.parentPath.endsWith("/packs") ||
+				!file.parentPath.endsWith("packs") ||
 				!(
 					(file.isFile() && file.name.endsWith(".7z")) ||
 					(file.isDirectory() &&
-						(await game.functions.util.fs("exists", `${path}/meta.jsonc`)))
+						(await game.functions.util.fs("exists", resolve(path, "meta.jsonc"))))
 				)
 			) {
 				return;
@@ -230,7 +231,7 @@ async function exportPack() {
 			}
 
 			if (
-				!(await game.functions.util.fs("exists", `${pack.path}/meta.jsonc`))
+				!(await game.functions.util.fs("exists", resolve(pack.path, "meta.jsonc")))
 			) {
 				await game.pause(
 					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
@@ -281,7 +282,7 @@ async function exportPack() {
 			recursive: true,
 		});
 		await game.functions.util.searchCardsFolder(async (path, content, file) => {
-			if (path.includes("/Custom")) {
+			if (path.includes("Custom")) {
 				await game.functions.util.fs(
 					"cp",
 					path,

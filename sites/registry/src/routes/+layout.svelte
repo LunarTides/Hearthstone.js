@@ -2,6 +2,7 @@
 	import "./layout.css";
 	import favicon from "$lib/assets/favicon.svg";
 	import { goto } from "$app/navigation";
+	import { resolve } from "$app/paths";
 
 	let { children, data } = $props();
 
@@ -13,13 +14,14 @@
 </svelte:head>
 
 <nav class="flex items-center p-5 bg-slate-500 text-white space-x-2">
-	<a href="/" class="font-bold uppercase text-xl">Registry</a>
+	<a href={resolve("/")} class="font-bold uppercase text-xl">Registry</a>
 	<p class="text-4xl font-thin">|</p>
 
 	<form
 		onsubmit={(event) => {
 			event.preventDefault();
 
+			// eslint-disable-next-line svelte/no-navigation-without-resolve
 			goto(`/search?q=${searchQuery}`);
 		}}
 	>
@@ -33,7 +35,7 @@
 	<!-- <a href="/search">Search</a> -->
 
 	{#if data.user}
-		<a href="/upload">Upload</a>
+		<a href={resolve("/upload")}>Upload</a>
 	{/if}
 
 	<span class="ml-auto">
@@ -42,7 +44,7 @@
 				<button type="submit" class="hover:cursor-pointer">Logout</button>
 			</form>
 		{:else}
-			<a href="/login">Login</a>
+			<a href={resolve("/login")}>Login</a>
 		{/if}
 	</span>
 </nav>

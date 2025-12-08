@@ -6,7 +6,8 @@ import { join, resolve } from "path";
 import { tmpdir } from "os";
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { pack } from "$lib/server/db/schema.js";
+import { card, pack } from "$lib/server/db/schema.js";
+import type { InferInsertModel } from "drizzle-orm";
 
 interface Metadata {
 	versions: {
@@ -27,6 +28,45 @@ interface Metadata {
 	};
 }
 
+function parseCardField(content: string, name: string) {
+	const split = content.split(`${name}: `);
+	if (split.length <= 1) {
+		return undefined;
+	}
+
+	let values = [split[1].split(",")[0]];
+	const matches = values[0].matchAll(/[A-Z][a-z]*\.([A-Z][a-z]*)/g);
+
+	const isArray = values[0].startsWith("[");
+	if (isArray) {
+		values = [];
+	}
+
+	for (const match of matches) {
+		if (match.length <= 1) {
+			continue;
+		}
+
+		if (name === "enchantmentPriority") {
+			// TODO: Parse enchantment priority correctly.
+		}
+
+		const parsed = `"${match[1]}"`;
+
+		if (isArray) {
+			values.push(parsed);
+		} else {
+			values[0] = parsed;
+		}
+	}
+
+	if (isArray) {
+		return values.map((v) => JSON.parse(v));
+	}
+
+	return JSON.parse(values[0]);
+}
+
 export const actions = {
 	default: async (event) => {
 		const user = event.locals.user;
@@ -37,11 +77,11 @@ export const actions = {
 		const formData = await event.request.formData();
 		const file = formData.get("file");
 		if (!file) {
-			return;
+			error(422, { message: m.supply_file() });
 		}
 
 		if (!(file instanceof File)) {
-			return;
+			error(422, { message: m.invalid_file() });
 		}
 
 		if (file.type !== "application/x-7z-compressed") {
@@ -71,11 +111,11 @@ export const actions = {
 		}
 
 		// Isolate temporarily.
-		const tmpDirPath = await fs.mkdtemp(join(tmpdir(), "pack-"));
-		const tmpPackPath = `${tmpDirPath}/pack.7z`;
-		await fs.writeFile(tmpPackPath, bytes);
+		const tmpPath = await fs.mkdtemp(join(tmpdir(), "pack-"));
+		const compressedPath = `${tmpPath}/pack.7z`;
+		await fs.writeFile(compressedPath, bytes);
 
-		const files = await seven.list(tmpPackPath);
+		const files = await seven.list(compressedPath);
 		// TODO: Move to settings.
 		if (files.length > 5000) {
 			error(413, { message: m.archive_too_many_files() });
@@ -94,8 +134,8 @@ export const actions = {
 		let hasMeta = false;
 
 		for (const file of files) {
-			const target = resolve(tmpDirPath, file.name);
-			if (!target.startsWith(tmpDirPath)) {
+			const target = resolve(tmpPath, file.name);
+			if (!target.startsWith(tmpPath)) {
 				console.log(1);
 				error(400, { message: m.archive_invalid() });
 			}
@@ -117,13 +157,13 @@ export const actions = {
 		// TODO: This could maybe create symlinks, which would be bad?
 		// TODO: Guard against zip bombs. `ulimit -f`
 		// await seven.unpack(tmpPackPath, tmpDirPath);
-		await seven.cmd(["x", "-snl", "-y", tmpPackPath, "-o" + tmpDirPath]);
+		await seven.cmd(["x", "-snl", "-y", compressedPath, "-o" + tmpPath]);
 
 		const folderName = file.name.split(".").slice(0, -1).join(".");
-		const packPath = resolve(tmpDirPath, folderName);
+		const innerFolderPath = resolve(tmpPath, folderName);
 
 		try {
-			const folderStats = await fs.stat(packPath);
+			const folderStats = await fs.stat(innerFolderPath);
 			if (!folderStats.isDirectory()) {
 				console.log(2);
 				error(400, { message: m.archive_invalid() });
@@ -137,13 +177,14 @@ export const actions = {
 		}
 
 		// TODO: Parse meta file.
-		const metadataContent = await fs.readFile(`${packPath}/meta.jsonc`, "utf8");
+		const metadataContent = await fs.readFile(`${innerFolderPath}/meta.jsonc`, "utf8");
 
 		// TODO: Make sure this works.
 		// TODO: Parse via zod.
 		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
 
+		// TODO: Delete pack from db if adding cards goes wrong.
 		await db.insert(pack).values({
 			uuid: folderName,
 			userId: user.id,
@@ -159,12 +200,66 @@ export const actions = {
 			approved: false,
 		});
 
+		// Parse cards.
+		for (const file of files) {
+			if (!file.name.endsWith(".ts")) {
+				continue;
+			}
+
+			const abilityRegex = /\tasync (\w+).*? {/g;
+
+			const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
+
+			const abilities = [];
+			for (const match of content.matchAll(abilityRegex)) {
+				if (match.length <= 1) {
+					continue;
+				}
+
+				const ability = match[1];
+				abilities.push(ability);
+			}
+
+			const p = parseCardField.bind(null, content);
+			const c: InferInsertModel<typeof card> = {
+				uuid: p("id"),
+				abilities,
+				packUUID: folderName,
+
+				name: p("name"),
+				text: p("text"),
+				cost: p("cost"),
+				type: p("type"),
+				classes: p("classes"),
+				rarity: p("rarity"),
+				collectible: p("collectible"),
+				tags: p("tags"),
+
+				attack: p("attack"),
+				health: p("health"),
+				tribes: p("tribes"),
+
+				spellSchools: p("spellSchools"),
+
+				durability: p("durability"),
+				cooldown: p("cooldown"),
+
+				armor: p("armor"),
+				heropowerId: p("heropowerId"),
+
+				enchantmentPriority: p("enchantmentPriority"),
+			};
+
+			// TODO: Validate c using zod.
+
+			await db.insert(card).values(c);
+		}
+
 		// TODO: Add links.
-		// TODO: Parse cards.
 
 		const finalPath = `./static/assets/held/packs/${file.name.split(".").slice(0, -1).join(".")}`;
 
-		await fs.cp(packPath, finalPath, { recursive: true });
-		await fs.rm(packPath, { recursive: true, force: true });
+		await fs.cp(innerFolderPath, finalPath, { recursive: true });
+		await fs.rm(innerFolderPath, { recursive: true, force: true });
 	},
 };

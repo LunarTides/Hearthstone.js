@@ -1,7 +1,7 @@
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { pack } from "$lib/server/db/schema.js";
-import { error, redirect } from "@sveltejs/kit";
+import { card, pack } from "$lib/server/db/schema.js";
+import { error } from "@sveltejs/kit";
 import { like } from "drizzle-orm";
 
 export async function load(event) {
@@ -16,5 +16,10 @@ export async function load(event) {
 		.from(pack)
 		.where(like(pack.name, `%${query}%`));
 
-	return { packs };
+	const cards = await db
+		.select()
+		.from(card)
+		.where(like(card.name, `%${query}%`));
+
+	return { packs, cards };
 }

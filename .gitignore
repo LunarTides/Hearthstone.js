@@ -1,4 +1,6 @@
 node_modules/
+packs/**/*
+packs/*.7z
 logs/
 dist/
 .vscode/

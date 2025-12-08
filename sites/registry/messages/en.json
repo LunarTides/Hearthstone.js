@@ -9,5 +9,8 @@
 	"meta_not_found": "'meta.jsonc' not found.",
 	"pack_not_found": "Pack not found.",
 	"login_required": "Please log in.",
-	"query_not_found": "Please specify a search query."
+	"query_not_found": "Please specify a search query.",
+	"supply_file": "Please supply a file.",
+	"invalid_file": "Invalid file.",
+	"card_not_found": "Card not found."
 }

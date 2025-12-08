@@ -58,6 +58,7 @@ export const packLinkRelations = relations(packLink, ({ one }) => ({
 
 export const card = pgTable("card", {
 	uuid: uuid("id").primaryKey(),
+	abilities: text("abilities").array().notNull(),
 
 	packUUID: uuid("pack_uuid")
 		.references(() => pack.uuid)
@@ -69,8 +70,8 @@ export const card = pgTable("card", {
 	type: text("type").notNull(),
 	classes: text("classes").array().notNull(),
 	rarity: text("rarity").notNull(),
-	tags: text("tags").array().notNull(),
 	collectible: boolean("collectible").notNull(),
+	tags: text("tags").array().notNull(),
 
 	attack: integer("attack"),
 	health: integer("health"),
