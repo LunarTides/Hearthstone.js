@@ -16,8 +16,8 @@ import {
 	UseLocationError,
 } from "@Game/types.ts";
 import { format } from "node:util";
-import { createPrompt, useKeypress, useState } from "@inquirer/core";
-import { checkbox } from "@inquirer/prompts";
+import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
+import { checkbox, input, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -67,6 +67,386 @@ process.on("uncaughtException", (error) => {
 let seenFunFacts: string[] = [];
 
 const prompt = {
+	/**
+	 * A custom select prompt that allows transforming the array. This is mostly used internally, so don't worry about it too much.
+	 *
+	 * @param message The prompt.
+	 * @param array The array it should ask the user to select from.
+	 * @param options Any options.
+	 * @param otherChoices Add choices other than the ones supplied from the array.
+	 * @returns The answer that the user chose.
+	 */
+	async customSelect(
+		message: string,
+		array: string[],
+		options?: {
+			arrayTransform:
+				| ((
+						i: number,
+						element: string,
+				  ) => Promise<{
+						name?: string;
+						value: string;
+						addSeperator?: boolean;
+						disabled?: boolean;
+				  }>)
+				| undefined;
+			hideBack: boolean;
+		},
+		...otherChoices: (
+			| Separator
+			| string
+			| {
+					name?: string;
+					value: string;
+					description?: string;
+					disabled?: boolean;
+			  }
+			| false
+		)[]
+	) {
+		const choices = [];
+		for (const [i, element] of Object.entries(array)) {
+			const choice = (await options?.arrayTransform?.(
+				parseInt(i, 10),
+				element,
+			)) ?? {
+				name: element,
+				value: i,
+			};
+
+			if (choice.addSeperator) {
+				choices.push(new Separator());
+			}
+
+			choices.push(choice);
+		}
+
+		if (!options?.hideBack) {
+			choices.push(new Separator());
+			choices.push({
+				value: "Back",
+			});
+		}
+
+		for (const element of otherChoices) {
+			// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
+			if (element === false) {
+				continue;
+			}
+
+			if (element instanceof Separator) {
+				choices.push(element);
+				continue;
+			}
+
+			if (typeof element === "string") {
+				choices.push({
+					name: element,
+					value: element.toLowerCase(),
+				});
+				continue;
+			}
+
+			choices.push(element);
+		}
+
+		const answer = await select({
+			message,
+			choices,
+			loop: false,
+			pageSize: 15,
+		});
+
+		return answer;
+	},
+
+	/**
+	 * A custom select prompt that allows selecting from an enum array. This is mostly used internally, so don't worry about it too much.
+	 *
+	 * @param message The prompt.
+	 * @param array The array it should ask the user to select from.
+	 * @returns The answer that the user chose.
+	 */
+	async customSelectEnum<E extends string>(message: string, array: E[]) {
+		return (await game.prompt.customSelect(message, array, {
+			arrayTransform: async (i, element) => ({
+				name: element,
+				value: element,
+			}),
+			hideBack: false,
+		})) as E;
+	},
+
+	/**
+	 * Prompts the user to configure an array. Modifies the array directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param array The array to configure.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the array was changed. Use this as a dirty flag.
+	 */
+	async configureArray(array: string[], onLoop?: () => Promise<void>) {
+		let dirty = false;
+
+		while (true) {
+			await onLoop?.();
+			console.log(JSON.stringify(array, null, 4));
+			console.log();
+
+			const answer = await game.prompt.customSelect(
+				"Configure Array",
+				array,
+				{
+					arrayTransform: async (i, element) => ({
+						name: `Element ${i}`,
+						value: i.toString(),
+					}),
+					hideBack: true,
+				},
+				new Separator(),
+				"New",
+				"Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (answer === "new") {
+				const value = await input({
+					message: "Value.",
+				});
+
+				array.push(value);
+				dirty = true;
+				continue;
+			} else if (answer === "delete") {
+				array.pop();
+				dirty = true;
+				continue;
+			} else if (answer === "done") {
+				break;
+			}
+
+			const index = parseInt(answer, 10);
+
+			const newValue = await input({
+				message: "What will you change this value to?",
+				default: array[index],
+			});
+
+			array[index] = newValue;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
+	/**
+	 * Prompts the user to configure an enum array. Modifies the array directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param array The array to configure.
+	 * @param enumType The enum itself.
+	 * @param options Any options.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the array was changed. Use this as a dirty flag.
+	 */
+	async configureArrayEnum(
+		array: string[],
+		enumType: any,
+		options?: { maxSize: number | undefined; allowDuplicates: boolean },
+		onLoop?: () => Promise<void>,
+	) {
+		let dirty = false;
+
+		while (true) {
+			onLoop?.();
+			console.log(JSON.stringify(array, null, 4));
+			console.log();
+
+			const allowEdit =
+				options?.allowDuplicates ||
+				Object.keys(enumType).filter((c) => !array.includes(c)).length > 0;
+			const allowNew =
+				allowEdit && array.length < (options?.maxSize ?? Infinity);
+
+			const answer = await game.prompt.customSelect(
+				"Configure Array",
+				array,
+				{
+					arrayTransform: async (i, element) => ({
+						name: `Element ${i}`,
+						value: i.toString(),
+					}),
+					hideBack: true,
+				},
+				new Separator(),
+				{
+					name: "New",
+					value: "new",
+					disabled: !allowNew,
+				},
+				"Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (answer === "new") {
+				if (!allowNew) {
+					continue;
+				}
+
+				const value = await game.prompt.customSelect(
+					"Value",
+					Object.keys(enumType).filter(
+						(c) => options?.allowDuplicates || !array.includes(c),
+					),
+					{
+						arrayTransform: async (i, element) => ({
+							name: element,
+							value: element,
+						}),
+						hideBack: false,
+					},
+				);
+
+				if (value === "Back") {
+					continue;
+				}
+
+				(array as unknown[]).push(value);
+				dirty = true;
+				continue;
+			} else if (answer === "delete") {
+				array.pop();
+				dirty = true;
+				continue;
+			} else if (answer === "done") {
+				break;
+			}
+
+			const index = parseInt(answer, 10);
+
+			if (!allowEdit) {
+				continue;
+			}
+
+			const value = await game.prompt.customSelect(
+				"Value",
+				Object.keys(enumType).filter(
+					(c) => options?.allowDuplicates || !array.includes(c),
+				),
+				{
+					arrayTransform: async (i, element) => ({
+						name: element,
+						value: element,
+					}),
+					hideBack: false,
+				},
+			);
+
+			if (value === "Back") {
+				continue;
+			}
+
+			(array as unknown[])[index] = value;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
+	/**
+	 * Prompts the user to configure an object. Modifies the object directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param object The object to configure.
+	 * @param allowAddingAndDeleting If it should allow adding and deleting elements from the object.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the object was changed. Use this as a dirty flag.
+	 */
+	async configureObject(
+		object: any,
+		allowAddingAndDeleting = true,
+		onLoop?: () => Promise<void>,
+	) {
+		let dirty = false;
+
+		while (true) {
+			await onLoop?.();
+			console.log(JSON.stringify(object, null, 4));
+			console.log();
+
+			const answer = await game.prompt.customSelect(
+				"Configure Object",
+				Object.keys(object),
+				{
+					arrayTransform: async (i, element) => ({
+						name: element,
+						value: `element-${element}`,
+					}),
+					hideBack: true,
+				},
+				allowAddingAndDeleting && new Separator(),
+				allowAddingAndDeleting && "New",
+				allowAddingAndDeleting && "Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (allowAddingAndDeleting) {
+				if (answer === "new") {
+					const key = await input({
+						message: "Key.",
+					});
+					const value = await input({
+						message: "Value.",
+					});
+
+					object[key] = value;
+					dirty = true;
+					continue;
+				} else if (answer === "delete") {
+					const key = await input({
+						message: "Key.",
+					});
+
+					delete object[key];
+					dirty = true;
+					continue;
+				}
+			}
+
+			if (answer === "done") {
+				break;
+			}
+
+			const key = answer.split("-").slice(1).join("-");
+
+			if (Array.isArray(object[key])) {
+				const changed = await game.prompt.configureArray(object[key], onLoop);
+
+				// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+				// Learned that the hard way...
+				dirty ||= changed;
+				continue;
+			}
+
+			const newValue = await input({
+				message: "What will you change this value to?",
+				default: object[key],
+			});
+
+			object[key] = newValue;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
 	/**
 	 * Asks the player to supply a deck code.
 	 *

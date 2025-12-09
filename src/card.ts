@@ -560,12 +560,18 @@ export class Card {
 	/**
 	 * Sets fields based on the blueprint of the card.
 	 *
-	 * @param trigger If it should trigger the card's `create` ability.
+	 * @param [trigger=true] If it should trigger the card's `create` ability.
+	 * @param [forceUsingOwnBlueprint=false] If it should force using the `card.blueprint` object instead of relying on `game.blueprints`.
 	 */
-	async doBlueprint(trigger = true): Promise<void> {
+	async doBlueprint(
+		trigger = true,
+		forceUsingOwnBlueprint = false,
+	): Promise<void> {
 		// Reset the blueprint
-		this.blueprint =
-			game.blueprints.find((c) => c.id === this.id) ?? this.blueprint;
+		if (!forceUsingOwnBlueprint) {
+			this.blueprint =
+				game.blueprints.find((c) => c.id === this.id) ?? this.blueprint;
+		}
 
 		/*
 		 * Go through all blueprint variables and
@@ -2139,7 +2145,7 @@ export class Card {
 		sb += `<yellow>(${this.type})</yellow>`;
 
 		// Add the keywords
-		sb += Object.keys(this.keywords)
+		sb += Object.values(this.keywords)
 			.map((keyword) => ` <gray>{${keyword}}</gray>`)
 			.join("");
 

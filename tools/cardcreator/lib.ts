@@ -134,9 +134,10 @@ async function getCreateAbility(
 	blueprint: BlueprintWithOptional,
 	cleanedDescription: string,
 ) {
-	const runes = blueprint.runes
-		? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
-		: "";
+	const runes =
+		blueprint.runes && blueprint.runes.length > 0
+			? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
+			: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {

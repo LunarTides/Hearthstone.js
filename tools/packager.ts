@@ -57,54 +57,6 @@ async function getPacks() {
 	return packs;
 }
 
-async function customSelect(
-	message: string,
-	array: string[],
-	arrayTransform:
-		| ((
-				i: number,
-				element: string,
-		  ) => Promise<{ name: string; value: string; disabled?: boolean }>)
-		| undefined,
-	...otherChoices: (Separator | string | false)[]
-) {
-	const choices = [];
-	for (const [i, element] of Object.entries(array)) {
-		choices.push(
-			(await arrayTransform?.(parseInt(i, 10), element)) ?? {
-				name: element,
-				value: i,
-			},
-		);
-	}
-
-	for (const element of otherChoices) {
-		// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
-		if (element === false) {
-			continue;
-		}
-
-		if (element instanceof Separator) {
-			choices.push(element);
-			continue;
-		}
-
-		choices.push({
-			name: element,
-			value: element.toLowerCase(),
-		});
-	}
-
-	const answer = await select({
-		message,
-		choices,
-		loop: false,
-		pageSize: 12,
-	});
-
-	return answer;
-}
-
 async function parseMetadataFile(pack: string) {
 	if (!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))) {
 		await game.pause(
@@ -193,38 +145,41 @@ async function importPack() {
 			);
 		}
 
-		const answer = await customSelect(
+		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
 			packs,
-			async (i, pack) => {
-				const o = importedPacks.find((o) => o.name === pack);
+			{
+				arrayTransform: async (i, pack) => {
+					const o = importedPacks.find((o) => o.name === pack);
 
-				// Get the new version.
-				const metadata: Metadata = JSON.parse(
-					(await game.functions.util.fs(
-						"readFile",
-						`/packs/${pack}/meta.jsonc`,
-						"utf8",
-					)) as string,
-				);
+					// Get the new version.
+					const metadata: Metadata = JSON.parse(
+						(await game.functions.util.fs(
+							"readFile",
+							`/packs/${pack}/meta.jsonc`,
+							"utf8",
+						)) as string,
+					);
 
-				let updateText = "";
-				let disabled = false;
+					let updateText = "";
+					let disabled = false;
 
-				if (o) {
-					if (o.version === metadata.versions.pack) {
-						updateText = ` (Already imported)`;
-						disabled = true;
-					} else {
-						updateText = ` (Update ${o.version} -> ${metadata.versions.pack})`;
+					if (o) {
+						if (o.version === metadata.versions.pack) {
+							updateText = ` (Already imported)`;
+							disabled = true;
+						} else {
+							updateText = ` (Update ${o.version} -> ${metadata.versions.pack})`;
+						}
 					}
-				}
 
-				return {
-					name: `${pack}${updateText}`,
-					value: i.toString(),
-					disabled,
-				};
+					return {
+						name: `${pack}${updateText}`,
+						value: i.toString(),
+						disabled,
+					};
+				},
+				hideBack: true,
 			},
 			new Separator(),
 			"Refresh",
@@ -277,10 +232,10 @@ async function exportPack() {
 		dirty = false;
 
 		const packs = await getPacks();
-		const answer = await customSelect(
+		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
 			packs,
-			undefined,
+			{ arrayTransform: undefined, hideBack: true },
 			"New",
 			new Separator(),
 			"Refresh",
@@ -371,115 +326,6 @@ async function exportPack() {
 		await game.pause(
 			`Done.\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Compress the 'packs/${uuid}' folder.\n3. Send the compressed file to whoever you'd like.\n`,
 		);
-	}
-}
-
-async function configureMetadataArray(array: string[]) {
-	while (true) {
-		hub.watermark(false);
-		console.log(JSON.stringify(array, null, 4));
-		console.log();
-
-		const answer = await customSelect(
-			"Configure Array",
-			array,
-			async (i, element) => ({ name: `Element ${i}`, value: i.toString() }),
-			new Separator(),
-			"New",
-			"Delete",
-			new Separator(),
-			"Done",
-		);
-
-		if (answer === "new") {
-			const value = await input({
-				message: "Value.",
-			});
-
-			array.push(value);
-			dirty = true;
-			continue;
-		} else if (answer === "delete") {
-			array.pop();
-			dirty = true;
-			continue;
-		} else if (answer === "done") {
-			break;
-		}
-
-		const index = parseInt(answer, 10);
-
-		const newValue = await input({
-			message: "What will you change this value to?",
-			default: array[index],
-		});
-
-		array[index] = newValue;
-		dirty = true;
-	}
-}
-
-async function configureMetadataObject(
-	object: any,
-	allowAddingAndDeleting = true,
-) {
-	while (true) {
-		hub.watermark(false);
-		console.log(JSON.stringify(object, null, 4));
-		console.log();
-
-		const answer = await customSelect(
-			"Configure Object",
-			Object.keys(object),
-			async (i, element) => ({ name: element, value: `element-${element}` }),
-			allowAddingAndDeleting && new Separator(),
-			allowAddingAndDeleting && "New",
-			allowAddingAndDeleting && "Delete",
-			new Separator(),
-			"Done",
-		);
-
-		if (allowAddingAndDeleting) {
-			if (answer === "new") {
-				const key = await input({
-					message: "Key.",
-				});
-				const value = await input({
-					message: "Value.",
-				});
-
-				object[key] = value;
-				dirty = true;
-				continue;
-			} else if (answer === "delete") {
-				const key = await input({
-					message: "Key.",
-				});
-
-				delete object[key];
-				dirty = true;
-				continue;
-			}
-		}
-
-		if (answer === "done") {
-			break;
-		}
-
-		const key = answer.split("-").slice(1).join("-");
-
-		if (Array.isArray(object[key])) {
-			await configureMetadataArray(object[key]);
-			continue;
-		}
-
-		const newValue = await input({
-			message: "What will you change this value to?",
-			default: object[key],
-		});
-
-		object[key] = newValue;
-		dirty = true;
 	}
 }
 
@@ -618,11 +464,31 @@ async function configureMetadata(metadata: Metadata) {
 			metadata.license = license;
 			dirty = true;
 		} else if (answer === "authors") {
-			await configureMetadataArray(metadata.authors);
+			const changed = await game.prompt.configureArray(
+				metadata.authors,
+				async () => hub.watermark(false),
+			);
+
+			// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+			// Learned that the hard way...
+			dirty ||= changed;
 		} else if (answer === "links") {
-			await configureMetadataObject(metadata.links);
+			const changed = await game.prompt.configureObject(
+				metadata.links,
+				true,
+				async () => hub.watermark(false),
+			);
+
+			dirty ||= changed;
 		} else if (answer === "requires") {
-			await configureMetadataObject(metadata.requires, false);
+			// TODO: Capitalize the choices.
+			const changed = await game.prompt.configureObject(
+				metadata.requires,
+				false,
+				async () => hub.watermark(false),
+			);
+
+			dirty ||= changed;
 		} else if (answer === "cancel") {
 			if (!dirty) {
 				// No changes have been made.
