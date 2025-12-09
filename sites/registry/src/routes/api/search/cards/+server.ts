@@ -19,6 +19,8 @@ export async function GET(event) {
 		const cards = await db
 			.select()
 			.from(card)
+			// TODO: Ignore caps.
+			// TODO: Make this smarter.
 			.where(and(like(card.name, `%${query}%`), eq(card.isLatestVersion, true)))
 			.innerJoin(pack, eq(card.packId, pack.id))
 			// TODO: Add setting for page size.

@@ -24,7 +24,7 @@
 					<div class="w-fit">
 						<a href={resolve("/pack/[uuid]", { uuid: pack.uuid })}>
 							<div
-								class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-gray-300 bg-blend-multiply hover:scale-110 hover:ml-[1.15rem] hover:my-[0.4rem] hover:mr-4"
+								class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-gray-300 bg-blend-multiply hover:scale-105 hover:my-1 hover:drop-shadow-xl"
 								style={`background-image: url(${cardboard})`}
 							>
 								<p class="font-bold">{pack.name} ({pack.packVersion})</p>
@@ -43,7 +43,7 @@
 		</div>
 	</div>
 
-	<div class="border ml-auto h-screen"></div>
+	<div class="border-l ml-auto h-screen"></div>
 
 	<div class="ml-auto mr-3">
 		<p class="text-xl m-2 ml-0 font-mono">{m.weak_drab_otter_aspire()}</p>
@@ -60,7 +60,7 @@
 					<div class="w-fit">
 						<a href={resolve("/card/[uuid]", { uuid: card.uuid })}>
 							<div
-								class="bg-black text-white p-4 rounded-xl w-fit transition-all hover:scale-110 hover:mr-[1.15rem] hover:my-[0.65rem] hover:ml-5"
+								class="bg-black text-white p-4 rounded-xl w-fit transition-all hover:scale-105 hover:my-1 hover:drop-shadow-xl"
 							>
 								<p class="">
 									<span class="text-cyan-500 font-bold">{`{${card.cost}}`}</span>

@@ -14,8 +14,13 @@ export async function load(event) {
 			error(404, { message: m.pack_not_found() });
 		}
 
+		const latest = packs.find((p) => p.isLatestVersion);
+		if (!latest) {
+			error(500, { message: m.drab_less_eel_fetch() });
+		}
+
 		return {
-			latest: packs.find((p) => p.isLatestVersion),
+			latest: latest,
 			all: packs,
 		};
 	};

@@ -16,15 +16,17 @@ export async function GET(event) {
 	}
 
 	// TODO: This doesn't show loading... in search page, it just stops.
-	await new Promise((resolve) => {
-		setTimeout(resolve, 1000);
-	});
+	// await new Promise((resolve) => {
+	// 	setTimeout(resolve, 1000);
+	// });
 
 	const packs = async () => {
 		// TODO: Filter by approved.
 		const packs = await db
 			.select()
 			.from(pack)
+			// TODO: Ignore caps.
+			// TODO: Make this smarter.
 			.where(and(like(pack.name, `%${query}%`), eq(pack.isLatestVersion, true)))
 			// TODO: Add setting for page size.
 			.limit(10)
