@@ -5,7 +5,7 @@
 
 	let { data } = $props();
 
-	console.log(data);
+	// TODO: Add pagination.
 </script>
 
 <div class="flex">

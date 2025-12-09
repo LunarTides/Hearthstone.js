@@ -8,6 +8,7 @@ export async function load(event) {
 	const uuid = event.params.uuid;
 
 	const getPack = async () => {
+		// TODO: Add API to get a single card / pack.
 		const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
 		if (packs.length <= 0) {
 			error(404, { message: m.pack_not_found() });
