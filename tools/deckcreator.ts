@@ -86,62 +86,69 @@ const defaultSettings = game.lodash.cloneDeep(settings);
  * Asks the user which class to choose, and returns it.
  */
 async function askClass(): Promise<Class> {
-	hub.watermark(false);
+	while (true) {
+		hub.watermark(false);
 
-	const heroClassString = await game.input(
-		`What class do you want to choose?\n${classes.join(", ")}\n`,
-	);
-	let heroClass: Class | undefined;
-
-	if (heroClassString) {
-		const cl = classes.find(
-			(c) =>
-				c.toLowerCase() === heroClassString.replaceAll(" ", "").toLowerCase(),
+		const heroClassString = await game.input(
+			`What class do you want to choose?\n${classes.join(", ")}\n`,
 		);
-		if (!cl) {
+		if (!heroClassString) {
 			await game.pause("\n<red>Invalid class.</red>");
-			return askClass();
+			continue;
 		}
 
-		heroClass = cl as Class;
-	}
+		let heroClass: Class | undefined;
 
-	if (!heroClass) {
-		throw new TypeError(
-			"heroClass is undefined even though cl was found. This should be impossible.",
-		);
-	}
-
-	player.heroClass = heroClass;
-
-	if (player.canUseRunes()) {
-		runes = [];
-
-		while (runes.length < 3) {
-			hub.watermark(false);
-
-			const runeChar = await game.inputTranslate(
-				`What runes do you want to add (%s more)\n${Object.values(Rune).join(", ")}\n`,
-				3 - runes.length,
+		if (heroClassString) {
+			const cl = classes.find(
+				(c) =>
+					c.toLowerCase() === heroClassString.replaceAll(" ", "").toLowerCase(),
 			);
-			if (!runeChar) {
+			if (!cl) {
+				await game.pause("\n<red>Invalid class.</red>");
 				continue;
 			}
 
-			const rune = Object.values(Rune).find((r) =>
-				r.startsWith(runeChar[0].toUpperCase()),
-			);
-			if (!rune) {
-				continue;
-			}
-
-			runes.push(rune);
+			heroClass = cl as Class;
 		}
 
-		player.runes = runes;
-	}
+		if (!heroClass) {
+			throw new TypeError(
+				"heroClass is undefined even though cl was found. This should be impossible.",
+			);
+		}
 
-	return heroClass;
+		player.heroClass = heroClass;
+
+		if (player.canUseRunes()) {
+			runes = [];
+
+			while (runes.length < 3) {
+				hub.watermark(false);
+
+				const runeChar = await game.inputTranslate(
+					`What runes do you want to add (%s more)\n${Object.values(Rune).join(", ")}\n`,
+					3 - runes.length,
+				);
+				if (!runeChar) {
+					continue;
+				}
+
+				const rune = Object.values(Rune).find((r) =>
+					r.startsWith(runeChar[0].toUpperCase()),
+				);
+				if (!rune) {
+					continue;
+				}
+
+				runes.push(rune);
+			}
+
+			player.runes = runes;
+		}
+
+		return heroClass;
+	}
 }
 
 /**

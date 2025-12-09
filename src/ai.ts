@@ -596,8 +596,8 @@ export class AI {
 	 *
 	 * @returns The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
 	 */
-	mulligan(): string {
-		let toMulligan = "";
+	mulligan(): Card[] {
+		const toMulligan = [];
 		let scores = "(";
 
 		for (const card of this.player.hand) {
@@ -610,7 +610,7 @@ export class AI {
 			const score = this.analyzePositiveCard(card);
 
 			if (score < game.config.ai.mulliganThreshold) {
-				toMulligan += (this.player.hand.indexOf(card) + 1).toString();
+				toMulligan.push(card);
 			}
 
 			scores += `${card.uuid}:${score}, `;

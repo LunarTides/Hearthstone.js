@@ -82,7 +82,7 @@ export const config: GameConfig = {
 		/*
 		 * This hides information that you don't need after you've played for a while.
 		 *
-		 * When enabled, this hides the mulligan help message, and the "type 'help' for further information" message.
+		 * When enabled, this hides information that you don't need if you know how to play.
 		 */
 		hideRedundantInformation: false,
 

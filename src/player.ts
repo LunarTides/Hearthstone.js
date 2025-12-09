@@ -1083,48 +1083,32 @@ export class Player {
 	 *
 	 * @returns The cards mulligan'd
 	 */
-	async mulligan(input: string): Promise<Card[]> {
-		if (input === "") {
-			return [];
-		}
+	async mulligan(cards: Card[]): Promise<Card[]> {
+		const mulligan = [];
 
-		if (!game.lodash.parseInt(input)) {
-			await game.pause("<red>Invalid input!</red>\n");
-			return this.mulligan(input);
-		}
-
-		const cards: Card[] = [];
-		const mulligan: Card[] = [];
-
-		for (const character of input) {
-			mulligan.push(this.hand[game.lodash.parseInt(character) - 1]);
-		}
-
-		for (const card of this.hand) {
+		for (const card of cards) {
 			// The Coin card shouldn't be mulligan'd
 			if (
-				!mulligan.includes(card) ||
+				!this.hand.includes(card) ||
 				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
 			) {
 				continue;
 			}
 
-			game.functions.util.remove(mulligan, card);
-
-			await game.event.withSuppressed(Event.DrawCard, async () =>
-				this.drawCards(1),
+			await game.event.withSuppressed(Event.DiscardCard, async () =>
+				card.discard(),
 			);
 			await game.event.withSuppressed(Event.AddCardToDeck, async () =>
 				this.shuffleIntoDeck(card),
 			);
-			await game.event.withSuppressed(Event.DiscardCard, async () =>
-				card.discard(),
+			await game.event.withSuppressed(Event.DrawCard, async () =>
+				this.drawCards(1),
 			);
 
-			cards.push(card);
+			mulligan.push(card);
 		}
 
-		return cards;
+		return mulligan;
 	}
 
 	/**

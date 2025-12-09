@@ -17,6 +17,7 @@ import {
 } from "@Game/types.ts";
 import { format } from "node:util";
 import { createPrompt, useKeypress, useState } from "@inquirer/core";
+import { checkbox } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -581,23 +582,44 @@ const prompt = {
 	 *
 	 * @param player The player to ask
 	 *
-	 * @returns A string of the indexes of the cards the player mulligan'd
+	 * @returns The cards that were mulligan'd
 	 */
-	async mulligan(player: Player): Promise<string> {
-		await game.functions.interact.print.gameState(player);
+	async mulligan(player: Player): Promise<Card[]> {
+		await game.functions.interact.print.gameState(player, false);
 
-		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
-		if (
-			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
-		) {
-			sb +=
-				"<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
+		let toMulligan: Card[];
+
+		if (player.ai) {
+			toMulligan = player.ai.mulligan();
+		} else {
+			const choices = [];
+
+			for (const [i, card] of Object.entries(player.hand)) {
+				// Don't allow mulliganing the coin.
+				if (
+					card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+				) {
+					continue;
+				}
+
+				const index = parseInt(i, 10);
+
+				choices.push({
+					name: parseTags(await card.readable(index + 1)),
+					value: card,
+				});
+			}
+
+			toMulligan = await checkbox({
+				message: "Choose cards to mulligan.",
+				choices,
+				pageSize: 10,
+				loop: false,
+			});
 		}
 
-		const input = player.ai ? player.ai.mulligan() : await game.input(sb);
-		await player.mulligan(input);
-
-		return input;
+		await player.mulligan(toMulligan);
+		return toMulligan;
 	},
 
 	/**
@@ -990,7 +1012,7 @@ const print = {
 	 *
 	 * @param player The player
 	 */
-	async gameState(player: Player): Promise<void> {
+	async gameState(player: Player, includeCardsInHand = true): Promise<void> {
 		this.watermark();
 		console.log();
 
@@ -1006,7 +1028,7 @@ const print = {
 		console.log();
 		await this.board(player);
 		console.log();
-		await this.hand(player);
+		await this.hand(player, includeCardsInHand);
 	},
 
 	/**
@@ -1180,7 +1202,7 @@ const print = {
 	/**
 	 * Prints the hand of the specified player.
 	 */
-	async hand(player: Player): Promise<void> {
+	async hand(player: Player, includeCards = true): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.getName(), player.heroClass);
 
 		const debugInfo = game.isDebugSettingEnabled(
@@ -1194,8 +1216,10 @@ const print = {
 			`([index] <cyan>{Cost}</cyan> <b>Name</b> ${debugInfo}<bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`,
 		);
 
-		for (const [index, card] of player.hand.entries()) {
-			console.log(await card.readable(index + 1));
+		if (includeCards) {
+			for (const [index, card] of player.hand.entries()) {
+				console.log(await card.readable(index + 1));
+			}
 		}
 	},
 };

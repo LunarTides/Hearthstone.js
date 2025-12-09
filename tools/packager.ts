@@ -660,17 +660,34 @@ async function configureMetadata(metadata: Metadata) {
 }
 
 export async function main() {
-	await hub.userInputLoop(
-		"<green>(E)xport a pack</green>, <blue>(I)mport a pack</blue>, <red>(B)ack</red>: ",
-		"b",
-		async (input) => {
-			const command = input[0].toLowerCase();
+	while (true) {
+		hub.watermark();
 
-			if (command === "e") {
-				await exportPack();
-			} else if (command === "i") {
-				await importPack();
-			}
-		},
-	);
+		const answer = await select({
+			message: "Packager Options",
+			choices: [
+				{
+					name: "Export a Pack",
+					value: "export",
+				},
+				{
+					name: "Import a Pack",
+					value: "import",
+				},
+				new Separator(),
+				{
+					name: "Back",
+					value: "back",
+				},
+			],
+		});
+
+		if (answer === "export") {
+			await exportPack();
+		} else if (answer === "import") {
+			await importPack();
+		} else if (answer === "back") {
+			break;
+		}
+	}
 }
