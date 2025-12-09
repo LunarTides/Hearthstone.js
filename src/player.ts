@@ -996,6 +996,13 @@ export class Player {
 	}
 
 	/**
+	 * @returns If the player can actually attack.
+	 */
+	canActuallyAttack(): boolean {
+		return this.canAttack && !this.frozen && this.attack > 0;
+	}
+
+	/**
 	 * @returns If the player can attack
 	 */
 	canBeAttacked(): boolean {

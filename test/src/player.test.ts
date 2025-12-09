@@ -652,6 +652,8 @@ describe("src/player", () => {
 		expect(player.canUseRunes()).toBe(true);
 	});
 
+	test.todo("canActuallyAttack", async () => {});
+
 	test("canBeAttacked", async () => {
 		const player = new Player();
 

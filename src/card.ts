@@ -2145,6 +2145,7 @@ export class Card {
 		sb += `<yellow>(${this.type})</yellow>`;
 
 		// Add the keywords
+		// TODO: `DivineShield` => `Divine Shield`.
 		sb += Object.values(this.keywords)
 			.map((keyword) => ` <gray>{${keyword}}</gray>`)
 			.join("");

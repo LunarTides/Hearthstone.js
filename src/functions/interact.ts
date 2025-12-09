@@ -659,11 +659,17 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags,
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Player | null> {
-		return (await this.target(prompt, card, {
-			...flags,
-			targetType: TargetType.Player,
-		})) as Player | null;
+		return (await this.target(
+			prompt,
+			card,
+			{
+				...flags,
+				targetType: TargetType.Player,
+			},
+			shouldBeDisabled,
+		)) as Player | null;
 	},
 
 	/**
@@ -675,11 +681,17 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Card | null> {
-		return (await this.target(prompt, card, {
-			...flags,
-			targetType: TargetType.Card,
-		})) as Card | null;
+		return (await this.target(
+			prompt,
+			card,
+			{
+				...flags,
+				targetType: TargetType.Card,
+			},
+			shouldBeDisabled,
+		)) as Card | null;
 	},
 
 	/**
@@ -693,6 +705,7 @@ const prompt = {
 	 * @param forceSide Force the user to only be able to select minions / the hero of a specific side
 	 * @param forceClass Force the user to only be able to select a minion or a hero
 	 * @param flags Change small behaviours ["allowLocations" => Allow selecting location, ]
+	 * @param shouldBeDisabled If this callback returns true, the target cannot be selected.
 	 *
 	 * @returns The card or hero chosen
 	 */
@@ -700,6 +713,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Target | null> {
 		await game.event.broadcast(
 			Event.TargetSelectionStarts,
@@ -707,7 +721,7 @@ const prompt = {
 			game.player,
 		);
 
-		const target = await this._target(prompt, card, flags);
+		const target = await this._target(prompt, card, flags, shouldBeDisabled);
 
 		if (target) {
 			await game.event.broadcast(
@@ -727,6 +741,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Target | null> {
 		// If the player is forced to select a target, select that target.
 		if (game.player.forceTarget) {
@@ -756,160 +771,145 @@ const prompt = {
 			return game.player.ai.promptTarget(newPrompt, card, flags);
 		}
 
-		// If the player is forced to select a player
-		if (flags.targetType === TargetType.Player) {
-			// You shouldn't really force a side while forcing a player, but it should still work
-			if (flags.alignment === Alignment.Enemy) {
-				return game.opponent;
-			}
-
-			if (flags.alignment === Alignment.Friendly) {
-				return game.player;
-			}
-
-			const target = await game.input(
-				"Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ",
-			);
-
-			return target.startsWith("y") ? game.opponent : game.player;
-		}
-
-		/*
-		 * From this point, forceClass is either
-		 * 1. any
-		 * 2. card
-		 */
-
-		// Ask the player to choose a target.
-		let p = `\n${newPrompt} (`;
-		if (flags.targetType === undefined) {
-			let possibleHeroes =
-				flags.alignment === Alignment.Enemy ? "the enemy" : "your";
-			possibleHeroes = flags.alignment === undefined ? "a" : possibleHeroes;
-
-			p += `type 'face' to select ${possibleHeroes} hero | `;
-		}
-
-		p += "type 'back' to go back) ";
-
-		const target = await game.input(p);
-
-		// Player chose to go back
-		if (target.startsWith("b") || game.functions.interact.isInputExit(target)) {
-			// This should always be safe.
-			return null;
-		}
-
-		// If the player chose to target a player, it will ask which player.
-		if (target.startsWith("face") && flags.targetType !== TargetType.Card) {
-			return this._target(newPrompt, card, {
-				...flags,
-				targetType: TargetType.Player,
-			});
-		}
-
-		// From this point, the player has chosen a minion.
-
-		// Get a list of each side of the board
-		const boardOpponent = game.opponent.board;
-		const boardFriendly = game.player.board;
-
-		// Get each minion that matches the target.
-		const boardOpponentTarget = boardOpponent[game.lodash.parseInt(target) - 1];
-		const boardFriendlyTarget = boardFriendly[game.lodash.parseInt(target) - 1];
-
-		/**
-		 * This is the resulting minion that the player chose, if any.
-		 */
-		let minion: Card;
-
-		// If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
-		if (!boardFriendlyTarget && !boardOpponentTarget) {
-			await game.pause("<red>Invalid input / minion!</red>\n");
-
-			// Try again
-			return this._target(newPrompt, card, flags);
-		}
-
-		if (flags.alignment === undefined) {
-			/*
-			 * If both players have a minion with the same index,
-			 * ask them which minion to select
-			 */
+		const choices = [];
+		const playerChoices = [];
+		if (
+			flags.alignment === undefined ||
+			flags.alignment === Alignment.Friendly
+		) {
 			if (
-				boardOpponent.length >= game.lodash.parseInt(target) &&
-				boardFriendly.length >= game.lodash.parseInt(target)
+				(!flags.targetType || flags.targetType === TargetType.Card) &&
+				game.player.board.length > 0
 			) {
-				const opponentTargetName = boardOpponentTarget.colorFromRarity();
-				const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
+				for (const [i, card] of Object.entries(game.player.board)) {
+					choices.push({
+						name: parseTags(await card.readable()),
+						value: `f${i}`,
+						description: `${card.name} on your side of the board.`,
+						disabled: (await shouldBeDisabled?.(card)) ?? false,
+					});
+				}
+			}
 
-				const alignment = await game.inputTranslate(
-					"Do you want to select your opponent's (%s) or your own (%s)? (y: opponent, n: friendly | type 'back' to go back) ",
-					opponentTargetName,
-					friendlyTargetName,
-				);
-
-				if (
-					alignment.startsWith("b") ||
-					game.functions.interact.isInputExit(alignment)
-				) {
-					// Go back.
-					return this._target(newPrompt, card, flags);
+			if (
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
+			) {
+				playerChoices.push({
+					name: "Friendly Player",
+					value: "pf",
+					disabled: (await shouldBeDisabled?.(game.player)) ?? false,
+				});
+			}
+		}
+		if (flags.alignment === undefined || flags.alignment === Alignment.Enemy) {
+			if (
+				(!flags.targetType || flags.targetType === TargetType.Card) &&
+				game.opponent.board.length > 0
+			) {
+				if (choices.length > 0) {
+					choices.push(new Separator());
 				}
 
-				minion = alignment.startsWith("y")
-					? boardOpponentTarget
-					: boardFriendlyTarget;
-			} else {
-				// If there is only one minion, select it.
-				minion =
-					boardOpponent.length >= game.lodash.parseInt(target)
-						? boardOpponentTarget
-						: boardFriendlyTarget;
+				for (const [i, card] of Object.entries(game.opponent.board)) {
+					choices.push({
+						name: parseTags(await card.readable()),
+						value: `e${i}`,
+						description: `${card.name} on the opponent's side of the board.`,
+						disabled: (await shouldBeDisabled?.(card)) ?? false,
+					});
+				}
 			}
-		} else {
-			/*
-			 * If the player is forced to one side.
-			 * Select the minion on the correct side of the board.
+
+			if (
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
+			) {
+				playerChoices.push({
+					name: "Enemy Player",
+					value: "pe",
+					disabled: (await shouldBeDisabled?.(game.opponent)) ?? false,
+				});
+			}
+		}
+
+		if (playerChoices.length > 0) {
+			if (choices.length > 0) {
+				choices.push(new Separator());
+			}
+
+			choices.push(...playerChoices);
+		}
+
+		choices.push(new Separator(), {
+			value: "Back",
+		});
+
+		while (true) {
+			const target = await select({
+				message: `\n${newPrompt}`,
+				choices,
+			});
+
+			// Player chose to go back
+			if (target === "Back") {
+				// This should always be safe.
+				return null;
+			}
+
+			// If the player chose to target a player, it will ask which player.
+			if (target.startsWith("p") && flags.targetType !== TargetType.Card) {
+				if (target === "pf") {
+					return game.player;
+				}
+
+				if (target === "pe") {
+					return game.opponent;
+				}
+
+				throw new Error("Targeted invalid player.");
+			}
+
+			// From this point, the player has chosen a minion.
+
+			/**
+			 * This is the resulting minion that the player chose, if any.
 			 */
-			minion =
-				flags.alignment === Alignment.Enemy
-					? boardOpponentTarget
-					: boardFriendlyTarget;
-		}
+			let minion: Card;
 
-		// If you didn't select a valid minion, return.
-		if (minion === undefined) {
-			await game.pause("<red>Invalid minion.</red>\n");
-			return null;
-		}
+			if (target[0] === "f") {
+				minion = game.player.board[parseInt(target[1], 10)];
+			} else {
+				minion = game.opponent.board[parseInt(target[1], 10)];
+			}
 
-		// If the minion has elusive, and the card that called this function is a spell or heropower.
-		if (
-			(card?.type === Type.Spell ||
-				card?.type === Type.HeroPower ||
-				flags.forceElusive) &&
-			minion.hasKeyword(Keyword.Elusive)
-		) {
-			await game.pause(
-				"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
-			);
-			return null;
-		}
+			// If the minion has elusive, and the card that called this function is a spell or heropower.
+			if (
+				(card?.type === Type.Spell ||
+					card?.type === Type.HeroPower ||
+					flags.forceElusive) &&
+				minion.hasKeyword(Keyword.Elusive)
+			) {
+				await game.pause(
+					"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
+				);
+				continue;
+			}
 
-		// If the minion has stealth, don't allow the opponent to target it.
-		if (minion.hasKeyword(Keyword.Stealth) && game.player !== minion.owner) {
-			await game.pause("<red>This minion has stealth.</red>\n");
-			return null;
-		}
+			// If the minion has stealth, don't allow the opponent to target it.
+			if (minion.hasKeyword(Keyword.Stealth) && game.player !== minion.owner) {
+				await game.pause("<red>This minion has stealth.</red>\n");
+				continue;
+			}
 
-		// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
-		if (minion.type === Type.Location && !flags.allowLocations) {
-			await game.pause("<red>You cannot target location cards.</red>\n");
-			return null;
-		}
+			// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
+			if (minion.type === Type.Location && !flags.allowLocations) {
+				await game.pause("<red>You cannot target location cards.</red>\n");
+				continue;
+			}
 
-		return minion;
+			return minion;
+		}
 	},
 
 	/**
@@ -1178,9 +1178,16 @@ const prompt = {
 			}
 		} else {
 			attacker = await this.target(
-				"Which minion do you want to attack with?",
+				"Which target do you want to attack with?",
 				undefined,
 				{ alignment: Alignment.Friendly },
+				async (target: Target) => {
+					if (target instanceof Card) {
+						return !target.canAttack();
+					}
+
+					return !target.canActuallyAttack();
+				},
 			);
 
 			if (!attacker) {
@@ -1188,9 +1195,10 @@ const prompt = {
 			}
 
 			target = await this.target(
-				"Which minion do you want to attack?",
+				"Which target do you want to attack?",
 				undefined,
 				{ alignment: Alignment.Enemy },
+				async (target: Target) => !target.canBeAttacked(),
 			);
 
 			if (!target) {
