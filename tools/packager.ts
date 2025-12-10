@@ -260,7 +260,7 @@ async function exportPack() {
 			if (
 				!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))
 			) {
-				game.input(
+				game.pause(
 					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
 				);
 				continue;

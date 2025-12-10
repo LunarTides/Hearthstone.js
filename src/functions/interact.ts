@@ -22,7 +22,7 @@ import {
 } from "@Game/types.ts";
 import { format } from "node:util";
 import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
-import { checkbox, input, select } from "@inquirer/prompts";
+import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -485,10 +485,12 @@ const prompt = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await game.inputTranslate(
-			"Player %s, please type in your deckcode%s: ",
-			player.id + 1,
-			debugStatement,
+		const deckcode = await game.input(
+			format(
+				"Player %s, please type in your deckcode%s: ",
+				player.id + 1,
+				debugStatement,
+			),
 		);
 
 		let result = true;
@@ -636,28 +638,19 @@ const prompt = {
 	 * @returns `true` if Yes / `false` if No
 	 */
 	async yesNo(prompt: string, player?: Player): Promise<boolean> {
-		const ask = `\n${prompt} (<bright:green>Y</bright:green>/<red>N</red>) `;
-
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
 		}
 
-		const rawChoice = await game.input(ask);
-		const choice = rawChoice.toUpperCase()[0];
-
-		if (["Y", "N"].includes(choice)) {
-			return choice === "Y";
-		}
-
-		// Invalid input
-		console.log(
-			"<red>Unexpected input: '<yellow>%s</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]",
-			rawChoice,
-		);
-
-		await game.pause();
-
-		return this.yesNo(prompt, player);
+		return confirm({
+			message: `\n${parseTags(prompt)}`,
+			theme: {
+				prefix: "",
+				style: {
+					message: (text: string) => text,
+				},
+			},
+		});
 	},
 
 	/**
@@ -1894,102 +1887,116 @@ export const interactFunctions = {
 			return turn;
 		}
 
-		let user: string;
+		let user: string = "";
 
-		while (true) {
-			await game.functions.interact.print.gameState(game.player, false);
+		const oldInterface = async () => {
+			await game.functions.interact.print.gameState(game.player);
+			console.log();
 
-			const cards = await Promise.all(
-				game.player.hand.map(async (c, i) =>
-					parseTags(await c.readable(i + 1)),
-				),
-			);
+			user = await input({
+				message: "Which card do you want to play?",
+			});
 
-			user = await game.prompt.customSelect(
-				"Which card do you want to play?",
-				cards,
-				{
-					arrayTransform: undefined,
-					hideBack: true,
-				},
-				cards.length > 0 && new Separator(),
-				"Commands",
-				{
-					name: "Type in",
-					value: "type in",
-					description:
-						"Type in the command instead of using the interface. (Old behavior)",
-				},
-			);
-			if (user === "commands") {
-				const debugCommandsDisabled = !game.isDebugSettingEnabled(
-					game.config.debug.commands,
+			if (!Number.isNaN(parseInt(user, 10))) {
+				user = (parseInt(user, 10) - 1).toString();
+			}
+		};
+
+		if (game.config.advanced.gameloopUseOldUserInterface) {
+			await oldInterface();
+		} else {
+			while (true) {
+				await game.functions.interact.print.gameState(game.player, false);
+
+				const cards = await Promise.all(
+					game.player.hand.map(async (c, i) =>
+						parseTags(await c.readable(i + 1)),
+					),
 				);
 
-				// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
-				const cmds = game.functions.util.alignColumns(
-					helpColumns
-						.filter((c) => !c.startsWith("(name)"))
-						.map((c) => c[0].toUpperCase() + c.slice(1)),
-					"-",
-				);
-				const debugCmds = game.functions.util.alignColumns(
-					helpDebugColumns
-						.filter((c) => !c.startsWith("(name)"))
-						.map((c) => c[0].toUpperCase() + c.slice(1)),
-					"-",
-				);
-
-				let command = await game.prompt.customSelect(
-					"Which command do you want to run?",
-					cmds,
+				user = await game.prompt.customSelect(
+					"Which card do you want to play?",
+					cards,
 					{
 						arrayTransform: undefined,
 						hideBack: true,
 					},
-					new Separator(),
-					...debugCmds.map((c) => ({
-						name: c,
-						value: c.split(" ")[0],
-						disabled: debugCommandsDisabled,
-					})),
-					new Separator(),
+					cards.length > 0 && new Separator(),
+					"Commands",
 					{
-						value: "Back",
+						name: "Type in",
+						value: "type in",
+						description:
+							"Type in the command instead of using the interface. (Old behavior)",
 					},
 				);
-				if (command === "Back") {
-					continue;
+				if (user === "commands") {
+					const debugCommandsDisabled = !game.isDebugSettingEnabled(
+						game.config.debug.commands,
+					);
+
+					// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
+					const cmds = game.functions.util.alignColumns(
+						helpColumns
+							.filter((c) => !c.startsWith("(name)"))
+							.map((c) => c[0].toUpperCase() + c.slice(1)),
+						"-",
+					);
+					const debugCmds = game.functions.util.alignColumns(
+						helpDebugColumns
+							.filter((c) => !c.startsWith("(name)"))
+							.map((c) => c[0].toUpperCase() + c.slice(1)),
+						"-",
+					);
+
+					let command = await game.prompt.customSelect(
+						"Which command do you want to run?",
+						cmds,
+						{
+							arrayTransform: undefined,
+							hideBack: true,
+						},
+						new Separator(),
+						...debugCmds.map((c) => ({
+							name: c,
+							value: c.split(" ")[0],
+							disabled: debugCommandsDisabled,
+						})),
+						new Separator(),
+						{
+							value: "Back",
+						},
+					);
+					if (command === "Back") {
+						continue;
+					}
+
+					// Handle commands with arguments.
+					if (["give", "eval"].includes(command.toLowerCase())) {
+						await game.functions.interact.print.gameState(game.player);
+						console.log();
+
+						command = game.config.advanced.debugCommandPrefix + command;
+
+						const args = await input({
+							message: command.toLowerCase(),
+						});
+
+						user = `${command} ${args}`;
+						break;
+					} else if (Number.isNaN(parseInt(command, 10))) {
+						command = game.config.advanced.debugCommandPrefix + command;
+					} else {
+						command = cmds[parseInt(command, 10)];
+					}
+
+					user = command.toLowerCase();
+				} else if (user === "type in") {
+					await oldInterface();
 				}
 
-				// Handle commands with arguments.
-				if (["give", "eval"].includes(command.toLowerCase())) {
-					await game.functions.interact.print.gameState(game.player);
-					console.log();
-
-					command = game.config.advanced.debugCommandPrefix + command;
-
-					user = `${command} ${await game.input(`${command.toLowerCase()} `)}`;
-					break;
-				} else if (Number.isNaN(parseInt(command, 10))) {
-					command = game.config.advanced.debugCommandPrefix + command;
-				} else {
-					command = cmds[parseInt(command, 10)];
-				}
-
-				user = command.toLowerCase();
-			} else if (user === "type in") {
-				await game.functions.interact.print.gameState(game.player);
-				console.log();
-
-				user = await game.input("Which card do you want to play? ");
-
-				if (!Number.isNaN(parseInt(user, 10))) {
-					user = (parseInt(user, 10) - 1).toString();
-				}
+				break;
 			}
-
-			break;
 		}
 
 		const returnValue = await this._gameloopHandleInput(user);

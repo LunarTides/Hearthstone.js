@@ -191,6 +191,7 @@ export type GameConfig = {
 		debugCommandPrefix: string;
 		spawnInDiyCards: boolean;
 		diyCardSpawnChance: number;
+		gameloopUseOldUserInterface: boolean;
 		dcShowUncollectible: boolean;
 		getReadableCardMaxDepth: number;
 		getReadableCardNoRecursion: boolean;

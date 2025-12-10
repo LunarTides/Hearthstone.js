@@ -248,6 +248,12 @@ export const config: GameConfig = {
 		 */
 		diyCardSpawnChance: 1 / 100,
 
+		/**
+		 * If it should use the old pre-4.0.0 interface for the "Which card do you want to play?" prompt.
+		 * This is equivalent to pressing "Type in" every time
+		 */
+		gameloopUseOldUserInterface: false,
+
 		/*
 		 * If this is true, the deckcreator will also show uncollectible cards.
 		 * These deckcodes will be rejected by the game as psuedo-valid if `Decks > Validate` is true.
