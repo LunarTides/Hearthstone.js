@@ -1,58 +1,154 @@
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
+import { confirm, input, number, Separator, select } from "@inquirer/prompts";
+import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
+
+async function configure(
+	heroBlueprint: Blueprint,
+	heropowerBlueprint: Blueprint,
+) {
+	let dirty = false;
+
+	while (true) {
+		hub.watermark(false);
+
+		const answer = await select({
+			message: "Configure Class",
+			choices: [
+				{
+					name: `Class Name (${heroBlueprint.classes[0]})`,
+					value: "className",
+					description: "The name of the class. Example: GnomeHunter",
+				},
+				new Separator(),
+				{
+					name: `Hero Name (${heroBlueprint.name})`,
+					value: "heroName",
+					description:
+						"The name of the default hero. Example: Hunter Gnomingstein",
+				},
+				new Separator(),
+				{
+					name: `Heropower Name (${heropowerBlueprint.name})`,
+					value: "heropowerName",
+					description:
+						"The name of the default hero's heropower. Example: Hunt Gnome",
+				},
+				{
+					name: `Heropower Description (${heropowerBlueprint.text})`,
+					value: "heropowerText",
+					description:
+						"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
+				},
+				{
+					name: `Heropower Cost (${heropowerBlueprint.cost})`,
+					value: "heropowerCost",
+					description: "The cost of the default hero's heropower. Default: 2",
+				},
+				new Separator(),
+				{
+					name: "Cancel",
+					value: "cancel",
+					description: "Cancel changes to the class.",
+				},
+				{
+					name: "Done",
+					value: "done",
+					description: "Done configuring class.",
+				},
+			],
+			loop: false,
+			pageSize: 12,
+		});
+
+		if (answer === "className") {
+			const className = (await input({
+				message: "Set the name of the class.",
+				default: heroBlueprint.classes.at(0) ?? "ChangeMe",
+				validate: (value) => !value.includes(" "),
+			})) as Class;
+
+			heroBlueprint.classes = [className];
+			heropowerBlueprint.classes = [className];
+
+			dirty = true;
+		} else if (answer === "heroName") {
+			heroBlueprint.name = await input({
+				message: "Set the name of the default hero.",
+				default: heroBlueprint.name,
+			});
+
+			dirty = true;
+		} else if (answer === "heropowerName") {
+			heropowerBlueprint.name = await input({
+				message: "Set the name of the default hero's heropower.",
+				default: heropowerBlueprint.name,
+			});
+
+			dirty = true;
+		} else if (answer === "heropowerText") {
+			heropowerBlueprint.text = await input({
+				message: "Set the description of the default hero's heropower.",
+				default: heropowerBlueprint.text,
+			});
+
+			dirty = true;
+		} else if (answer === "heropowerCost") {
+			heropowerBlueprint.cost = await number({
+				message: "Set the cost of the default hero's heropower.",
+				default: heropowerBlueprint.cost,
+				required: true,
+			});
+
+			dirty = true;
+		} else if (answer === "cancel") {
+			if (!dirty) {
+				// No changes have been made.
+				return false;
+			}
+
+			const done = await confirm({
+				message:
+					"Are you sure you want to cancel configuring the class? Your changes will be lost.",
+				default: false,
+			});
+
+			if (done) {
+				return false;
+			}
+		} else if (answer === "done") {
+			let message = "Are you sure you are done configuring the class?";
+
+			if (heroBlueprint.classes[0] === ("ChangeMe" as Class)) {
+				message = parseTags(
+					"<yellow>You haven't changed the class name. Continue anyway?<yellow>",
+				);
+			}
+
+			const done = await confirm({
+				message,
+				default: false,
+			});
+
+			if (done) {
+				return true;
+			}
+		}
+	}
+}
 
 /**
  * Asks the user a series of questions, and creates a class card using it.
  * This is not meant to be a library. Running this function will temporarily give control to this function.
  */
-export async function main(
-	debug = false,
-	overrideType?: lib.CCType,
-): Promise<void> {
-	const watermark = () => {
-		hub.watermark(false);
-		console.log("type 'back' at any step to cancel.\n");
-	};
-
-	const questions = [
-		"What should the name of the class be?",
-		"What should the default hero's name be?",
-		"What should the name of the hero power be?",
-		"What should the description of the hero power be? (example: Deal 2 damage to the enemy hero.):",
-		"How much should the hero power cost? (Default is 2):",
-	];
-
-	const answers: string[] = [];
-	let exited = false;
-
-	// Ask the questions as defined above and push the answer to answers
-	for (const question of questions) {
-		if (exited) {
-			continue;
-		}
-
-		watermark();
-		const value = await game.input(`${question} `);
-		if (!value || game.functions.interact.isInputExit(value)) {
-			exited = true;
-		}
-
-		answers.push(value);
-	}
-
-	if (exited) {
-		return;
-	}
-
-	const [className, heroName, hpName, hpText, hpCost] = answers;
-
+export async function main(debug = false): Promise<void> {
 	const heroBlueprint: Blueprint = {
-		name: heroName,
-		text: `${game.lodash.capitalize(className)} starting hero`,
+		name: "CHANGE ME",
+		text: `Change me starting hero`,
 		cost: 0,
 		type: Type.Hero,
-		classes: [game.lodash.startCase(className) as Class],
+		classes: ["ChangeMe" as Class],
 		rarity: Rarity.Free,
 		collectible: false,
 		tags: [Tag.StartingHero],
@@ -65,11 +161,11 @@ export async function main(
 	};
 
 	const heropowerBlueprint: Blueprint = {
-		name: hpName,
-		text: hpText,
-		cost: game.lodash.parseInt(hpCost),
+		name: "CHANGE ME",
+		text: "",
+		cost: 2,
 		type: Type.HeroPower,
-		classes: [game.lodash.startCase(className) as Class],
+		classes: ["ChangeMe" as Class],
 		rarity: Rarity.Free,
 		collectible: false,
 		tags: [],
@@ -77,11 +173,14 @@ export async function main(
 		id: game.cardIds.null,
 	};
 
-	let cctype: lib.CCType = lib.CCType.Class;
-	if (overrideType) {
-		cctype = overrideType;
+	const done = await configure(heroBlueprint, heropowerBlueprint);
+	if (!done) {
+		return;
 	}
 
+	const className = heroBlueprint.classes[0];
+
+	const cctype: lib.CCType = lib.CCType.Class;
 	await lib.create(
 		cctype,
 		heroBlueprint,

@@ -331,7 +331,9 @@ export const cardFunctions = {
 		idsContent += "export const cardIds = {\n";
 		idsContent += '\tnull: "00000000-0000-0000-0000-000000000000",';
 
-		for (const blueprint of game.blueprints.sort((a, b) => a.id.localeCompare(b.id))) {
+		for (const blueprint of game.blueprints.sort((a, b) =>
+			a.id.localeCompare(b.id),
+		)) {
 			const numberIdentifier = /^\d/.test(blueprint.name) ? "n" : "";
 			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(blueprint.name)}_${blueprint.id.replaceAll("-", "_")}: "${blueprint.id}",`;
 		}
