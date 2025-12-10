@@ -43,10 +43,31 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		runes: [],
 	};
 
+	const set = (key: keyof typeof blueprint, value: any) => {
+		(blueprint as any)[key] = value;
+		dirty = true;
+
+		if (key === "keywords") {
+			(card.keywords as any)[key] = undefined;
+			return;
+		}
+
+		if (Array.isArray(typeof (card as any)[key])) {
+			(card as any)[key].push(value);
+			return;
+		}
+
+		(card as any)[key] = value;
+	};
+
 	const card = await Card.create(
 		game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
 		game.player,
 	);
+
+	// NOTE: The game is *not* meant for this. Oh well!
+	card.blueprint = blueprint;
+	await card.doBlueprint(false, true);
 
 	let dirty = false;
 	const globalBlacklist: (keyof BlueprintWithOptional)[] = ["id"];
@@ -103,10 +124,6 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				.replace(/("keywords": \[.*\],)/, "\n    $1"),
 		);
 		console.log();
-
-		// NOTE: The game is *not* meant for this. Oh well!
-		card.blueprint = blueprint;
-		await card.doBlueprint(false, true);
 		console.log(await card.readable());
 		console.log();
 
@@ -119,14 +136,11 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				arrayTransform: async (i, element) => ({
 					name: game.lodash.startCase(element),
 					value: `element-${element}`,
-					addSeperator:
-						// Hardcoded, but whatever...
-						element === "attack" ||
-						element === "spellSchools" ||
-						element === "armor" ||
-						element === "durability" ||
-						element === "enchantmentPriority" ||
-						element === "keywords",
+					addSeperatorBefore:
+						element === "keywords" &&
+						// Heropowers don't have type-specific fields.
+						blueprint.type !== Type.HeroPower,
+					addSeperatorAfter: element === "tags",
 				}),
 				hideBack: true,
 			},
@@ -214,7 +228,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				}
 			}
 
-			await game.prompt.configureArrayEnum(
+			const changed = await game.prompt.configureArrayEnum(
 				value,
 				enumType,
 				options,
@@ -222,37 +236,51 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 					hub.watermark(false);
 				},
 			);
+
+			// Force reset.
+			card.doBlueprint(false, true);
+
+			dirty ||= changed;
 			continue;
 		}
 
 		if (key === "type") {
-			blueprint.type = await game.prompt.customSelectEnum<Type>(
-				message,
-				Object.values(Type).filter((type) => type !== Type.Undefined),
+			set(
+				"type",
+				await game.prompt.customSelectEnum<Type>(
+					message,
+					Object.values(Type).filter((type) => type !== Type.Undefined),
+				),
 			);
 			continue;
 		} else if (key === "rarity") {
-			blueprint.rarity = await game.prompt.customSelectEnum<Rarity>(
-				message,
-				Object.values(Rarity),
+			set(
+				"rarity",
+				await game.prompt.customSelectEnum<Rarity>(
+					message,
+					Object.values(Rarity),
+				),
 			);
 			continue;
 		} else if (key === "enchantmentPriority") {
-			blueprint.enchantmentPriority = parseInt(
-				await game.prompt.customSelect(
-					message,
-					Object.keys(EnchantmentPriority).filter((p) =>
-						Number.isNaN(parseInt(p, 10)),
+			set(
+				"enchantmentPriority",
+				parseInt(
+					await game.prompt.customSelect(
+						message,
+						Object.keys(EnchantmentPriority).filter((p) =>
+							Number.isNaN(parseInt(p, 10)),
+						),
+						{
+							arrayTransform: async (i, element) => ({
+								name: element,
+								value: EnchantmentPriority[element as any],
+							}),
+							hideBack: false,
+						},
 					),
-					{
-						arrayTransform: async (i, element) => ({
-							name: element,
-							value: EnchantmentPriority[element as any],
-						}),
-						hideBack: false,
-					},
+					10,
 				),
-				10,
 			);
 			continue;
 		}
@@ -270,7 +298,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				},
 			);
 
-			(blueprint[key] as boolean) = Boolean(newRarity);
+			set(key, Boolean(newRarity));
 			continue;
 		}
 
@@ -287,9 +315,9 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		});
 
 		if (typeof value === "string") {
-			(blueprint[key] as unknown) = newValue;
+			set(key, newValue);
 		} else {
-			(blueprint[key] as unknown) = JSON.parse(newValue);
+			set(key, JSON.parse(newValue));
 		}
 
 		dirty = true;

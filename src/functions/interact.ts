@@ -87,7 +87,8 @@ const prompt = {
 				  ) => Promise<{
 						name?: string;
 						value: string;
-						addSeperator?: boolean;
+						addSeperatorBefore?: boolean;
+						addSeperatorAfter?: boolean;
 						disabled?: boolean;
 				  }>)
 				| undefined;
@@ -115,11 +116,15 @@ const prompt = {
 				value: i,
 			};
 
-			if (choice.addSeperator) {
+			if (choice.addSeperatorBefore) {
 				choices.push(new Separator());
 			}
 
 			choices.push(choice);
+
+			if (choice.addSeperatorAfter) {
+				choices.push(new Separator());
+			}
 		}
 
 		if (!options?.hideBack) {
