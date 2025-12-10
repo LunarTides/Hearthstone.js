@@ -157,7 +157,6 @@ export type GameConfig = {
 		all: boolean;
 		commands: boolean;
 		allowTestDeck: boolean;
-		hideRedundantInformation: boolean;
 		hideLicense: boolean;
 		additionalInfoInReadable: boolean;
 		showCommitHash: boolean;

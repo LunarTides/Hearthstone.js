@@ -1,6 +1,11 @@
 import type { AI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
-import { commands, debugCommands } from "@Game/commands.ts";
+import {
+	commands,
+	debugCommands,
+	helpColumns,
+	helpDebugColumns,
+} from "@Game/commands.ts";
 import type { Player } from "@Game/player.ts";
 import {
 	Ability,
@@ -777,11 +782,21 @@ const prompt = {
 		}
 
 		const choices = [];
-		const playerChoices = [];
 		if (
 			flags.alignment === undefined ||
 			flags.alignment === Alignment.Friendly
 		) {
+			if (
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
+			) {
+				choices.push({
+					name: "Friendly Player",
+					value: "pf",
+					disabled: (await shouldBeDisabled?.(game.player)) ?? false,
+				});
+			}
+
 			if (
 				(!flags.targetType || flags.targetType === TargetType.Card) &&
 				game.player.board.length > 0
@@ -795,27 +810,27 @@ const prompt = {
 					});
 				}
 			}
-
-			if (
-				flags.targetType === undefined ||
-				flags.targetType === TargetType.Player
-			) {
-				playerChoices.push({
-					name: "Friendly Player",
-					value: "pf",
-					disabled: (await shouldBeDisabled?.(game.player)) ?? false,
-				});
-			}
 		}
 		if (flags.alignment === undefined || flags.alignment === Alignment.Enemy) {
 			if (
-				(!flags.targetType || flags.targetType === TargetType.Card) &&
-				game.opponent.board.length > 0
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
 			) {
 				if (choices.length > 0) {
 					choices.push(new Separator());
 				}
 
+				choices.push({
+					name: "Enemy Player",
+					value: "pe",
+					disabled: (await shouldBeDisabled?.(game.opponent)) ?? false,
+				});
+			}
+
+			if (
+				(!flags.targetType || flags.targetType === TargetType.Card) &&
+				game.opponent.board.length > 0
+			) {
 				for (const [i, card] of Object.entries(game.opponent.board)) {
 					choices.push({
 						name: parseTags(await card.readable()),
@@ -825,25 +840,6 @@ const prompt = {
 					});
 				}
 			}
-
-			if (
-				flags.targetType === undefined ||
-				flags.targetType === TargetType.Player
-			) {
-				playerChoices.push({
-					name: "Enemy Player",
-					value: "pe",
-					disabled: (await shouldBeDisabled?.(game.opponent)) ?? false,
-				});
-			}
-		}
-
-		if (playerChoices.length > 0) {
-			if (choices.length > 0) {
-				choices.push(new Separator());
-			}
-
-			choices.push(...playerChoices);
 		}
 
 		choices.push(new Separator(), {
@@ -868,6 +864,8 @@ const prompt = {
 				target = await select({
 					message: `\n${newPrompt}`,
 					choices,
+					loop: false,
+					pageSize: 15,
 				});
 			}
 
@@ -1013,8 +1011,8 @@ const prompt = {
 			toMulligan = await checkbox({
 				message: "Choose cards to mulligan.",
 				choices,
-				pageSize: 10,
 				loop: false,
+				pageSize: 15,
 			});
 		}
 
@@ -1857,7 +1855,7 @@ export const interactFunctions = {
 
 		const parsedInput = game.lodash.parseInt(input);
 
-		const card = game.player.hand[parsedInput - 1];
+		const card = game.player.hand[parsedInput];
 		if (!card) {
 			return GamePlayCardReturn.Invalid;
 		}
@@ -1896,19 +1894,104 @@ export const interactFunctions = {
 			return turn;
 		}
 
-		await game.functions.interact.print.gameState(game.player);
-		console.log();
+		let user: string;
 
-		let input = "Which card do you want to play? ";
-		if (
-			game.turn <= 2 &&
-			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
-		) {
-			input +=
-				"(type 'help' for further information <- This will disappear once you end your turn) ";
+		while (true) {
+			await game.functions.interact.print.gameState(game.player, false);
+
+			const cards = await Promise.all(
+				game.player.hand.map(async (c, i) =>
+					parseTags(await c.readable(i + 1)),
+				),
+			);
+
+			user = await game.prompt.customSelect(
+				"Which card do you want to play?",
+				cards,
+				{
+					arrayTransform: undefined,
+					hideBack: true,
+				},
+				cards.length > 0 && new Separator(),
+				"Commands",
+				{
+					name: "Type in",
+					value: "type in",
+					description:
+						"Type in the command instead of using the interface. (Old behavior)",
+				},
+			);
+			if (user === "commands") {
+				const debugCommandsDisabled = !game.isDebugSettingEnabled(
+					game.config.debug.commands,
+				);
+
+				// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
+				const cmds = game.functions.util.alignColumns(
+					helpColumns
+						.filter((c) => !c.startsWith("(name)"))
+						.map((c) => c[0].toUpperCase() + c.slice(1)),
+					"-",
+				);
+				const debugCmds = game.functions.util.alignColumns(
+					helpDebugColumns
+						.filter((c) => !c.startsWith("(name)"))
+						.map((c) => c[0].toUpperCase() + c.slice(1)),
+					"-",
+				);
+
+				let command = await game.prompt.customSelect(
+					"Which command do you want to run?",
+					cmds,
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
+					new Separator(),
+					...debugCmds.map((c) => ({
+						name: c,
+						value: c.split(" ")[0],
+						disabled: debugCommandsDisabled,
+					})),
+					new Separator(),
+					{
+						value: "Back",
+					},
+				);
+				if (command === "Back") {
+					continue;
+				}
+
+				// Handle commands with arguments.
+				if (["give", "eval"].includes(command.toLowerCase())) {
+					await game.functions.interact.print.gameState(game.player);
+					console.log();
+
+					command = game.config.advanced.debugCommandPrefix + command;
+
+					user = `${command} ${await game.input(`${command.toLowerCase()} `)}`;
+					break;
+				} else if (Number.isNaN(parseInt(command, 10))) {
+					command = game.config.advanced.debugCommandPrefix + command;
+				} else {
+					command = cmds[parseInt(command, 10)];
+				}
+
+				user = command.toLowerCase();
+			} else if (user === "type in") {
+				await game.functions.interact.print.gameState(game.player);
+				console.log();
+
+				user = await game.input("Which card do you want to play? ");
+
+				if (!Number.isNaN(parseInt(user, 10))) {
+					user = (parseInt(user, 10) - 1).toString();
+				}
+			}
+
+			break;
 		}
 
-		const user = await game.input(input);
 		const returnValue = await this._gameloopHandleInput(user);
 
 		// If there were no errors, return true.
@@ -1919,7 +2002,7 @@ export const interactFunctions = {
 		let error: string;
 
 		// Get the card
-		const card = game.player.hand[game.lodash.parseInt(user) - 1];
+		const card = game.player.hand[game.lodash.parseInt(user)];
 		const cost = card ? card.costType : "mana";
 
 		// Error Codes

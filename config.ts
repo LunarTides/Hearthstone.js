@@ -80,13 +80,6 @@ export const config: GameConfig = {
 		allowTestDeck: false,
 
 		/*
-		 * This hides information that you don't need after you've played for a while.
-		 *
-		 * When enabled, this hides information that you don't need if you know how to play.
-		 */
-		hideRedundantInformation: false,
-
-		/*
 		 * If this is enabled, it doesn't show the license when you play.
 		 */
 		hideLicense: false,

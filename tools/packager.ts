@@ -388,7 +388,7 @@ async function configureMetadata(metadata: Metadata) {
 				},
 			],
 			loop: false,
-			pageSize: 12,
+			pageSize: 15,
 		});
 
 		if (answer === "version") {
@@ -452,7 +452,7 @@ async function configureMetadata(metadata: Metadata) {
 				],
 				default: metadata.license,
 				loop: false,
-				pageSize: 12,
+				pageSize: 15,
 			});
 
 			if (license === "other") {

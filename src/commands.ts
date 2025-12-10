@@ -15,19 +15,19 @@ import { resumeTagParsing, stopTagParsing } from "chalk-tags";
  * This is the list of commands that can be used in the game.
  * This will be shown when using the "help" command.
  */
-const helpColumns = [
+export const helpColumns = [
 	"(name) - (description)\n",
 
-	"end - End your turn.",
 	"attack - Attack a target.",
+	"end - End your turn.",
 	"hero power - Use your hero power.",
-	"concede - Forfeit the game.",
+	"history - Show a list of things that have happened this game.",
 	"use - Use a location card.",
 	"titan - Use a titan card.",
-	"history - Show a list of things that have happened this game.",
+	"concede - Forfeit the game.",
 	"detail - Toggle showing more details about the game.",
 	"version - Show information about the version, branch, and settings of the game.",
-	"help - Show this message.",
+	"help - Show information about the different commands.",
 	"license - Open a link to this project's license.",
 ];
 
@@ -35,7 +35,7 @@ const helpColumns = [
  * This is the list of debug commands that can be used in the game.
  * This will also be shown when using the "help" command.
  */
-const helpDebugColumns = [
+export const helpDebugColumns = [
 	"(name) (required) [optional] - (description)\n",
 
 	"give (name | id) - Add a card to your hand.",

@@ -59,7 +59,7 @@ async function configure(
 				},
 			],
 			loop: false,
-			pageSize: 12,
+			pageSize: 15,
 		});
 
 		if (answer === "className") {
