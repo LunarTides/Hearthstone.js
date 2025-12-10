@@ -480,8 +480,6 @@ export const blueprint: Blueprint = {
 		console.log(`File created at: "${filePath}"`);
 	}
 
-	await game.functions.card.generateIdsFile();
-
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
 	if (abilities.length > 0 && !debugMode) {
 		game.functions.util.runCommand(
