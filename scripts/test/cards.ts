@@ -33,7 +33,7 @@ export async function main(): Promise<void> {
 		}
 
 		process.stderr.write(
-			`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`,
+			`\r\u001B[KTesting card ${index + 1} / ${cards.length} (${card.id})...`,
 		);
 
 		// Create a game
