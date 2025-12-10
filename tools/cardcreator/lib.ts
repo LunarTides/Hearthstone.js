@@ -294,6 +294,7 @@ export async function create(
 
 	// Create a random id.
 	const id = randomUUID();
+	blueprint.id = id;
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");

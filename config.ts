@@ -442,6 +442,6 @@ export const config: GameConfig = {
 		"One of my philosophies with Hearthstone.js is to make it <i>incredibly</i> easy to add new stuff. I achieve this not only by making tools like the card creators, but through making the codebase highly modular and extendable.",
 		"Check out Hearthstone.gd for a version of Hearthstone.js made in Godot. It is in very early stages of development and is currently stuck in limbo.",
 		"There is another Hearthstone.py (not to be confused with Hearthstone.py V1 / V2) currently in development. It might not see the light of day, but it exists.",
-		"Some of the things used in Hearthstone.js (the tags used for coloring, and the types for Vanilla cards), have been seperated into their own projects. See 'chalk-tags' and '@hearthstonejs/vanillatypes' on npm.",
+		"Some of the things used in Hearthstone.js (the tags used for coloring, and the types for Vanilla cards), have been separated into their own projects. See 'chalk-tags' and '@hearthstonejs/vanillatypes' on npm.",
 	],
 };

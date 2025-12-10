@@ -8,6 +8,8 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
+import { input, Separator, search } from "@inquirer/prompts";
+import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
@@ -177,74 +179,100 @@ export async function main(
 	debug = false,
 	overrideType?: lib.CCType,
 ): Promise<boolean> {
-	hub.watermark(false);
-
 	const vanillaCards = await game.functions.card.vanilla.getAll();
 
-	let running = true;
-	while (running) {
+	while (true) {
 		hub.watermark(false);
 
-		const cardName = await game.input("Name / dbfId (Type 'back' to cancel): ");
-		if (game.functions.interact.isInputExit(cardName)) {
-			running = false;
-			break;
+		const cardType = await game.prompt.customSelectEnum(
+			"Choose a type to filter the card using.",
+			[...Object.keys(Type).filter((t) => t !== "Undefined"), "Unknown (Slow)"],
+		);
+		if (cardType === "Back") {
+			return false;
 		}
 
-		let filteredCards = vanillaCards.filter(
-			(c) =>
-				c.name.toLowerCase() === cardName.toLowerCase() ||
-				c.dbfId === game.lodash.parseInt(cardName),
+		const answer = await game.prompt.customSelect(
+			"Do you want to filter by cost?",
+			["Type in cost", "Unknown (Slow)"],
 		);
+		let cardCost: number | undefined;
 
-		filteredCards = game.functions.card.vanilla.filter(
-			filteredCards,
-			false,
-			true,
-		);
+		if (answer === "0") {
+			cardCost = parseInt(
+				await input({
+					message: "How much does the card cost?",
+					validate: (value) =>
+						value.toLowerCase() === "unknown" ||
+						!Number.isNaN(parseInt(value, 10)),
+				}),
+				10,
+			);
+		}
 
-		if (filteredCards.length <= 0) {
-			console.log("Invalid card.\n");
+		let dbfId = await search({
+			message: "Search vanilla cards.",
+			source: (value) => {
+				const filteredCards = vanillaCards
+					.filter(
+						(c) =>
+							(!value || c.name.toLowerCase().includes(value?.toLowerCase())) &&
+							(c.cost === undefined ||
+								cardCost === undefined ||
+								c.cost === cardCost) &&
+							(cardType === "Unknown (Slow)" ||
+								c.type?.toLowerCase() === cardType.toLowerCase()),
+					)
+					.map((c) => ({
+						name: parseTags(
+							`<cyan>{${c.cost ?? "None"}}</cyan> ${c.name}${c.text ? ` (${c.text.replaceAll("[x]", "").replaceAll("\n", "")})` : ""} <yellow>(${game.lodash.startCase(c.type?.toLowerCase())})</yellow> <gray>(${c.collectible ? "Collectible" : "Uncollectible"}) [${c.dbfId}]</gray>`,
+						),
+						value: c.dbfId,
+					}));
+
+				const cards = [
+					{
+						name: "Type name / dbfId",
+						value: -2,
+						description:
+							"Manually type in the name or dbfId of the vanilla card you want to import.",
+					},
+					{
+						name: "Back",
+						value: -1,
+					},
+					new Separator(),
+					...filteredCards,
+				];
+
+				return cards;
+			},
+			pageSize: 15,
+		});
+		if (dbfId === -1) {
 			continue;
 		}
+		if (dbfId === -2) {
+			const name = await input({
+				message: "Name / dbfId",
+				validate: (value) =>
+					vanillaCards.some(
+						(c) =>
+							c.name.toLowerCase() === value.toLowerCase() ||
+							c.dbfId === parseInt(value, 10),
+					),
+			});
 
-		let card: VanillaCard;
-
-		if (filteredCards.length > 1) {
-			// Prompt the user to pick one
-			for (const [index, vanillaCard] of filteredCards.entries()) {
-				// Get rid of useless information
-				const {
-					id: _id,
-					elite: _elite,
-					heroPowerDbfId: _heroPowerDbfId,
-					artist: _artist,
-					flavor: _flavor,
-					mechanics: _mechanics,
-					...card
-				} = vanillaCard;
-
-				console.log("\n%s:", index + 1);
-				console.log(card);
-			}
-
-			const picked = game.lodash.parseInt(
-				await game.inputTranslate("Pick one (1-%s): ", filteredCards.length),
-			);
-
-			if (!picked || !filteredCards[picked - 1]) {
-				console.log("Invalid number.\n");
-				continue;
-			}
-
-			card = filteredCards[picked - 1];
-		} else {
-			card = filteredCards[0];
+			dbfId = vanillaCards.find(
+				(c) =>
+					c.name.toLowerCase() === name.toLowerCase() ||
+					c.dbfId === parseInt(name, 10),
+			)!.dbfId;
 		}
 
-		console.log("Found '%s'\n", card.name);
-
+		const card = vanillaCards.find((c) => c.dbfId === dbfId)!;
 		await create(card, debug, overrideType);
+		break;
 	}
 
 	return true;

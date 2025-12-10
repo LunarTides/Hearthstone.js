@@ -228,6 +228,7 @@ export const cardFunctions = {
 	/**
 	 * Returns the name of all classes in the game
 	 */
+	// TODO: Replace this with `Object.keys(Class)`
 	async getClasses(): Promise<string[]> {
 		const cards = await Promise.all(
 			(await Card.allWithTags(Tag.StartingHero)).map(async (hero) => {

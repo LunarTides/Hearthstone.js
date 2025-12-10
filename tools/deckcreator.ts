@@ -509,7 +509,7 @@ async function showCards(): Promise<void> {
 
 	const columns: string[] = [];
 	for (const card of classCards) {
-		// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
+		// Can't separate using "-" since that would break, for example, "Yogg-Saron, ..."
 		columns.push(`${card.colorFromRarity()} __HSJS_SEPERATOR__ ${card.id}`);
 	}
 
@@ -670,7 +670,7 @@ async function showDeck(): Promise<void> {
 
 	console.log(
 		game.functions.util
-			// Can't seperate using "-" since that would break, for example, "Yogg-Saron, ..."
+			// Can't separate using "-" since that would break, for example, "Yogg-Saron, ..."
 			.alignColumns(columns, "__HSJS_SEPERATOR__")
 			.join("\n")
 			.replaceAll("__HSJS_SEPERATOR__", "-"),
