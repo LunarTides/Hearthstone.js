@@ -851,10 +851,25 @@ const prompt = {
 		});
 
 		while (true) {
-			const target = await select({
-				message: `\n${newPrompt}`,
-				choices,
-			});
+			let target: string;
+
+			// Handle input queue.
+			if (game.player.inputQueue && game.player.inputQueue.length > 0) {
+				if (typeof game.player.inputQueue === "string") {
+					target = game.player.inputQueue;
+				} else {
+					target = game.player.inputQueue.pop()!;
+
+					if (game.player.inputQueue.length <= 0) {
+						game.player.inputQueue = undefined;
+					}
+				}
+			} else {
+				target = await select({
+					message: `\n${newPrompt}`,
+					choices,
+				});
+			}
 
 			// Player chose to go back
 			if (target === "Back") {

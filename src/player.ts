@@ -293,9 +293,9 @@ export class Player {
 	 * # Example
 	 * ```
 	 * // Only run this code when the player's turn starts
-	 * player.inputQueue = ["attack", "1", "1", "end"]; // Does these commands in order
+	 * player.inputQueue = ["attack", "f0", "e0", "end"]; // Does these commands in order
 	 *
-	 * // Once it has done all these commands, `player.inputQueue` = null
+	 * // Once it has done all these commands, `player.inputQueue` = undefined
 	 * ```
 	 *
 	 * #### Or with just a string

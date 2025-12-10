@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
 		await owner.summon(sheep);
 
 		// Activate the battlecry, choose the sheep
-		owner.inputQueue = ["1"];
+		owner.inputQueue = ["f0"];
 		await self.trigger(Ability.Battlecry);
 
 		// The sheep should have 2 attack and rush

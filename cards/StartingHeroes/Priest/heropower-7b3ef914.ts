@@ -33,14 +33,14 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		// Health: 1->3
 		owner.health = 1;
-		owner.inputQueue = ["face", "n"];
+		owner.inputQueue = ["pf"];
 		await self.trigger(Ability.HeroPower);
 
 		assert.equal(owner.health, 1 + 2);
 
 		// Health: 29->30 (cap at 30)
 		owner.health = 29;
-		owner.inputQueue = ["face", "n"];
+		owner.inputQueue = ["pf"];
 		await self.trigger(Ability.HeroPower);
 
 		assert.equal(owner.health, 30);

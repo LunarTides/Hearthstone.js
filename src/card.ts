@@ -633,9 +633,7 @@ export class Card {
 	// Keywords
 
 	hasKeyword(keyword: Keyword): boolean {
-		return (Object.keys(this.keywords) as unknown as Keyword[]).includes(
-			keyword,
-		);
+		return Object.keys(this.keywords).includes(keyword);
 	}
 
 	/**
