@@ -9,7 +9,7 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 /*
  * This is the list of commands that can be used in the game.
@@ -144,21 +144,16 @@ export const commands: CommandList = {
 			"Which card do you want to use?",
 			undefined,
 			{ alignment: Alignment.Friendly },
+			async (target) =>
+				!target.hasKeyword(Keyword.Titan) || target.attackTimes <= 0,
 		);
 
 		if (!card) {
 			return false;
 		}
 
-		if (card.attackTimes <= 0) {
-			await game.pause("<red>That card is exhausted.</red>\n");
-			return false;
-		}
-
 		const titanIds = card.getKeyword(Keyword.Titan) as string[] | undefined;
-
 		if (!titanIds) {
-			await game.pause("<red>That card is not a titan.</red>\n");
 			return false;
 		}
 
@@ -166,25 +161,18 @@ export const commands: CommandList = {
 			titanIds.map(async (id) => Card.create(id, game.player, true)),
 		);
 
-		await game.functions.interact.print.gameState(game.player);
-		console.log(
-			"\nWhich ability do you want to trigger?\n%s",
-			titanCards.map((c) => c.readable).join(",\n"),
+		const choice = await game.prompt.customSelect(
+			"Which ability do you want to trigger?",
+			await Promise.all(
+				titanCards.map(async (c, i) => parseTags(await c.readable(i + 1))),
+			),
 		);
-
-		const choice = game.lodash.parseInt(await game.input());
-
-		if (
-			!choice ||
-			choice < 1 ||
-			choice > titanCards.length ||
-			Number.isNaN(choice)
-		) {
-			await game.pause("<red>Invalid choice.</red>\n");
+		if (choice === "Back") {
 			return false;
 		}
 
-		const ability = titanCards[choice - 1];
+		const abilityIndex = parseInt(choice, 10);
+		const ability = titanCards[abilityIndex];
 
 		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
 			await game.event.withSuppressed(Event.DiscardCard, async () =>
@@ -194,8 +182,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		titanIds.splice(choice - 1, 1);
-
+		titanIds.splice(abilityIndex, 1);
 		card.setKeyword(Keyword.Titan, titanIds);
 
 		if (titanIds.length <= 0) {
@@ -580,21 +567,17 @@ export const debugCommands: CommandList = {
 
 		// If there are multiple cards with the same name, ask the user to choose one.
 		if (cards.length > 1) {
-			const user = await game.input(
-				`<yellow>Multiple cards matching the name/id '</yellow>${cardName}<yellow>' found. Which one will you select?</yellow>\n${(await Promise.all(cards.map(async (c, i) => await c.readable(i + 1)))).join("\n")}\n`,
+			const choice = await game.prompt.customSelect(
+				`Multiple cards matching '${cardName}' found. Select one.`,
+				await Promise.all(
+					cards.map(async (c, i) => parseTags(await c.readable(i + 1))),
+				),
 			);
-
-			if (game.functions.interact.isInputExit(user)) {
+			if (choice === "Back") {
 				return false;
 			}
 
-			const i = parseInt(user, 10);
-			if (Number.isNaN(i) || i <= 0 || i > cards.length) {
-				await game.pause("<red>Invalid choice.</red>\n");
-				return false;
-			}
-
-			card = cards[i - 1];
+			card = cards[parseInt(choice, 10)];
 		}
 
 		if (!card) {
