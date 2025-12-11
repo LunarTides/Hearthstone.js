@@ -584,6 +584,10 @@ export const deckcodeFunctions = {
 				const chosen = await game.prompt.customSelect(
 					"Multiple cards with the name '</yellow>%s<yellow>' detected! Please choose one.",
 					matches.map((m) => JSON.stringify(m)),
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
 				);
 
 				match = matches[parseInt(chosen, 10)];

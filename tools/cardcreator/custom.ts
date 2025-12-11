@@ -275,7 +275,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		}
 
 		if (typeof value === "boolean") {
-			const newRarity = await game.prompt.customSelect(
+			const booleanChoice = await game.prompt.customSelect(
 				message,
 				["True", "False"],
 				{
@@ -287,7 +287,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				},
 			);
 
-			set(key, Boolean(newRarity));
+			set(key, booleanChoice === "true");
 			continue;
 		}
 
@@ -295,8 +295,12 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 			message: "What will you change this value to?",
 			default: value?.toString(),
 			validate: (value) => {
-				if (typeof value === "number") {
-					return !Number.isNaN(parseInt(value, 10));
+				// If the key is a number, make sure the new value is one too.
+				if (typeof blueprint[key] === "number") {
+					const parsed = parseInt(value, 10);
+					if (Number.isNaN(parsed)) {
+						return "Please enter a valid number";
+					}
 				}
 
 				return true;
@@ -308,8 +312,6 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		} else {
 			set(key, JSON.parse(newValue));
 		}
-
-		dirty = true;
 	}
 
 	// Delete blacklisted fields so that the game won't complain about card type field mismatch.

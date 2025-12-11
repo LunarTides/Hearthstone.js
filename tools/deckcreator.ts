@@ -365,8 +365,13 @@ const commands: CommandList = {
 		const deckcode = args.join(" ");
 
 		game.config.decks.validate = false;
-		let newDeck = await game.functions.deckcode.import(player, deckcode);
-		game.config.decks.validate = true;
+		let newDeck: Card[] | undefined;
+		try {
+			newDeck = await game.functions.deckcode.import(player, deckcode);
+		} finally {
+			game.config.decks.validate = true;
+		}
+
 		if (!newDeck) {
 			return false;
 		}
