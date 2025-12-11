@@ -40,6 +40,7 @@ describe("src/functions/card", () => {
 
 	test.todo("runBlueprintValidator", async () => {});
 	test.todo("getClasses", async () => {});
+	test.todo("readables", async () => {});
 
 	test("galakrondFormula", async () => {
 		expect(cardFunctions.galakrondFormula(0)).toEqual(1);

@@ -9,6 +9,7 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
+import { parseTags } from "chalk-tags";
 
 const vanilla = {
 	/**
@@ -241,6 +242,15 @@ export const cardFunctions = {
 		);
 
 		return cards.map((card) => card.classes[0]);
+	},
+
+	/**
+	 * Returns the result of calling `readable` on all cards.
+	 */
+	async readables(cards: Card[]): Promise<string[]> {
+		return await Promise.all(
+			cards.map(async (c, i) => parseTags(await c.readable(i + 1))),
+		);
 	},
 
 	/**

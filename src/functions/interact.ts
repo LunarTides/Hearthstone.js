@@ -1050,7 +1050,7 @@ const prompt = {
 
 		const chosen = await game.prompt.customSelect(
 			prompt,
-			await Promise.all(cards.map(async (c) => parseTags(await c.readable()))),
+			await game.functions.card.readables(cards),
 			{
 				arrayTransform: undefined,
 				hideBack: true,
@@ -1106,7 +1106,7 @@ const prompt = {
 
 		const choice = await game.prompt.customSelect(
 			prompt,
-			await Promise.all(cards.map(async (c) => parseTags(await c.readable()))),
+			await game.functions.card.readables(cards),
 			{
 				arrayTransform: undefined,
 				hideBack: true,
@@ -1853,12 +1853,7 @@ export const interactFunctions = {
 			while (true) {
 				await game.functions.interact.print.gameState(game.player, false);
 
-				const cards = await Promise.all(
-					game.player.hand.map(async (c, i) =>
-						parseTags(await c.readable(i + 1)),
-					),
-				);
-
+				const cards = await game.functions.card.readables(game.player.hand);
 				user = await game.prompt.customSelect(
 					"Which card do you want to play?",
 					cards,

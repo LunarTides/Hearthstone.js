@@ -9,7 +9,7 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 /*
  * This is the list of commands that can be used in the game.
@@ -163,9 +163,7 @@ export const commands: CommandList = {
 
 		const choice = await game.prompt.customSelect(
 			"Which ability do you want to trigger?",
-			await Promise.all(
-				titanCards.map(async (c, i) => parseTags(await c.readable(i + 1))),
-			),
+			await game.functions.card.readables(titanCards),
 		);
 		if (choice === "Back") {
 			return false;
@@ -569,9 +567,7 @@ export const debugCommands: CommandList = {
 		if (cards.length > 1) {
 			const choice = await game.prompt.customSelect(
 				`Multiple cards matching '${cardName}' found. Select one.`,
-				await Promise.all(
-					cards.map(async (c, i) => parseTags(await c.readable(i + 1))),
-				),
+				await game.functions.card.readables(cards),
 			);
 			if (choice === "Back") {
 				return false;
