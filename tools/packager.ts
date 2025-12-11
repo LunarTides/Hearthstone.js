@@ -260,7 +260,7 @@ async function exportPack() {
 			if (
 				!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))
 			) {
-				game.pause(
+				await game.pause(
 					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
 				);
 				continue;
@@ -509,7 +509,7 @@ async function configureMetadata(metadata: Metadata) {
 
 			if (metadata.license === "Proprietary") {
 				message = parseTags(
-					"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?<yellow>",
+					"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
 				);
 			}
 

@@ -35,14 +35,15 @@ const undoableCommandHistory: string[] = [];
 async function askClass(): Promise<Class | undefined> {
 	hub.watermark(false);
 
-	player.heroClass = await game.prompt.customSelectEnum<Class>(
+	const chosen = await game.prompt.customSelectEnum<Class>(
 		`What class do you want to choose?`,
 		Object.values(Class).filter((c) => c !== Class.Neutral),
 	);
-	if (player.heroClass === ("Back" as Class)) {
+	if (chosen === ("Back" as Class)) {
 		return undefined;
 	}
 
+	player.heroClass = chosen;
 	if (player.canUseRunes()) {
 		await game.prompt.configureArrayEnum(
 			player.runes,
@@ -121,7 +122,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 
 			case "TooManyCopies": {
 				log += util.format(
-					"Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
+					"Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'</yellow>",
 					game.config.decks.maxOfOneCard,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);
@@ -131,7 +132,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 
 			case "TooManyLegendaryCopies": {
 				log += util.format(
-					"Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
+					"Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'</yellow>",
 					game.config.decks.maxOfOneLegendary,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);

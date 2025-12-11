@@ -271,7 +271,7 @@ const prompt = {
 		let dirty = false;
 
 		while (true) {
-			onLoop?.();
+			await onLoop?.();
 			console.log(JSON.stringify(array, null, 4));
 			console.log();
 

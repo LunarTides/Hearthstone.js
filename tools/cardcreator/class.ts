@@ -122,7 +122,7 @@ async function configure(
 
 			if (heroBlueprint.classes[0] === ("ChangeMe" as Class)) {
 				message = parseTags(
-					"<yellow>You haven't changed the class name. Continue anyway?<yellow>",
+					"<yellow>You haven't changed the class name. Continue anyway?</yellow>",
 				);
 			}
 

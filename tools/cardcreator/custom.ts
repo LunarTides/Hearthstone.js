@@ -45,19 +45,8 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 
 	const set = (key: keyof typeof blueprint, value: any) => {
 		(blueprint as any)[key] = value;
-		dirty = true;
-
-		if (key === "keywords") {
-			(card.keywords as any)[key] = undefined;
-			return;
-		}
-
-		if (Array.isArray(typeof (card as any)[key])) {
-			(card as any)[key].push(value);
-			return;
-		}
-
 		(card as any)[key] = value;
+		dirty = true;
 	};
 
 	const card = await Card.create(
@@ -169,7 +158,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 
 			if (!blueprint.name || blueprint.name === "CHANGE ME") {
 				message = parseTags(
-					"<yellow>You haven't changed the name. The game doesn't support cards with empty names. Continue anyway?<yellow>",
+					"<yellow>You haven't changed the name. The game doesn't support cards with empty names. Continue anyway?</yellow>",
 				);
 			}
 
@@ -238,7 +227,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 			);
 
 			// Force reset.
-			card.doBlueprint(false, true);
+			await card.doBlueprint(false, true);
 
 			dirty ||= changed;
 			continue;

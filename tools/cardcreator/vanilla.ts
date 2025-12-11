@@ -8,7 +8,7 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
-import { input, Separator, search } from "@inquirer/prompts";
+import { input, number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
@@ -69,8 +69,9 @@ export async function create(
 	while (!classes.includes(cardClass)) {
 		cardClass = game.lodash.startCase(
 			await input({
-				message:
+				message: parseTags(
 					"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
+				),
 			}),
 		) as Class;
 	}
@@ -200,15 +201,9 @@ export async function main(
 		let cardCost: number | undefined;
 
 		if (answer === "0") {
-			cardCost = parseInt(
-				await input({
-					message: "How much does the card cost?",
-					validate: (value) =>
-						value.toLowerCase() === "unknown" ||
-						!Number.isNaN(parseInt(value, 10)),
-				}),
-				10,
-			);
+			cardCost = await number({
+				message: "How much does the card cost?",
+			});
 		}
 
 		let dbfId = await search({
