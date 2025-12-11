@@ -4,11 +4,11 @@ import {
 	type CommandList,
 	Event,
 	type GameConfig,
-	Rarity,
 	Rune,
 } from "@Game/types.ts";
 import util from "node:util";
-import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { Separator, search } from "@inquirer/prompts";
+import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import * as hub from "../hub.ts";
 
 enum ViewType {
@@ -152,214 +152,6 @@ async function askClass(): Promise<Class> {
 }
 
 /**
- * Sort the input cards based on the current `settings`.
- *
- * @returns The sorted cards
- */
-function sortCards(_cards: Card[]): Card[] {
-	// If the order is invalid, fall back to ascending
-	if (
-		![SortOrder.Ascending, SortOrder.Descending].includes(settings.sort.order)
-	) {
-		settings.sort.order = defaultSettings.sort.order;
-	}
-
-	const type = settings.sort.type;
-	const order = settings.sort.order;
-
-	const calcOrder = (a: string | number, b: string | number) => {
-		if (typeof a !== typeof b) {
-			throw new TypeError("A and B are different types.");
-		}
-
-		if (order === SortOrder.Ascending) {
-			if (typeof a === "string") {
-				return a.localeCompare(b as string);
-			}
-
-			return a - (b as number);
-		}
-
-		if (typeof a === "string") {
-			return -a.localeCompare(b as string);
-		}
-
-		return (b as number) - a;
-	};
-
-	if (type === "rarity") {
-		const sortScores = [
-			Rarity.Free,
-			Rarity.Common,
-			Rarity.Rare,
-			Rarity.Epic,
-			Rarity.Legendary,
-		];
-
-		return _cards.sort((a, b) => {
-			const scoreA = sortScores.indexOf(a.rarity);
-			const scoreB = sortScores.indexOf(b.rarity);
-
-			return calcOrder(scoreA, scoreB);
-		});
-	}
-
-	if (["name", "type"].includes(type)) {
-		return _cards.sort((a, b) => {
-			let typeA: string;
-			let typeB: string;
-
-			if (type === "name") {
-				typeA = a.name;
-				typeB = b.name;
-			} else {
-				typeA = a.type;
-				typeB = b.type;
-			}
-
-			let returnValue = typeA.localeCompare(typeB);
-			if (order === SortOrder.Descending) {
-				returnValue = -returnValue;
-			}
-
-			return returnValue;
-		});
-	}
-
-	if (type === "cost" || type === "id") {
-		const newType = type;
-
-		return _cards.sort((a, b) => calcOrder(a[newType], b[newType]));
-	}
-
-	// If 'type' isn't valid, fall back to sorting by rarity
-	settings.sort.type = defaultSettings.sort.type;
-	return sortCards(_cards);
-}
-
-/**
- * Searches cards based on a query.
- *
- * # Examples:
- * ```ts
- * let searched = searchCards(cards, 'cost:1');
- * searched = searchCards(cards, 'cost:even');
- * searched = searchCards(cards, 'name:Hi rarity:Legendary');
- *```
- */
-function searchCards(_cards: Card[], searchQuery: string): Card[] | false {
-	if (searchQuery.length <= 0) {
-		return _cards;
-	}
-
-	const returnValueCards: Card[] = [];
-
-	const splitQuery = searchQuery.split(":");
-
-	if (splitQuery.length <= 1) {
-		// The user didn't specify a key. Do a general search
-		const query = splitQuery[0].toLowerCase();
-
-		for (const card of _cards) {
-			const name = card.name.toLowerCase();
-			const text = card.text.toLowerCase();
-
-			if (!name.includes(query) && !text.includes(query)) {
-				continue;
-			}
-
-			returnValueCards.push(card);
-		}
-
-		return returnValueCards;
-	}
-
-	let [key, value] = splitQuery;
-
-	value = value.toLowerCase();
-
-	const doReturn = (c: Card) => {
-		const returnValue = c[key as keyof Card];
-
-		// Javascript
-		if (!returnValue && returnValue !== 0) {
-			console.log("\n<red>Key '%s' not valid!</red>", key);
-			return -1;
-		}
-
-		// Mana even / odd
-		if (key === "cost") {
-			if (typeof returnValue !== "number") {
-				throw new TypeError("`ret` is not a number.");
-			}
-
-			if (value === "even") {
-				return returnValue % 2 === 0;
-			}
-
-			if (value === "odd") {
-				return returnValue % 2 === 1;
-			}
-
-			// Mana range (1-10)
-			const regex = /\d+-\d+/;
-			if (regex.test(value)) {
-				const valueSplit = value.split("-");
-
-				const min = game.lodash.parseInt(valueSplit[0]);
-				const max = game.lodash.parseInt(valueSplit[1]);
-
-				return returnValue >= min && returnValue <= max;
-			}
-
-			const parsedValue = game.lodash.parseInt(value);
-
-			if (!Number.isNaN(parsedValue)) {
-				return returnValue === parsedValue;
-			}
-
-			console.log("\n<red>Value '%s' not valid!</red>", value);
-			return -1;
-		}
-
-		if (typeof returnValue === "string") {
-			return returnValue.toLowerCase().includes(value);
-		}
-
-		if (typeof returnValue === "number") {
-			return returnValue === Number.parseFloat(value);
-		}
-
-		return -1;
-	};
-
-	let error = false;
-
-	for (const card of _cards) {
-		if (error) {
-			continue;
-		}
-
-		const returnValue = doReturn(card);
-
-		if (returnValue === -1) {
-			error = true;
-			continue;
-		}
-
-		if (returnValue) {
-			returnValueCards.push(card);
-		}
-	}
-
-	if (error) {
-		return false;
-	}
-
-	return returnValueCards;
-}
-
-/**
  * Shows the possible cards that the user can add to their deck.
  */
 async function showCards(): Promise<void> {
@@ -421,39 +213,6 @@ async function showCards(): Promise<void> {
 		return;
 	}
 
-	let searchFailed = false;
-
-	// Search functionality
-	for (const query of settings.search.query) {
-		if (searchFailed) {
-			continue;
-		}
-
-		const searchedCards = searchCards(classCards, query);
-
-		if (searchedCards === false) {
-			await game.pause(
-				`<red>Search failed at '${query}'! Reverting back to last successful query.\n</red>`,
-			);
-
-			searchFailed = true;
-			continue;
-		}
-
-		classCards = searchedCards;
-	}
-
-	if (classCards.length <= 0) {
-		await game.pause("<yellow>\nNo cards match search.\n</yellow>");
-		searchFailed = true;
-	}
-
-	if (searchFailed) {
-		settings.search.query = settings.search.prevQuery;
-		await showCards();
-		return;
-	}
-
 	settings.search.prevQuery = settings.search.query;
 
 	settings.view.maxPage = Math.ceil(classCards.length / cardsPerPage);
@@ -468,9 +227,6 @@ async function showCards(): Promise<void> {
 		settings.sort.type.toUpperCase(),
 		settings.sort.order.toLowerCase(),
 	);
-
-	// Sort
-	classCards = sortCards(classCards);
 
 	const sortTypeInvalid = oldSortType !== settings.sort.type;
 	const sortOrderInvalid = oldSortOrder !== settings.sort.order;
@@ -986,8 +742,49 @@ let running = true;
  * Runs the deck creator.
  */
 export async function main(): Promise<void> {
-	running = true;
 	chosenClass = await askClass();
+
+	while (true) {
+		const id = await search({
+			message: "",
+			source: async (value) => [
+				{
+					value: "Deck",
+				},
+				{
+					value: "Commands",
+				},
+				new Separator(),
+				...(await Promise.all(
+					cards
+						.filter(
+							// TODO: Add runes.
+							(c) =>
+								(!value || c.name.includes(value) || c.id.includes(value)) &&
+								c.classes.includes(chosenClass),
+						)
+						.map(async (c) => ({
+							name: parseTags(
+								`${await c.readable()} {#<#${c.id.slice(0, 6)}>${c.id.slice(0, 8)}</#>}`,
+							),
+							value: c.id,
+						})),
+				)),
+			],
+		});
+
+		if (id === "Deck") {
+			settings.view.type = ViewType.Deck;
+			continue;
+		} else if (id === "Commands") {
+			// TODO: Do.
+			continue;
+		}
+
+		add(cards.find((c) => c.id === id)!);
+	}
+
+	running = true;
 
 	while (running) {
 		if (settings.view.type === ViewType.Cards) {

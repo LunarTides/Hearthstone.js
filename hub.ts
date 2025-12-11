@@ -3,7 +3,6 @@
  */
 import { Card } from "@Game/card.ts";
 import { Separator, select } from "@inquirer/prompts";
-import { parseTags } from "chalk-tags";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
@@ -76,16 +75,16 @@ export async function cardCreator() {
 			message: "Create a Card",
 			choices: [
 				{
-					name: parseTags("<green>Create a Custom Card</green>"),
+					name: "Create a Custom Card",
 					value: "custom",
 				},
 				{
-					name: parseTags("<blue>Import a Vanilla Card</blue>"),
+					name: "Import a Vanilla Card",
 					value: "vanilla",
 				},
 				new Separator(),
 				{
-					name: parseTags("<red>Back</red>"),
+					name: "Back",
 					value: "back",
 				},
 			],
@@ -119,21 +118,21 @@ export async function devmode() {
 			message: "Developer Options",
 			choices: [
 				{
-					name: parseTags("<green>Create a Card</green>"),
+					name: "Create a Card",
 					value: "card",
 				},
 				{
-					name: parseTags("<blue>Create a Class</blue>"),
+					name: "Create a Class",
 					value: "class",
 				},
 				new Separator(),
 				{
-					name: parseTags("<yellow>Start Packager</yellow>"),
+					name: "Start Packager",
 					value: "pkgr",
 				},
 				new Separator(),
 				{
-					name: parseTags("<red>Back</red>"),
+					name: "Back",
 					value: "back",
 				},
 			],
@@ -165,20 +164,20 @@ export async function main() {
 			message: "Options",
 			choices: [
 				{
-					name: parseTags("<green>Play</green>"),
+					name: "Play",
 					value: "play",
 				},
 				{
-					name: parseTags("<blue>Create a Deck</blue>"),
+					name: "Create a Deck",
 					value: "deck",
 				},
 				{
-					name: parseTags("<yellow>Developer Options</yellow>"),
+					name: "Developer Options",
 					value: "developer",
 				},
 				new Separator(),
 				{
-					name: parseTags("<red>Exit</red>"),
+					name: "Exit",
 					value: "exit",
 				},
 			],
