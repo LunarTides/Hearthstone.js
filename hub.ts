@@ -2,16 +2,16 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  */
 import { Card } from "@Game/card.ts";
-import { Separator, confirm, select } from "@inquirer/prompts";
+import { confirm, Separator, select } from "@inquirer/prompts";
+import * as cardTest from "./scripts/test/cards.ts"; // Card Test
+import * as crashTest from "./scripts/test/crash.ts"; // Crash Test
+import * as generateVanilla from "./scripts/vanilla/generate.ts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 import * as pkgr from "./tools/packager.ts"; // Packager
-import * as cardTest from "./scripts/test/cards.ts"; // Card Test
-import * as crashTest from "./scripts/test/crash.ts"; // Crash Test
-import * as generateVanilla from "./scripts/vanilla/generate.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -176,7 +176,8 @@ export async function devmode() {
 			game.interest("Starting Crash Test...OK");
 		} else if (answer === "generateVanilla") {
 			const sure = await confirm({
-				message: "Are you sure you want to generate the vanilla cards? Doing this will query an API.",
+				message:
+					"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
 				default: false,
 			});
 			if (!sure) {

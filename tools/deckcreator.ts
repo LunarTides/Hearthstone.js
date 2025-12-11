@@ -16,158 +16,49 @@ enum DeckcodeFormat {
 	JS = "JS",
 }
 
-const config = game.config;
 const player = game.player;
-const classes = await game.functions.card.getClasses();
 const cards = await Card.all(game.config.advanced.dcShowUncollectible);
 
-let chosenClass: Class;
 let viewingClass: Class;
 
-let deck: Card[] = [];
-let runes: Rune[] = [];
+let cardsToShow = cards;
+let showingDeck = false;
 
-const settings = {
-	deckcode: {
-		format: DeckcodeFormat.JS,
-	},
-	commands: {
-		history: [] as string[],
-		undoableHistory: [] as string[],
-	},
-};
+let deck: Card[] = [];
+
+let deckcodeFormat: DeckcodeFormat = DeckcodeFormat.JS;
+const undoableCommandHistory: string[] = [];
 
 /**
  * Asks the user which class to choose, and returns it.
  */
-async function askClass(): Promise<Class> {
-	while (true) {
-		hub.watermark(false);
+async function askClass(): Promise<Class | undefined> {
+	hub.watermark(false);
 
-		const heroClassString = await game.input(
-			`What class do you want to choose?\n${classes.join(", ")}\n`,
-		);
-		if (!heroClassString) {
-			await game.pause("\n<red>Invalid class.</red>");
-			continue;
-		}
-
-		let heroClass: Class | undefined;
-
-		if (heroClassString) {
-			const cl = classes.find(
-				(c) =>
-					c.toLowerCase() === heroClassString.replaceAll(" ", "").toLowerCase(),
-			);
-			if (!cl) {
-				await game.pause("\n<red>Invalid class.</red>");
-				continue;
-			}
-
-			heroClass = cl as Class;
-		}
-
-		if (!heroClass) {
-			throw new TypeError(
-				"heroClass is undefined even though cl was found. This should be impossible.",
-			);
-		}
-
-		player.heroClass = heroClass;
-
-		if (player.canUseRunes()) {
-			runes = [];
-
-			while (runes.length < 3) {
-				hub.watermark(false);
-
-				const runeChar = await game.inputTranslate(
-					`What runes do you want to add (%s more)\n${Object.values(Rune).join(", ")}\n`,
-					3 - runes.length,
-				);
-				if (!runeChar) {
-					continue;
-				}
-
-				const rune = Object.values(Rune).find((r) =>
-					r.startsWith(runeChar[0].toUpperCase()),
-				);
-				if (!rune) {
-					continue;
-				}
-
-				runes.push(rune);
-			}
-
-			player.runes = runes;
-		}
-
-		return heroClass;
+	player.heroClass = await game.prompt.customSelectEnum<Class>(
+		`What class do you want to choose?`,
+		Object.values(Class).filter((c) => c !== Class.Neutral),
+	);
+	if (player.heroClass === ("Back" as Class)) {
+		return undefined;
 	}
-}
 
-/**
- * Prints the rules / config to the screen
- */
-function showRules(): void {
-	const configText = "### RULES ###";
-	console.log("#".repeat(configText.length));
-	console.log(configText);
-	console.log("#".repeat(configText.length));
+	if (player.canUseRunes()) {
+		await game.prompt.configureArrayEnum(
+			player.runes,
+			Rune,
+			{
+				maxSize: 3,
+				allowDuplicates: true,
+			},
+			async () => {
+				hub.watermark(false);
+				console.log("<blue>Add runes.</blue>\n");
+			},
+		);
+	}
 
-	console.log("#");
-
-	console.log(
-		"# Validation: %s",
-		game.translate(
-			config.decks.validate
-				? "<bright:green>ON</bright:green>"
-				: "<red>OFF</red>",
-		),
-	);
-
-	console.log(
-		"#\n# Rule 1. Minimum Deck Length: <yellow>%s</yellow>",
-		config.decks.minLength,
-	);
-
-	console.log(
-		"# Rule 2. Maximum Deck Length: <yellow>%s</yellow>",
-		config.decks.maxLength,
-	);
-
-	console.log(
-		"#\n# Rule 3. Maximum amount of cards for each card (eg. You can only have: <yellow>x</yellow> Seances in a deck): <yellow>%s</yellow>",
-		config.decks.maxOfOneCard,
-	);
-
-	console.log(
-		"# Rule 4. Maximum amount of cards for each legendary card (Same as Rule 3 but for legendaries): <yellow>%s</yellow>",
-		config.decks.maxOfOneLegendary,
-	);
-
-	console.log("#");
-
-	console.log(
-		"# There are 3 types of deck states: Valid, Pseudo-Valid, Invalid",
-	);
-
-	console.log("# Valid decks will work properly");
-	console.log(
-		"# Pseudo-valid decks will be rejected by the deck importer for violating a rule",
-	);
-
-	console.log(
-		"# Invalid decks are decks with a fundemental problem that the deck importer cannot resolve. Eg. An invalid card in the deck.",
-	);
-
-	console.log(
-		"# Violating any of these rules while validation is enabled will result in a pseudo-valid deck.",
-	);
-
-	console.log("#");
-
-	console.log("#".repeat(configText.length));
+	return player.heroClass;
 }
 
 /**
@@ -182,7 +73,7 @@ function add(card: Card): boolean {
 
 	for (const setting of Object.entries(card.deckSettings)) {
 		const [key, value] = setting;
-		config[key as keyof GameConfig] = value as any;
+		game.config[key as keyof GameConfig] = value as any;
 	}
 
 	return true;
@@ -201,7 +92,11 @@ function remove(card: Card): boolean {
  * @param parseVanillaOnPseudo Converts the deckcode to a vanilla one even if the deck is pseudo-valid. This will decrease performance.
  */
 async function generateDeckcode(parseVanillaOnPseudo = false) {
-	const deckcode = game.functions.deckcode.export(deck, chosenClass, runes);
+	const deckcode = game.functions.deckcode.export(
+		deck,
+		player.heroClass,
+		player.runes,
+	);
 	const error = deckcode.error;
 
 	if (error) {
@@ -227,7 +122,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			case "TooManyCopies": {
 				log += util.format(
 					"Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
-					config.decks.maxOfOneCard,
+					game.config.decks.maxOfOneCard,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);
 
@@ -237,7 +132,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			case "TooManyLegendaryCopies": {
 				log += util.format(
 					"Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'<yellow>",
-					config.decks.maxOfOneLegendary,
+					game.config.decks.maxOfOneLegendary,
 					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
 				);
 
@@ -253,7 +148,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 	}
 
 	if (
-		settings.deckcode.format === DeckcodeFormat.Vanilla &&
+		deckcodeFormat === DeckcodeFormat.Vanilla &&
 		(parseVanillaOnPseudo || !deckcode.error)
 	) {
 		// Don't convert if the error is unrecoverable
@@ -280,31 +175,16 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
  */
 async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
 	const args = cmd.split(" ");
-	const name = args.shift()?.toLowerCase();
-	if (!name) {
-		await game.pause("<red>Invalid command.</red>\n");
-		return false;
-	}
+	const name = args.shift()!.toLowerCase();
 
-	if (game.functions.interact.isInputExit(name)) {
-		return true;
-	}
-
-	const commandName = Object.keys(commands).find(
-		(commandName) => commandName === name,
-	);
-
-	if (commandName) {
-		await commands[commandName](args);
-	}
+	await commands[name](args);
 
 	if (!addToHistory) {
 		return true;
 	}
 
-	settings.commands.history.push(cmd);
 	if (["a", "r"].includes(cmd[0])) {
-		settings.commands.undoableHistory.push(cmd);
+		undoableCommandHistory.push(cmd);
 	}
 
 	return true;
@@ -314,11 +194,16 @@ async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
  * Runs the deck creator.
  */
 export async function main(): Promise<void> {
-	chosenClass = await askClass();
-	viewingClass = chosenClass;
+	{
+		const heroClass = await askClass();
+		if (!heroClass) {
+			return;
+		}
+	}
+	viewingClass = player.heroClass;
 
-	let cardsToShow = cards;
-	let showingDeck = false;
+	cardsToShow = cards;
+	showingDeck = false;
 
 	const filterCards = (c: Card) => {
 		// TODO: Add runes.
@@ -398,10 +283,13 @@ export async function main(): Promise<void> {
 			}
 
 			command = commands[parseInt(command, 10)].split(" ")[0].toLowerCase();
+			if (command === "exit") {
+				break;
+			}
 
-			if (["import", "eval"].includes(command.toLowerCase())) {
+			if (["import", "eval"].includes(command)) {
 				const args = await input({
-					message: command.toLowerCase(),
+					message: command,
 				});
 
 				command = `${command} ${args}`;
@@ -415,22 +303,49 @@ export async function main(): Promise<void> {
 
 		if (showingDeck) {
 			remove(card);
+			undoableCommandHistory.push(`remove ${card.id}`);
 		} else {
 			add(card);
+			undoableCommandHistory.push(`add ${card.id}`);
 		}
 	}
 }
 
 const commands: CommandList = {
 	async neutral(): Promise<boolean> {
-		viewingClass = viewingClass === Class.Neutral ? chosenClass : Class.Neutral;
+		viewingClass =
+			viewingClass === Class.Neutral ? player.heroClass : Class.Neutral;
 		return true;
 	},
-	async rules(): Promise<boolean> {
-		hub.watermark(false);
-		showRules();
-		await game.pause("\nPress enter to continue...\n");
+	async undo(): Promise<boolean> {
+		if (undoableCommandHistory.length <= 0) {
+			await game.pause("<red>Nothing to undo.</red>\n");
+			return false;
+		}
 
+		const commandSplit = game.lodash.last(undoableCommandHistory)?.split(" ");
+		if (!commandSplit) {
+			await game.pause(
+				"<red>Could not find anything to undo. This is a bug.</red>\n",
+			);
+
+			return false;
+		}
+
+		const args = commandSplit.slice(1);
+		const command = commandSplit[0];
+
+		if (command.startsWith("a")) {
+			remove(cards.find((c) => c.id === args[0])!);
+		} else if (command.startsWith("r")) {
+			add(cards.find((c) => c.id === args[0])!);
+		} else {
+			// This shouldn't ever happen, but oh well
+			console.log("<red>Command '%s' cannot be undoed.</red>", command);
+			return false;
+		}
+
+		undoableCommandHistory.pop();
 		return true;
 	},
 	async deckcode(): Promise<boolean> {
@@ -448,97 +363,53 @@ const commands: CommandList = {
 	async import(args): Promise<boolean> {
 		const deckcode = args.join(" ");
 
-		config.decks.validate = false;
+		game.config.decks.validate = false;
 		let newDeck = await game.functions.deckcode.import(player, deckcode);
-		config.decks.validate = true;
-
+		game.config.decks.validate = true;
 		if (!newDeck) {
 			return false;
 		}
 
 		newDeck = newDeck.sort((a, b) => a.name.localeCompare(b.name));
-
 		deck = [];
 
-		// Update the filtered cards
-		chosenClass = player.heroClass;
-		runes = player.runes;
-
-		/*
-		 * Add the cards using handleCmds instead of add because for some reason, adding them with add
-		 * causes a weird bug that makes modifying the deck impossible because removing a card
-		 * removes a completly unrelated card because javascript.
-		 * You can just set deck = functions.importDeck(), but doing it that way doesn't account for renathal or any other card that changes the config in any way since that is done using the add function.
-		 */
 		for (const card of newDeck) {
-			await handleCmds(`add ${card.id}`);
+			add(card);
 		}
 
 		return true;
 	},
 	async class(): Promise<boolean> {
-		const oldRunes = game.lodash.clone(runes);
-		const newClass = await askClass();
+		const oldClass = game.lodash.clone(player.heroClass);
+		const oldRunes = game.lodash.clone(player.runes);
 
-		if (newClass === chosenClass && runes === oldRunes) {
-			await game.pause("<yellow>Your class was not changed</yellow>\n");
+		const newClass = await askClass();
+		if (!newClass) {
+			return false;
+		}
+
+		if (
+			player.heroClass === oldClass &&
+			game.lodash.isEqual(player.runes, oldRunes)
+		) {
 			return false;
 		}
 
 		deck = [];
-		chosenClass = newClass;
 		if (viewingClass !== Class.Neutral) {
-			viewingClass = chosenClass;
+			viewingClass = player.heroClass;
 		}
 
 		return true;
 	},
-	async undo(): Promise<boolean> {
-		if (settings.commands.undoableHistory.length <= 0) {
-			await game.pause("<red>Nothing to undo.</red>\n");
-			return false;
-		}
-
-		const commandSplit = game.lodash
-			.last(settings.commands.undoableHistory)
-			?.split(" ");
-
-		if (!commandSplit) {
-			await game.pause(
-				"<red>Could not find anything to undo. This is a bug.</red>\n",
-			);
-
-			return false;
-		}
-
-		const args = commandSplit.slice(1);
-		const command = commandSplit[0];
-
-		let reverse: string;
-
-		if (command.startsWith("a")) {
-			reverse = "remove";
-		} else if (command.startsWith("r")) {
-			reverse = "add";
-		} else {
-			// This shouldn't ever happen, but oh well
-			console.log("<red>Command '%s' cannot be undoed.</red>", command);
-			return false;
-		}
-
-		await handleCmds(`${reverse} ${args.join(" ")}`, false);
-
-		settings.commands.undoableHistory.pop();
-		settings.commands.history.pop();
-
+	async format(): Promise<boolean> {
+		deckcodeFormat =
+			deckcodeFormat === DeckcodeFormat.JS
+				? DeckcodeFormat.Vanilla
+				: DeckcodeFormat.JS;
 		return true;
 	},
 	async eval(args): Promise<boolean> {
-		if (args.length <= 0) {
-			await game.pause("<red>Too few arguments.</red>\n");
-			return false;
-		}
-
 		const code = await game.functions.util.parseEvalArgs(args);
 
 		try {
@@ -562,6 +433,42 @@ const commands: CommandList = {
 		}
 
 		await game.event.broadcast(Event.Eval, code, game.player);
+		return true;
+	},
+	async rules(): Promise<boolean> {
+		hub.watermark(false);
+
+		console.log("--- Rules ---");
+		console.log();
+
+		console.log(
+			"Validation: %s",
+			game.translate(
+				game.config.decks.validate
+					? "<bright:green>ON</bright:green>"
+					: "<red>OFF</red>",
+			),
+		);
+
+		console.log(
+			"\nMinimum Deck Length: <yellow>%s</yellow>",
+			game.config.decks.minLength,
+		);
+		console.log(
+			"Maximum Deck Length: <yellow>%s</yellow>",
+			game.config.decks.maxLength,
+		);
+
+		console.log(
+			"\nYou can only have: <yellow>%s</yellow> Sheep in a deck.",
+			game.config.decks.maxOfOneCard,
+		);
+		console.log(
+			"You can only have: <yellow>%s Brann Bronzebeard</yellow>",
+			game.config.decks.maxOfOneLegendary,
+		);
+
+		await game.pause("\nPress enter to continue...\n");
 		return true;
 	},
 };
