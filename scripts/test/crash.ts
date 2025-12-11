@@ -3,7 +3,10 @@ import { createGame } from "@Game/game.ts";
 import { Player } from "@Game/player.ts";
 import process from "node:process";
 
-const { game } = await createGame();
+if (import.meta.main) {
+	await createGame();
+}
+
 const blueprints = game.blueprints;
 
 const cards = await Card.all(true);
@@ -15,7 +18,7 @@ games = Number.isNaN(games) ? 10 : games;
 /**
  * Executes the main function for the program.
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
 	// Do this, otherwise `game` isn't recognized.
 	const hub = await import("../../hub.ts");
 	hub.watermark(false);
@@ -95,7 +98,14 @@ async function main(): Promise<void> {
 	 */
 	await createGame();
 	console.warn("\n<green>Crash test passed!</green>");
-	process.exit();
+
+	if (import.meta.main) {
+		process.exit();
+	} else {
+		await game.pause();
+	}
 }
 
-await main();
+if (import.meta.main) {
+	await main();
+}

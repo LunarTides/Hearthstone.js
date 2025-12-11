@@ -2,13 +2,16 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  */
 import { Card } from "@Game/card.ts";
-import { Separator, select } from "@inquirer/prompts";
+import { Separator, confirm, select } from "@inquirer/prompts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 import * as pkgr from "./tools/packager.ts"; // Packager
+import * as cardTest from "./scripts/test/cards.ts"; // Card Test
+import * as crashTest from "./scripts/test/crash.ts"; // Crash Test
+import * as generateVanilla from "./scripts/vanilla/generate.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -88,6 +91,8 @@ export async function cardCreator() {
 					value: "back",
 				},
 			],
+			loop: false,
+			pageSize: 15,
 		});
 
 		if (answer === "custom") {
@@ -132,10 +137,25 @@ export async function devmode() {
 				},
 				new Separator(),
 				{
+					name: "Test Cards",
+					value: "cardTest",
+				},
+				{
+					name: "Crash Test",
+					value: "crashTest",
+				},
+				{
+					name: "Generate Vanilla Cards",
+					value: "generateVanilla",
+				},
+				new Separator(),
+				{
 					name: "Back",
 					value: "back",
 				},
 			],
+			loop: false,
+			pageSize: 15,
 		});
 
 		if (answer === "card") {
@@ -146,6 +166,26 @@ export async function devmode() {
 			game.interest("Starting Class Creator...");
 			await clc.main();
 			game.interest("Starting Class Creator...OK");
+		} else if (answer === "cardTest") {
+			game.interest("Starting Card Test...");
+			await cardTest.main();
+			game.interest("Starting Card Test...OK");
+		} else if (answer === "crashTest") {
+			game.interest("Starting Crash Test...");
+			await crashTest.main();
+			game.interest("Starting Crash Test...OK");
+		} else if (answer === "generateVanilla") {
+			const sure = await confirm({
+				message: "Are you sure you want to generate the vanilla cards? Doing this will query an API.",
+				default: false,
+			});
+			if (!sure) {
+				continue;
+			}
+
+			game.interest("Generating vanilla cards...");
+			await generateVanilla.main();
+			game.interest("Generating vanilla cards...OK");
 		} else if (answer === "pkgr") {
 			game.interest("Starting Packager...");
 			await pkgr.main();
@@ -181,6 +221,8 @@ export async function main() {
 					value: "exit",
 				},
 			],
+			loop: false,
+			pageSize: 15,
 		});
 
 		if (answer === "play") {
