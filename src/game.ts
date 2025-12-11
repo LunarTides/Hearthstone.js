@@ -1329,61 +1329,6 @@ export class Game {
 	}
 
 	/**
-	 * Logs the translated text to the console.
-	 *
-	 * @param text The text to be translated
-	 * @param args The arguments to be passed to the translation string
-	 */
-	logTranslate(text: string, ...args: unknown[]): void {
-		console.log(this.translate(text, ...args));
-	}
-
-	/**
-	 * A combination of {@link Game.translate} and {@link Game.input}.
-	 *
-	 * @param text The text to be translated
-	 * @param args The arguments to be passed to the translation string
-	 * @returns The user's answer
-	 */
-	async inputTranslate(text: string, ...args: unknown[]): Promise<string> {
-		return await game.input(this.translate(text, ...args));
-	}
-
-	/**
-	 * Translates the input text to the current locale using the language map and prompts the user for input.
-	 * Allows overriding the noInput setting and using the player's input queue.
-	 *
-	 * @param text The text to be translated
-	 * @param overrideNoInput If true, overrides the `game.noInput` setting
-	 * @param useInputQueue If true, allows using the player's input queue
-	 * @param args The arguments to be passed to the translation string
-	 * @returns The user's input as a string
-	 */
-	async inputTranslateWithOptions(
-		text: string,
-		overrideNoInput = false,
-		useInputQueue = true,
-		...args: unknown[]
-	): Promise<string> {
-		return await game.input(
-			this.translate(text, ...args),
-			overrideNoInput,
-			useInputQueue,
-		);
-	}
-
-	/**
-	 * Translates the input text to the current locale using the language map and pauses the game, displaying the translated text as a prompt.
-	 *
-	 * @param text The text to be translated.
-	 * @param args The arguments to be passed to the translation string.
-	 * @returns A Promise that resolves when the pause is complete.
-	 */
-	async pauseTranslate(text: string, ...args: unknown[]): Promise<void> {
-		await game.pause(this.translate(text, ...args));
-	}
-
-	/**
 	 * Assigns an ai to the players if in the config.
 	 *
 	 * Unassigns the player's ai's if not in the config.

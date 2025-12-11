@@ -1,6 +1,11 @@
 import type { AI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
-import { commands, debugCommands } from "@Game/commands.ts";
+import {
+	commands,
+	debugCommands,
+	helpColumns,
+	helpDebugColumns,
+} from "@Game/commands.ts";
 import type { Player } from "@Game/player.ts";
 import {
 	Ability,
@@ -16,12 +21,12 @@ import {
 	UseLocationError,
 } from "@Game/types.ts";
 import { format } from "node:util";
-import { createPrompt, useKeypress, useState } from "@inquirer/core";
+import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
+import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
 // This is to remove that stupid padding that comes with the standard implementation.
-// TODO: A newline adds 2 newlines? Empty message adds 2 newlines? What??
 // TODO: Add support for up arrow for history.
 const readInput = createPrompt((config: { message: string }, done) => {
 	const [value, setValue] = useState("");
@@ -67,6 +72,391 @@ let seenFunFacts: string[] = [];
 
 const prompt = {
 	/**
+	 * A custom select prompt that allows transforming the array. This is mostly used internally, so don't worry about it too much.
+	 *
+	 * @param message The prompt.
+	 * @param array The array it should ask the user to select from.
+	 * @param options Any options.
+	 * @param otherChoices Add choices other than the ones supplied from the array.
+	 * @returns The answer that the user chose.
+	 */
+	async customSelect(
+		message: string,
+		array: string[],
+		options?: {
+			arrayTransform:
+				| ((
+						i: number,
+						element: string,
+				  ) => Promise<{
+						name?: string;
+						value: string;
+						addSeperatorBefore?: boolean;
+						addSeperatorAfter?: boolean;
+						disabled?: boolean;
+				  }>)
+				| undefined;
+			hideBack: boolean;
+		},
+		...otherChoices: (
+			| Separator
+			| string
+			| {
+					name?: string;
+					value: string;
+					description?: string;
+					disabled?: boolean;
+			  }
+			| false
+		)[]
+	) {
+		const choices = [];
+		for (const [i, element] of Object.entries(array)) {
+			const choice = (await options?.arrayTransform?.(
+				parseInt(i, 10),
+				element,
+			)) ?? {
+				name: element,
+				value: i,
+			};
+
+			if (choice.addSeperatorBefore) {
+				choices.push(new Separator());
+			}
+
+			choices.push(choice);
+
+			if (choice.addSeperatorAfter) {
+				choices.push(new Separator());
+			}
+		}
+
+		if (!options?.hideBack) {
+			choices.push(new Separator());
+			choices.push({
+				value: "Back",
+			});
+		}
+
+		for (const element of otherChoices) {
+			// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
+			if (element === false) {
+				continue;
+			}
+
+			if (element instanceof Separator) {
+				choices.push(element);
+				continue;
+			}
+
+			if (typeof element === "string") {
+				choices.push({
+					name: element,
+					value: element.toLowerCase(),
+				});
+				continue;
+			}
+
+			choices.push(element);
+		}
+
+		const answer = await select({
+			message,
+			choices,
+			loop: false,
+			pageSize: 15,
+		});
+
+		return answer;
+	},
+
+	/**
+	 * A custom select prompt that allows selecting from an enum array. This is mostly used internally, so don't worry about it too much.
+	 *
+	 * @param message The prompt.
+	 * @param array The array it should ask the user to select from.
+	 * @returns The answer that the user chose.
+	 */
+	async customSelectEnum<E extends string>(message: string, array: E[]) {
+		return (await game.prompt.customSelect(message, array, {
+			arrayTransform: async (i, element) => ({
+				name: element,
+				value: element,
+			}),
+			hideBack: false,
+		})) as E;
+	},
+
+	/**
+	 * Prompts the user to configure an array. Modifies the array directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param array The array to configure.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the array was changed. Use this as a dirty flag.
+	 */
+	async configureArray(array: string[], onLoop?: () => Promise<void>) {
+		let dirty = false;
+
+		while (true) {
+			await onLoop?.();
+			console.log(JSON.stringify(array, null, 4));
+			console.log();
+
+			const answer = await game.prompt.customSelect(
+				"Configure Array",
+				array,
+				{
+					arrayTransform: async (i, element) => ({
+						name: `Element ${i}`,
+						value: i.toString(),
+					}),
+					hideBack: true,
+				},
+				new Separator(),
+				"New",
+				"Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (answer === "new") {
+				const value = await input({
+					message: "Value.",
+				});
+
+				array.push(value);
+				dirty = true;
+				continue;
+			} else if (answer === "delete") {
+				array.pop();
+				dirty = true;
+				continue;
+			} else if (answer === "done") {
+				break;
+			}
+
+			const index = parseInt(answer, 10);
+
+			const newValue = await input({
+				message: "What will you change this value to?",
+				default: array[index],
+			});
+
+			array[index] = newValue;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
+	/**
+	 * Prompts the user to configure an enum array. Modifies the array directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param array The array to configure.
+	 * @param enumType The enum itself.
+	 * @param options Any options.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the array was changed. Use this as a dirty flag.
+	 */
+	async configureArrayEnum(
+		array: string[],
+		enumType: any,
+		options?: { maxSize: number | undefined; allowDuplicates: boolean },
+		onLoop?: () => Promise<void>,
+	) {
+		let dirty = false;
+
+		while (true) {
+			await onLoop?.();
+			console.log(JSON.stringify(array, null, 4));
+			console.log();
+
+			const allowEdit =
+				options?.allowDuplicates ||
+				Object.keys(enumType).filter((c) => !array.includes(c)).length > 0;
+			const allowNew =
+				allowEdit && array.length < (options?.maxSize ?? Infinity);
+
+			const answer = await game.prompt.customSelect(
+				"Configure Array",
+				array,
+				{
+					arrayTransform: async (i, element) => ({
+						name: `Element ${i}`,
+						value: i.toString(),
+					}),
+					hideBack: true,
+				},
+				new Separator(),
+				{
+					name: "New",
+					value: "new",
+					disabled: !allowNew,
+				},
+				"Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (answer === "new") {
+				if (!allowNew) {
+					continue;
+				}
+
+				const value = await game.prompt.customSelect(
+					"Value",
+					Object.keys(enumType).filter(
+						(c) => options?.allowDuplicates || !array.includes(c),
+					),
+					{
+						arrayTransform: async (i, element) => ({
+							name: element,
+							value: element,
+						}),
+						hideBack: false,
+					},
+				);
+
+				if (value === "Back") {
+					continue;
+				}
+
+				(array as unknown[]).push(value);
+				dirty = true;
+				continue;
+			} else if (answer === "delete") {
+				array.pop();
+				dirty = true;
+				continue;
+			} else if (answer === "done") {
+				break;
+			}
+
+			const index = parseInt(answer, 10);
+
+			if (!allowEdit) {
+				continue;
+			}
+
+			const value = await game.prompt.customSelect(
+				"Value",
+				Object.keys(enumType).filter(
+					(c) => options?.allowDuplicates || !array.includes(c),
+				),
+				{
+					arrayTransform: async (i, element) => ({
+						name: element,
+						value: element,
+					}),
+					hideBack: false,
+				},
+			);
+
+			if (value === "Back") {
+				continue;
+			}
+
+			(array as unknown[])[index] = value;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
+	/**
+	 * Prompts the user to configure an object. Modifies the object directly.
+	 *
+	 * This is used by the Packager, and the Custom Card Creator, for their menus.
+	 *
+	 * @param object The object to configure.
+	 * @param allowAddingAndDeleting If it should allow adding and deleting elements from the object.
+	 * @param onLoop A function it should call at the start of each prompt.
+	 * @returns If the object was changed. Use this as a dirty flag.
+	 */
+	async configureObject(
+		object: any,
+		allowAddingAndDeleting = true,
+		onLoop?: () => Promise<void>,
+	) {
+		let dirty = false;
+
+		while (true) {
+			await onLoop?.();
+			console.log(JSON.stringify(object, null, 4));
+			console.log();
+
+			const answer = await game.prompt.customSelect(
+				"Configure Object",
+				Object.keys(object),
+				{
+					arrayTransform: async (i, element) => ({
+						name: element,
+						value: `element-${element}`,
+					}),
+					hideBack: true,
+				},
+				allowAddingAndDeleting && new Separator(),
+				allowAddingAndDeleting && "New",
+				allowAddingAndDeleting && "Delete",
+				new Separator(),
+				"Done",
+			);
+
+			if (allowAddingAndDeleting) {
+				if (answer === "new") {
+					const key = await input({
+						message: "Key.",
+					});
+					const value = await input({
+						message: "Value.",
+					});
+
+					object[key] = value;
+					dirty = true;
+					continue;
+				} else if (answer === "delete") {
+					const key = await input({
+						message: "Key.",
+					});
+
+					delete object[key];
+					dirty = true;
+					continue;
+				}
+			}
+
+			if (answer === "done") {
+				break;
+			}
+
+			const key = answer.split("-").slice(1).join("-");
+
+			if (Array.isArray(object[key])) {
+				const changed = await game.prompt.configureArray(object[key], onLoop);
+
+				// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+				// Learned that the hard way...
+				dirty ||= changed;
+				continue;
+			}
+
+			const newValue = await input({
+				message: "What will you change this value to?",
+				default: object[key],
+			});
+
+			object[key] = newValue;
+			dirty = true;
+		}
+
+		return dirty;
+	},
+
+	/**
 	 * Asks the player to supply a deck code.
 	 *
 	 * If no code was given, fill the players deck with 30 Sheep unless both;
@@ -84,9 +474,9 @@ const prompt = {
 		const { branch } = game.functions.info.version();
 
 		/**
-		 * If the test deck (30 Sheep) should be allowed
+		 * If the test deck (30 Sheep) should be allowed.
+		 * I want to be able to test without debug mode on a non-stable branch
 		 */
-		// I want to be able to test without debug mode on a non-stable branch
 		const allowTestDeck: boolean =
 			game.isDebugSettingEnabled(game.config.debug.allowTestDeck) ||
 			branch !== "stable";
@@ -94,11 +484,11 @@ const prompt = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await game.inputTranslate(
-			"Player %s, please type in your deckcode%s: ",
-			player.id + 1,
-			debugStatement,
-		);
+		const deckcode = await input({
+			message: parseTags(
+				`Player ${player.id + 1}, please type in your deckcode${debugStatement}`,
+			),
+		});
 
 		let result = true;
 
@@ -148,10 +538,15 @@ const prompt = {
 		times: number,
 		...prompts: Array<[string, () => Promise<void>]>
 	): Promise<void> {
-		let chosen = 0;
+		for (let i = 0; i < times; i++) {
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
+				const choice = parseInt(queue, 10) - 1;
 
-		while (chosen < times) {
-			await game.functions.interact.print.gameState(game.player);
+				// Call the callback function.
+				await prompts[choice][1]();
+				continue;
+			}
 
 			if (game.player.ai) {
 				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
@@ -159,29 +554,26 @@ const prompt = {
 					continue;
 				}
 
-				chosen++;
-
 				// Call the callback function
 				await prompts[aiChoice][1]();
 				continue;
 			}
 
-			let p = `\nChoose ${times - chosen}:\n`;
+			await game.functions.interact.print.gameState(game.player);
+			console.log();
 
-			for (const [index, promptObject] of prompts.entries()) {
-				p += `${index + 1}: ${promptObject[0]},\n`;
-			}
+			const value = await game.prompt.customSelect(
+				`Choose ${times - i}`,
+				prompts.map((obj) => obj[0]),
+				{
+					arrayTransform: undefined,
+					hideBack: true,
+				},
+			);
 
-			const choice = game.lodash.parseInt(await game.input(p)) - 1;
-			if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
-				await game.pause("<red>Invalid input!</red>\n");
-				this.chooseOne(times, ...prompts);
-				return;
-			}
+			const choice = parseInt(value, 10);
 
-			chosen++;
-
-			// Call the callback function
+			// Call the callback function.
 			await prompts[choice][1]();
 		}
 	},
@@ -200,21 +592,17 @@ const prompt = {
 		prompt: string,
 		answers: string[],
 	): Promise<string> {
-		await game.functions.interact.print.gameState(player);
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const choice = parseInt(queue, 10) - 1;
 
-		let strbuilder = `\n${prompt} [`;
-
-		for (const [index, answer] of answers.entries()) {
-			strbuilder += `${index + 1}: ${answer}, `;
+			return answers[choice];
 		}
 
-		strbuilder = strbuilder.slice(0, -2);
-		strbuilder += "] ";
-
-		let choice: number;
+		await game.functions.interact.print.gameState(player);
 
 		if (player.ai) {
-			const aiChoice = player.ai.question(prompt, answers);
+			const aiChoice = player.ai.chooseFromList(prompt, answers);
 			if (!aiChoice) {
 				// Code, expected, actual
 				throw new Error(
@@ -222,18 +610,14 @@ const prompt = {
 				);
 			}
 
-			choice = aiChoice;
-		} else {
-			choice = game.lodash.parseInt(await game.input(strbuilder));
+			return aiChoice;
 		}
 
-		const answer = answers[choice - 1];
-		if (!answer) {
-			await game.pause("<red>Invalid input!</red>\n");
-			return await this.chooseFromList(player, prompt, answers);
-		}
-
-		return answer;
+		const choice = await game.prompt.customSelect(prompt, answers, {
+			arrayTransform: undefined,
+			hideBack: true,
+		});
+		return answers[parseInt(choice, 10)];
 	},
 
 	/**
@@ -245,28 +629,26 @@ const prompt = {
 	 * @returns `true` if Yes / `false` if No
 	 */
 	async yesNo(prompt: string, player?: Player): Promise<boolean> {
-		const ask = `\n${prompt} (<bright:green>Y</bright:green>/<red>N</red>) `;
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			return queue === "y";
+		}
 
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
 		}
 
-		const rawChoice = await game.input(ask);
-		const choice = rawChoice.toUpperCase()[0];
+		console.log();
 
-		if (["Y", "N"].includes(choice)) {
-			return choice === "Y";
-		}
-
-		// Invalid input
-		console.log(
-			"<red>Unexpected input: '<yellow>%s</yellow>'. Valid inputs: </red>[<bright:green>Y</bright:green> | <red>N</red>]",
-			rawChoice,
-		);
-
-		await game.pause();
-
-		return this.yesNo(prompt, player);
+		return confirm({
+			message: parseTags(prompt),
+			theme: {
+				prefix: "",
+				style: {
+					message: (text: string) => text,
+				},
+			},
+		});
 	},
 
 	/**
@@ -278,11 +660,17 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags,
+		shouldBeDisabled?: (target: Player) => Promise<boolean>,
 	): Promise<Player | null> {
-		return (await this.target(prompt, card, {
-			...flags,
-			targetType: TargetType.Player,
-		})) as Player | null;
+		return (await this.target(
+			prompt,
+			card,
+			{
+				...flags,
+				targetType: TargetType.Player,
+			},
+			shouldBeDisabled as any,
+		)) as Player | null;
 	},
 
 	/**
@@ -294,11 +682,17 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Card) => Promise<boolean>,
 	): Promise<Card | null> {
-		return (await this.target(prompt, card, {
-			...flags,
-			targetType: TargetType.Card,
-		})) as Card | null;
+		return (await this.target(
+			prompt,
+			card,
+			{
+				...flags,
+				targetType: TargetType.Card,
+			},
+			shouldBeDisabled as any,
+		)) as Card | null;
 	},
 
 	/**
@@ -312,6 +706,7 @@ const prompt = {
 	 * @param forceSide Force the user to only be able to select minions / the hero of a specific side
 	 * @param forceClass Force the user to only be able to select a minion or a hero
 	 * @param flags Change small behaviours ["allowLocations" => Allow selecting location, ]
+	 * @param shouldBeDisabled If this callback returns true, the target cannot be selected.
 	 *
 	 * @returns The card or hero chosen
 	 */
@@ -319,6 +714,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Target | null> {
 		await game.event.broadcast(
 			Event.TargetSelectionStarts,
@@ -326,7 +722,7 @@ const prompt = {
 			game.player,
 		);
 
-		const target = await this._target(prompt, card, flags);
+		const target = await this._target(prompt, card, flags, shouldBeDisabled);
 
 		if (target) {
 			await game.event.broadcast(
@@ -346,6 +742,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
+		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Target | null> {
 		// If the player is forced to select a target, select that target.
 		if (game.player.forceTarget) {
@@ -363,7 +760,7 @@ const prompt = {
 			for (const match of matches) {
 				newPrompt = prompt.replace(
 					match,
-					(game.lodash.parseInt(match) + game.player.spellDamage).toString(),
+					(parseInt(match, 10) + game.player.spellDamage).toString(),
 				);
 			}
 		}
@@ -375,160 +772,148 @@ const prompt = {
 			return game.player.ai.promptTarget(newPrompt, card, flags);
 		}
 
-		// If the player is forced to select a player
-		if (flags.targetType === TargetType.Player) {
-			// You shouldn't really force a side while forcing a player, but it should still work
-			if (flags.alignment === Alignment.Enemy) {
-				return game.opponent;
-			}
-
-			if (flags.alignment === Alignment.Friendly) {
-				return game.player;
-			}
-
-			const target = await game.input(
-				"Do you want to select the enemy hero, or your own hero? (y: enemy, n: friendly) ",
-			);
-
-			return target.startsWith("y") ? game.opponent : game.player;
-		}
-
-		/*
-		 * From this point, forceClass is either
-		 * 1. any
-		 * 2. card
-		 */
-
-		// Ask the player to choose a target.
-		let p = `\n${newPrompt} (`;
-		if (flags.targetType === undefined) {
-			let possibleHeroes =
-				flags.alignment === Alignment.Enemy ? "the enemy" : "your";
-			possibleHeroes = flags.alignment === undefined ? "a" : possibleHeroes;
-
-			p += `type 'face' to select ${possibleHeroes} hero | `;
-		}
-
-		p += "type 'back' to go back) ";
-
-		const target = await game.input(p);
-
-		// Player chose to go back
-		if (target.startsWith("b") || game.functions.interact.isInputExit(target)) {
-			// This should always be safe.
-			return null;
-		}
-
-		// If the player chose to target a player, it will ask which player.
-		if (target.startsWith("face") && flags.targetType !== TargetType.Card) {
-			return this._target(newPrompt, card, {
-				...flags,
-				targetType: TargetType.Player,
-			});
-		}
-
-		// From this point, the player has chosen a minion.
-
-		// Get a list of each side of the board
-		const boardOpponent = game.opponent.board;
-		const boardFriendly = game.player.board;
-
-		// Get each minion that matches the target.
-		const boardOpponentTarget = boardOpponent[game.lodash.parseInt(target) - 1];
-		const boardFriendlyTarget = boardFriendly[game.lodash.parseInt(target) - 1];
-
-		/**
-		 * This is the resulting minion that the player chose, if any.
-		 */
-		let minion: Card;
-
-		// If the player didn't choose to attack a hero, and no minions could be found at the index requested, try again.
-		if (!boardFriendlyTarget && !boardOpponentTarget) {
-			await game.pause("<red>Invalid input / minion!</red>\n");
-
-			// Try again
-			return this._target(newPrompt, card, flags);
-		}
-
-		if (flags.alignment === undefined) {
-			/*
-			 * If both players have a minion with the same index,
-			 * ask them which minion to select
-			 */
+		const choices = [];
+		if (
+			flags.alignment === undefined ||
+			flags.alignment === Alignment.Friendly
+		) {
 			if (
-				boardOpponent.length >= game.lodash.parseInt(target) &&
-				boardFriendly.length >= game.lodash.parseInt(target)
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
 			) {
-				const opponentTargetName = boardOpponentTarget.colorFromRarity();
-				const friendlyTargetName = boardFriendlyTarget.colorFromRarity();
+				choices.push({
+					name: "Friendly Player",
+					value: "pf",
+					disabled: (await shouldBeDisabled?.(game.player)) ?? false,
+				});
+			}
 
-				const alignment = await game.inputTranslate(
-					"Do you want to select your opponent's (%s) or your own (%s)? (y: opponent, n: friendly | type 'back' to go back) ",
-					opponentTargetName,
-					friendlyTargetName,
-				);
-
-				if (
-					alignment.startsWith("b") ||
-					game.functions.interact.isInputExit(alignment)
-				) {
-					// Go back.
-					return this._target(newPrompt, card, flags);
+			if (
+				(!flags.targetType || flags.targetType === TargetType.Card) &&
+				game.player.board.length > 0
+			) {
+				for (const [i, card] of Object.entries(game.player.board)) {
+					choices.push({
+						name: parseTags(await card.readable()),
+						value: `f${i}`,
+						description: `${card.name} on your side of the board.`,
+						disabled: (await shouldBeDisabled?.(card)) ?? false,
+					});
+				}
+			}
+		}
+		if (flags.alignment === undefined || flags.alignment === Alignment.Enemy) {
+			if (
+				flags.targetType === undefined ||
+				flags.targetType === TargetType.Player
+			) {
+				if (choices.length > 0) {
+					choices.push(new Separator());
 				}
 
-				minion = alignment.startsWith("y")
-					? boardOpponentTarget
-					: boardFriendlyTarget;
-			} else {
-				// If there is only one minion, select it.
-				minion =
-					boardOpponent.length >= game.lodash.parseInt(target)
-						? boardOpponentTarget
-						: boardFriendlyTarget;
+				choices.push({
+					name: "Enemy Player",
+					value: "pe",
+					disabled: (await shouldBeDisabled?.(game.opponent)) ?? false,
+				});
 			}
-		} else {
-			/*
-			 * If the player is forced to one side.
-			 * Select the minion on the correct side of the board.
+
+			if (
+				(!flags.targetType || flags.targetType === TargetType.Card) &&
+				game.opponent.board.length > 0
+			) {
+				for (const [i, card] of Object.entries(game.opponent.board)) {
+					choices.push({
+						name: parseTags(await card.readable()),
+						value: `e${i}`,
+						description: `${card.name} on the opponent's side of the board.`,
+						disabled: (await shouldBeDisabled?.(card)) ?? false,
+					});
+				}
+			}
+		}
+
+		choices.push(new Separator(), {
+			value: "Back",
+		});
+
+		while (true) {
+			let target: string;
+
+			// Handle input queue.
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
+				target = queue;
+			} else {
+				console.log();
+
+				target = await select({
+					message: newPrompt,
+					choices,
+					loop: false,
+					pageSize: 15,
+				});
+			}
+
+			// Player chose to go back
+			if (target === "Back") {
+				// This should always be safe.
+				return null;
+			}
+
+			// If the player chose to target a player, it will ask which player.
+			if (target.startsWith("p") && flags.targetType !== TargetType.Card) {
+				if (target === "pf") {
+					return game.player;
+				}
+
+				if (target === "pe") {
+					return game.opponent;
+				}
+
+				throw new Error("Targeted invalid player.");
+			}
+
+			// From this point, the player has chosen a minion.
+
+			/**
+			 * This is the resulting minion that the player chose, if any.
 			 */
-			minion =
-				flags.alignment === Alignment.Enemy
-					? boardOpponentTarget
-					: boardFriendlyTarget;
-		}
+			let minion: Card;
 
-		// If you didn't select a valid minion, return.
-		if (minion === undefined) {
-			await game.pause("<red>Invalid minion.</red>\n");
-			return null;
-		}
+			if (target[0] === "f") {
+				minion = game.player.board[parseInt(target[1], 10)];
+			} else {
+				minion = game.opponent.board[parseInt(target[1], 10)];
+			}
 
-		// If the minion has elusive, and the card that called this function is a spell or heropower.
-		if (
-			(card?.type === Type.Spell ||
-				card?.type === Type.HeroPower ||
-				flags.forceElusive) &&
-			minion.hasKeyword(Keyword.Elusive)
-		) {
-			await game.pause(
-				"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
-			);
-			return null;
-		}
+			// If the minion has elusive, and the card that called this function is a spell or heropower.
+			if (
+				(card?.type === Type.Spell ||
+					card?.type === Type.HeroPower ||
+					flags.forceElusive) &&
+				minion.hasKeyword(Keyword.Elusive)
+			) {
+				await game.pause(
+					"<red>Can't be targeted by Spells or Hero Powers.</red>\n",
+				);
+				continue;
+			}
 
-		// If the minion has stealth, don't allow the opponent to target it.
-		if (minion.hasKeyword(Keyword.Stealth) && game.player !== minion.owner) {
-			await game.pause("<red>This minion has stealth.</red>\n");
-			return null;
-		}
+			// If the minion has stealth, don't allow the opponent to target it.
+			if (minion.hasKeyword(Keyword.Stealth) && game.player !== minion.owner) {
+				await game.pause("<red>This minion has stealth.</red>\n");
+				continue;
+			}
 
-		// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
-		if (minion.type === Type.Location && !flags.allowLocations) {
-			await game.pause("<red>You cannot target location cards.</red>\n");
-			return null;
-		}
+			// If the minion is a location, don't allow it to be selected unless the `allowLocations` flag was set.
+			if (minion.type === Type.Location && !flags.allowLocations) {
+				await game.pause("<red>You cannot target location cards.</red>\n");
+				continue;
+			}
 
-		return minion;
+			return minion;
+		}
 	},
 
 	/**
@@ -549,6 +934,7 @@ const prompt = {
 				alignment: Alignment.Friendly,
 				allowLocations: true,
 			},
+			async (target) => target.type !== Type.Location || target.cooldown > 0,
 		);
 
 		if (!location) {
@@ -559,7 +945,7 @@ const prompt = {
 			return UseLocationError.InvalidType;
 		}
 
-		if (location.cooldown && location.cooldown > 0) {
+		if (location.cooldown > 0) {
 			return UseLocationError.Cooldown;
 		}
 
@@ -581,23 +967,44 @@ const prompt = {
 	 *
 	 * @param player The player to ask
 	 *
-	 * @returns A string of the indexes of the cards the player mulligan'd
+	 * @returns The cards that were mulligan'd
 	 */
-	async mulligan(player: Player): Promise<string> {
-		await game.functions.interact.print.gameState(player);
+	async mulligan(player: Player): Promise<Card[]> {
+		await game.functions.interact.print.gameState(player, false);
 
-		let sb = "\nChoose the cards to mulligan (1, 2, 3, ...):\n";
-		if (
-			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
-		) {
-			sb +=
-				"<gray>(Example: 13 will mulligan the cards with the ids 1 and 3, 123 will mulligan the cards with the ids 1, 2 and 3, just pressing enter will not mulligan any cards):</gray>\n";
+		let toMulligan: Card[];
+
+		if (player.ai) {
+			toMulligan = player.ai.mulligan();
+		} else {
+			const choices = [];
+
+			for (const [i, card] of Object.entries(player.hand)) {
+				// Don't allow mulliganing the coin.
+				if (
+					card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+				) {
+					continue;
+				}
+
+				const index = parseInt(i, 10);
+
+				choices.push({
+					name: parseTags(await card.readable(index + 1)),
+					value: card,
+				});
+			}
+
+			toMulligan = await checkbox({
+				message: "Choose cards to mulligan.",
+				choices,
+				loop: false,
+				pageSize: 15,
+			});
 		}
 
-		const input = player.ai ? player.ai.mulligan() : await game.input(sb);
-		await player.mulligan(input);
-
-		return input;
+		await player.mulligan(toMulligan);
+		return toMulligan;
 	},
 
 	/**
@@ -610,6 +1017,19 @@ const prompt = {
 	async dredge(prompt = "Choose a card to Dredge:"): Promise<Card | undefined> {
 		// Look at the bottom three cards of the deck and put one on the top.
 		const cards = game.player.deck.slice(0, 3);
+		if (cards.length <= 0) {
+			return undefined;
+		}
+
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const card = cards[parseInt(queue, 10) - 1];
+
+			game.functions.util.remove(game.player.deck, card);
+			game.player.addToDeck(card);
+
+			return card;
+		}
 
 		// Check if ai
 		if (game.player.ai) {
@@ -626,25 +1046,18 @@ const prompt = {
 		}
 
 		await game.functions.interact.print.gameState(game.player);
+		console.log();
 
-		console.log("\n%s", prompt);
+		const chosen = await game.prompt.customSelect(
+			prompt,
+			await game.functions.card.readables(cards),
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
+		);
 
-		if (cards.length <= 0) {
-			return undefined;
-		}
-
-		for (const [index, card] of cards.entries()) {
-			console.log(await card.readable(index + 1));
-		}
-
-		const choice = await game.input("> ");
-
-		const cardId = game.lodash.parseInt(choice) - 1;
-		const card = cards[cardId];
-
-		if (!card) {
-			return this.dredge(prompt);
-		}
+		const card = cards[parseInt(chosen, 10)];
 
 		// Removes the selected card from the players deck.
 		game.functions.util.remove(game.player.deck, card);
@@ -658,9 +1071,8 @@ const prompt = {
 	 *
 	 * @param prompt The prompt to ask
 	 * @param cards The cards to choose from
-	 * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.card.getAll()`, disable this if you are using either player's deck / hand / graveyard / etc...
+	 * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `Card.getAll()`, disable this if you are using either player's deck / hand / graveyard / etc...
 	 * @param amount The amount of cards to show
-	 * @param _static_cards Do not use this variable, keep it at default
 	 *
 	 * @returns The card chosen.
 	 */
@@ -669,27 +1081,9 @@ const prompt = {
 		cards: Card[] = [],
 		filterClassCards = true,
 		amount = 3,
-		_static_cards: Card[] = [],
 	): Promise<Card | undefined> {
-		let actualCards = cards;
-
-		await game.functions.interact.print.gameState(game.player);
-		let values: Card[] = _static_cards;
-
-		if (actualCards.length <= 0) {
-			actualCards = await Card.all();
-		}
-
-		if (actualCards.length <= 0 || !actualCards) {
-			return undefined;
-		}
-
 		if (filterClassCards) {
-			/*
-			 * We need to filter the cards
-			 * of the filter function
-			 */
-			actualCards = actualCards.filter((card) =>
+			cards = cards.filter((card) =>
 				game.functions.card.validateClasses(
 					card.classes,
 					game.player.heroClass,
@@ -697,51 +1091,30 @@ const prompt = {
 			);
 		}
 
-		// No cards from previous discover loop, we need to generate new ones.
-		if (_static_cards.length === 0) {
-			values = game.lodash.sampleSize(actualCards, amount);
-			values = values.map((c) => {
-				if (c instanceof Card) {
-					c.perfectCopy();
-				}
+		cards = game.lodash.sampleSize(cards, amount);
 
-				return c;
-			});
-		}
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const card = cards[parseInt(queue, 10) - 1];
 
-		if (values.length <= 0) {
-			return undefined;
+			return card.perfectCopy();
 		}
 
 		if (game.player.ai) {
-			return game.player.ai.discover(values);
+			return game.player.ai.discover(cards);
 		}
 
-		console.log("\n%s:", prompt);
+		const choice = await game.prompt.customSelect(
+			prompt,
+			await game.functions.card.readables(cards),
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
+		);
 
-		for (const [index, card] of values.entries()) {
-			console.log(await card.readable(index + 1));
-		}
-
-		const choice = await game.input();
-
-		if (!values[game.lodash.parseInt(choice) - 1]) {
-			/*
-			 * Invalid input
-			 * We still want the user to be able to select a card, so we force it to be valid
-			 */
-			return this.discover(
-				prompt,
-				actualCards,
-				filterClassCards,
-				amount,
-				values,
-			);
-		}
-
-		const card = values[game.lodash.parseInt(choice) - 1];
-
-		return card;
+		const card = cards[parseInt(choice, 10)];
+		return card.perfectCopy();
 	},
 
 	/**
@@ -776,9 +1149,16 @@ const prompt = {
 			}
 		} else {
 			attacker = await this.target(
-				"Which minion do you want to attack with?",
+				"Which target do you want to attack with?",
 				undefined,
 				{ alignment: Alignment.Friendly },
+				async (target: Target) => {
+					if (target instanceof Card) {
+						return !target.canAttack();
+					}
+
+					return !target.canActuallyAttack();
+				},
 			);
 
 			if (!attacker) {
@@ -786,9 +1166,10 @@ const prompt = {
 			}
 
 			target = await this.target(
-				"Which minion do you want to attack?",
+				"Which target do you want to attack?",
 				undefined,
 				{ alignment: Alignment.Enemy },
+				async (target: Target) => !target.canBeAttacked(),
 			);
 
 			if (!target) {
@@ -990,7 +1371,7 @@ const print = {
 	 *
 	 * @param player The player
 	 */
-	async gameState(player: Player): Promise<void> {
+	async gameState(player: Player, includeCardsInHand = true): Promise<void> {
 		this.watermark();
 		console.log();
 
@@ -1006,7 +1387,7 @@ const print = {
 		console.log();
 		await this.board(player);
 		console.log();
-		await this.hand(player);
+		await this.hand(player, includeCardsInHand);
 	},
 
 	/**
@@ -1180,7 +1561,7 @@ const print = {
 	/**
 	 * Prints the hand of the specified player.
 	 */
-	async hand(player: Player): Promise<void> {
+	async hand(player: Player, includeCards = true): Promise<void> {
 		console.log("--- %s (%s)'s Hand ---", player.getName(), player.heroClass);
 
 		const debugInfo = game.isDebugSettingEnabled(
@@ -1194,8 +1575,10 @@ const print = {
 			`([index] <cyan>{Cost}</cyan> <b>Name</b> ${debugInfo}<bright:green>[attack / health]</bright:green> <yellow>(type)</yellow>)\n`,
 		);
 
-		for (const [index, card] of player.hand.entries()) {
-			console.log(await card.readable(index + 1));
+		if (includeCards) {
+			for (const [index, card] of player.hand.entries()) {
+				console.log(await card.readable(index + 1));
+			}
 		}
 	},
 };
@@ -1286,26 +1669,11 @@ export const interactFunctions = {
 		question = parseTags(question);
 
 		// Let the game make choices for the user
-		if (game.player.inputQueue && useInputQueue) {
-			const queue = game.player.inputQueue;
-
-			if (typeof queue === "string") {
+		if (useInputQueue) {
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
 				return wrapper(queue);
 			}
-
-			// Invalid queue
-			if (!Array.isArray(queue)) {
-				return wrapper((await readInput({ message: question })) as string);
-			}
-
-			const answer = queue[0];
-			queue.splice(0, 1);
-
-			if (queue.length <= 0) {
-				game.player.inputQueue = undefined;
-			}
-
-			return wrapper(answer);
 		}
 
 		return wrapper((await readInput({ message: question })) as string);
@@ -1423,9 +1791,9 @@ export const interactFunctions = {
 			return GamePlayCardReturn.Success;
 		}
 
-		const parsedInput = game.lodash.parseInt(input);
+		const parsedInput = parseInt(input, 10);
 
-		const card = game.player.hand[parsedInput - 1];
+		const card = game.player.hand[parsedInput];
 		if (!card) {
 			return GamePlayCardReturn.Invalid;
 		}
@@ -1464,19 +1832,113 @@ export const interactFunctions = {
 			return turn;
 		}
 
-		await game.functions.interact.print.gameState(game.player);
-		console.log();
+		let user: string = "";
 
-		let input = "Which card do you want to play? ";
-		if (
-			game.turn <= 2 &&
-			!game.isDebugSettingEnabled(game.config.debug.hideRedundantInformation)
-		) {
-			input +=
-				"(type 'help' for further information <- This will disappear once you end your turn) ";
+		const oldInterface = async () => {
+			await game.functions.interact.print.gameState(game.player);
+			console.log();
+
+			user = await input({
+				message: "Which card do you want to play?",
+			});
+
+			if (!Number.isNaN(parseInt(user, 10))) {
+				user = (parseInt(user, 10) - 1).toString();
+			}
+		};
+
+		if (game.config.advanced.gameloopUseOldUserInterface) {
+			await oldInterface();
+		} else {
+			while (true) {
+				await game.functions.interact.print.gameState(game.player, false);
+
+				const cards = await game.functions.card.readables(game.player.hand);
+				user = await game.prompt.customSelect(
+					"Which card do you want to play?",
+					cards,
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
+					cards.length > 0 && new Separator(),
+					"Commands",
+					{
+						name: "Type in",
+						value: "type in",
+						description:
+							"Type in the command instead of using the interface. (Old behavior)",
+					},
+				);
+				if (user === "commands") {
+					const debugCommandsDisabled = !game.isDebugSettingEnabled(
+						game.config.debug.commands,
+					);
+
+					// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
+					const cmds = game.functions.util.alignColumns(
+						helpColumns
+							.filter((c) => !c.startsWith("(name)"))
+							.map((c) => c[0].toUpperCase() + c.slice(1)),
+						"-",
+					);
+					const debugCmds = game.functions.util.alignColumns(
+						helpDebugColumns
+							.filter((c) => !c.startsWith("(name)"))
+							.map((c) => c[0].toUpperCase() + c.slice(1)),
+						"-",
+					);
+
+					let command = await game.prompt.customSelect(
+						"Which command do you want to run?",
+						cmds,
+						{
+							arrayTransform: undefined,
+							hideBack: true,
+						},
+						new Separator(),
+						...debugCmds.map((c) => ({
+							name: c,
+							value: c.split(" ")[0],
+							disabled: debugCommandsDisabled,
+						})),
+						new Separator(),
+						{
+							value: "Back",
+						},
+					);
+					if (command === "Back") {
+						continue;
+					}
+
+					// Handle commands with arguments.
+					if (["give", "eval"].includes(command.toLowerCase())) {
+						await game.functions.interact.print.gameState(game.player);
+						console.log();
+
+						command = game.config.advanced.debugCommandPrefix + command;
+
+						const args = await input({
+							message: command.toLowerCase(),
+						});
+
+						user = `${command} ${args}`;
+						break;
+					} else if (Number.isNaN(parseInt(command, 10))) {
+						command = game.config.advanced.debugCommandPrefix + command;
+					} else {
+						command = cmds[parseInt(command, 10)];
+					}
+
+					user = command.toLowerCase();
+				} else if (user === "type in") {
+					await oldInterface();
+				}
+
+				break;
+			}
 		}
 
-		const user = await game.input(input);
 		const returnValue = await this._gameloopHandleInput(user);
 
 		// If there were no errors, return true.
@@ -1487,7 +1949,7 @@ export const interactFunctions = {
 		let error: string;
 
 		// Get the card
-		const card = game.player.hand[game.lodash.parseInt(user) - 1];
+		const card = game.player.hand[parseInt(user, 10)];
 		const cost = card ? card.costType : "mana";
 
 		// Error Codes

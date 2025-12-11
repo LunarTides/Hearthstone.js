@@ -12,7 +12,9 @@ const API_URL = "https://api.hearthstonejson.com/v1/latest/enUS/cards.json";
 
 const filterAwayUseless = process.argv[2] !== "--no-filter";
 
-const { game } = await createGame(false);
+if (import.meta.main) {
+	await createGame(false);
+}
 
 // Function to fetch data from the API
 function fetchData(url: string): Promise<any> {
@@ -40,7 +42,7 @@ function fetchData(url: string): Promise<any> {
  *
  * @returns Promise that resolves to void.
  */
-async function main(): Promise<void> {
+export async function main(): Promise<void> {
 	// Do this, otherwise `game` isn't recognized.
 	const hub = await import("../../hub.ts");
 	hub.watermark(false);
@@ -69,8 +71,14 @@ async function main(): Promise<void> {
 			data.length,
 		);
 
-		process.exit(0);
+		if (import.meta.main) {
+			process.exit(0);
+		} else {
+			await game.pause();
+		}
 	});
 }
 
-await main();
+if (import.meta.main) {
+	await main();
+}

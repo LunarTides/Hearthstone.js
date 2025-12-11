@@ -9,6 +9,7 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
+import { parseTags } from "chalk-tags";
 
 const vanilla = {
 	/**
@@ -228,6 +229,7 @@ export const cardFunctions = {
 	/**
 	 * Returns the name of all classes in the game
 	 */
+	// TODO: Replace this with `Object.values(Class)`
 	async getClasses(): Promise<string[]> {
 		const cards = await Promise.all(
 			(await Card.allWithTags(Tag.StartingHero)).map(async (hero) => {
@@ -240,6 +242,15 @@ export const cardFunctions = {
 		);
 
 		return cards.map((card) => card.classes[0]);
+	},
+
+	/**
+	 * Returns the result of calling `readable` on all cards.
+	 */
+	async readables(cards: Card[]): Promise<string[]> {
+		return await Promise.all(
+			cards.map(async (c, i) => parseTags(await c.readable(i + 1))),
+		);
 	},
 
 	/**
@@ -331,9 +342,11 @@ export const cardFunctions = {
 		idsContent += "export const cardIds = {\n";
 		idsContent += '\tnull: "00000000-0000-0000-0000-000000000000",';
 
-		for (const card of game.cards.sort((a, b) => a.id.localeCompare(b.id))) {
-			const numberIdentifier = /^\d/.test(card.name) ? "n" : "";
-			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(card.name)}_${card.id.replaceAll("-", "_")}: "${card.id}",`;
+		for (const blueprint of game.blueprints.sort((a, b) =>
+			a.id.localeCompare(b.id),
+		)) {
+			const numberIdentifier = /^\d/.test(blueprint.name) ? "n" : "";
+			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(blueprint.name)}_${blueprint.id.replaceAll("-", "_")}: "${blueprint.id}",`;
 		}
 
 		idsContent += "\n};\n";

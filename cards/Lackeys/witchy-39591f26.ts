@@ -94,7 +94,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// Activate the battlecry, select the sheep.
-		owner.inputQueue = ["1"];
+		owner.inputQueue = ["f0"];
 		await self.trigger(Ability.Battlecry);
 
 		// There should now exist a minion with 1 more cost than the sheep.

@@ -652,6 +652,8 @@ describe("src/player", () => {
 		expect(player.canUseRunes()).toBe(true);
 	});
 
+	test.todo("canActuallyAttack", async () => {});
+
 	test("canBeAttacked", async () => {
 		const player = new Player();
 
@@ -913,6 +915,7 @@ describe("src/player", () => {
 	test.todo("invoke", async () => {});
 	test.todo("recruit", async () => {});
 	test.todo("joust", async () => {});
+	test.todo("inputQueueNext", async () => {});
 
 	// This is the same as `game.summon`.
 	// test.todo("summon", async () => {});

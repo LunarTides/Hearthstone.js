@@ -134,9 +134,10 @@ async function getCreateAbility(
 	blueprint: BlueprintWithOptional,
 	cleanedDescription: string,
 ) {
-	const runes = blueprint.runes
-		? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
-		: "";
+	const runes =
+		blueprint.runes && blueprint.runes.length > 0
+			? `\t\tself.runes = [${blueprint.runes.map((rune) => `Rune.${rune}`).join(", ")}];\n`
+			: "";
 	let keywords = "";
 
 	if (blueprint.keywords) {
@@ -293,6 +294,7 @@ export async function create(
 
 	// Create a random id.
 	const id = randomUUID();
+	blueprint.id = id;
 
 	// Create a path to put the card in.
 	let path = generateCardPath(blueprint).replaceAll("\\", "/");
@@ -479,6 +481,8 @@ export const blueprint: Blueprint = {
 		console.log(`File created at: "${filePath}"`);
 	}
 
+	// Update the ids so that `game.cardIds` is updated immediately.
+	game.blueprints.push(blueprint);
 	await game.functions.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled

@@ -87,7 +87,7 @@ export const blueprint: Blueprint = {
 
 		owner.emptyMana = 1;
 		assert.equal(owner.emptyMana, 1);
-		owner.inputQueue = ["1"];
+		owner.inputQueue = ["e0"];
 		await self.trigger(Ability.Battlecry);
 
 		assert(sheep.hasKeyword(Keyword.Frozen));
@@ -95,7 +95,7 @@ export const blueprint: Blueprint = {
 		assert(!sheep.hasKeyword(Keyword.Frozen));
 
 		owner.emptyMana = 6;
-		owner.inputQueue = ["1"];
+		owner.inputQueue = ["e0"];
 		await self.trigger(Ability.Battlecry);
 
 		assert(sheep.hasKeyword(Keyword.Frozen));

@@ -507,18 +507,18 @@ export class AI {
 	 *
 	 * @returns The index of the option chosen + 1
 	 */
-	question(prompt: string, options: string[]): number | undefined {
+	chooseFromList(prompt: string, options: string[]): string | undefined {
 		let bestChoice = null;
 		let bestScore = -100_000;
 
-		for (const [index, card] of options.entries()) {
-			const score = this.analyzePositive(card);
+		for (const option of options) {
+			const score = this.analyzePositive(option);
 
 			if (score <= bestScore) {
 				continue;
 			}
 
-			bestChoice = index;
+			bestChoice = option;
 			bestScore = score;
 		}
 
@@ -531,7 +531,7 @@ export class AI {
 			return undefined;
 		}
 
-		return bestChoice + 1;
+		return bestChoice;
 	}
 
 	/**
@@ -596,8 +596,8 @@ export class AI {
 	 *
 	 * @returns The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
 	 */
-	mulligan(): string {
-		let toMulligan = "";
+	mulligan(): Card[] {
+		const toMulligan = [];
 		let scores = "(";
 
 		for (const card of this.player.hand) {
@@ -610,7 +610,7 @@ export class AI {
 			const score = this.analyzePositiveCard(card);
 
 			if (score < game.config.ai.mulliganThreshold) {
-				toMulligan += (this.player.hand.indexOf(card) + 1).toString();
+				toMulligan.push(card);
 			}
 
 			scores += `${card.uuid}:${score}, `;

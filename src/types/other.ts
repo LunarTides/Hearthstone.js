@@ -157,7 +157,6 @@ export type GameConfig = {
 		all: boolean;
 		commands: boolean;
 		allowTestDeck: boolean;
-		hideRedundantInformation: boolean;
 		hideLicense: boolean;
 		additionalInfoInReadable: boolean;
 		showCommitHash: boolean;
@@ -192,6 +191,7 @@ export type GameConfig = {
 		debugCommandPrefix: string;
 		spawnInDiyCards: boolean;
 		diyCardSpawnChance: number;
+		gameloopUseOldUserInterface: boolean;
 		dcShowUncollectible: boolean;
 		getReadableCardMaxDepth: number;
 		getReadableCardNoRecursion: boolean;

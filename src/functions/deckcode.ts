@@ -151,9 +151,9 @@ export const deckcodeFunctions = {
 			const definition = copyDefinitionSplitObject.split(":");
 
 			const copies = definition[0];
-			const times = Number.isNaN(game.lodash.parseInt(definition[1]))
+			const times = Number.isNaN(parseInt(definition[1], 10))
 				? deck.length
-				: game.lodash.parseInt(definition[1]);
+				: parseInt(definition[1], 10);
 
 			const cards = deck.slice(processed, times);
 
@@ -167,7 +167,7 @@ export const deckcodeFunctions = {
 
 				const card = await Card.create(blueprint.id, player, true);
 
-				for (let i = 0; i < game.lodash.parseInt(copies); i++) {
+				for (let i = 0; i < parseInt(copies, 10); i++) {
 					newDeck.push(card);
 				}
 
@@ -530,21 +530,22 @@ export const deckcodeFunctions = {
 					continue;
 				}
 
-				if (index >= game.lodash.parseInt(amountFromString)) {
+				if (index >= parseInt(amountFromString, 10)) {
 					continue;
 				}
 
 				// This is correct
 				found = true;
 
-				amount = game.lodash.parseInt(
+				amount = parseInt(
 					amountStringSplit[amountStringSplit.indexOf(amountFromString) - 1],
+					10,
 				);
 			}
 
 			if (!found) {
 				const character = amountString.at(-1);
-				amount = game.lodash.parseInt(character ?? "0");
+				amount = parseInt(character ?? "0", 10);
 			}
 
 			let matches = vanillaCards.filter(
@@ -567,7 +568,7 @@ export const deckcodeFunctions = {
 
 			if (matches.length > 1) {
 				// Ask the user to pick one
-				for (const [index, vanillaCard] of matches.entries()) {
+				for (const [_, vanillaCard] of matches.entries()) {
 					vanillaCard.elite = undefined;
 
 					// All cards here should already be collectible
@@ -578,19 +579,18 @@ export const deckcodeFunctions = {
 					// Just look at `m.races`
 					vanillaCard.race = undefined;
 					vanillaCard.referencesTags = undefined;
-
-					console.log("%s:", index + 1);
-					console.log(vanillaCard);
 				}
 
-				console.log(
-					"<yellow>Multiple cards with the name '</yellow>%s<yellow>' detected! Please choose one:</yellow>",
-					cardName,
+				const chosen = await game.prompt.customSelect(
+					"Multiple cards with the name '</yellow>%s<yellow>' detected! Please choose one.",
+					matches.map((m) => JSON.stringify(m)),
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
 				);
 
-				const chosen = await game.input();
-
-				match = matches[game.lodash.parseInt(chosen) - 1];
+				match = matches[parseInt(chosen, 10)];
 			} else {
 				match = matches[0];
 			}
@@ -779,9 +779,7 @@ export const deckcodeFunctions = {
 			const [key, amount] = entry;
 
 			// If this is the last amount
-			deckcode += amounts[game.lodash.parseInt(key) + 1]
-				? `${key}:${amount},`
-				: key;
+			deckcode += amounts[parseInt(key, 10) + 1] ? `${key}:${amount},` : key;
 		}
 
 		deckcode += "/ ";

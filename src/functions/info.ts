@@ -5,7 +5,7 @@ export const infoFunctions = {
 	version(): { version: string; branch: string; build: number } {
 		const ver = pkg.version.split("-")[0];
 		const branch = pkg.version.split("-")[1].split(".")[0];
-		const build = game.lodash.parseInt(pkg.version.split("-")[1].split(".")[1]);
+		const build = parseInt(pkg.version.split("-")[1].split(".")[1], 10);
 
 		return {
 			version: ver,

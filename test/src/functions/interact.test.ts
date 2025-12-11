@@ -3,7 +3,11 @@ import { describe, test } from "bun:test";
 
 describe("src/functions/interact", () => {
 	describe("prompt", () => {
-		test.todo("deckcode", async () => {});
+		test.todo("customSelect", async () => {});
+		test.todo("customSelectEnum", async () => {});
+		test.todo("configureArray", async () => {});
+		test.todo("configureArrayEnum", async () => {});
+		test.todo("configureObject", async () => {});
 		test.todo("chooseOne", async () => {});
 		test.todo("chooseFromList", async () => {});
 		test.todo("yesNo", async () => {});

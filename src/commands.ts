@@ -15,19 +15,19 @@ import { resumeTagParsing, stopTagParsing } from "chalk-tags";
  * This is the list of commands that can be used in the game.
  * This will be shown when using the "help" command.
  */
-const helpColumns = [
+export const helpColumns = [
 	"(name) - (description)\n",
 
-	"end - End your turn.",
 	"attack - Attack a target.",
+	"end - End your turn.",
 	"hero power - Use your hero power.",
-	"concede - Forfeit the game.",
+	"history - Show a list of things that have happened this game.",
 	"use - Use a location card.",
 	"titan - Use a titan card.",
-	"history - Show a list of things that have happened this game.",
+	"concede - Forfeit the game.",
 	"detail - Toggle showing more details about the game.",
 	"version - Show information about the version, branch, and settings of the game.",
-	"help - Show this message.",
+	"help - Show information about the different commands.",
 	"license - Open a link to this project's license.",
 ];
 
@@ -35,7 +35,7 @@ const helpColumns = [
  * This is the list of debug commands that can be used in the game.
  * This will also be shown when using the "help" command.
  */
-const helpDebugColumns = [
+export const helpDebugColumns = [
 	"(name) (required) [optional] - (description)\n",
 
 	"give (name | id) - Add a card to your hand.",
@@ -144,21 +144,16 @@ export const commands: CommandList = {
 			"Which card do you want to use?",
 			undefined,
 			{ alignment: Alignment.Friendly },
+			async (target) =>
+				!target.hasKeyword(Keyword.Titan) || target.attackTimes <= 0,
 		);
 
 		if (!card) {
 			return false;
 		}
 
-		if (card.attackTimes <= 0) {
-			await game.pause("<red>That card is exhausted.</red>\n");
-			return false;
-		}
-
 		const titanIds = card.getKeyword(Keyword.Titan) as string[] | undefined;
-
 		if (!titanIds) {
-			await game.pause("<red>That card is not a titan.</red>\n");
 			return false;
 		}
 
@@ -166,25 +161,16 @@ export const commands: CommandList = {
 			titanIds.map(async (id) => Card.create(id, game.player, true)),
 		);
 
-		await game.functions.interact.print.gameState(game.player);
-		console.log(
-			"\nWhich ability do you want to trigger?\n%s",
-			titanCards.map((c) => c.readable).join(",\n"),
+		const choice = await game.prompt.customSelect(
+			"Which ability do you want to trigger?",
+			await game.functions.card.readables(titanCards),
 		);
-
-		const choice = game.lodash.parseInt(await game.input());
-
-		if (
-			!choice ||
-			choice < 1 ||
-			choice > titanCards.length ||
-			Number.isNaN(choice)
-		) {
-			await game.pause("<red>Invalid choice.</red>\n");
+		if (choice === "Back") {
 			return false;
 		}
 
-		const ability = titanCards[choice - 1];
+		const abilityIndex = parseInt(choice, 10);
+		const ability = titanCards[abilityIndex];
 
 		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
 			await game.event.withSuppressed(Event.DiscardCard, async () =>
@@ -194,8 +180,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		titanIds.splice(choice - 1, 1);
-
+		titanIds.splice(abilityIndex, 1);
 		card.setKeyword(Keyword.Titan, titanIds);
 
 		if (titanIds.length <= 0) {
@@ -260,7 +245,8 @@ export const commands: CommandList = {
 			),
 		);
 
-		await game.pause("\nPress enter to continue...\n");
+		console.log();
+		await game.pause("Press enter to continue...\n");
 		return true;
 	},
 
@@ -549,8 +535,9 @@ export const commands: CommandList = {
 			// Do nothing
 		} else {
 			console.log(finished);
+			console.log();
 
-			await game.pause("\nPress enter to continue...");
+			await game.pause();
 		}
 
 		return finished;
@@ -578,21 +565,15 @@ export const debugCommands: CommandList = {
 
 		// If there are multiple cards with the same name, ask the user to choose one.
 		if (cards.length > 1) {
-			const user = await game.input(
-				`<yellow>Multiple cards matching the name/id '</yellow>${cardName}<yellow>' found. Which one will you select?</yellow>\n${(await Promise.all(cards.map(async (c, i) => await c.readable(i + 1)))).join("\n")}\n`,
+			const choice = await game.prompt.customSelect(
+				`Multiple cards matching '${cardName}' found. Select one.`,
+				await game.functions.card.readables(cards),
 			);
-
-			if (game.functions.interact.isInputExit(user)) {
+			if (choice === "Back") {
 				return false;
 			}
 
-			const i = parseInt(user, 10);
-			if (Number.isNaN(i) || i <= 0 || i > cards.length) {
-				await game.pause("<red>Invalid choice.</red>\n");
-				return false;
-			}
-
-			card = cards[i - 1];
+			card = cards[parseInt(choice, 10)];
 		}
 
 		if (!card) {
@@ -690,14 +671,16 @@ export const debugCommands: CommandList = {
 				return true;
 			}
 
+			console.log();
 			await game.pause(
-				"\nThe cards have been reloaded.\nPress enter to continue...",
+				"The cards have been reloaded.\nPress enter to continue...",
 			);
 			return true;
 		}
 
+		console.log();
 		await game.pause(
-			"\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
+			"Some steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
 		);
 
 		return false;
@@ -773,8 +756,9 @@ export const debugCommands: CommandList = {
 			// Do nothing
 		} else {
 			console.log(finished);
+			console.log();
 
-			await game.pause("\nPress enter to continue...");
+			await game.pause("Press enter to continue...");
 		}
 
 		return finished;

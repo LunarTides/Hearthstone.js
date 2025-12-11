@@ -48,7 +48,7 @@ Here's what you can expect from Hearthstone.js
 <img width="1363" height="596" alt="Screenshot of the HUB" src="https://github.com/user-attachments/assets/c4a4cab7-e041-4531-89b3-631b81041fc0" />
 
 This is the hub. It connects the different aspects of Hearthstone.js together,
-allowing you to run the seperate tools seamlessly.
+allowing you to run the separate tools seamlessly.
 
 ### Generic game
 

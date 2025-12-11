@@ -293,9 +293,9 @@ export class Player {
 	 * # Example
 	 * ```
 	 * // Only run this code when the player's turn starts
-	 * player.inputQueue = ["attack", "1", "1", "end"]; // Does these commands in order
+	 * player.inputQueue = ["attack", "f0", "e0", "end"]; // Does these commands in order
 	 *
-	 * // Once it has done all these commands, `player.inputQueue` = null
+	 * // Once it has done all these commands, `player.inputQueue` = undefined
 	 * ```
 	 *
 	 * #### Or with just a string
@@ -996,6 +996,13 @@ export class Player {
 	}
 
 	/**
+	 * @returns If the player can actually attack.
+	 */
+	canActuallyAttack(): boolean {
+		return this.canAttack && !this.frozen && this.attack > 0;
+	}
+
+	/**
 	 * @returns If the player can attack
 	 */
 	canBeAttacked(): boolean {
@@ -1083,48 +1090,32 @@ export class Player {
 	 *
 	 * @returns The cards mulligan'd
 	 */
-	async mulligan(input: string): Promise<Card[]> {
-		if (input === "") {
-			return [];
-		}
+	async mulligan(cards: Card[]): Promise<Card[]> {
+		const mulligan = [];
 
-		if (!game.lodash.parseInt(input)) {
-			await game.pause("<red>Invalid input!</red>\n");
-			return this.mulligan(input);
-		}
-
-		const cards: Card[] = [];
-		const mulligan: Card[] = [];
-
-		for (const character of input) {
-			mulligan.push(this.hand[game.lodash.parseInt(character) - 1]);
-		}
-
-		for (const card of this.hand) {
+		for (const card of cards) {
 			// The Coin card shouldn't be mulligan'd
 			if (
-				!mulligan.includes(card) ||
+				!this.hand.includes(card) ||
 				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
 			) {
 				continue;
 			}
 
-			game.functions.util.remove(mulligan, card);
-
-			await game.event.withSuppressed(Event.DrawCard, async () =>
-				this.drawCards(1),
+			await game.event.withSuppressed(Event.DiscardCard, async () =>
+				card.discard(),
 			);
 			await game.event.withSuppressed(Event.AddCardToDeck, async () =>
 				this.shuffleIntoDeck(card),
 			);
-			await game.event.withSuppressed(Event.DiscardCard, async () =>
-				card.discard(),
+			await game.event.withSuppressed(Event.DrawCard, async () =>
+				this.drawCards(1),
 			);
 
-			cards.push(card);
+			mulligan.push(card);
 		}
 
-		return cards;
+		return mulligan;
 	}
 
 	/**
@@ -1388,6 +1379,29 @@ export class Player {
 		await game.pause("");
 
 		return win;
+	}
+
+	/**
+	 * @returns The next element in the input queue.
+	 */
+	inputQueueNext() {
+		if (this.inputQueue) {
+			if (typeof this.inputQueue === "string") {
+				return this.inputQueue;
+			}
+
+			if (this.inputQueue.length > 0) {
+				const element = this.inputQueue[0];
+				this.inputQueue.splice(0, 1);
+				if (this.inputQueue.length <= 0) {
+					this.inputQueue = undefined;
+				}
+
+				return element;
+			}
+		}
+
+		return undefined;
 	}
 
 	/**

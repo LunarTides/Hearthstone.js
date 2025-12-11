@@ -1,289 +1,330 @@
+import { Card } from "@Game/card.ts";
 import {
-	type Blueprint,
 	type BlueprintWithOptional,
 	Class,
 	EnchantmentPriority,
-	type Keyword,
+	Keyword,
 	Rarity,
 	Rune,
 	SpellSchool,
+	Tag,
 	Tribe,
 	Type,
 } from "@Game/types.ts";
+import { confirm, input, Separator } from "@inquirer/prompts";
+import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
 
-const player1 = game.player1;
+// TODO: Support creating heropowers for heroes.
+async function configure(): Promise<BlueprintWithOptional | undefined> {
+	const blueprint: BlueprintWithOptional = {
+		type: Type.Minion,
+		name: "CHANGE ME",
+		text: "",
+		cost: 0,
+		classes: [Class.Neutral],
+		rarity: Rarity.Free,
+		collectible: false,
+		tags: [],
+		id: game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
 
-let shouldExit = false;
-let type: Type;
+		attack: 1,
+		health: 1,
+		tribes: [Tribe.None],
+		spellSchools: [SpellSchool.None],
+		armor: 5,
+		heropowerId: game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+		durability: 2,
+		cooldown: 2,
+		enchantmentPriority: EnchantmentPriority.Normal,
 
-/**
- * Asks the user a question and returns the result.
- * This is a wrapper for `game.input` that might set the global `shouldExit` variable.
- */
-async function input(prompt: string): Promise<string> {
-	if (shouldExit) {
-		return "";
-	}
+		keywords: [],
+		runes: [],
+	};
 
-	const returnValue = await game.input(prompt);
+	const set = (key: keyof typeof blueprint, value: any) => {
+		(blueprint as any)[key] = value;
+		(card as any)[key] = value;
+		dirty = true;
+	};
 
-	if (game.functions.interact.isInputExit(returnValue)) {
-		shouldExit = true;
-	}
+	const card = await Card.create(
+		game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+		game.player,
+	);
 
-	return returnValue;
-}
+	// NOTE: The game is *not* meant for this. Oh well!
+	card.blueprint = blueprint;
+	await card.doBlueprint(false, true);
 
-/**
- * Parses user input, `_card`, into a working card that can be passed to the library.
- */
-function applyCard(_card: BlueprintWithOptional): Blueprint {
-	const newCard = {} as Blueprint;
+	let dirty = false;
+	const globalBlacklist: (keyof BlueprintWithOptional)[] = ["id"];
+	let blacklist: (keyof BlueprintWithOptional)[] = [];
 
-	for (const entry of Object.entries(_card)) {
-		let [key, value] = entry;
+	while (true) {
+		blacklist = game.lodash.clone(globalBlacklist);
 
-		// These are the required fields and their default values.
-		const defaults: Blueprint = {
-			type: Type.Undefined,
-			name: "CHANGE THIS",
-			text: "",
-			cost: 0,
-			classes: [Class.Neutral],
-			rarity: Rarity.Free,
-			collectible: false,
-			tags: [],
-			id: game.cardIds.null,
+		// Heropower Id should always be blacklisted.
+		blacklist.push("heropowerId");
 
-			attack: 1,
-			health: 1,
-			tribes: [Tribe.None],
-			spellSchools: [SpellSchool.None],
-			armor: 5,
-			heropowerId: game.cardIds.null,
-			durability: 2,
-			cooldown: 2,
-			enchantmentPriority: EnchantmentPriority.Normal,
-		};
-
-		let valueUndefined = !value;
-
-		// If the value is an array, the value is undefined if every element is falsy
-		valueUndefined ||= Array.isArray(value) && value.every((v) => !v);
-
-		// The value should not be undefined if it is 0
-		valueUndefined &&= value !== 0;
-
-		// Don't include the key if the value is falsy, unless the key is required.
-		const defaultValue = game.lodash.get(defaults, key);
-		if (defaultValue !== undefined && valueUndefined) {
-			value = defaultValue;
-			valueUndefined = false;
+		if (blueprint.type !== Type.Minion && blueprint.type !== Type.Weapon) {
+			blacklist.push("attack");
+			blacklist.push("health");
 		}
 
-		if (valueUndefined) {
+		if (blueprint.type !== Type.Minion) {
+			blacklist.push("tribes");
+		}
+
+		if (blueprint.type !== Type.Spell) {
+			blacklist.push("spellSchools");
+		}
+
+		if (blueprint.type !== Type.Hero) {
+			blacklist.push("armor");
+		}
+
+		if (blueprint.type !== Type.Location) {
+			blacklist.push("durability");
+			blacklist.push("cooldown");
+		}
+
+		if (blueprint.type !== Type.Enchantment) {
+			blacklist.push("enchantmentPriority");
+		}
+
+		const cardToPrint: any = {};
+
+		{
+			const entries = Object.entries(blueprint).filter(
+				(c) => !blacklist.includes(c[0] as keyof BlueprintWithOptional),
+			);
+
+			for (const entry of entries) {
+				cardToPrint[entry[0]] = entry[1];
+			}
+		}
+
+		hub.watermark(false);
+		console.log(
+			JSON.stringify(cardToPrint, null, 4)
+				.replace(/("tags": \[.*\],)/, "$1\n")
+				.replace(/("keywords": \[.*\],)/, "\n    $1"),
+		);
+		console.log();
+		console.log(await card.readable());
+		console.log();
+
+		const answer = await game.prompt.customSelect(
+			"Configure Card",
+			Object.keys(blueprint).filter(
+				(k) => !blacklist.includes(k as keyof BlueprintWithOptional),
+			),
+			{
+				arrayTransform: async (i, element) => ({
+					name: game.lodash.startCase(element),
+					value: `element-${element}`,
+					addSeperatorBefore:
+						element === "keywords" &&
+						// Heropowers don't have type-specific fields.
+						blueprint.type !== Type.HeroPower,
+					addSeperatorAfter: element === "tags",
+				}),
+				hideBack: true,
+			},
+			new Separator(),
+			"Cancel",
+			"Done",
+		);
+
+		if (answer === "cancel") {
+			if (!dirty) {
+				// No changes have been made.
+				return undefined;
+			}
+
+			const done = await confirm({
+				message:
+					"Are you sure you want to cancel creating this card? Your changes will be lost.",
+				default: false,
+			});
+
+			if (done) {
+				return undefined;
+			}
+		} else if (answer === "done") {
+			let message = "Are you sure you are done configuring the card?";
+
+			if (!blueprint.name || blueprint.name === "CHANGE ME") {
+				message = parseTags(
+					"<yellow>You haven't changed the name. The game doesn't support cards with empty names. Continue anyway?</yellow>",
+				);
+			}
+
+			const done = await confirm({
+				message,
+				default: false,
+			});
+
+			if (done) {
+				break;
+			}
+
 			continue;
 		}
 
-		// HACK: Well, it is not ts-expect-error at least
-		newCard[key as keyof Blueprint] = value as never;
-	}
+		const key = answer
+			.split("-")
+			.slice(1)
+			.join("-") as keyof BlueprintWithOptional;
+		const message = game.lodash.startCase(key);
 
-	return newCard;
-}
+		const value = blueprint[key];
 
-/**
- * Asks the user questions that apply to every card type.
- */
-async function common(): Promise<BlueprintWithOptional> {
-	const name = await input("Name: ");
-	const text = await input("Text: ");
-	const cost = game.lodash.parseInt(await input("Cost: "));
-	const classes = await input("Classes: ");
-	const rarity = game.lodash.startCase(await input("Rarity: ")) as Rarity;
-	const keywords = await input("Keywords: ");
+		// Arrays
+		if (Array.isArray(value)) {
+			let enumType: any;
+			const options: {
+				maxSize: number | undefined;
+				allowDuplicates: boolean;
+			} = {
+				maxSize: undefined,
+				allowDuplicates: false,
+			};
 
-	let realClasses: Class[] = [];
-	if (classes) {
-		realClasses = classes
-			.split(", ")
-			.map((k) => game.lodash.startCase(k) as Class);
-	}
+			switch (key) {
+				case "classes":
+					enumType = Class;
+					break;
+				case "tags":
+					enumType = Tag;
+					break;
+				case "tribes":
+					enumType = Tribe;
+					break;
+				case "spellSchools":
+					enumType = SpellSchool;
+					break;
+				case "keywords":
+					enumType = Keyword;
+					break;
+				case "runes": {
+					enumType = Rune;
+					options.maxSize = 3;
+					options.allowDuplicates = true;
+					break;
+				}
+			}
 
-	let realKeywords: Keyword[] | undefined;
-	if (keywords) {
-		realKeywords = keywords
-			.split(", ")
-			.map((k) => game.lodash.startCase(k) as Keyword);
-	}
-
-	let runes: Rune[] = [];
-	for (const c of realClasses) {
-		player1.heroClass = c;
-
-		if (player1.canUseRunes()) {
-			const runesString = await input(
-				`Runes (${Object.values(Rune)
-					.map((rune) => rune[0])
-					.join("")}): `,
+			const changed = await game.prompt.configureArrayEnum(
+				value,
+				enumType,
+				options,
+				async () => {
+					hub.watermark(false);
+				},
 			);
-			const runesArray = runesString
-				.toUpperCase()
-				.split("")
-				.map((char) =>
-					Object.values(Rune).find((rune) => rune.startsWith(char)),
-				);
-			if (runesArray.some((rune) => rune === undefined)) {
-				throw new Error("Invalid rune found.");
-			}
 
-			runes = runesArray as Rune[];
-			break;
+			// Force reset.
+			await card.doBlueprint(false, true);
+
+			dirty ||= changed;
+			continue;
+		}
+
+		if (key === "type") {
+			set(
+				"type",
+				await game.prompt.customSelectEnum<Type>(
+					message,
+					Object.values(Type).filter((type) => type !== Type.Undefined),
+				),
+			);
+			continue;
+		} else if (key === "rarity") {
+			set(
+				"rarity",
+				await game.prompt.customSelectEnum<Rarity>(
+					message,
+					Object.values(Rarity),
+				),
+			);
+			continue;
+		} else if (key === "enchantmentPriority") {
+			set(
+				"enchantmentPriority",
+				parseInt(
+					await game.prompt.customSelect(
+						message,
+						Object.keys(EnchantmentPriority).filter((p) =>
+							Number.isNaN(parseInt(p, 10)),
+						),
+						{
+							arrayTransform: async (i, element) => ({
+								name: element,
+								value: EnchantmentPriority[element as any],
+							}),
+							hideBack: false,
+						},
+					),
+					10,
+				),
+			);
+			continue;
+		}
+
+		if (typeof value === "boolean") {
+			const booleanChoice = await game.prompt.customSelect(
+				message,
+				["True", "False"],
+				{
+					arrayTransform: async (i, element) => ({
+						name: element,
+						value: element.toLowerCase(),
+					}),
+					hideBack: false,
+				},
+			);
+
+			set(key, booleanChoice === "true");
+			continue;
+		}
+
+		const newValue = await input({
+			message: "What will you change this value to?",
+			default: value?.toString(),
+			validate: (value) => {
+				// If the key is a number, make sure the new value is one too.
+				if (typeof blueprint[key] === "number") {
+					const parsed = parseInt(value, 10);
+					if (Number.isNaN(parsed)) {
+						return "Please enter a valid number";
+					}
+				}
+
+				return true;
+			},
+		});
+
+		if (typeof value === "string") {
+			set(key, newValue);
+		} else {
+			set(key, JSON.parse(newValue));
 		}
 	}
 
-	return {
-		name,
-		text,
-		cost,
-		type,
-		classes: realClasses,
-		rarity,
-		runes,
-		keywords: realKeywords,
-		collectible: true,
-		tags: [],
-		id: game.cardIds.null,
-	};
+	// Delete blacklisted fields so that the game won't complain about card type field mismatch.
+	for (const key of blacklist) {
+		if (globalBlacklist.includes(key)) {
+			continue;
+		}
+
+		delete blueprint[key];
+	}
+
+	return blueprint;
 }
-
-const cardTypeFunctions: {
-	[x in Type]: () => Promise<Blueprint>;
-} = {
-	async Minion(): Promise<Blueprint> {
-		const card = await common();
-
-		const attack = game.lodash.parseInt(await input("Attack: "));
-		const health = game.lodash.parseInt(await input("Health: "));
-		const tribes = await input("Tribes: ");
-
-		let realTribes: Tribe[] = [];
-		if (tribes) {
-			realTribes = tribes
-				.split(", ")
-				.map((k) => game.lodash.startCase(k) as Tribe);
-		}
-
-		return applyCard({
-			...card,
-			attack,
-			health,
-			tribes: realTribes,
-		});
-	},
-
-	async Spell(): Promise<Blueprint> {
-		const card = await common();
-
-		const spellSchools = await input("Spell School: ");
-
-		let realSpellSchools: SpellSchool[] = [];
-		if (spellSchools) {
-			realSpellSchools = spellSchools
-				.split(", ")
-				.map((k) => game.lodash.startCase(k) as SpellSchool);
-		}
-
-		return applyCard({
-			...card,
-			spellSchools: realSpellSchools,
-		});
-	},
-
-	async Weapon(): Promise<Blueprint> {
-		const card = await common();
-
-		const attack = game.lodash.parseInt(await input("Attack: "));
-		const health = game.lodash.parseInt(await input("Health: "));
-
-		return applyCard({
-			...card,
-			attack,
-			health,
-		});
-	},
-
-	async Hero(): Promise<Blueprint> {
-		const card = await common();
-
-		const armor =
-			game.lodash.parseInt(await input("Armor (Default: 5): ")) ?? 5;
-		const heropowerId =
-			(await input("Hero Power ID (Leave blank to create a new one): ")) ||
-			game.cardIds.null;
-
-		if (heropowerId === game.cardIds.null) {
-			// TODO: Get the heropower id.
-			console.log("\n<green bold>Make the Hero Power:<green bold>\n");
-			if (!(await main({ overrideCardType: Type.HeroPower }))) {
-				throw new Error("Failed to create hero power");
-			}
-		}
-
-		return applyCard({
-			...card,
-			armor,
-			heropowerId,
-		});
-	},
-
-	async Location(): Promise<Blueprint> {
-		const card = await common();
-
-		const durability = game.lodash.parseInt(
-			await input(
-				"Durability (How many times you can trigger this location before it is destroyed): ",
-			),
-		);
-
-		const cooldown =
-			game.lodash.parseInt(await input("Cooldown (Default: 2): ")) ?? 2;
-
-		return applyCard({
-			...card,
-			durability,
-			cooldown,
-		});
-	},
-
-	async HeroPower(): Promise<Blueprint> {
-		const card = await common();
-
-		return applyCard(card);
-	},
-
-	async Enchantment(): Promise<Blueprint> {
-		const card = await common();
-
-		const enchantmentPriority = Number.parseInt(
-			await input(
-				"Enchantment Priority (-2: lowest | -1: low | 0: normal | 1: high | 2: highest): ",
-			),
-			10,
-		) as EnchantmentPriority;
-
-		return applyCard({
-			...card,
-			enchantmentPriority,
-		});
-	},
-
-	async Undefined(): Promise<Blueprint> {
-		throw new TypeError("Undefined type");
-	},
-};
 
 /**
  * Asks the user a series of questions, and creates a custom card using it.
@@ -293,62 +334,23 @@ const cardTypeFunctions: {
  */
 export async function main({
 	debug = false,
-	overrideCCType,
-	overrideCardType,
 }: {
 	debug?: boolean;
-	overrideCCType?: lib.CCType;
-	overrideCardType?: Type;
 }): Promise<string | false> {
-	// Reset the shouldExit switch so that the program doesn't immediately exit when the user enters the ccc, exits, then enters ccc again
-	shouldExit = false;
-
-	hub.watermark(false);
-	console.log("type 'back' at any step to cancel.\n");
-
-	if (overrideCardType) {
-		type = overrideCardType;
-		console.log("Type: %s", type);
-	} else {
-		// Ask the user for the type of card they want to make
-		type = game.lodash.startCase(await input("Type: ")) as Type;
-		if (shouldExit) {
-			return false;
-		}
-	}
-
-	if (type === ("Heropower" as Type) || type === ("Hero Power" as Type)) {
-		type = Type.HeroPower;
-	}
-
-	if (!Object.keys(cardTypeFunctions).includes(type)) {
-		console.log("That is not a valid type!");
-		await game.pause();
+	const card = await configure();
+	if (!card) {
 		return false;
-	}
-
-	const cardFunction = cardTypeFunctions[type];
-	const card = await cardFunction();
-
-	if (shouldExit) {
-		return false;
-	}
-
-	// Ask the user if the card should be uncollectible
-	const uncollectible = await game.prompt.yesNo("Uncollectible?");
-	if (uncollectible) {
-		card.collectible = !uncollectible;
 	}
 
 	// Actually create the card
 	console.log("Creating file...");
-
-	let cctype: lib.CCType = lib.CCType.Custom;
-	if (overrideCCType) {
-		cctype = overrideCCType;
-	}
-
-	const filePath = await lib.create(cctype, card, undefined, undefined, debug);
+	const filePath = await lib.create(
+		lib.CCType.Custom,
+		card,
+		undefined,
+		undefined,
+		debug,
+	);
 
 	await game.pause();
 	return filePath;

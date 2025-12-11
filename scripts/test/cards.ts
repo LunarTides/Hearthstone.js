@@ -8,7 +8,10 @@ import { createGame } from "@Game/game.ts";
 import { Ability, EventListenerMessage } from "@Game/types.ts";
 import process from "node:process";
 
-const { game } = await createGame();
+if (import.meta.main) {
+	await createGame();
+}
+
 const blueprints = game.blueprints;
 const cards = await Card.all(true);
 
@@ -33,7 +36,7 @@ export async function main(): Promise<void> {
 		}
 
 		process.stderr.write(
-			`\r\u001B[KTesting card ${index + 1} / ${cards.length}...`,
+			`\r\u001B[KTesting card ${index + 1} / ${cards.length} (${card.id})...`,
 		);
 
 		// Create a game
@@ -123,7 +126,14 @@ export async function main(): Promise<void> {
 		console.log("\n<bright:green>All tests passed!</bright:green>");
 	}
 	console.log();
-	process.exit();
+
+	if (import.meta.main) {
+		process.exit();
+	} else {
+		await game.pause();
+	}
 }
 
-await main();
+if (import.meta.main) {
+	await main();
+}
