@@ -391,6 +391,11 @@ export const config: GameConfig = {
 		"Like 2.0, 3.0 completely changes the entire codebase. I don't mean for these updates to be so big. It just happens...",
 		"Unlike 2.0, I didn't have a specific goal in mind when making 3.0. I just wanted to improve upon existing features, and add new ones. All based on what I wanted to do in the moment.",
 
+		// 4.0
+		"Version 4.0 began when I got the ideas for packages. I just kept coming up with new ideas, and the scope got bigger and bigger. Now we're here!",
+		"Version 4.0 added a new user interaction interface. Prievously, you had to type stuff manually, but now you can navigate using the arrow keys!",
+		"A little tip for you. Did you know you can press the first letter of an option to navigate to it? Try pressing 'e' when it asks you to select a target, and it will take you to the enemy secion!",
+
 		// Cards
 		"If you want to make your own cards, you can totally do so! Just enable developer mode in the HUB, and follow the instructions! A little coding knowledge is required though.",
 		"There are example cards that show you how to make cards properly. They are found under the 'cards/Examples' folder.",
@@ -399,7 +404,6 @@ export const config: GameConfig = {
 
 		// Tools / Scripts
 		"The card creator was originally created in Python, but was changed to JavaScript later on to improve readability, compatability, and maintainability. The holy trinity of coding...",
-		"The deck creator has, surpisingly enough, not undergone too many changes since its creation. The command system was reworked though!",
 		"The id script was originally made to change ids in the early stages of 2.0 development, but ended up being useful for discovering holes and duplicates in ids, so it stayed.",
 		"I have scripts to try to ensure that cards work correctly and that the game doesn't crash, but it can still happen. Please report any bugs you find.",
 

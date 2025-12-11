@@ -1382,6 +1382,29 @@ export class Player {
 	}
 
 	/**
+	 * @returns The next element in the input queue.
+	 */
+	inputQueueNext() {
+		if (this.inputQueue) {
+			if (typeof this.inputQueue === "string") {
+				return this.inputQueue;
+			}
+
+			if (this.inputQueue.length > 0) {
+				const element = this.inputQueue[0];
+				this.inputQueue.splice(0, 1);
+				if (this.inputQueue.length <= 0) {
+					this.inputQueue = undefined;
+				}
+
+				return element;
+			}
+		}
+
+		return undefined;
+	}
+
+	/**
 	 * Summon a card.
 	 * Broadcasts the `SummonCard` event
 	 *

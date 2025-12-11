@@ -1856,7 +1856,9 @@ export class Card {
 			}
 		}
 
-		let p = `\n${prompt}\n[\n`;
+		console.log();
+
+		let p = `${prompt}\n[\n`;
 
 		for (const [index, value] of values.entries()) {
 			// Check for a TypeError and ignore it

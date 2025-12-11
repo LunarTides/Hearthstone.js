@@ -264,12 +264,12 @@ export async function main(): Promise<void> {
 				"Neutral - Switch between showing Neutral cards.",
 				"Undo - Undo the last action.",
 				"Deckcode - View the current deckcode.",
-				"Import (deckcode) - Import a deckcode. (Overrides your deck)",
-				"Class - Change the class.",
+				"Import (deckcode) - Import a deckcode. (Overrides your deck.)",
+				"Class - Change the class. (Resets your deck.)",
 				"Format - Output the deckcode in a different format. Switches between the Hearthstone.js format and the Vanilla format.",
 				"Eval (code) - Run some code. Be careful with copying code from the internet since it could be malicious.",
 				"Rules - Show the rules for valid decks and invalid decks.",
-				"Exit - Quits the program.",
+				"Exit - Quit the deck creator.",
 			];
 
 			commands = game.functions.util.alignColumns(commands, "-");
@@ -468,7 +468,8 @@ const commands: CommandList = {
 			game.config.decks.maxOfOneLegendary,
 		);
 
-		await game.pause("\nPress enter to continue...\n");
+		console.log();
+		await game.pause("Press enter to continue...\n");
 		return true;
 	},
 };

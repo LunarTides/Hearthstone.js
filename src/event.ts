@@ -208,8 +208,9 @@ export const eventManager = {
 			game.functions.util.remove(player.quests, quest);
 
 			if (quest.type === QuestType.Secret) {
+				console.log();
 				await game.pause(
-					`\nYou triggered the opponents's '${quest.card.name}'.\n`,
+					`You triggered the opponents's '${quest.card.name}'.\n`,
 				);
 			}
 

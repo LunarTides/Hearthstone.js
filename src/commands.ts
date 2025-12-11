@@ -260,7 +260,8 @@ export const commands: CommandList = {
 			),
 		);
 
-		await game.pause("\nPress enter to continue...\n");
+		console.log();
+		await game.pause("Press enter to continue...\n");
 		return true;
 	},
 
@@ -549,8 +550,9 @@ export const commands: CommandList = {
 			// Do nothing
 		} else {
 			console.log(finished);
+			console.log();
 
-			await game.pause("\nPress enter to continue...");
+			await game.pause();
 		}
 
 		return finished;
@@ -690,14 +692,16 @@ export const debugCommands: CommandList = {
 				return true;
 			}
 
+			console.log();
 			await game.pause(
-				"\nThe cards have been reloaded.\nPress enter to continue...",
+				"The cards have been reloaded.\nPress enter to continue...",
 			);
 			return true;
 		}
 
+		console.log();
 		await game.pause(
-			"\nSome steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
+			"Some steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
 		);
 
 		return false;
@@ -773,8 +777,9 @@ export const debugCommands: CommandList = {
 			// Do nothing
 		} else {
 			console.log(finished);
+			console.log();
 
-			await game.pause("\nPress enter to continue...");
+			await game.pause("Press enter to continue...");
 		}
 
 		return finished;

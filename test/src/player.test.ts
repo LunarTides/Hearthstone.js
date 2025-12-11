@@ -915,6 +915,7 @@ describe("src/player", () => {
 	test.todo("invoke", async () => {});
 	test.todo("recruit", async () => {});
 	test.todo("joust", async () => {});
+	test.todo("inputQueueNext", async () => {});
 
 	// This is the same as `game.summon`.
 	// test.todo("summon", async () => {});

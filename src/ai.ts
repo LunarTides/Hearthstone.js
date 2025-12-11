@@ -507,18 +507,18 @@ export class AI {
 	 *
 	 * @returns The index of the option chosen + 1
 	 */
-	question(prompt: string, options: string[]): number | undefined {
+	chooseFromList(prompt: string, options: string[]): string | undefined {
 		let bestChoice = null;
 		let bestScore = -100_000;
 
-		for (const [index, card] of options.entries()) {
-			const score = this.analyzePositive(card);
+		for (const option of options) {
+			const score = this.analyzePositive(option);
 
 			if (score <= bestScore) {
 				continue;
 			}
 
-			bestChoice = index;
+			bestChoice = option;
 			bestScore = score;
 		}
 
@@ -531,7 +531,7 @@ export class AI {
 			return undefined;
 		}
 
-		return bestChoice + 1;
+		return bestChoice;
 	}
 
 	/**

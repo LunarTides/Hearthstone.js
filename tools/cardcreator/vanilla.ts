@@ -68,9 +68,10 @@ export async function create(
 
 	while (!classes.includes(cardClass)) {
 		cardClass = game.lodash.startCase(
-			await game.input(
-				"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
-			),
+			await input({
+				message:
+					"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
+			}),
 		) as Class;
 	}
 

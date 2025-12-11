@@ -27,7 +27,6 @@ import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
 // This is to remove that stupid padding that comes with the standard implementation.
-// TODO: A newline adds 2 newlines? Empty message adds 2 newlines? What??
 // TODO: Add support for up arrow for history.
 const readInput = createPrompt((config: { message: string }, done) => {
 	const [value, setValue] = useState("");
@@ -475,9 +474,9 @@ const prompt = {
 		const { branch } = game.functions.info.version();
 
 		/**
-		 * If the test deck (30 Sheep) should be allowed
+		 * If the test deck (30 Sheep) should be allowed.
+		 * I want to be able to test without debug mode on a non-stable branch
 		 */
-		// I want to be able to test without debug mode on a non-stable branch
 		const allowTestDeck: boolean =
 			game.isDebugSettingEnabled(game.config.debug.allowTestDeck) ||
 			branch !== "stable";
@@ -485,13 +484,11 @@ const prompt = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await game.input(
-			format(
-				"Player %s, please type in your deckcode%s: ",
-				player.id + 1,
-				debugStatement,
+		const deckcode = await input({
+			message: parseTags(
+				`Player ${player.id + 1}, please type in your deckcode${debugStatement}`,
 			),
-		);
+		});
 
 		let result = true;
 
@@ -541,10 +538,15 @@ const prompt = {
 		times: number,
 		...prompts: Array<[string, () => Promise<void>]>
 	): Promise<void> {
-		let chosen = 0;
+		for (let i = 0; i < times; i++) {
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
+				const choice = parseInt(queue, 10) - 1;
 
-		while (chosen < times) {
-			await game.functions.interact.print.gameState(game.player);
+				// Call the callback function.
+				await prompts[choice][1]();
+				continue;
+			}
 
 			if (game.player.ai) {
 				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
@@ -552,29 +554,26 @@ const prompt = {
 					continue;
 				}
 
-				chosen++;
-
 				// Call the callback function
 				await prompts[aiChoice][1]();
 				continue;
 			}
 
-			let p = `\nChoose ${times - chosen}:\n`;
+			await game.functions.interact.print.gameState(game.player);
+			console.log();
 
-			for (const [index, promptObject] of prompts.entries()) {
-				p += `${index + 1}: ${promptObject[0]},\n`;
-			}
+			const value = await game.prompt.customSelect(
+				`Choose ${times - i}`,
+				prompts.map((obj) => obj[0]),
+				{
+					arrayTransform: undefined,
+					hideBack: true,
+				},
+			);
 
-			const choice = game.lodash.parseInt(await game.input(p)) - 1;
-			if (Number.isNaN(choice) || choice < 0 || choice >= prompts.length) {
-				await game.pause("<red>Invalid input!</red>\n");
-				this.chooseOne(times, ...prompts);
-				return;
-			}
+			const choice = parseInt(value, 10);
 
-			chosen++;
-
-			// Call the callback function
+			// Call the callback function.
 			await prompts[choice][1]();
 		}
 	},
@@ -593,21 +592,17 @@ const prompt = {
 		prompt: string,
 		answers: string[],
 	): Promise<string> {
-		await game.functions.interact.print.gameState(player);
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const choice = parseInt(queue, 10) - 1;
 
-		let strbuilder = `\n${prompt} [`;
-
-		for (const [index, answer] of answers.entries()) {
-			strbuilder += `${index + 1}: ${answer}, `;
+			return answers[choice];
 		}
 
-		strbuilder = strbuilder.slice(0, -2);
-		strbuilder += "] ";
-
-		let choice: number;
+		await game.functions.interact.print.gameState(player);
 
 		if (player.ai) {
-			const aiChoice = player.ai.question(prompt, answers);
+			const aiChoice = player.ai.chooseFromList(prompt, answers);
 			if (!aiChoice) {
 				// Code, expected, actual
 				throw new Error(
@@ -615,18 +610,14 @@ const prompt = {
 				);
 			}
 
-			choice = aiChoice;
-		} else {
-			choice = game.lodash.parseInt(await game.input(strbuilder));
+			return aiChoice;
 		}
 
-		const answer = answers[choice - 1];
-		if (!answer) {
-			await game.pause("<red>Invalid input!</red>\n");
-			return await this.chooseFromList(player, prompt, answers);
-		}
-
-		return answer;
+		const choice = await game.prompt.customSelect(prompt, answers, {
+			arrayTransform: undefined,
+			hideBack: true,
+		});
+		return answers[parseInt(choice, 10)];
 	},
 
 	/**
@@ -638,12 +629,19 @@ const prompt = {
 	 * @returns `true` if Yes / `false` if No
 	 */
 	async yesNo(prompt: string, player?: Player): Promise<boolean> {
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			return queue === "y";
+		}
+
 		if (player?.ai) {
 			return player.ai.yesNoQuestion(prompt);
 		}
 
+		console.log();
+
 		return confirm({
-			message: `\n${parseTags(prompt)}`,
+			message: parseTags(prompt),
 			theme: {
 				prefix: "",
 				style: {
@@ -662,7 +660,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags,
-		shouldBeDisabled?: (target: Target) => Promise<boolean>,
+		shouldBeDisabled?: (target: Player) => Promise<boolean>,
 	): Promise<Player | null> {
 		return (await this.target(
 			prompt,
@@ -671,7 +669,7 @@ const prompt = {
 				...flags,
 				targetType: TargetType.Player,
 			},
-			shouldBeDisabled,
+			shouldBeDisabled as any,
 		)) as Player | null;
 	},
 
@@ -684,7 +682,7 @@ const prompt = {
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags = {},
-		shouldBeDisabled?: (target: Target) => Promise<boolean>,
+		shouldBeDisabled?: (target: Card) => Promise<boolean>,
 	): Promise<Card | null> {
 		return (await this.target(
 			prompt,
@@ -693,7 +691,7 @@ const prompt = {
 				...flags,
 				targetType: TargetType.Card,
 			},
-			shouldBeDisabled,
+			shouldBeDisabled as any,
 		)) as Card | null;
 	},
 
@@ -843,19 +841,14 @@ const prompt = {
 			let target: string;
 
 			// Handle input queue.
-			if (game.player.inputQueue && game.player.inputQueue.length > 0) {
-				if (typeof game.player.inputQueue === "string") {
-					target = game.player.inputQueue;
-				} else {
-					target = game.player.inputQueue.pop()!;
-
-					if (game.player.inputQueue.length <= 0) {
-						game.player.inputQueue = undefined;
-					}
-				}
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
+				target = queue;
 			} else {
+				console.log();
+
 				target = await select({
-					message: `\n${newPrompt}`,
+					message: newPrompt,
 					choices,
 					loop: false,
 					pageSize: 15,
@@ -941,6 +934,7 @@ const prompt = {
 				alignment: Alignment.Friendly,
 				allowLocations: true,
 			},
+			async (target) => target.type !== Type.Location || target.cooldown > 0,
 		);
 
 		if (!location) {
@@ -951,7 +945,7 @@ const prompt = {
 			return UseLocationError.InvalidType;
 		}
 
-		if (location.cooldown && location.cooldown > 0) {
+		if (location.cooldown > 0) {
 			return UseLocationError.Cooldown;
 		}
 
@@ -1023,6 +1017,19 @@ const prompt = {
 	async dredge(prompt = "Choose a card to Dredge:"): Promise<Card | undefined> {
 		// Look at the bottom three cards of the deck and put one on the top.
 		const cards = game.player.deck.slice(0, 3);
+		if (cards.length <= 0) {
+			return undefined;
+		}
+
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const card = cards[parseInt(queue, 10) - 1];
+
+			game.functions.util.remove(game.player.deck, card);
+			game.player.addToDeck(card);
+
+			return card;
+		}
 
 		// Check if ai
 		if (game.player.ai) {
@@ -1039,25 +1046,18 @@ const prompt = {
 		}
 
 		await game.functions.interact.print.gameState(game.player);
+		console.log();
 
-		console.log("\n%s", prompt);
+		const chosen = await game.prompt.customSelect(
+			prompt,
+			await Promise.all(cards.map(async (c) => parseTags(await c.readable()))),
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
+		);
 
-		if (cards.length <= 0) {
-			return undefined;
-		}
-
-		for (const [index, card] of cards.entries()) {
-			console.log(await card.readable(index + 1));
-		}
-
-		const choice = await game.input("> ");
-
-		const cardId = game.lodash.parseInt(choice) - 1;
-		const card = cards[cardId];
-
-		if (!card) {
-			return this.dredge(prompt);
-		}
+		const card = cards[parseInt(chosen, 10)];
 
 		// Removes the selected card from the players deck.
 		game.functions.util.remove(game.player.deck, card);
@@ -1071,9 +1071,8 @@ const prompt = {
 	 *
 	 * @param prompt The prompt to ask
 	 * @param cards The cards to choose from
-	 * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `functions.card.getAll()`, disable this if you are using either player's deck / hand / graveyard / etc...
+	 * @param filterClassCards If it should filter away cards that do not belong to the player's class. Keep this at default if you are using `Card.getAll()`, disable this if you are using either player's deck / hand / graveyard / etc...
 	 * @param amount The amount of cards to show
-	 * @param _static_cards Do not use this variable, keep it at default
 	 *
 	 * @returns The card chosen.
 	 */
@@ -1082,27 +1081,9 @@ const prompt = {
 		cards: Card[] = [],
 		filterClassCards = true,
 		amount = 3,
-		_static_cards: Card[] = [],
 	): Promise<Card | undefined> {
-		let actualCards = cards;
-
-		await game.functions.interact.print.gameState(game.player);
-		let values: Card[] = _static_cards;
-
-		if (actualCards.length <= 0) {
-			actualCards = await Card.all();
-		}
-
-		if (actualCards.length <= 0 || !actualCards) {
-			return undefined;
-		}
-
 		if (filterClassCards) {
-			/*
-			 * We need to filter the cards
-			 * of the filter function
-			 */
-			actualCards = actualCards.filter((card) =>
+			cards = cards.filter((card) =>
 				game.functions.card.validateClasses(
 					card.classes,
 					game.player.heroClass,
@@ -1110,51 +1091,30 @@ const prompt = {
 			);
 		}
 
-		// No cards from previous discover loop, we need to generate new ones.
-		if (_static_cards.length === 0) {
-			values = game.lodash.sampleSize(actualCards, amount);
-			values = values.map((c) => {
-				if (c instanceof Card) {
-					c.perfectCopy();
-				}
+		cards = game.lodash.sampleSize(cards, amount);
 
-				return c;
-			});
-		}
+		const queue = game.player.inputQueueNext();
+		if (queue !== undefined) {
+			const card = cards[parseInt(queue, 10) - 1];
 
-		if (values.length <= 0) {
-			return undefined;
+			return card.perfectCopy();
 		}
 
 		if (game.player.ai) {
-			return game.player.ai.discover(values);
+			return game.player.ai.discover(cards);
 		}
 
-		console.log("\n%s:", prompt);
+		const choice = await game.prompt.customSelect(
+			prompt,
+			await Promise.all(cards.map(async (c) => parseTags(await c.readable()))),
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
+		);
 
-		for (const [index, card] of values.entries()) {
-			console.log(await card.readable(index + 1));
-		}
-
-		const choice = await game.input();
-
-		if (!values[game.lodash.parseInt(choice) - 1]) {
-			/*
-			 * Invalid input
-			 * We still want the user to be able to select a card, so we force it to be valid
-			 */
-			return this.discover(
-				prompt,
-				actualCards,
-				filterClassCards,
-				amount,
-				values,
-			);
-		}
-
-		const card = values[game.lodash.parseInt(choice) - 1];
-
-		return card;
+		const card = cards[parseInt(choice, 10)];
+		return card.perfectCopy();
 	},
 
 	/**
@@ -1709,26 +1669,11 @@ export const interactFunctions = {
 		question = parseTags(question);
 
 		// Let the game make choices for the user
-		if (game.player.inputQueue && useInputQueue) {
-			const queue = game.player.inputQueue;
-
-			if (typeof queue === "string") {
+		if (useInputQueue) {
+			const queue = game.player.inputQueueNext();
+			if (queue !== undefined) {
 				return wrapper(queue);
 			}
-
-			// Invalid queue
-			if (!Array.isArray(queue)) {
-				return wrapper((await readInput({ message: question })) as string);
-			}
-
-			const answer = queue[0];
-			queue.splice(0, 1);
-
-			if (queue.length <= 0) {
-				game.player.inputQueue = undefined;
-			}
-
-			return wrapper(answer);
 		}
 
 		return wrapper((await readInput({ message: question })) as string);
