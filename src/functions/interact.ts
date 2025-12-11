@@ -760,7 +760,7 @@ const prompt = {
 			for (const match of matches) {
 				newPrompt = prompt.replace(
 					match,
-					(game.lodash.parseInt(match) + game.player.spellDamage).toString(),
+					(parseInt(match, 10) + game.player.spellDamage).toString(),
 				);
 			}
 		}
@@ -1791,7 +1791,7 @@ export const interactFunctions = {
 			return GamePlayCardReturn.Success;
 		}
 
-		const parsedInput = game.lodash.parseInt(input);
+		const parsedInput = parseInt(input, 10);
 
 		const card = game.player.hand[parsedInput];
 		if (!card) {
@@ -1949,7 +1949,7 @@ export const interactFunctions = {
 		let error: string;
 
 		// Get the card
-		const card = game.player.hand[game.lodash.parseInt(user)];
+		const card = game.player.hand[parseInt(user, 10)];
 		const cost = card ? card.costType : "mana";
 
 		// Error Codes

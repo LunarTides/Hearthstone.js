@@ -271,9 +271,9 @@ ${mainContent}
 		const headerObject = {
 			watermark,
 			date,
-			version: game.lodash.parseInt(version),
+			version: parseInt(version, 10),
 			os,
-			logVersion: game.lodash.parseInt(logVersion),
+			logVersion: parseInt(logVersion, 10),
 		};
 
 		return { header: headerObject, history, ai, config };

@@ -12,7 +12,7 @@ const blueprints = game.blueprints;
 const cards = await Card.all(true);
 
 const gamesEnv = process.env.GAMES ?? "";
-let games = game.lodash.parseInt(gamesEnv);
+let games = parseInt(gamesEnv, 10);
 games = Number.isNaN(games) ? 10 : games;
 
 /**

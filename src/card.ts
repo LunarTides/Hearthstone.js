@@ -1687,7 +1687,7 @@ export class Card {
 
 			// Get the capturing group result
 			const key = regedDesc[1];
-			const replacement = game.lodash.parseInt(key) + game.player.spellDamage;
+			const replacement = parseInt(key, 10) + game.player.spellDamage;
 
 			text = text.replace(reg, replacement.toString());
 		}
@@ -1819,14 +1819,9 @@ export class Card {
 	 * Asks the user a `prompt` and show 3 choices for the player to choose, and do something to the minion based on the choice.
 	 *
 	 * @param prompt The prompt to ask the user
-	 * @param _values DON'T TOUCH THIS UNLESS YOU KNOW WHAT YOU'RE DOING
-	 *
-	 * @returns An array with the name of the adapt(s) chosen, or -1 if the user cancelled.
+	 * @returns The name of the adapt chosen, or -1 if the user cancelled.
 	 */
-	async adapt(
-		prompt = "Choose One:",
-		_values: string[][] = [],
-	): Promise<string | -1> {
+	async adapt(prompt = "Choose One:"): Promise<string | -1> {
 		await game.functions.interact.print.gameState(game.player);
 
 		const possibleCards = [
@@ -1842,45 +1837,16 @@ export class Card {
 			["Poison Spit", "Poisonous"],
 		];
 
-		const values = _values;
-
-		if (values.length === 0) {
-			for (let i = 0; i < 3; i++) {
-				const card = game.lodash.sample(possibleCards);
-				if (!card) {
-					throw new Error("undefined when randomly choosing adapt option");
-				}
-
-				values.push(card);
-				game.functions.util.remove(possibleCards, card);
-			}
+		const values = game.lodash.sampleSize(possibleCards, 3);
+		const user = await game.prompt.customSelect(
+			prompt,
+			values.map((v) => `${v[0]}: ${v[1]}`),
+		);
+		if (user === "Back") {
+			return Card.REFUND;
 		}
 
-		console.log();
-
-		let p = `${prompt}\n[\n`;
-
-		for (const [index, value] of values.entries()) {
-			// Check for a TypeError and ignore it
-			try {
-				p += `${index + 1}: ${value[0]}; ${value[1]},\n`;
-			} catch {}
-		}
-
-		p = p.slice(0, -2);
-		p += "\n] ";
-
-		let choice = await game.input(p);
-		if (!game.lodash.parseInt(choice)) {
-			await game.pause("<red>Invalid choice!</red>\n");
-			return this.adapt(prompt, values);
-		}
-
-		if (game.lodash.parseInt(choice) > 3) {
-			return this.adapt(prompt, values);
-		}
-
-		choice = values[game.lodash.parseInt(choice) - 1][0];
+		const choice = values[parseInt(user, 10)][0];
 
 		switch (choice) {
 			case "Crackling Shield": {
