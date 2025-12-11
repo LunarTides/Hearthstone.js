@@ -4,13 +4,13 @@
 
 import { createGame } from "@Game/game.ts";
 import { randomUUID } from "node:crypto";
+import { resolve } from "node:path";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
 import seven from "7zip-min";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
 import { validate } from "scripts/id/lib.ts";
-import { resolve } from "node:path";
 
 const { game } = await createGame();
 
@@ -54,7 +54,10 @@ async function getPacks() {
 				!(
 					(file.isFile() && file.name.endsWith(".7z")) ||
 					(file.isDirectory() &&
-						(await game.functions.util.fs("exists", resolve(path, "meta.jsonc"))))
+						(await game.functions.util.fs(
+							"exists",
+							resolve(path, "meta.jsonc"),
+						)))
 				)
 			) {
 				return;
@@ -134,7 +137,7 @@ async function importPack() {
 		);
 
 		const packs = await getPacks();
-		const answer = await customSelect(
+		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
 			packs.map((p) => p.uuid),
 			undefined,
@@ -199,7 +202,7 @@ async function exportPack() {
 		const packs = await getPacks();
 		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
-			packs,
+			packs.map((p) => p.uuid),
 			{ arrayTransform: undefined, hideBack: true },
 			"New",
 			new Separator(),
@@ -231,7 +234,10 @@ async function exportPack() {
 			}
 
 			if (
-				!(await game.functions.util.fs("exists", resolve(pack.path, "meta.jsonc")))
+				!(await game.functions.util.fs(
+					"exists",
+					resolve(pack.path, "meta.jsonc"),
+				))
 			) {
 				await game.pause(
 					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
