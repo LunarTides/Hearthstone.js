@@ -9,9 +9,10 @@
 	let canModeratePack = $state(false);
 
 	$effect(() => {
-		data.packs.then((packs) => {
+		(async () => {
+			const packs = await data.packs;
 			canModeratePack = packs.latest.userIds.includes(data.user?.id || "0");
-		});
+		})();
 	});
 </script>
 
