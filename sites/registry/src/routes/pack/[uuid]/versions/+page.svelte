@@ -10,7 +10,7 @@
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then packs}
 	<div class="p-2 flex flex-col space-y-2">
-		{#each packs.all as version (version.id)}
+		{#each packs.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as version (version.id)}
 			<button
 				class="bg-blue-500 p-2 rounded-full text-xl text-white hover:bg-blue-400 hover:cursor-pointer active:bg-blue-600"
 				onclick={() => {
