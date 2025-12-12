@@ -1,7 +1,6 @@
 import { m } from "$lib/paraglide/messages.js";
-import type { card, pack } from "$lib/db/schema.js";
+import type { Card, Pack } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import type { InferSelectModel } from "drizzle-orm";
 
 export async function load(event) {
 	const query = event.url.searchParams.get("q");
@@ -30,10 +29,10 @@ export async function load(event) {
 
 		return {
 			cards: cards as {
-				card: InferSelectModel<typeof card>;
-				pack: InferSelectModel<typeof pack>;
+				card: Card;
+				pack: Pack;
 			}[],
-			packs: packs as InferSelectModel<typeof pack>[],
+			packs: packs as Pack[],
 		};
 	};
 

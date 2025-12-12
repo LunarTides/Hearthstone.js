@@ -213,15 +213,13 @@ export const actions = {
 					// No permission.
 					error(403, m.fluffy_bluffy_biome_mall());
 				}
-			}
-
-			// TODO: Fix this. It doesn't work.
-			else if (semver.gt(metadata.versions.pack, version.packVersion)) {
+			} else if (semver.gt(metadata.versions.pack, version.packVersion)) {
 				if (version.isLatestVersion) {
 					await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
 
 					const cards = await db.select().from(card).where(eq(card.packId, version.id));
 
+					// TODO: Fix this. It doesn't work.
 					for (const c of cards) {
 						for (const file of files) {
 							if (!file.name.endsWith(".ts")) {
@@ -231,8 +229,10 @@ export const actions = {
 							const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
 							const uuid = parseCardField(content, "id");
 
-							if (c.id === uuid) {
-								await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, card.id));
+							console.log(c.uuid, uuid);
+
+							if (c.uuid === uuid) {
+								await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.id));
 							}
 						}
 					}

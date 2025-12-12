@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import cardboard from "$lib/assets/cardboard-texture.avif";
+	import { getAllDownloads } from "$lib/pack.js";
 	import { m } from "$lib/paraglide/messages.js";
+	import { Download } from "lucide-svelte";
 
 	let { data } = $props();
 
@@ -31,12 +33,16 @@
 								<p class="text-xs mb-2">{pack.authors.join(", ")}</p>
 								<p>{pack.description}</p>
 								<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
+								<div class="flex space-x-1">
+									<Download />
+									<p class="text-lg font-bold">{getAllDownloads(packs)}</p>
+								</div>
 							</div>
 						</a>
 					</div>
 				{/snippet}
 
-				{#each packs as p (p.id)}
+				{#each packs.toSorted((a, b) => b.downloadCount - a.downloadCount) as p (p.id)}
 					{@render pack(p)}
 				{/each}
 			{/await}

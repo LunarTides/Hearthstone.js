@@ -51,6 +51,7 @@
 		"7zip-min": "^2.1.0",
 		"@node-rs/argon2": "^2.0.2",
 		"file-type": "^21.1.1",
+		"lucide-svelte": "^0.561.0",
 		"postgres": "^3.4.7",
 		"semver": "^7.7.3"
 	}

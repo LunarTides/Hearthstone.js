@@ -29,7 +29,6 @@ export const actions = {
 			return fail(response.status, { message: json.message });
 		}
 
-		const blob = await response.blob();
 		const filename = response.headers
 			.get("Content-Disposition")
 			?.split('filename="')[1]
@@ -38,6 +37,7 @@ export const actions = {
 			return fail(400, { message: m.terrible_pool_weapon_pot() });
 		}
 
+		const blob = await response.blob();
 		return { file: await blob.bytes(), filename };
 	},
 };

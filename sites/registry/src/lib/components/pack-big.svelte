@@ -4,6 +4,7 @@
 	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { goto } from "$app/navigation";
 	import { type Pack } from "$lib/db/schema";
+	import { getAllDownloads } from "$lib/pack";
 
 	let {
 		pack,
@@ -104,9 +105,7 @@
 			<p class="text-lg font-semibold">Downloads</p>
 			<hr />
 			<p>
-				{all.length > 0
-					? all.map((v) => v.downloadCount).reduce((p, v) => p + v)
-					: pack.downloadCount}
+				{all.length > 0 ? getAllDownloads(all) : pack.downloadCount}
 			</p>
 		</div>
 

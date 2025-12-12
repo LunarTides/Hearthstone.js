@@ -2,7 +2,8 @@ import { m } from "$lib/paraglide/messages.js";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { pack } from "$lib/db/schema";
-import { like, and, eq } from "drizzle-orm";
+import { like } from "drizzle-orm";
+import { getAllDownloads } from "$lib/pack.js";
 
 export async function GET(event) {
 	const query = event.url.searchParams.get("q");
@@ -22,15 +23,21 @@ export async function GET(event) {
 
 	const packs = async () => {
 		// TODO: Filter by approved.
-		const packs = await db
+		let packs = await db
 			.select()
 			.from(pack)
-			// TODO: Ignore caps.
 			// TODO: Make this smarter.
-			.where(and(like(pack.name, `%${query}%`), eq(pack.isLatestVersion, true)))
+			.where(like(pack.name, `%${query}%`))
 			// TODO: Add setting for page size.
 			.limit(10)
 			.offset((page - 1) * 10);
+
+		// Show all downloads from all versions.
+		packs = packs.map((p) => ({
+			...p,
+			downloadCount: getAllDownloads(packs.filter((v) => v.uuid === p.uuid)),
+		}));
+		packs = packs.filter((p) => p.isLatestVersion);
 
 		return packs;
 	};
