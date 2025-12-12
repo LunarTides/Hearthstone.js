@@ -6,7 +6,7 @@ import { join, resolve } from "path";
 import { tmpdir } from "os";
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { card, pack } from "$lib/server/db/schema.js";
+import { card, pack } from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import semver from "semver";
@@ -257,6 +257,8 @@ export const actions = {
 			description: metadata.description,
 			license: metadata.license,
 			authors: metadata.authors,
+
+			unpackedSize: uncompressedSize,
 
 			isLatestVersion,
 			// TODO: Add setting for this.

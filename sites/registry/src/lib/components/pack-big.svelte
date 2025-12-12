@@ -3,10 +3,35 @@
 	import { page } from "$app/state";
 	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { goto } from "$app/navigation";
+	import { type Pack } from "$lib/db/schema";
 
-	let { pack, all = [], user, hideButtons = false } = $props();
+	let {
+		pack,
+		all = [],
+		user,
+		hideButtons = false,
+	}: {
+		pack: Pack;
+		all?: Pack[];
+		user: any;
+		hideButtons?: boolean;
+	} = $props();
 
 	let canModeratePack = $derived(pack.userIds.includes(user?.id || "0"));
+
+	// https://stackoverflow.com/a/18650828
+	function formatBytes(bytes: number, decimals = 2) {
+		if (!+bytes) {
+			return "0 Bytes";
+		}
+
+		const k = 1024;
+		const dm = decimals < 0 ? 0 : decimals;
+		const sizes = ["Bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"];
+
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+	}
 </script>
 
 <!-- TODO: Deduplicate code between this and the search page. -->
@@ -69,11 +94,20 @@
 			<p>{pack.gameVersion}</p>
 		</div>
 
-		<!-- TODO: Make this work. -->
 		<div>
 			<p class="text-lg font-semibold">Unpacked Size</p>
 			<hr />
-			<p>0kb</p>
+			<p>{formatBytes(pack.unpackedSize)}</p>
+		</div>
+
+		<div>
+			<p class="text-lg font-semibold">Downloads</p>
+			<hr />
+			<p>
+				{all.length > 0
+					? all.map((v) => v.downloadCount).reduce((p, v) => p + v)
+					: pack.downloadCount}
+			</p>
 		</div>
 
 		<div>

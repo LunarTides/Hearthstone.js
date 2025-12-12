@@ -2,20 +2,24 @@
 	import { enhance } from "$app/forms";
 	import { page } from "$app/state";
 	import PackBig from "$lib/components/pack-big.svelte";
+	import type { Pack } from "$lib/db/schema.js";
 	import { m } from "$lib/paraglide/messages";
 
 	let { data, form } = $props();
 
 	// Some real typescript magic right here. Wow...
-	type PacksData = Awaited<typeof data.packs>["latest"];
-	let version = $state<Promise<PacksData>>(Promise.resolve() as any);
+	let version = $state<Promise<Pack>>(Promise.resolve() as any);
 
 	$effect(() => {
 		(async () => {
 			const packs = await data.packs;
 			const found = packs.all.find((v) => v.packVersion === page.params.version);
+			if (!found) {
+				// TODO: Error handling.
+				return;
+			}
 
-			version = Promise.resolve(found as any);
+			version = Promise.resolve(found);
 		})();
 	});
 

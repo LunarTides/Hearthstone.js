@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages.js";
-import type { card, pack } from "$lib/server/db/schema.js";
+import type { card, pack } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import type { InferSelectModel } from "drizzle-orm";
 

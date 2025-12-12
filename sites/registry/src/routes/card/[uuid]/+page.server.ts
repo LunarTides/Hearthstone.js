@@ -1,6 +1,6 @@
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { card } from "$lib/server/db/schema.js";
+import { card } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 

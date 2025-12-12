@@ -1,6 +1,6 @@
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { pack } from "$lib/server/db/schema.js";
+import { pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import fs from "fs/promises";
@@ -15,6 +15,12 @@ export async function POST(event) {
 	if (!version.approved) {
 		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 	}
+
+	// TODO: Only do this if this IP hasn't already downloaded this? To prevent download inflation by the authors.
+	await db
+		.update(pack)
+		.set({ downloadCount: version.downloadCount + 1 })
+		.where(eq(pack.id, version.id));
 
 	const file = await fs.readFile(
 		`./static/assets/packs/${version.uuid}/${version.packVersion}/${version.uuid}.7z`,

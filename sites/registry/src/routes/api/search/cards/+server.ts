@@ -1,7 +1,7 @@
 import { m } from "$lib/paraglide/messages.js";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { card, pack } from "$lib/server/db/schema";
+import { card, pack } from "$lib/db/schema";
 import { like, and, eq } from "drizzle-orm";
 
 export async function GET(event) {

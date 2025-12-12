@@ -32,6 +32,9 @@ export const pack = pgTable("pack", {
 	authors: text("authors").array().notNull(),
 	// TODO: Add requires.
 
+	downloadCount: integer("download_count").notNull().default(0),
+	unpackedSize: integer("unpacked_size").notNull(),
+
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean().notNull(),
 });
@@ -92,5 +95,7 @@ export const cardRelations = relations(card, ({ one }) => ({
 }));
 
 export type Session = typeof session.$inferSelect;
-
 export type User = typeof user.$inferSelect;
+
+export type Pack = typeof pack.$inferSelect;
+export type Card = typeof card.$inferSelect;
