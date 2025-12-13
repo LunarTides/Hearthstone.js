@@ -3,7 +3,7 @@ import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { pack } from "$lib/db/schema";
 import { like } from "drizzle-orm";
-import { getAllDownloads } from "$lib/pack.js";
+import { getFullPacks } from "$lib/server/db/pack";
 
 export async function GET(event) {
 	const query = event.url.searchParams.get("q");
@@ -21,26 +21,19 @@ export async function GET(event) {
 	// 	setTimeout(resolve, 1000);
 	// });
 
-	const packs = async () => {
-		// TODO: Filter by approved.
-		let packs = await db
+	// TODO: Filter by approved.
+	const packs = await getFullPacks(
+		event.locals.user,
+		db
 			.select()
 			.from(pack)
 			// TODO: Make this smarter.
 			.where(like(pack.name, `%${query}%`))
 			// TODO: Add setting for page size.
 			.limit(10)
-			.offset((page - 1) * 10);
+			.offset((page - 1) * 10)
+			.$dynamic(),
+	);
 
-		// Show all downloads from all versions.
-		packs = packs.map((p) => ({
-			...p,
-			downloadCount: getAllDownloads(packs.filter((v) => v.uuid === p.uuid)),
-		}));
-		packs = packs.filter((p) => p.isLatestVersion);
-
-		return packs;
-	};
-
-	return json(await packs());
+	return json(packs.filter((p) => p.isLatestVersion));
 }

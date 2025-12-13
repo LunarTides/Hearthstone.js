@@ -3,19 +3,23 @@
 	import { page } from "$app/state";
 	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { goto } from "$app/navigation";
-	import { type Pack } from "$lib/db/schema";
+	import { type PackWithExtras } from "$lib/db/schema";
 	import { getAllDownloads } from "$lib/pack";
+	import { ThumbsUp } from "lucide-svelte";
+	import { enhance } from "$app/forms";
 
 	let {
 		pack,
 		all = [],
 		user,
 		hideButtons = false,
+		form,
 	}: {
-		pack: Pack;
-		all?: Pack[];
+		pack: PackWithExtras;
+		all?: PackWithExtras[];
 		user: any;
 		hideButtons?: boolean;
+		form: any;
 	} = $props();
 
 	let canModeratePack = $derived(pack.userIds.includes(user?.id || "0"));
@@ -80,7 +84,6 @@
 	{/if}
 
 	<!-- TODO: Add links. -->
-	<!-- TODO: Add downloads. -->
 
 	<div class="flex mt-4 space-x-2">
 		<div>
@@ -115,4 +118,19 @@
 			<p>{pack.license}</p>
 		</div>
 	</div>
+
+	{#if !hideButtons}
+		<form
+			action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
+			method="post"
+			use:enhance
+		>
+			<!-- TODO: Get the form message here. -->
+			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+			<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
+				<ThumbsUp class={pack.hasLiked ? "fill-white" : ""} />
+				<p>{pack.likes ?? "undefined"}</p>
+			</button>
+		</form>
+	{/if}
 </div>

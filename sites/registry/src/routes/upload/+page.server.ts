@@ -178,10 +178,8 @@ export const actions = {
 			}
 		}
 
-		// TODO: Parse meta file.
 		const metadataContent = await fs.readFile(`${innerFolderPath}/meta.jsonc`, "utf8");
 
-		// TODO: Make sure this works.
 		// TODO: Parse via zod.
 		// TODO: Reject proprietary packs.
 		const metadata: Metadata = JSON.parse(metadataContent);
@@ -218,8 +216,6 @@ export const actions = {
 					await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
 
 					const cards = await db.select().from(card).where(eq(card.packId, version.id));
-
-					// TODO: Fix this. It doesn't work.
 					for (const c of cards) {
 						for (const file of files) {
 							if (!file.name.endsWith(".ts")) {
@@ -266,7 +262,6 @@ export const actions = {
 		});
 
 		// Parse cards.
-		// TODO: Update files when uploading an updated pack.
 		for (const file of files) {
 			if (!file.name.endsWith(".ts")) {
 				continue;

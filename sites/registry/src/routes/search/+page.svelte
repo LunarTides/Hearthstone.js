@@ -3,7 +3,7 @@
 	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { getAllDownloads } from "$lib/pack.js";
 	import { m } from "$lib/paraglide/messages.js";
-	import { Download } from "lucide-svelte";
+	import { Download, ThumbsUp } from "lucide-svelte";
 
 	let { data } = $props();
 
@@ -33,9 +33,15 @@
 								<p class="text-xs mb-2">{pack.authors.join(", ")}</p>
 								<p>{pack.description}</p>
 								<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
-								<div class="flex space-x-1">
-									<Download />
-									<p class="text-lg font-bold">{getAllDownloads(packs)}</p>
+								<div class="flex space-x-4">
+									<div class="flex space-x-1">
+										<Download />
+										<p class="text-lg font-bold">{getAllDownloads(packs)}</p>
+									</div>
+									<div class="flex space-x-1">
+										<ThumbsUp class={pack.hasLiked ? "fill-white" : ""} />
+										<p class="text-lg font-bold">{pack.likes}</p>
+									</div>
 								</div>
 							</div>
 						</a>

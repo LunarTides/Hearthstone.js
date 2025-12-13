@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages.js";
-import type { Card, Pack } from "$lib/db/schema.js";
+import type { Card, Pack, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
 export async function load(event) {
@@ -12,7 +12,7 @@ export async function load(event) {
 
 	const getResult = async () => {
 		const packsResponse = await event.fetch(
-			`/api/search/packs?q=${event.url.searchParams.get("q")}&page=${page}`,
+			`/api/v1/search/packs?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
 		const packs = await packsResponse.json();
 		if (packsResponse.status !== 200) {
@@ -20,7 +20,7 @@ export async function load(event) {
 		}
 
 		const cardsResponse = await event.fetch(
-			`/api/search/cards?q=${event.url.searchParams.get("q")}&page=${page}`,
+			`/api/v1/search/cards?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
 		const cards = await cardsResponse.json();
 		if (cardsResponse.status !== 200) {
@@ -32,7 +32,7 @@ export async function load(event) {
 				card: Card;
 				pack: Pack;
 			}[],
-			packs: packs as Pack[],
+			packs: packs as PackWithExtras[],
 		};
 	};
 
