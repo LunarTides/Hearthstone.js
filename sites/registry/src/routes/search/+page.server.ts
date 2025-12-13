@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages.js";
-import type { Card, Pack, PackWithExtras } from "$lib/db/schema.js";
+import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
 export async function load(event) {
@@ -30,7 +30,7 @@ export async function load(event) {
 		return {
 			cards: cards as {
 				card: Card;
-				pack: Pack;
+				pack: PackWithExtras;
 			}[],
 			packs: packs as PackWithExtras[],
 		};

@@ -1,24 +1,27 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { page } from "$app/state";
 	import cardboard from "$lib/assets/cardboard-texture.avif";
-	import { goto } from "$app/navigation";
-	import { type PackWithExtras } from "$lib/db/schema";
+	import { type Card, type PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 
+	// TODO: Normalize these props.
 	let {
 		pack,
 		all = [],
+		cards,
 		user,
 		hideButtons = false,
 		form,
+		class: className,
 	}: {
 		pack: PackWithExtras;
 		all?: PackWithExtras[];
+		cards: Card[];
 		user: any;
 		hideButtons?: boolean;
 		form: any;
+		class?: string;
 	} = $props();
 
 	let canModeratePack = $derived(pack.userIds.includes(user?.id || "0"));
@@ -38,112 +41,119 @@
 	}
 </script>
 
-<!-- TODO: Deduplicate code between this and the search page. -->
+<!-- TODO: Deduplicate code between this and the small pack. -->
 <div
-	class="rounded-xl rounded-t-none p-7 bg-cover bg-gray-300 bg-blend-multiply text-white"
+	class={`rounded-xl rounded-t-none p-7 bg-cover bg-gray-300 bg-blend-multiply text-white ${className ?? ""}`}
 	style={`background-image: url(${cardboard});`}
 >
-	<h1 class="text-xl font-bold">{pack.name}</h1>
-	<!-- TODO: Add clicking on the author if they have a connected account. -->
-	<p class="font-semibold">({pack.authors.join(", ")})</p>
-	{#if canModeratePack}
-		<!-- TODO: Localize. -->
-		<p class="text-green-300">You can administrate this pack.</p>
-	{/if}
-
-	<p class="mt-4">{pack.description}</p>
-
 	{#if !hideButtons}
-		<!-- TODO: Don't use absolute? -->
 		<div
-			class="absolute right-10 top-28 flex m-2 mt-4 w-fit bg-blue-300 drop-shadow-2xl rounded-full outline-1 outline-black"
+			class="flex float-right m-2 mt-4 w-fit h-fit bg-blue-300 drop-shadow-2xl rounded-full outline-1 outline-black"
 		>
-			<button
-				class="px-5 py-3 text-black rounded-full rounded-r-none hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
-				onclick={() => goto(resolve("/pack/[uuid]/versions", { uuid: page.params.uuid! }))}
+			<a
+				href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+				class="px-5 py-3 text-black rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
 			>
 				Download
-			</button>
+			</a>
 			<div class="border-l ml-auto h-auto text-black"></div>
-			<button
-				class="px-5 py-3 text-black hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
-				onclick={() => goto(resolve("/pack/[uuid]/versions", { uuid: page.params.uuid! }))}
+			<a
+				href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+				class="px-5 py-3 text-black hover:bg-cyan-200 active:bg-blue-400"
 			>
 				Versions ({all.length})
-			</button>
+			</a>
 			<div class="border-l ml-auto h-auto text-black"></div>
 			<!-- TODO: Show amount of cards. -->
-			<button
-				class="px-5 py-3 text-black rounded-full rounded-l-none hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
-				onclick={() => goto(resolve("/pack/[uuid]/versions", { uuid: page.params.uuid! }))}
+			<a
+				href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+				class="px-5 py-3 text-black rounded-full rounded-l-none hover:bg-cyan-200 active:bg-blue-400"
 			>
-				Cards (0)
-			</button>
+				Cards ({cards.length})
+			</a>
 		</div>
 	{/if}
 
-	<!-- TODO: Add links. -->
+	<div class="flex flex-col">
+		<div class="flex gap-1">
+			<h1 class="text-xl font-bold">{pack.name}</h1>
+			{#if !pack.isLatestVersion}
+				<p class="text-gray-300 self-center">(v{pack.packVersion})</p>
+			{/if}
+		</div>
+		<!-- TODO: Add clicking on the author if they have a connected account. -->
+		<p class="font-semibold">({pack.authors.join(", ")})</p>
+		{#if canModeratePack}
+			<!-- TODO: Localize. -->
+			<p class="text-green-300">You can administrate this pack.</p>
+		{/if}
 
-	<div class="flex mt-4 space-x-2">
-		<div>
-			<p class="text-lg font-semibold">Pack Version</p>
-			<hr />
-			<p>{pack.packVersion}</p>
+		<p class="mt-4">{pack.description}</p>
+
+		<!-- TODO: Add links. -->
+
+		<div class="flex mt-4 gap-2">
+			<div>
+				<p class="text-lg font-semibold">Pack Version</p>
+				<hr />
+				<p>{pack.packVersion}</p>
+			</div>
+
+			<div>
+				<p class="text-lg font-semibold">Game Version</p>
+				<hr />
+				<p>{pack.gameVersion}</p>
+			</div>
+
+			<div>
+				<p class="text-lg font-semibold">Unpacked Size</p>
+				<hr />
+				<p>{formatBytes(pack.unpackedSize)}</p>
+			</div>
+
+			<div>
+				<p class="text-lg font-semibold">Downloads</p>
+				<hr />
+				<p>
+					{all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
+				</p>
+			</div>
+
+			<div>
+				<p class="text-lg font-semibold">License</p>
+				<hr />
+				<p>{pack.license}</p>
+			</div>
 		</div>
 
-		<div>
-			<p class="text-lg font-semibold">Game Version</p>
-			<hr />
-			<p>{pack.gameVersion}</p>
-		</div>
+		{#if !hideButtons}
+			<!-- TODO: Get the form message here. -->
+			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+			<div class="flex gap-4">
+				<form
+					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
+					method="post"
+					use:enhance
+				>
+					<!-- TODO: These are glitchy on the card page. -->
+					<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
+						<ThumbsUp class={pack.likes.hasLiked ? "fill-green-400" : ""} />
+						<p class="font-mono text-lg">{pack.likes.positive}</p>
+					</button>
+				</form>
 
-		<div>
-			<p class="text-lg font-semibold">Unpacked Size</p>
-			<hr />
-			<p>{formatBytes(pack.unpackedSize)}</p>
-		</div>
-
-		<div>
-			<p class="text-lg font-semibold">Downloads</p>
-			<hr />
-			<p>
-				{all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
-			</p>
-		</div>
-
-		<div>
-			<p class="text-lg font-semibold">License</p>
-			<hr />
-			<p>{pack.license}</p>
-		</div>
+				<form
+					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
+					method="post"
+					use:enhance
+				>
+					<!-- TODO: Get the form message here. -->
+					<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
+						<ThumbsDown class={pack.likes.hasDisliked ? "fill-red-400" : ""} />
+						<p class="font-mono text-lg">{pack.likes.negative}</p>
+					</button>
+				</form>
+			</div>
+		{/if}
 	</div>
-
-	{#if !hideButtons}
-		<!-- TODO: Get the form message here. -->
-		{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-		<div class="flex space-x-4">
-			<form
-				action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
-				method="post"
-				use:enhance
-			>
-				<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
-					<ThumbsUp class={pack.likes.hasLiked ? "fill-green-400" : ""} />
-					<p class="font-mono text-lg">{pack.likes.positive}</p>
-				</button>
-			</form>
-
-			<form
-				action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
-				method="post"
-				use:enhance
-			>
-				<!-- TODO: Get the form message here. -->
-				<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
-					<ThumbsDown class={pack.likes.hasDisliked ? "fill-red-400" : ""} />
-					<p class="font-mono text-lg">{pack.likes.negative}</p>
-				</button>
-			</form>
-		</div>
-	{/if}
 </div>

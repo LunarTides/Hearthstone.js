@@ -7,12 +7,21 @@ import type { PgSelect } from "drizzle-orm/pg-core";
 
 export const loadGetPack = async (user: any, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
-	const packs = await getFullPacks(
+	let packs = await getFullPacks(
 		user,
 		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
 	);
 	if (packs.length <= 0) {
-		error(404, { message: m.pack_not_found() });
+		// To to parse uuid as a version id.
+		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
+		if (!id) {
+			error(404, { message: m.pack_not_found() });
+		}
+
+		packs = await getFullPacks(
+			user,
+			db.select().from(pack).where(eq(pack.uuid, id.uuid)).$dynamic(),
+		);
 	}
 
 	const latest = packs.find((p) => p.isLatestVersion);

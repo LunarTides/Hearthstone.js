@@ -19,7 +19,6 @@ export const actions = {
 		);
 		if (response.status !== 200) {
 			const json = await response.json();
-			console.log(json);
 			return fail(response.status, { message: json.message });
 		}
 	},
@@ -40,7 +39,6 @@ export const actions = {
 		);
 		if (response.status !== 200) {
 			const json = await response.json();
-			console.log(json);
 			return fail(response.status, { message: json.message });
 		}
 	},

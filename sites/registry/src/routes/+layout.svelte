@@ -15,7 +15,7 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<nav class="flex items-center p-5 bg-slate-500 text-white space-x-2">
+<nav class="flex items-center p-5 bg-slate-500 text-white gap-2">
 	<a href={resolve("/")} class="font-bold uppercase text-xl">{m.bald_trite_myna_pet()}</a>
 	<p class="text-4xl font-thin">|</p>
 
@@ -39,7 +39,7 @@
 		<a href={resolve("/upload")}>{m.inclusive_quaint_butterfly_push()}</a>
 	{/if}
 
-	<span class="flex items-center space-x-2 ml-auto">
+	<span class="flex items-center gap-2 ml-auto">
 		{#if data.user}
 			<form action="/?/logout" method="post">
 				<button type="submit" class="hover:cursor-pointer">{m.loose_drab_warthog_cut()}</button>
