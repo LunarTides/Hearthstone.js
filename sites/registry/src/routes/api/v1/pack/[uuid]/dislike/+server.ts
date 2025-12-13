@@ -4,6 +4,7 @@ import { pack, packLike } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 
+// TODO: Deduplicate code between this and like.
 export async function POST(event) {
 	if (!event.locals.user) {
 		return json({ message: m.login_required() }, { status: 401 });
@@ -34,9 +35,9 @@ export async function POST(event) {
 	).at(0);
 	if (like) {
 		if (like.dislike) {
-			await db.update(packLike).set({ dislike: false }).where(eq(packLike.id, like.id));
-		} else {
 			await db.delete(packLike).where(eq(packLike.id, like.id));
+		} else {
+			await db.update(packLike).set({ dislike: true }).where(eq(packLike.id, like.id));
 		}
 
 		return json({}, { status: 200 });
@@ -45,7 +46,7 @@ export async function POST(event) {
 	await db.insert(packLike).values({
 		packId: version.uuid,
 		userId: event.locals.user.id,
-		dislike: false,
+		dislike: true,
 	});
 
 	return json({}, { status: 200 });

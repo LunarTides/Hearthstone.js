@@ -4,8 +4,7 @@
 	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { goto } from "$app/navigation";
 	import { type PackWithExtras } from "$lib/db/schema";
-	import { getAllDownloads } from "$lib/pack";
-	import { ThumbsUp } from "lucide-svelte";
+	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 
 	let {
@@ -108,7 +107,7 @@
 			<p class="text-lg font-semibold">Downloads</p>
 			<hr />
 			<p>
-				{all.length > 0 ? getAllDownloads(all) : pack.downloadCount}
+				{all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
 			</p>
 		</div>
 
@@ -120,17 +119,31 @@
 	</div>
 
 	{#if !hideButtons}
-		<form
-			action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
-			method="post"
-			use:enhance
-		>
-			<!-- TODO: Get the form message here. -->
-			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-			<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
-				<ThumbsUp class={pack.hasLiked ? "fill-white" : ""} />
-				<p>{pack.likes ?? "undefined"}</p>
-			</button>
-		</form>
+		<!-- TODO: Get the form message here. -->
+		{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+		<div class="flex space-x-4">
+			<form
+				action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
+				method="post"
+				use:enhance
+			>
+				<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
+					<ThumbsUp class={pack.likes.hasLiked ? "fill-green-400" : ""} />
+					<p class="font-mono text-lg">{pack.likes.positive}</p>
+				</button>
+			</form>
+
+			<form
+				action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
+				method="post"
+				use:enhance
+			>
+				<!-- TODO: Get the form message here. -->
+				<button type="submit" class="flex space-x-1 mt-4 hover:cursor-pointer">
+					<ThumbsDown class={pack.likes.hasDisliked ? "fill-red-400" : ""} />
+					<p class="font-mono text-lg">{pack.likes.negative}</p>
+				</button>
+			</form>
+		</div>
 	{/if}
 </div>

@@ -53,6 +53,7 @@ export const packLike = pgTable("packLike", {
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
+	dislike: boolean("dislike").notNull(),
 });
 
 export const packLikeRelations = relations(pack, ({ one }) => ({
@@ -114,4 +115,12 @@ export type User = typeof user.$inferSelect;
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
 
-export type PackWithExtras = Pack & { downloadCount: number; likes: number; hasLiked: boolean };
+export type PackWithExtras = Pack & {
+	totalDownloadCount: number;
+	likes: {
+		positive: number;
+		negative: number;
+		hasLiked: boolean;
+		hasDisliked: boolean;
+	};
+};

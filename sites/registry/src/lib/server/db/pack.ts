@@ -4,7 +4,6 @@ import { pack, packLike, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
-import { getAllDownloads } from "$lib/pack";
 
 export const loadGetPack = async (user: any, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
@@ -56,13 +55,24 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(user: any | null,
 	// Show all downloads from all versions.
 	const packs: PackWithExtras[] = packsAndLikes.map((p) => {
 		const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
-		const likes = new Set(relevantPacks.filter((p) => p.packLike).map((p) => p.packLike?.userId));
+
+		// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
+		const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
+		const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
+		const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
+		const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
 
 		return {
 			...p.pack,
-			downloadCount: getAllDownloads(relevantPacks.map((p) => p.pack!)),
-			likes: likes.size,
-			hasLiked: user ? likes.has(user.id) : false,
+			totalDownloadCount: relevantPacks
+				.map((p) => p.pack!.downloadCount)
+				.reduce((p, v) => p + v, 0),
+			likes: {
+				positive: likes.size,
+				hasLiked: user ? likes.has(user.id) : false,
+				negative: dislikes.size,
+				hasDisliked: user ? dislikes.has(user.id) : false,
+			},
 		};
 	});
 

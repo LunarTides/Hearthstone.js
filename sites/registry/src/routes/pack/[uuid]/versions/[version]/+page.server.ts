@@ -5,7 +5,7 @@ import { fail } from "@sveltejs/kit";
 
 export const actions = {
 	download: async (event) => {
-		const packs = await APIGetPack(event.params.uuid);
+		const packs = await APIGetPack(event.locals.user, event.params.uuid);
 		if (packs.error) {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
@@ -16,7 +16,7 @@ export const actions = {
 		}
 
 		const response = await event.fetch(
-			resolve("/api/pack/[uuid]/[version]/download", {
+			resolve("/api/v1/pack/[uuid]/[version]/download", {
 				uuid: version.uuid,
 				version: version.id,
 			}),

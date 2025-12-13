@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import cardboard from "$lib/assets/cardboard-texture.avif";
-	import { getAllDownloads } from "$lib/pack.js";
 	import { m } from "$lib/paraglide/messages.js";
-	import { Download, ThumbsUp } from "lucide-svelte";
+	import { Download, ThumbsDown, ThumbsUp } from "lucide-svelte";
 
 	let { data } = $props();
 
@@ -36,11 +35,17 @@
 								<div class="flex space-x-4">
 									<div class="flex space-x-1">
 										<Download />
-										<p class="text-lg font-bold">{getAllDownloads(packs)}</p>
+										<p class="text-lg font-bold font-mono">{pack.totalDownloadCount}</p>
 									</div>
 									<div class="flex space-x-1">
-										<ThumbsUp class={pack.hasLiked ? "fill-white" : ""} />
-										<p class="text-lg font-bold">{pack.likes}</p>
+										{#if pack.likes.positive >= pack.likes.negative}
+											<ThumbsUp class={pack.likes.hasLiked ? "fill-green-400" : ""} />
+										{:else}
+											<ThumbsDown class={pack.likes.hasDisliked ? "fill-red-400" : ""} />
+										{/if}
+										<p class="text-lg font-bold font-mono">
+											{pack.likes.positive - pack.likes.negative}
+										</p>
 									</div>
 								</div>
 							</div>
@@ -48,7 +53,7 @@
 					</div>
 				{/snippet}
 
-				{#each packs.toSorted((a, b) => b.downloadCount - a.downloadCount) as p (p.id)}
+				{#each packs.toSorted((a, b) => b.totalDownloadCount - a.totalDownloadCount) as p (p.id)}
 					{@render pack(p)}
 				{/each}
 			{/await}
