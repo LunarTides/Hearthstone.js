@@ -22,10 +22,12 @@ export async function load(event) {
 		const cardsResponse = await event.fetch(
 			`/api/v1/search/cards?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
-		const cards = await cardsResponse.json();
-		if (cardsResponse.status !== 200) {
-			error(cardsResponse.status, { message: cards.message });
-		}
+		const cardsJson = await cardsResponse.json();
+		// if (cardsResponse.status !== 200) {
+		// 	error(cardsResponse.status, { message: cards.message });
+		// }
+
+		const cards = !cardsJson.message ? cardsJson : [];
 
 		return {
 			cards: cards as {

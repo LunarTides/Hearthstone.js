@@ -4,13 +4,16 @@
 	import { type Card, type PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
+	import { satisfiesRole } from "$lib/user";
+	import type { ClientUser } from "$lib/server/auth";
 
 	let {
 		packs,
 		cards,
 		user,
 		hideButtons = false,
-		form,
+		individual = false,
+		form = undefined,
 		class: className,
 	}: {
 		packs: {
@@ -21,15 +24,17 @@
 		cards: {
 			all: Card[];
 		};
-		user: any;
+		user: ClientUser;
 		hideButtons?: boolean;
-		form: any;
+		individual?: boolean;
+		form?: any;
 		class?: string;
 	} = $props();
 
 	const pack = $derived(packs.current ?? packs.latest);
 
-	let canModeratePack = $derived(pack.userIds.includes(user?.id || "0"));
+	const canEditPack = $derived(pack.userIds.includes(user?.id || "0"));
+	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
 
 	// https://stackoverflow.com/a/18650828
 	function formatBytes(bytes: number, decimals = 2) {
@@ -52,30 +57,82 @@
 	style={`background-image: url(${cardboard});`}
 >
 	{#if !hideButtons}
-		<div
-			class="flex float-right m-2 mt-4 w-fit h-fit bg-blue-300 drop-shadow-2xl rounded-full outline-1 outline-black"
-		>
-			<a
-				href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
-				class="px-5 py-3 text-black rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
-			>
-				Download
-			</a>
-			<div class="border-l ml-auto h-auto text-black"></div>
-			<a
-				href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
-				class="px-5 py-3 text-black hover:bg-cyan-200 active:bg-blue-400"
-			>
-				Versions ({packs.all.length})
-			</a>
-			<div class="border-l ml-auto h-auto text-black"></div>
-			<!-- TODO: Show amount of cards. -->
-			<a
-				href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-				class="px-5 py-3 text-black rounded-full rounded-l-none hover:bg-cyan-200 active:bg-blue-400"
-			>
-				Cards ({cards.all.length})
-			</a>
+		<div class="flex flex-col float-right m-2 mt-4 gap-2">
+			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
+				<a
+					href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+					class="px-5 py-3 rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
+				>
+					Download
+				</a>
+				<div class="border-l ml-auto h-auto"></div>
+				<a
+					href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+					class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
+				>
+					Versions ({packs.all.length})
+				</a>
+				<div class="border-l ml-auto h-auto"></div>
+				<a
+					href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+					class="px-5 py-3 rounded-full rounded-l-none hover:bg-cyan-200 active:bg-blue-400"
+				>
+					Cards ({cards.all.filter((c) => c.isLatestVersion).length})
+				</a>
+			</div>
+
+			{#if canEditPack || canModeratePack}
+				<div
+					class="flex bg-red-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black"
+				>
+					<a
+						href={resolve("/pack/[uuid]/edit", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full rounded-full rounded-r-none hover:bg-red-200 active:bg-red-400"
+					>
+						Edit
+					</a>
+					<div class="border-l ml-auto h-auto"></div>
+					<a
+						href={resolve("/pack/[uuid]/edit", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full hover:bg-red-200 active:bg-red-400"
+					>
+						(Reserved)
+					</a>
+					<div class="border-l ml-auto h-auto"></div>
+					<a
+						href={resolve("/pack/[uuid]/delete", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full rounded-full rounded-l-none hover:bg-red-200 active:bg-red-400"
+					>
+						Delete
+					</a>
+				</div>
+			{/if}
+
+			{#if canModeratePack}
+				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
+					<a
+						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full rounded-full rounded-r-none hover:bg-gray-800 active:bg-black"
+					>
+						<!-- TODO: Change depending on if it's listed or not. -->
+						(Un)list
+					</a>
+					<div class="border-l ml-auto h-auto"></div>
+					<a
+						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full hover:bg-gray-800 active:bg-black"
+					>
+						(Reserved)
+					</a>
+					<div class="border-l ml-auto h-auto"></div>
+					<a
+						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full rounded-full rounded-l-none hover:bg-gray-800 active:bg-black"
+					>
+						(Reserved)
+					</a>
+				</div>
+			{/if}
 		</div>
 	{/if}
 
@@ -88,7 +145,7 @@
 		</div>
 		<!-- TODO: Add clicking on the author if they have a connected account. -->
 		<p class="font-semibold">({pack.authors.join(", ")})</p>
-		{#if canModeratePack}
+		{#if canEditPack}
 			<!-- TODO: Localize. -->
 			<p class="text-green-300">You can administrate this pack.</p>
 		{/if}
@@ -120,7 +177,7 @@
 				<p class="text-lg font-semibold">Downloads</p>
 				<hr />
 				<p>
-					{packs.all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
+					{!individual ? pack.totalDownloadCount : pack.downloadCount}
 				</p>
 			</div>
 

@@ -209,21 +209,24 @@ export const actions = {
 					error(403, m.fluffy_bluffy_biome_mall());
 				}
 			} else if (semver.gt(metadata.versions.pack, version.packVersion)) {
-				if (version.isLatestVersion) {
-					await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
+				// TODO: Only do this when the pack is approved. If the approval process is disabled, do this here.
+				if (false) {
+					if (version.isLatestVersion) {
+						await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
 
-					const cards = await db.select().from(card).where(eq(card.packId, version.id));
-					for (const c of cards) {
-						for (const file of files) {
-							if (!file.name.endsWith(".ts")) {
-								continue;
-							}
+						const cards = await db.select().from(card).where(eq(card.packId, version.id));
+						for (const c of cards) {
+							for (const file of files) {
+								if (!file.name.endsWith(".ts")) {
+									continue;
+								}
 
-							const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
-							const uuid = parseCardField(content, "id");
+								const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
+								const uuid = parseCardField(content, "id");
 
-							if (c.uuid === uuid) {
-								await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.id));
+								if (c.uuid === uuid) {
+									await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.id));
+								}
 							}
 						}
 					}
@@ -236,9 +239,13 @@ export const actions = {
 			}
 		}
 
+		// TODO: Only do this if the approval process is enabled.
+		if (true) {
+			isLatestVersion = false;
+		}
+
 		// TODO: Delete pack from db if adding cards goes wrong.
 		const packInDB = await updateDB({
-			// id: randomUUID(),
 			uuid: folderName,
 			userIds: [user.id],
 			metadataVersion: metadata.versions.metadata,
@@ -282,6 +289,7 @@ export const actions = {
 				uuid: p("id"),
 				abilities,
 				packId: packInDB[0].id,
+				isLatestVersion,
 
 				name: p("name"),
 				text: p("text"),

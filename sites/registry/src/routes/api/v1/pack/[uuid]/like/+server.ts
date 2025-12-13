@@ -10,18 +10,18 @@ export async function POST(event) {
 	}
 
 	const uuid = event.params.uuid;
-	const version = (
+	const p = (
 		await db
 			.select()
 			.from(pack)
 			.where(and(eq(pack.uuid, uuid), eq(pack.isLatestVersion, true)))
 			.limit(1)
 	).at(0);
-	if (!version) {
+	if (!p) {
 		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 	}
 
-	if (!version.approved) {
+	if (!p.approved) {
 		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 	}
 
@@ -29,7 +29,7 @@ export async function POST(event) {
 		await db
 			.select()
 			.from(packLike)
-			.where(and(eq(packLike.packId, version.uuid), eq(packLike.userId, event.locals.user.id)))
+			.where(and(eq(packLike.packId, p.uuid), eq(packLike.userId, event.locals.user.id)))
 			.limit(1)
 	).at(0);
 	if (like) {
@@ -43,7 +43,7 @@ export async function POST(event) {
 	}
 
 	await db.insert(packLike).values({
-		packId: version.uuid,
+		packId: p.uuid,
 		userId: event.locals.user.id,
 		dislike: false,
 	});

@@ -39,6 +39,7 @@
 		{cards}
 		user={data.user}
 		{form}
+		individual
 		class="rounded-b-none"
 	/>
 

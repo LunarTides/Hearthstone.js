@@ -1,11 +1,14 @@
-import { boolean, integer, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+
+export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 
 // TODO: Change to using plural names.
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
 	username: text("username").notNull().unique(),
 	passwordHash: text("password_hash").notNull(),
+	role: rolesEnum().notNull().default("User"),
 	creationDate: timestamp().defaultNow(),
 });
 
@@ -73,8 +76,8 @@ export const card = pgTable("card", {
 	abilities: text("abilities").array().notNull(),
 
 	packId: uuid("pack_id")
-		.references(() => pack.id)
-		.notNull(),
+		.notNull()
+		.references(() => pack.id, { onDelete: "cascade" }),
 
 	name: text("name").notNull(),
 	text: text("text").notNull(),
@@ -111,6 +114,7 @@ export const cardRelations = relations(card, ({ one }) => ({
 
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
+export type Role = (typeof rolesEnum.enumValues)[number];
 
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;

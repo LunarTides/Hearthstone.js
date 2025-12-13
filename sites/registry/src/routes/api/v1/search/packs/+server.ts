@@ -2,7 +2,7 @@ import { m } from "$lib/paraglide/messages.js";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { pack } from "$lib/db/schema";
-import { like } from "drizzle-orm";
+import { like, and, eq } from "drizzle-orm";
 import { getFullPacks } from "$lib/server/db/pack";
 
 export async function GET(event) {
@@ -21,14 +21,13 @@ export async function GET(event) {
 	// 	setTimeout(resolve, 1000);
 	// });
 
-	// TODO: Filter by approved.
 	const packs = await getFullPacks(
 		event.locals.user,
 		db
 			.select()
 			.from(pack)
 			// TODO: Make this smarter.
-			.where(like(pack.name, `%${query}%`))
+			.where(and(like(pack.name, `%${query}%`), eq(pack.approved, true)))
 			// TODO: Add setting for page size.
 			.limit(10)
 			.offset((page - 1) * 10)

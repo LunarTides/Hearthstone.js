@@ -2,18 +2,28 @@ import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packLike, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
+import type { ClientUser } from "../auth";
 
-export const loadGetPack = async (user: any, uuid: string) => {
+export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(pack)
+			.where(and(eq(pack.uuid, uuid), eq(pack.approved, true)))
+			.$dynamic(),
 	);
 	if (packs.length <= 0) {
 		// To to parse uuid as a version id.
-		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
+		const id = (
+			await db
+				.select({ uuid: pack.uuid })
+				.from(pack)
+				.where(and(eq(pack.id, uuid), eq(pack.approved, true)))
+		).at(0);
 		if (!id) {
 			error(404, { message: m.pack_not_found() });
 		}
@@ -35,11 +45,15 @@ export const loadGetPack = async (user: any, uuid: string) => {
 	};
 };
 
-export const APIGetPack = async (user: any, uuid: string) => {
+export const APIGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
 	const packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(pack)
+			.where(and(eq(pack.uuid, uuid), eq(pack.approved, true)))
+			.$dynamic(),
 	);
 	if (packs.length <= 0) {
 		return { error: { message: m.pack_not_found(), status: 404 } };
@@ -57,8 +71,10 @@ export const APIGetPack = async (user: any, uuid: string) => {
 	};
 };
 
-// TODO: Add type for user.
-export const getFullPacks = async <T extends PgSelect<"pack">>(user: any | null, query: T) => {
+export const getFullPacks = async <T extends PgSelect<"pack">>(
+	user: ClientUser | null,
+	query: T,
+) => {
 	const packsAndLikes = await query.fullJoin(packLike, eq(pack.uuid, packLike.packId));
 
 	// Show all downloads from all versions.

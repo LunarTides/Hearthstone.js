@@ -22,7 +22,7 @@ export const actions = {
 			return fail(response.status, { message: json.message });
 		}
 	},
-	// Deduplicate.
+	// TODO: Deduplicate.
 	dislike: async (event) => {
 		const packs = await APIGetPack(event.locals.user, event.params.uuid);
 		if (packs.error) {
