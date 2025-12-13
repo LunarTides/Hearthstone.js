@@ -1,0 +1,130 @@
+import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+
+export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
+
+// TODO: Change to using plural names.
+export const user = pgTable("user", {
+	id: text("id").primaryKey(),
+	username: text("username").notNull().unique(),
+	passwordHash: text("password_hash").notNull(),
+	role: rolesEnum().notNull().default("User"),
+	creationDate: timestamp().defaultNow(),
+});
+
+export const session = pgTable("session", {
+	id: text("id").primaryKey(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id),
+	expiresAt: timestamp("expires_at", {
+		withTimezone: true,
+		mode: "date",
+	}).notNull(),
+});
+
+export const pack = pgTable("pack", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	uuid: uuid("uuid").notNull(),
+	userIds: text("user_ids").array().notNull(),
+	metadataVersion: integer("metadata_version").notNull(),
+	gameVersion: text("game_version").notNull(),
+	packVersion: text("pack_version").notNull(),
+	name: text("name").notNull(),
+	description: text("description").notNull(),
+	license: text("license").notNull(),
+	authors: text("authors").array().notNull(),
+	// TODO: Add requires.
+
+	downloadCount: integer("download_count").notNull().default(0),
+	unpackedSize: integer("unpacked_size").notNull(),
+
+	isLatestVersion: boolean("is_latest_version").notNull().default(true),
+	approved: boolean().notNull(),
+});
+
+export const packRelations = relations(pack, ({ many }) => ({
+	cards: many(card),
+	likes: many(packLike),
+	links: many(packLink),
+	users: many(user, { relationName: "user_ids" }),
+}));
+
+export const packLike = pgTable("packLike", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	packId: uuid("pack_id").notNull(),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	dislike: boolean("dislike").notNull(),
+});
+
+export const packLikeRelations = relations(pack, ({ one }) => ({
+	packs: one(pack),
+}));
+
+export const packLink = pgTable("packLinks", {
+	id: uuid("id").defaultRandom().primaryKey(),
+	packId: uuid("pack_id").references(() => pack.id, { onDelete: "cascade" }),
+	key: text("key").notNull(),
+	value: text("value").notNull(),
+});
+
+export const card = pgTable("card", {
+	id: uuid("id").primaryKey(),
+	uuid: uuid("uuid").notNull(),
+	abilities: text("abilities").array().notNull(),
+
+	packId: uuid("pack_id")
+		.notNull()
+		.references(() => pack.id, { onDelete: "cascade" }),
+
+	name: text("name").notNull(),
+	text: text("text").notNull(),
+	cost: integer("cost").notNull(),
+	type: text("type").notNull(),
+	classes: text("classes").array().notNull(),
+	rarity: text("rarity").notNull(),
+	collectible: boolean("collectible").notNull(),
+	tags: text("tags").array().notNull(),
+
+	attack: integer("attack"),
+	health: integer("health"),
+	tribes: text("tribes").array(),
+
+	spellSchools: text("spellSchools").array(),
+
+	durability: integer("durability"),
+	cooldown: integer("cooldown"),
+
+	armor: integer("armor"),
+	heropowerId: uuid("heropowerId"),
+
+	enchantmentPriority: integer("enchantment_priority"),
+
+	isLatestVersion: boolean("is_latest_version").notNull().default(true),
+});
+
+export const cardRelations = relations(card, ({ one }) => ({
+	heropower: one(card, {
+		fields: [card.heropowerId],
+		references: [card.uuid],
+	}),
+}));
+
+export type Session = typeof session.$inferSelect;
+export type User = typeof user.$inferSelect;
+export type Role = (typeof rolesEnum.enumValues)[number];
+
+export type Pack = typeof pack.$inferSelect;
+export type Card = typeof card.$inferSelect;
+
+export type PackWithExtras = Pack & {
+	totalDownloadCount: number;
+	likes: {
+		positive: number;
+		negative: number;
+		hasLiked: boolean;
+		hasDisliked: boolean;
+	};
+};
