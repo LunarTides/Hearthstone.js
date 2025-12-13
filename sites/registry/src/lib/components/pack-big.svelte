@@ -5,24 +5,29 @@
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 
-	// TODO: Normalize these props.
 	let {
-		pack,
-		all = [],
+		packs,
 		cards,
 		user,
 		hideButtons = false,
 		form,
 		class: className,
 	}: {
-		pack: PackWithExtras;
-		all?: PackWithExtras[];
-		cards: Card[];
+		packs: {
+			latest: PackWithExtras;
+			current?: PackWithExtras;
+			all: PackWithExtras[];
+		};
+		cards: {
+			all: Card[];
+		};
 		user: any;
 		hideButtons?: boolean;
 		form: any;
 		class?: string;
 	} = $props();
+
+	const pack = $derived(packs.current ?? packs.latest);
 
 	let canModeratePack = $derived(pack.userIds.includes(user?.id || "0"));
 
@@ -61,7 +66,7 @@
 				href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
 				class="px-5 py-3 text-black hover:bg-cyan-200 active:bg-blue-400"
 			>
-				Versions ({all.length})
+				Versions ({packs.all.length})
 			</a>
 			<div class="border-l ml-auto h-auto text-black"></div>
 			<!-- TODO: Show amount of cards. -->
@@ -69,7 +74,7 @@
 				href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
 				class="px-5 py-3 text-black rounded-full rounded-l-none hover:bg-cyan-200 active:bg-blue-400"
 			>
-				Cards ({cards.length})
+				Cards ({cards.all.length})
 			</a>
 		</div>
 	{/if}
@@ -115,7 +120,7 @@
 				<p class="text-lg font-semibold">Downloads</p>
 				<hr />
 				<p>
-					{all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
+					{packs.all.length > 0 ? pack.totalDownloadCount : pack.downloadCount}
 				</p>
 			</div>
 

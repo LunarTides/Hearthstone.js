@@ -9,20 +9,8 @@
 {#await data.cards}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then cards}
-	<PackBig
-		pack={cards.packs.latest}
-		all={cards.packs.all}
-		cards={cards.all}
-		user={data.user}
-		{form}
-		class="rounded-b-none"
-	/>
-	<CardBig
-		card={cards.latest}
-		cardsAll={cards.all}
-		pack={cards.packs.latest}
-		packsAll={cards.packs.all}
-	/>
+	<PackBig packs={cards.packs} {cards} user={data.user} {form} class="rounded-b-none" />
+	<CardBig {cards} packs={cards.packs} />
 
 	<!-- <pre>{JSON.stringify(cards, null, 4)}</pre> -->
 {/await}

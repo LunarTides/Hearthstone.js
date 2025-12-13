@@ -32,9 +32,11 @@
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then cards}
 	<PackBig
-		pack={cards.packs.all.find((p) => p.packVersion === page.params.version)!}
-		all={cards.packs.all}
-		cards={cards.all}
+		packs={{
+			...cards.packs,
+			current: cards.packs.all.find((p) => p.packVersion === page.params.version)!,
+		}}
+		{cards}
 		user={data.user}
 		{form}
 		class="rounded-b-none"
@@ -43,6 +45,12 @@
 	{#await card}
 		<p>{m.tidy_fancy_mule_prosper()}</p>
 	{:then card}
-		<CardBig {card} cardsAll={cards.all} pack={getPack(cards, card)} packsAll={cards.packs.all} />
+		<CardBig
+			{cards}
+			packs={{
+				...cards.packs,
+				current: getPack(cards, card),
+			}}
+		/>
 	{/await}
 {/await}

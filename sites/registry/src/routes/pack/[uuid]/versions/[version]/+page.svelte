@@ -38,11 +38,13 @@
 
 {#await packs}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
-{:then version}
+{:then versions}
 	<PackBig
-		pack={version.current}
-		all={version.all}
-		cards={data.cards!}
+		packs={{
+			...versions,
+			latest: versions.all.find((v) => v.isLatestVersion)!,
+		}}
+		cards={{ all: data.cards! }}
 		user={data.user}
 		{form}
 		class="rounded-b-none"

@@ -13,7 +13,7 @@
 		{#await data.cards}
 			<p>{m.tidy_fancy_mule_prosper()}</p>
 		{:then cards}
-			<PackBig pack={packs.latest} all={packs.all} cards={cards!} user={data.user} {form} />
+			<PackBig {packs} cards={{ all: cards! }} user={data.user} {form} />
 
 			<div class="m-2 flex flex-wrap gap-1">
 				{#each cards as card (card.id)}

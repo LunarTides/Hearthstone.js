@@ -4,16 +4,23 @@
 	import { type Card, type PackWithExtras } from "$lib/db/schema";
 
 	let {
-		card,
-		cardsAll,
-		pack,
-		packsAll,
+		cards,
+		packs,
 	}: {
-		card: Card;
-		cardsAll: Card[];
-		pack: PackWithExtras;
-		packsAll: PackWithExtras[];
+		cards: {
+			latest: Card;
+			current?: Card;
+			all: Card[];
+		};
+		packs: {
+			latest: PackWithExtras;
+			current?: PackWithExtras;
+			// all: PackWithExtras[];
+		};
 	} = $props();
+
+	const card = $derived(cards.current ?? cards.latest);
+	const pack = $derived(packs.current ?? packs.latest);
 </script>
 
 <div class="bg-black text-white p-4 rounded-t-none rounded-xl">
@@ -22,14 +29,14 @@
 	>
 		{#if page.route.id === "/card/[uuid]/versions"}
 			<p class="px-5 py-3 rounded-full bg-gray-300 hover:cursor-default">
-				Versions ({cardsAll.length})
+				Versions ({cards.all.length})
 			</p>
 		{:else}
 			<a
 				href={resolve("/card/[uuid]/versions", { uuid: page.params.uuid! })}
 				class="px-5 py-3 rounded-full hover:bg-cyan-200 active:bg-blue-400"
 			>
-				Versions ({cardsAll.length})
+				Versions ({cards.all.length})
 			</a>
 		{/if}
 	</div>

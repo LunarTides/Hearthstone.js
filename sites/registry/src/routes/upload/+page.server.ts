@@ -138,7 +138,6 @@ export const actions = {
 		for (const file of files) {
 			const target = resolve(tmpPath, file.name);
 			if (!target.startsWith(tmpPath)) {
-				console.log(1);
 				error(400, { message: m.archive_invalid() });
 			}
 
@@ -167,13 +166,11 @@ export const actions = {
 		try {
 			const folderStats = await fs.stat(innerFolderPath);
 			if (!folderStats.isDirectory()) {
-				console.log(2);
 				error(400, { message: m.archive_invalid() });
 			}
 		} catch (err: any) {
 			// Folder not found.
 			if (err?.code === "ENOENT") {
-				console.log(3);
 				error(400, { message: m.archive_invalid() });
 			}
 		}
@@ -224,8 +221,6 @@ export const actions = {
 
 							const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
 							const uuid = parseCardField(content, "id");
-
-							console.log(c.uuid, uuid);
 
 							if (c.uuid === uuid) {
 								await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.id));
