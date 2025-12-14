@@ -78,7 +78,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	const packsAndLikes = await query.fullJoin(packLike, eq(pack.uuid, packLike.packId));
 
 	// Show all downloads from all versions.
-	const packs: PackWithExtras[] = packsAndLikes.map((p) => {
+	let packs: PackWithExtras[] = packsAndLikes.map((p) => {
 		const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
 
 		// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
@@ -100,6 +100,10 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 			},
 		};
 	});
+
+	// Remove duplicates.
+	const ids = new Set(packsAndLikes.map((p) => p.pack.id));
+	packs = packs.filter((p) => ids.delete(p.id));
 
 	return packs;
 };
