@@ -21,7 +21,7 @@
 	<div class="p-2 flex flex-col gap-2">
 		{#each cards.all.toSorted( (a, b) => getPack(cards, b).packVersion.localeCompare(getPack(cards, a).packVersion), ) as card (card.id)}
 			<a
-				class="bg-blue-500 p-2 text-center rounded-full text-xl text-white hover:bg-blue-400 active:bg-blue-600"
+				class="bg-slate-500 p-2 text-center rounded-full text-xl text-white hover:bg-slate-400 active:bg-slate-600"
 				href={resolve("/card/[uuid]/versions/[version]", {
 					uuid: card.uuid,
 					version: getPack(cards, card).packVersion,

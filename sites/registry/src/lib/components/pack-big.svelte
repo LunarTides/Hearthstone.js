@@ -6,6 +6,7 @@
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user";
 	import type { ClientUser } from "$lib/server/auth";
+	import Badge from "./badge.svelte";
 
 	let {
 		packs,
@@ -59,13 +60,22 @@
 	{#if !hideButtons}
 		<div class="flex flex-col float-right m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
-				<a
-					href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
-					class="px-5 py-3 rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
-				>
-					Download
-				</a>
-				<div class="border-l ml-auto h-auto"></div>
+				{#if pack.approved}
+					<a
+						href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+						class="px-5 py-3 rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
+					>
+						Download
+					</a>
+					<div class="border-l ml-auto h-auto"></div>
+				{:else}
+					<p
+						class="px-5 py-3 bg-gray-300 text-gray-700 rounded-full rounded-r-none hover:cursor-default"
+					>
+						Download
+					</p>
+					<div class="border-l ml-auto h-auto"></div>
+				{/if}
 				<a
 					href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
 					class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
@@ -188,7 +198,7 @@
 			</div>
 		</div>
 
-		{#if !hideButtons}
+		{#if !hideButtons && pack.approved}
 			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
 			<div class="flex gap-4">
@@ -217,5 +227,11 @@
 				</form>
 			</div>
 		{/if}
+
+		<div class="flex gap-1 not-empty:mt-2">
+			{#if !pack.approved}
+				<Badge class="bg-yellow-300 text-slate-600">Waiting for approval</Badge>
+			{/if}
+		</div>
 	</div>
 </div>

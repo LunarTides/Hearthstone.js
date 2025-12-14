@@ -7,11 +7,11 @@
 	let { data } = $props();
 </script>
 
-{#await data.user}
+{#await data.currentUser}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then user}
 	<div class="m-2">
-		<UserSmall {user} />
+		<UserSmall {user} loggedInUser={data.user} />
 	</div>
 
 	{#await data.packs}
@@ -50,7 +50,7 @@
 				{/each}
 			</div>
 
-			<pre>{JSON.stringify(packs, null, 4)}</pre>
+			<!-- <pre>{JSON.stringify(packs, null, 4)}</pre> -->
 		{/if}
 	{/await}
 

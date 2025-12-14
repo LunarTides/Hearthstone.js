@@ -28,7 +28,7 @@
 		class="flex float-right m-2 mt-4 w-fit h-fit text-black bg-blue-300 drop-shadow-2xl rounded-full outline-1 outline-black"
 	>
 		{#if page.route.id === "/card/[uuid]/versions"}
-			<p class="px-5 py-3 rounded-full bg-gray-300 hover:cursor-default">
+			<p class="px-5 py-3 rounded-full bg-gray-300 text-gray-700 hover:cursor-default">
 				Versions ({cards.all.length})
 			</p>
 		{:else}

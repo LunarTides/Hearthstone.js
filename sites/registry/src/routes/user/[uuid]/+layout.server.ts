@@ -16,6 +16,6 @@ export const load = (event) => {
 	};
 
 	return {
-		user: getUser(),
+		currentUser: getUser(),
 	};
 };
