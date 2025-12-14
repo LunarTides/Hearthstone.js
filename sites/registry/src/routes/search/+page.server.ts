@@ -2,7 +2,7 @@ import { m } from "$lib/paraglide/messages.js";
 import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
-export async function load(event) {
+export const load = (event) => {
 	const query = event.url.searchParams.get("q");
 	if (!query) {
 		error(400, { message: m.query_not_found() });
@@ -39,4 +39,4 @@ export async function load(event) {
 	};
 
 	return getResult();
-}
+};

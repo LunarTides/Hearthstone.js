@@ -16,7 +16,7 @@
 		<div class="p-2 flex flex-col gap-2">
 			{#each packs.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as version (version.id)}
 				<button
-					class="bg-blue-500 p-2 rounded-full text-xl text-white hover:bg-blue-400 hover:cursor-pointer active:bg-blue-600"
+					class="bg-slate-500 p-2 rounded-full text-xl text-white hover:bg-slate-400 hover:cursor-pointer active:bg-slate-600"
 					onclick={() => {
 						goto(
 							resolve("/pack/[uuid]/versions/[version]", {

@@ -3,9 +3,8 @@ import { relations } from "drizzle-orm";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 
-// TODO: Change to using plural names.
 export const user = pgTable("user", {
-	id: text("id").primaryKey(),
+	id: uuid("id").primaryKey(),
 	username: text("username").notNull().unique(),
 	passwordHash: text("password_hash").notNull(),
 	role: rolesEnum().notNull().default("User"),
@@ -14,7 +13,7 @@ export const user = pgTable("user", {
 
 export const session = pgTable("session", {
 	id: text("id").primaryKey(),
-	userId: text("user_id")
+	userId: uuid("user_id")
 		.notNull()
 		.references(() => user.id),
 	expiresAt: timestamp("expires_at", {
@@ -23,10 +22,19 @@ export const session = pgTable("session", {
 	}).notNull(),
 });
 
+export const profile = pgTable("profile", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => user.id),
+	aboutMe: text("about_me").notNull(),
+	pronouns: text("pronouns"),
+});
+
 export const pack = pgTable("pack", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	uuid: uuid("uuid").notNull(),
-	userIds: text("user_ids").array().notNull(),
+	userIds: uuid("user_ids").array().notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
 	gameVersion: text("game_version").notNull(),
 	packVersion: text("pack_version").notNull(),
@@ -53,7 +61,7 @@ export const packRelations = relations(pack, ({ many }) => ({
 export const packLike = pgTable("packLike", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	packId: uuid("pack_id").notNull(),
-	userId: text("user_id")
+	userId: uuid("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	dislike: boolean("dislike").notNull(),
@@ -115,6 +123,7 @@ export const cardRelations = relations(card, ({ one }) => ({
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
+export type Profile = typeof profile.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;

@@ -2,31 +2,37 @@ import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packLike, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
+import { satisfiesRole } from "$lib/user";
+import semver from "semver";
+
+const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
+	if ((!user || !packs.at(0)?.userIds.includes(user.id)) && !satisfiesRole(user, "Moderator")) {
+		return packs.filter((p) => p.approved);
+	}
+
+	return packs;
+};
 
 export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db
-			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.approved, true)))
-			.$dynamic(),
+		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
 	);
+
+	packs = filterApproved(user, packs);
+
 	if (packs.length <= 0) {
 		// To to parse uuid as a version id.
-		const id = (
-			await db
-				.select({ uuid: pack.uuid })
-				.from(pack)
-				.where(and(eq(pack.id, uuid), eq(pack.approved, true)))
-		).at(0);
+		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
 		if (!id) {
 			error(404, { message: m.pack_not_found() });
 		}
+
+		packs = filterApproved(user, packs);
 
 		packs = await getFullPacks(
 			user,
@@ -34,9 +40,9 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 		);
 	}
 
-	const latest = packs.find((p) => p.isLatestVersion);
+	let latest = packs.find((p) => p.isLatestVersion);
 	if (!latest) {
-		error(500, { message: m.drab_less_eel_fetch() });
+		latest = packs.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
 	}
 
 	return {
@@ -47,21 +53,20 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 
 export const APIGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
-	const packs = await getFullPacks(
+	let packs = await getFullPacks(
 		user,
-		db
-			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.approved, true)))
-			.$dynamic(),
+		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
 	);
+
+	packs = filterApproved(user, packs);
+
 	if (packs.length <= 0) {
 		return { error: { message: m.pack_not_found(), status: 404 } };
 	}
 
-	const latest = packs.find((p) => p.isLatestVersion);
+	let latest = packs.find((p) => p.isLatestVersion);
 	if (!latest) {
-		return { error: { message: m.drab_less_eel_fetch(), status: 500 } };
+		latest = packs.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
 	}
 
 	return {

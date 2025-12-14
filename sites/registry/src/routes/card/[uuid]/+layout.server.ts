@@ -5,7 +5,7 @@ import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { loadGetPack } from "$lib/server/db/pack.js";
 
-export async function load(event) {
+export const load = (event) => {
 	const user = event.locals.user;
 	const uuid = event.params.uuid;
 
@@ -27,4 +27,4 @@ export async function load(event) {
 	return {
 		cards: getCards(),
 	};
-}
+};

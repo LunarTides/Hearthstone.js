@@ -62,20 +62,22 @@
 		class="rounded-b-none"
 	/>
 
-	<form action="?/download" method="post" use:enhance>
-		{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-		<button
-			type="submit"
-			class={`p-3 w-full bg-blue-500 text-white hover:bg-blue-400 hover:cursor-pointer active:bg-blue-600 ${canModeratePack || canEditPack(versions) ? "" : "rounded-b-lg"}`}
-		>
-			Download
-		</button>
-	</form>
+	{#if versions.current.approved}
+		<form action="?/download" method="post" use:enhance>
+			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+			<button
+				type="submit"
+				class={`p-3 w-full bg-blue-300 text-black hover:bg-blue-200 hover:cursor-pointer active:bg-blue-400 ${canModeratePack || canEditPack(versions) ? "" : "rounded-b-lg"}`}
+			>
+				Download
+			</button>
+		</form>
+	{/if}
 
 	{#if canModeratePack || canEditPack(versions)}
 		{#if deleteConfirm < 2}
 			<button
-				class="p-3 w-full rounded-b-lg bg-red-400 text-white hover:bg-red-300 hover:cursor-pointer active:bg-red-500"
+				class="p-3 w-full rounded-b-lg bg-red-400 text-black hover:bg-red-300 hover:cursor-pointer active:bg-red-500"
 				onclick={() => {
 					deleteConfirm++;
 				}}
@@ -91,7 +93,7 @@
 				{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
 				<button
 					type="submit"
-					class="p-3 w-full rounded-b-lg bg-red-400 text-white hover:bg-red-300 hover:cursor-pointer active:bg-red-500"
+					class="p-3 w-full rounded-b-lg bg-red-400 text-black hover:bg-red-300 hover:cursor-pointer active:bg-red-500"
 				>
 					<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
 				</button>

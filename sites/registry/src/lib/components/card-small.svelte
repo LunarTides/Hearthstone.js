@@ -14,7 +14,7 @@
 <div class="w-fit">
 	<a href={resolve("/card/[uuid]", { uuid: card.uuid })}>
 		<div
-			class="bg-black text-white p-4 rounded-xl w-fit transition-all hover:scale-105 hover:drop-shadow-2xl hover:bg-slate-900"
+			class="bg-black text-white p-4 rounded-xl transition-all hover:scale-105 hover:drop-shadow-2xl hover:bg-slate-900"
 		>
 			<p class="">
 				<span class="text-cyan-500 font-bold">{`{${card.cost}}`}</span>

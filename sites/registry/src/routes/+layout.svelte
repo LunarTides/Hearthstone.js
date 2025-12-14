@@ -55,6 +55,14 @@
 				</option>
 			{/each}
 		</select>
+
+		{#if data.user}
+			<a
+				href={resolve("/user/[uuid]", { uuid: data.user.id })}
+				class="p-5 bg-white rounded-full"
+				title="Profile"
+			></a>
+		{/if}
 	</span>
 </nav>
 
