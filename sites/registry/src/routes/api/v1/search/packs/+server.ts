@@ -26,6 +26,7 @@ export async function GET(event) {
 		db
 			.select()
 			.from(pack)
+			// TODO: Ignore caps.
 			// TODO: Make this smarter.
 			.where(and(like(pack.name, `%${query}%`), eq(pack.approved, true)))
 			// TODO: Add setting for page size.

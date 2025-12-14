@@ -81,9 +81,9 @@
 				}}
 			>
 				{#if deleteConfirm === 0}
-					<p>Delete</p>
+					Delete
 				{:else if deleteConfirm === 1}
-					<p>Really delete?</p>
+					Really delete?
 				{/if}
 			</button>
 		{:else}
