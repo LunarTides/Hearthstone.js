@@ -4,6 +4,8 @@ import { pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import fs from "fs/promises";
+import seven from "7zip-min";
+import { resolve } from "path";
 
 export async function POST(event) {
 	const id = event.params.version;
@@ -22,9 +24,14 @@ export async function POST(event) {
 		.set({ downloadCount: version.downloadCount + 1 })
 		.where(eq(pack.id, version.id));
 
-	const file = await fs.readFile(
-		`./static/assets/packs/${version.uuid}/${version.packVersion}/${version.uuid}.7z`,
-	);
+	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}`;
+	const filename = resolve(folder, `${version.uuid}.7z`);
+
+	// TODO: Is this safe?
+	await seven.pack(folder, resolve(folder, `${version.uuid}.7z`));
+
+	const file = await fs.readFile(filename);
+	await fs.unlink(filename);
 
 	return new Response(file, {
 		headers: {

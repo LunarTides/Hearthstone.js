@@ -325,7 +325,7 @@ export const actions = {
 		const finalPath = `./static/assets/packs/${folderName}/${metadata.versions.pack}`;
 		await fs.mkdir(finalPath, { recursive: true });
 
-		await fs.cp(compressedPath, resolve(finalPath, `${folderName}.7z`));
+		await fs.cp(innerFolderPath, finalPath, { recursive: true });
 		await fs.rm(compressedPath);
 		await fs.rm(innerFolderPath, { recursive: true, force: true });
 	},
