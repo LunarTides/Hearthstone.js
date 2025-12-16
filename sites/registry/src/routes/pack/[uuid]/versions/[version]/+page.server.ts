@@ -66,6 +66,7 @@ export const actions = {
 			return fail(response.status, { message: json.message });
 		}
 
+		// TODO: If there are no more versions, navigate to the homepage.
 		redirect(302, resolve("/pack/[uuid]", { uuid: version.uuid }));
 	},
 };

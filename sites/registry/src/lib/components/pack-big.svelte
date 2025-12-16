@@ -13,6 +13,8 @@
 		cards,
 		user,
 		hideButtons = false,
+		showDownloadButton = false,
+		deleteButtonBuiltin = false,
 		individual = false,
 		form = undefined,
 		class: className,
@@ -27,6 +29,8 @@
 		};
 		user: ClientUser;
 		hideButtons?: boolean;
+		showDownloadButton?: boolean;
+		deleteButtonBuiltin?: boolean;
 		individual?: boolean;
 		form?: any;
 		class?: string;
@@ -36,6 +40,8 @@
 
 	const canEditPack = $derived(pack.userIds.includes(user?.id || "0"));
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
+
+	let deleteConfirm = $state(0);
 
 	// https://stackoverflow.com/a/18650828
 	function formatBytes(bytes: number, decimals = 2) {
@@ -50,6 +56,16 @@
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 	}
+
+	$effect(() => {
+		// Download the file.
+		if (form?.file) {
+			const element = document.createElement("a");
+			element.href = window.URL.createObjectURL(new Blob([form.file]));
+			element.download = form.filename;
+			element.click();
+		}
+	});
 </script>
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
@@ -58,20 +74,28 @@
 	style={`background-image: url(${cardboard});`}
 >
 	{#if !hideButtons}
-		<div class="flex flex-col float-right m-2 mt-4 gap-2">
+		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
-				{#if pack.approved}
-					<a
-						href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
-						class="px-5 py-3 rounded-full rounded-r-none hover:bg-cyan-200 active:bg-blue-400"
+				{#if showDownloadButton && pack.approved}
+					<form
+						action={resolve("/pack/[uuid]/versions/[version]", {
+							uuid: pack.uuid,
+							version: pack.packVersion,
+						}) + "?/download"}
+						method="post"
+						use:enhance
 					>
-						Download
-					</a>
+						{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+						<button
+							type="submit"
+							class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
+						>
+							Download
+						</button>
+					</form>
 					<div class="border-l ml-auto h-auto"></div>
 				{:else}
-					<p
-						class="px-5 py-3 bg-gray-300 text-gray-700 rounded-full rounded-r-none hover:cursor-default"
-					>
+					<p class="px-5 py-3 w-full bg-gray-300 text-gray-700 rounded-l-full hover:cursor-default">
 						Download
 					</p>
 					<div class="border-l ml-auto h-auto"></div>
@@ -85,7 +109,7 @@
 				<div class="border-l ml-auto h-auto"></div>
 				<a
 					href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-					class="px-5 py-3 rounded-full rounded-l-none hover:bg-cyan-200 active:bg-blue-400"
+					class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
 				>
 					Cards ({cards.all.filter((c) => c.isLatestVersion).length})
 				</a>
@@ -97,7 +121,7 @@
 				>
 					<a
 						href={resolve("/pack/[uuid]/edit", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-full rounded-r-none hover:bg-red-200 active:bg-red-400"
+						class="px-5 py-3 w-full rounded-l-full hover:bg-red-200 active:bg-red-400"
 					>
 						Edit
 					</a>
@@ -109,12 +133,52 @@
 						(Reserved)
 					</a>
 					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]/delete", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-full rounded-l-none hover:bg-red-200 active:bg-red-400"
-					>
-						Delete
-					</a>
+					{#if deleteButtonBuiltin}
+						{#if deleteConfirm < 2}
+							<button
+								class="px-5 py-3 w-full rounded-r-full hover:cursor-pointer hover:bg-red-200 active:bg-red-400"
+								onclick={() => {
+									deleteConfirm++;
+								}}
+							>
+								{#if deleteConfirm === 0}
+									Delete Version
+								{:else if deleteConfirm === 1}
+									Really delete?
+								{/if}
+							</button>
+						{:else}
+							<form
+								action={resolve("/pack/[uuid]/versions/[version]", {
+									uuid: pack.uuid,
+									version: pack.packVersion,
+								}) + "?/delete"}
+								method="post"
+								use:enhance
+							>
+								{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+								<button
+									type="submit"
+									class="px-5 py-3 w-full rounded-r-full bg-red-500 hover:cursor-pointer hover:bg-red-400 active:bg-red-600"
+								>
+									<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
+								</button>
+							</form>
+						{/if}
+					{:else}
+						<a
+							href={resolve("/pack/[uuid]/delete", { uuid: pack.uuid })}
+							class="px-5 py-3 w-full rounded-r-full hover:bg-red-200 active:bg-red-400"
+						>
+							Delete Pack
+						</a>
+						<!-- {:else}
+						<p
+							class="px-5 py-3 w-full bg-gray-300 text-gray-700 rounded-r-full hover:cursor-default"
+						>
+							Delete
+						</p> -->
+					{/if}
 				</div>
 			{/if}
 
@@ -122,7 +186,7 @@
 				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
 					<a
 						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-full rounded-r-none hover:bg-gray-800 active:bg-black"
+						class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
 					>
 						<!-- TODO: Change depending on if it's listed or not. -->
 						(Un)list
@@ -137,7 +201,7 @@
 					<div class="border-l ml-auto h-auto"></div>
 					<a
 						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-full rounded-l-none hover:bg-gray-800 active:bg-black"
+						class="px-5 py-3 w-full rounded-r-full hover:bg-gray-800 active:bg-black"
 					>
 						(Reserved)
 					</a>
