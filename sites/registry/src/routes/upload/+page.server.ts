@@ -289,7 +289,6 @@ export const actions = {
 				uuid: p("id"),
 				abilities,
 				packId: packInDB[0].id,
-				isLatestVersion,
 
 				name: p("name"),
 				text: p("text"),
@@ -313,6 +312,10 @@ export const actions = {
 				heropowerId: p("heropowerId"),
 
 				enchantmentPriority: p("enchantmentPriority"),
+
+				// TODO: Add setting for this.
+				approved: false,
+				isLatestVersion,
 			};
 
 			// TODO: Validate c using zod.

@@ -32,12 +32,12 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 			error(404, { message: m.pack_not_found() });
 		}
 
-		packs = filterApproved(user, packs);
-
 		packs = await getFullPacks(
 			user,
 			db.select().from(pack).where(eq(pack.uuid, id.uuid)).$dynamic(),
 		);
+
+		packs = filterApproved(user, packs);
 	}
 
 	let latest = packs.find((p) => p.isLatestVersion);

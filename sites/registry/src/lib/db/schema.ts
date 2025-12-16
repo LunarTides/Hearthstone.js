@@ -111,6 +111,7 @@ export const card = pgTable("card", {
 
 	enchantmentPriority: integer("enchantment_priority"),
 
+	approved: boolean("approved").notNull(),
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 });
 
