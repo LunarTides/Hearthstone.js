@@ -3,3 +3,9 @@ export interface FileTree {
 	type: "directory" | "file";
 	children?: FileTree[];
 }
+
+export interface File {
+	type: "directory" | "file";
+	size: number;
+	content: string;
+}

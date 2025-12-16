@@ -5,6 +5,7 @@
 	import { resolve } from "$app/paths";
 	import { getLocale, setLocale, locales } from "$lib/paraglide/runtime";
 	import { m } from "$lib/paraglide/messages.js";
+	import { githubDarkDimmed } from "svelte-highlight/styles";
 
 	let { children, data } = $props();
 
@@ -13,6 +14,9 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html githubDarkDimmed}
 </svelte:head>
 
 <nav class="flex items-center p-5 bg-slate-500 text-white gap-2">
