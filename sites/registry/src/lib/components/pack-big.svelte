@@ -112,6 +112,7 @@
 					href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
 					class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
 				>
+					<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
 					Cards ({cards.all.filter((c) => c.isLatestVersion).length})
 				</a>
 			</div>
@@ -173,12 +174,6 @@
 						>
 							Delete Pack
 						</a>
-						<!-- {:else}
-						<p
-							class="px-5 py-3 w-full bg-gray-300 text-gray-700 rounded-r-full hover:cursor-default"
-						>
-							Delete
-						</p> -->
 					{/if}
 				</div>
 			{/if}
@@ -203,13 +198,6 @@
 								Approve
 							</button>
 						{:else}
-							<!-- <a
-								href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-								class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
-							>
-								
-							</a> -->
-
 							<form
 								action={resolve("/pack/[uuid]/versions/[version]", {
 									uuid: pack.uuid,

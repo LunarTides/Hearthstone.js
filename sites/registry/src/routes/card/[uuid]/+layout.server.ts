@@ -20,7 +20,7 @@ export const load = (event) => {
 		}
 
 		const latest = cards.find((c) => c.isLatestVersion)!;
-		const packs = await loadGetPack(user, latest.packId);
+		const packs = await loadGetPack(user, cards[0].packId);
 
 		if (!user || (!packs.latest.userIds.includes(user.id) && !satisfiesRole(user, "Moderator"))) {
 			cards = cards.filter((c) => c.approved);

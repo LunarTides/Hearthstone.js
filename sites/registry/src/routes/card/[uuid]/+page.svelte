@@ -6,6 +6,7 @@
 	let { data, form } = $props();
 </script>
 
+<!-- TODO: Page doesn't render when there is an unapproved pack with no approved versions. -->
 {#await data.cards}
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then cards}
