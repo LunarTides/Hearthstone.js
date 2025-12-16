@@ -2,7 +2,7 @@ import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card, pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
 
@@ -15,7 +15,12 @@ export async function DELETE(event) {
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
 
-	const version = (await db.select().from(pack).where(eq(pack.packVersion, packVersion))).at(0);
+	const version = (
+		await db
+			.select()
+			.from(pack)
+			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
+	).at(0);
 	if (!version) {
 		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 	}

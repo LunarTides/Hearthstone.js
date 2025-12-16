@@ -60,6 +60,7 @@ export const packRelations = relations(pack, ({ many }) => ({
 
 export const packLike = pgTable("packLike", {
 	id: uuid("id").primaryKey().defaultRandom(),
+	// TODO: Delete pack likes when the pack is deleted.
 	packId: uuid("pack_id").notNull(),
 	userId: uuid("user_id")
 		.notNull()

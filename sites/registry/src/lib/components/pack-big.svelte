@@ -42,6 +42,7 @@
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
 
 	let deleteConfirm = $state(0);
+	let approveConfirm = $state(0);
 
 	// https://stackoverflow.com/a/18650828
 	function formatBytes(bytes: number, decimals = 2) {
@@ -184,13 +185,49 @@
 
 			{#if canModeratePack}
 				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
-					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
-					>
-						<!-- TODO: Change depending on if it's listed or not. -->
-						(Un)list
-					</a>
+					{#if pack.approved}
+						<a
+							href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+							class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
+						>
+							<!-- TODO: Change depending on if it's listed or not. -->
+							(Un)list
+						</a>
+					{:else}
+						<!-- Approve -->
+						{#if approveConfirm === 0}
+							<button
+								class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+								onclick={() => approveConfirm++}
+							>
+								Approve
+							</button>
+						{:else}
+							<!-- <a
+								href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+								class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
+							>
+								
+							</a> -->
+
+							<form
+								action={resolve("/pack/[uuid]/versions/[version]", {
+									uuid: pack.uuid,
+									version: pack.packVersion,
+								}) + "?/approve"}
+								method="post"
+								use:enhance
+							>
+								{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+								<button
+									type="submit"
+									class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+								>
+									Are you sure?
+								</button>
+							</form>
+						{/if}
+					{/if}
 					<div class="border-l ml-auto h-auto"></div>
 					<a
 						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
