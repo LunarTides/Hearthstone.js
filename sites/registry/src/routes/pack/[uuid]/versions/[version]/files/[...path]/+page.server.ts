@@ -27,10 +27,9 @@ const getRelevantFile = (files: FileTree[], path: string | undefined): FileTree 
 
 export const load = async (event) => {
 	const response = await event.fetch(
-		resolve("/api/v1/pack/[uuid]/[version]/files/[...path]", {
+		resolve("/api/v1/pack/[uuid]/versions/[version]/files/[...path]", {
 			uuid: event.params.uuid,
-			// TODO: Don't hardcode.
-			version: "6c34f7a5-2bd6-4137-8968-b37781272811",
+			version: event.params.version,
 			path: event.params.path,
 		}),
 	);

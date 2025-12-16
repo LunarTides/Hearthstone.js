@@ -8,8 +8,8 @@ import seven from "7zip-min";
 import { resolve } from "path";
 
 export async function POST(event) {
-	const id = event.params.version;
-	const version = (await db.select().from(pack).where(eq(pack.id, id))).at(0);
+	const packVersion = event.params.version;
+	const version = (await db.select().from(pack).where(eq(pack.packVersion, packVersion))).at(0);
 	if (!version) {
 		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 	}

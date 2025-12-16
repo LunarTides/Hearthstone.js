@@ -16,9 +16,9 @@ export const actions = {
 		}
 
 		const response = await event.fetch(
-			resolve("/api/v1/pack/[uuid]/[version]/download", {
+			resolve("/api/v1/pack/[uuid]/versions/[version]/download", {
 				uuid: version.uuid,
-				version: version.id,
+				version: version.packVersion,
 			}),
 			{
 				method: "POST",
@@ -53,9 +53,9 @@ export const actions = {
 		}
 
 		const response = await event.fetch(
-			resolve("/api/v1/pack/[uuid]/[version]", {
+			resolve("/api/v1/pack/[uuid]/versions/[version]", {
 				uuid: version.uuid,
-				version: version.id,
+				version: version.packVersion,
 			}),
 			{
 				method: "DELETE",

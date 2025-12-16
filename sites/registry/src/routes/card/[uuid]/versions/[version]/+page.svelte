@@ -53,5 +53,7 @@
 				current: getPack(cards, card),
 			}}
 		/>
+
+		<!-- TODO: Show the card's code. -->
 	{/await}
 {/await}

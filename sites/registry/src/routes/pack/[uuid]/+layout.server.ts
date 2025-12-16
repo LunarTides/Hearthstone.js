@@ -11,7 +11,10 @@ export const load = async (event) => {
 	const version = packs.latest;
 
 	const response = await event.fetch(
-		resolve("/api/v1/pack/[uuid]/[version]/cards", { uuid: version.uuid, version: version.id }),
+		resolve("/api/v1/pack/[uuid]/versions/[version]/cards", {
+			uuid: version.uuid,
+			version: version.packVersion,
+		}),
 	);
 
 	const json = await response.json();

@@ -16,9 +16,9 @@ export const load = async (event) => {
 	}
 
 	const response = await event.fetch(
-		resolve("/api/v1/pack/[uuid]/[version]/files", {
+		resolve("/api/v1/pack/[uuid]/versions/[version]/files", {
 			uuid: version.uuid,
-			version: version.id,
+			version: version.packVersion,
 		}),
 	);
 
