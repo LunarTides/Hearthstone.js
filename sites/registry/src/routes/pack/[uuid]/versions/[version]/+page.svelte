@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import PackBig from "$lib/components/pack-big.svelte";
 	import type { PackWithExtras } from "$lib/db/schema.js";
 	import { m } from "$lib/paraglide/messages";
 	import { satisfiesRole } from "$lib/user.js";
+	import { File, Folder } from "lucide-svelte";
 
 	let { data, form } = $props();
 	let deleteConfirm = $state(0);
@@ -100,4 +102,37 @@
 			</form>
 		{/if}
 	{/if}
+{/await}
+
+{#await data.files}
+	<p>{m.tidy_fancy_mule_prosper()}</p>
+{:then files}
+	<table class="text-yellow-100">
+		<tbody>
+			{#each files as file (file.path)}
+				<tr class="flex gap-1 odd:bg-slate-500 even:bg-slate-400 p-2 rounded-r-full">
+					<th>
+						{#if file.type === "directory"}
+							<Folder />
+						{:else if file.type === "file"}
+							<File />
+						{/if}
+					</th>
+					<td class="text-white">
+						<a
+							href={resolve("/pack/[uuid]/versions/[version]/files/[path]", {
+								uuid: page.params.uuid!,
+								version: page.params.version!,
+								path: file.path,
+							})}
+						>
+							{file.path}
+						</a>
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+
+	<pre>{JSON.stringify(files, null, 4)}</pre>
 {/await}
