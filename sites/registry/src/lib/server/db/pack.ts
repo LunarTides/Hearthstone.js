@@ -1,12 +1,13 @@
 import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
-import { pack, packLike, type PackWithExtras } from "$lib/db/schema.js";
+import { pack, packLike, user, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
-import { satisfiesRole } from "$lib/user";
+import { censorUser, satisfiesRole } from "$lib/user";
 import semver from "semver";
+import { censorPack } from "$lib/pack";
 
 const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
 	if ((!user || !packs.at(0)?.userIds.includes(user.id)) && !satisfiesRole(user, "Moderator")) {
@@ -40,14 +41,16 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 		packs = filterApproved(user, packs);
 	}
 
-	let latest = packs.find((p) => p.isLatestVersion);
+	const censoredPacks = packs.map((p) => censorPack(p, user));
+
+	let latest = censoredPacks.find((p) => p.isLatestVersion);
 	if (!latest) {
-		latest = packs.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
+		latest = censoredPacks.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
 	}
 
 	return {
 		latest: latest,
-		all: packs,
+		all: censoredPacks,
 	};
 };
 
@@ -64,23 +67,27 @@ export const APIGetPack = async (user: ClientUser, uuid: string) => {
 		return { error: { message: m.pack_not_found(), status: 404 } };
 	}
 
-	let latest = packs.find((p) => p.isLatestVersion);
+	const censoredPacks = packs.map((p) => censorPack(p, user));
+
+	let latest = censoredPacks.find((p) => p.isLatestVersion);
 	if (!latest) {
-		latest = packs.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
+		latest = censoredPacks.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
 	}
 
 	return {
 		error: undefined,
 		latest: latest,
-		all: packs,
+		all: censoredPacks,
 	};
 };
 
 export const getFullPacks = async <T extends PgSelect<"pack">>(
-	user: ClientUser | null,
+	clientUser: ClientUser | null,
 	query: T,
 ) => {
-	const packsAndLikes = await query.fullJoin(packLike, eq(pack.uuid, packLike.packId));
+	const packsAndLikes = await query
+		.fullJoin(packLike, eq(pack.uuid, packLike.packId))
+		.fullJoin(user, eq(pack.approvedBy, user.id));
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = packsAndLikes.map((p) => {
@@ -99,10 +106,11 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				.reduce((p, v) => p + v, 0),
 			likes: {
 				positive: likes.size,
-				hasLiked: user ? likes.has(user.id) : false,
+				hasLiked: clientUser ? likes.has(clientUser.id) : false,
 				negative: dislikes.size,
-				hasDisliked: user ? dislikes.has(user.id) : false,
+				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
 			},
+			approvedByUser: p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
 		};
 	});
 

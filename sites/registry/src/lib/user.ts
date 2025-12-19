@@ -16,7 +16,7 @@ export function satisfiesRole(user: ClientUser, role: Role) {
 }
 
 export type CensoredUser = Exclude<User, "passwordHash">;
-export function censorUser(user: User): CensoredUser {
+export function censorUser(user: User | null): CensoredUser {
 	const censored = ["passwordHash"];
 	const censoredUser: CensoredUser = {} as any;
 

@@ -253,38 +253,50 @@
 
 		<!-- TODO: Add links. -->
 
-		<div class="flex mt-4 gap-2">
-			<div>
-				<p class="text-lg font-semibold">Pack Version</p>
-				<hr />
-				<p>{pack.packVersion}</p>
+		<div>
+			<div class="flex mt-4 gap-2">
+				<div>
+					<p class="text-lg font-semibold">Pack Version</p>
+					<hr />
+					<p>{pack.packVersion}</p>
+				</div>
+
+				<div>
+					<p class="text-lg font-semibold">Game Version</p>
+					<hr />
+					<p>{pack.gameVersion}</p>
+				</div>
+
+				<div>
+					<p class="text-lg font-semibold">Unpacked Size</p>
+					<hr />
+					<p>{formatBytes(pack.unpackedSize)}</p>
+				</div>
+
+				<div>
+					<p class="text-lg font-semibold">Downloads</p>
+					<hr />
+					<p>
+						{!individual ? pack.totalDownloadCount : pack.downloadCount}
+					</p>
+				</div>
+
+				<div>
+					<p class="text-lg font-semibold">License</p>
+					<hr />
+					<p>{pack.license}</p>
+				</div>
 			</div>
 
-			<div>
-				<p class="text-lg font-semibold">Game Version</p>
-				<hr />
-				<p>{pack.gameVersion}</p>
-			</div>
-
-			<div>
-				<p class="text-lg font-semibold">Unpacked Size</p>
-				<hr />
-				<p>{formatBytes(pack.unpackedSize)}</p>
-			</div>
-
-			<div>
-				<p class="text-lg font-semibold">Downloads</p>
-				<hr />
-				<p>
-					{!individual ? pack.totalDownloadCount : pack.downloadCount}
-				</p>
-			</div>
-
-			<div>
-				<p class="text-lg font-semibold">License</p>
-				<hr />
-				<p>{pack.license}</p>
-			</div>
+			{#if satisfiesRole(user, "Moderator")}
+				<div class="flex mt-4 gap-2">
+					<div>
+						<p class="text-lg font-semibold">Approved By</p>
+						<hr />
+						<p>{pack.approvedByUser?.username}</p>
+					</div>
+				</div>
+			{/if}
 		</div>
 
 		{#if !hideButtons && pack.approved}

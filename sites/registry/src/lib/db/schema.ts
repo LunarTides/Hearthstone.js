@@ -1,5 +1,6 @@
 import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import type { CensoredUser } from "$lib/user";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 
@@ -49,6 +50,7 @@ export const pack = pgTable("pack", {
 
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean().notNull(),
+	approvedBy: uuid("approved_by").references(() => user.id),
 });
 
 export const packRelations = relations(pack, ({ many }) => ({
@@ -138,4 +140,5 @@ export type PackWithExtras = Pack & {
 		hasLiked: boolean;
 		hasDisliked: boolean;
 	};
+	approvedByUser: CensoredUser | null;
 };

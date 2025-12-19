@@ -30,7 +30,7 @@ export async function POST(event) {
 		return json({ message: "You do not have the the necessary privileges to do this." });
 	}
 
-	await db.update(pack).set({ approved: true }).where(eq(pack.id, version.id));
+	await db.update(pack).set({ approved: true, approvedBy: user.id }).where(eq(pack.id, version.id));
 	await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.uuid, version.uuid));
 	await db
 		.update(card)
