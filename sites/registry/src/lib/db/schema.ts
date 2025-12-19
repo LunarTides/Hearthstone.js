@@ -146,7 +146,7 @@ export const packCommentLike = pgTable("packCommentLike", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	commentId: uuid("comment_id")
 		.notNull()
-		.references(() => packComment.id),
+		.references(() => packComment.id, { onDelete: "cascade" }),
 	userId: uuid("user_id")
 		.notNull()
 		.references(() => user.id),

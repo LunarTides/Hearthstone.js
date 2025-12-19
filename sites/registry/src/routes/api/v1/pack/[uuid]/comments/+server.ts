@@ -5,6 +5,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and, count } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import { getFullPackComment } from "$lib/server/db/comment.js";
+import { CommentRequest } from "$lib/api/types";
 
 export async function GET(event) {
 	// TODO: Extract page logic.
@@ -13,7 +14,7 @@ export async function GET(event) {
 		return json({ message: m.gray_steep_husky_gaze() }, { status: 400 });
 	}
 
-	const user = event.locals.user;
+	const clientUser = event.locals.user;
 
 	const uuid = event.params.uuid;
 	const packs = await db
@@ -25,17 +26,19 @@ export async function GET(event) {
 	}
 
 	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
-
 	if (!p.approved) {
-		// eslint-disable-next-line no-empty
-		if (user && (p.userIds.includes(user.id) || satisfiesRole(user, "Moderator"))) {
+		if (
+			clientUser &&
+			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+		) {
+			// eslint-disable no-empty
 		} else {
 			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 		}
 	}
 
 	const comments = await getFullPackComment(
-		user,
+		clientUser,
 		db
 			.select()
 			.from(packComment)
@@ -55,4 +58,46 @@ export async function GET(event) {
 			"X-Comment-Amount": amount[0].count.toString(),
 		},
 	});
+}
+
+export async function POST(event) {
+	const clientUser = event.locals.user;
+	if (!clientUser) {
+		return json({ message: m.login_required() }, { status: 401 });
+	}
+
+	const uuid = event.params.uuid;
+	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
+	if (packs.length <= 0) {
+		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+	}
+
+	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
+	if (!p.approved) {
+		if (
+			clientUser &&
+			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+		) {
+			// eslint-disable no-empty
+		} else {
+			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		}
+	}
+
+	const result = CommentRequest.safeParse(await event.request.json());
+	if (!result.success) {
+		// TODO: i18n
+		return json(
+			{ message: `Invalid data provided. ${JSON.parse(result.error.message)[0].message}` },
+			{ status: 422 },
+		);
+	}
+
+	await db.insert(packComment).values({
+		packId: p.uuid,
+		authorId: clientUser.id,
+		text: result.data.text,
+	});
+
+	return json({}, { status: 200 });
 }

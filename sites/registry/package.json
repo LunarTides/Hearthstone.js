@@ -54,6 +54,7 @@
 		"lucide-svelte": "^0.561.0",
 		"postgres": "^3.4.7",
 		"semver": "^7.7.3",
-		"svelte-highlight": "^7.9.0"
+		"svelte-highlight": "^7.9.0",
+		"zod": "^4.2.1"
 	}
 }

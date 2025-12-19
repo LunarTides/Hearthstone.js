@@ -6,9 +6,12 @@
 	import Badge from "$lib/components/badge.svelte";
 	import { satisfiesRole } from "$lib/user.js";
 	import { enhance } from "$app/forms";
-	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
+	import { ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
+	import { page } from "$app/state";
 
 	let { data, form } = $props();
+
+	let deleteConfirm = $state<string | null>(null);
 </script>
 
 {#await data.packs}
@@ -41,21 +44,62 @@
 		{:then commentsObject}
 			<h2 class="text-lg font-medium">Comments ({commentsObject.amount})</h2>
 
+			<form
+				action={resolve("/pack/[uuid]/comments", { uuid: page.params.uuid! }) + "?/post"}
+				method="post"
+				class="flex flex-col gap-1 p-2 rounded-xl bg-slate-400 mb-2"
+				use:enhance
+			>
+				<textarea name="text" placeholder="Comment..." class="rounded-xl resize h-24"></textarea>
+				<button
+					type="submit"
+					class="bg-blue-500 rounded-full p-1 text-white hover:cursor-pointer hover:bg-blue-400 active:bg-blue-600"
+					>Post</button
+				>
+			</form>
+
 			<!-- TODO: The comments constantely reorder each other. -->
 			{#each commentsObject.comments as comment (comment.id)}
 				<div class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white">
-					<a href={resolve("/user/[uuid]", { uuid: comment.author.id })}>
-						<div class="flex gap-2">
-							<!-- TODO: Add avatar -->
-							<div class="p-4 bg-white rounded-full"></div>
-							<p class="text-lg self-center font-mono">{comment.author.username}</p>
-							{#if satisfiesRole(comment.author, "Moderator")}
-								<Badge class="bg-yellow-300 h-fit self-center text-black"
-									>{comment.author.role}</Badge
+					<div>
+						{#if deleteConfirm === comment.id}
+							<form
+								action={resolve("/pack/[uuid]/comments/[commentId]", {
+									uuid: page.params.uuid!,
+									commentId: comment.id,
+								}) + "?/delete"}
+								method="post"
+								use:enhance
+							>
+								<button
+									type="submit"
+									class="float-right m-1 animate-pulse text-red-400 hover:cursor-pointer"
 								>
+									<Trash2 />
+								</button>
+							</form>
+						{:else}
+							<button
+								class="float-right m-1 hover:cursor-pointer"
+								onclick={() => (deleteConfirm = comment.id)}
+							>
+								<Trash2 />
+							</button>
+						{/if}
+
+						<div class="flex gap-2">
+							<a href={resolve("/user/[uuid]", { uuid: comment.author.id })} class="flex gap-2">
+								<!-- TODO: Add avatar -->
+								<div class="p-4 bg-white rounded-full"></div>
+								<p class="text-lg self-center font-mono">{comment.author.username}</p>
+							</a>
+							{#if satisfiesRole(comment.author, "Moderator")}
+								<Badge class="bg-yellow-300 h-fit self-center text-black">
+									{comment.author.role}
+								</Badge>
 							{/if}
 						</div>
-					</a>
+					</div>
 
 					<pre class="text-black font-sans">{comment.text}</pre>
 
