@@ -7,6 +7,7 @@
 	import { satisfiesRole } from "$lib/user";
 	import type { ClientUser } from "$lib/server/auth";
 	import Badge from "./badge.svelte";
+	import { page } from "$app/state";
 
 	let {
 		packs,
@@ -101,20 +102,33 @@
 					</p>
 					<div class="border-l ml-auto h-auto"></div>
 				{/if}
-				<a
-					href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
-					class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
-				>
-					Versions ({packs.all.length})
-				</a>
+				{#if page.route.id === "/pack/[uuid]/versions"}
+					<p class="px-5 py-3 bg-gray-300 text-gray-700 hover:cursor-default">
+						Versions ({packs.all.length})
+					</p>
+				{:else}
+					<a
+						href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+						class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
+					>
+						Versions ({packs.all.length})
+					</a>
+				{/if}
 				<div class="border-l ml-auto h-auto"></div>
-				<a
-					href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-					class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
-				>
-					<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
-					Cards ({cards.all.filter((c) => c.isLatestVersion).length})
-				</a>
+				{#if page.route.id === "/pack/[uuid]"}
+					<p class="px-5 py-3 w-full rounded-r-full bg-gray-300 text-gray-700 hover:cursor-default">
+						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
+						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
+					</p>
+				{:else}
+					<a
+						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
+					>
+						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
+						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
+					</a>
+				{/if}
 			</div>
 
 			{#if canEditPack || canModeratePack}
