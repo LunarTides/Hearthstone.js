@@ -1,6 +1,35 @@
 import { resolve } from "$app/paths";
-import { APIGetPack } from "$lib/server/db/pack.js";
-import { fail } from "@sveltejs/kit";
+import type { PackCommentWithExtras } from "$lib/db/schema";
+import type { CensoredPack } from "$lib/pack.js";
+import { APIGetPack, loadGetPack } from "$lib/server/db/pack.js";
+import { error, fail, type ServerLoadEvent } from "@sveltejs/kit";
+
+const getComments = async (event: ServerLoadEvent, version: CensoredPack) => {
+	// return error(400, { message: "hi" });
+	const response = await event.fetch(
+		resolve("/api/v1/pack/[uuid]/comments", { uuid: version.uuid }),
+	);
+
+	const json = await response.json();
+	if (response.status !== 200) {
+		return error(response.status, { message: json.message });
+	}
+
+	const amount = parseInt(response.headers.get("X-Comment-Amount")!, 10);
+
+	return { comments: json as PackCommentWithExtras[], amount };
+};
+
+export const load = async (event) => {
+	const packs = await loadGetPack(event.locals.user, event.params.uuid);
+	const version = packs.latest;
+
+	const commentsObject = await getComments(event, version);
+
+	return {
+		commentsObject,
+	};
+};
 
 export const actions = {
 	like: async (event) => {

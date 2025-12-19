@@ -8,8 +8,8 @@ export const user = pgTable("user", {
 	id: uuid("id").primaryKey(),
 	username: text("username").notNull().unique(),
 	passwordHash: text("password_hash").notNull(),
-	role: rolesEnum().notNull().default("User"),
-	creationDate: timestamp().defaultNow(),
+	role: rolesEnum("role").notNull().default("User"),
+	creationDate: timestamp("creation_date").notNull().defaultNow(),
 });
 
 export const session = pgTable("session", {
@@ -57,6 +57,7 @@ export const packRelations = relations(pack, ({ many }) => ({
 	cards: many(card),
 	likes: many(packLike),
 	links: many(packLink),
+	comments: many(packComment),
 	users: many(user, { relationName: "user_ids" }),
 }));
 
@@ -74,9 +75,11 @@ export const packLikeRelations = relations(pack, ({ one }) => ({
 	packs: one(pack),
 }));
 
-export const packLink = pgTable("packLinks", {
+export const packLink = pgTable("packLink", {
 	id: uuid("id").defaultRandom().primaryKey(),
-	packId: uuid("pack_id").references(() => pack.id, { onDelete: "cascade" }),
+	packId: uuid("pack_id")
+		.notNull()
+		.references(() => pack.id, { onDelete: "cascade" }),
 	key: text("key").notNull(),
 	value: text("value").notNull(),
 });
@@ -109,7 +112,7 @@ export const card = pgTable("card", {
 	cooldown: integer("cooldown"),
 
 	armor: integer("armor"),
-	heropowerId: uuid("heropowerId"),
+	heropowerId: uuid("heropower_id"),
 
 	enchantmentPriority: integer("enchantment_priority"),
 
@@ -124,6 +127,32 @@ export const cardRelations = relations(card, ({ one }) => ({
 	}),
 }));
 
+export const packComment = pgTable("packComment", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	authorId: uuid("author_id")
+		.notNull()
+		.references(() => user.id),
+	packId: uuid("pack_id").notNull(),
+	creationDate: timestamp().notNull().defaultNow(),
+
+	text: text("text").notNull(),
+});
+
+export const packCommentRelations = relations(packComment, ({ many }) => ({
+	likes: many(packCommentLike),
+}));
+
+export const packCommentLike = pgTable("packCommentLike", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	commentId: uuid("comment_id")
+		.notNull()
+		.references(() => packComment.id),
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => user.id),
+	dislike: boolean("dislike").notNull(),
+});
+
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
@@ -131,6 +160,8 @@ export type Profile = typeof profile.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
+
+export type PackComment = typeof packComment.$inferSelect;
 
 export type PackWithExtras = Pack & {
 	totalDownloadCount: number;
@@ -141,4 +172,14 @@ export type PackWithExtras = Pack & {
 		hasDisliked: boolean;
 	};
 	approvedByUser: CensoredUser | null;
+};
+
+export type PackCommentWithExtras = PackComment & {
+	author: CensoredUser;
+	likes: {
+		positive: number;
+		negative: number;
+		hasLiked: boolean;
+		hasDisliked: boolean;
+	};
 };

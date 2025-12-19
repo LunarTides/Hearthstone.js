@@ -2,11 +2,17 @@
 	import { m } from "$lib/paraglide/messages.js";
 	import PackBig from "$lib/components/pack-big.svelte";
 	import CardSmall from "$lib/components/card-small.svelte";
+	import { resolve } from "$app/paths";
+	import Badge from "$lib/components/badge.svelte";
+	import { satisfiesRole } from "$lib/user.js";
+	import { enhance } from "$app/forms";
+	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 
 	let { data, form } = $props();
 </script>
 
 {#await data.packs}
+	<!-- TODO: Replace with spinner. -->
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then packs}
 	{#if packs}
@@ -24,4 +30,72 @@
 	{/if}
 
 	<!-- <pre>{JSON.stringify(packs, null, 4)}</pre> -->
+
+	<!-- <hr /> -->
+
+	<div class="m-2 p-5 bg-blue-300 rounded-xl">
+		{#await data.commentsObject}
+			<h2 class="text-lg font-medium">Comments</h2>
+
+			<p>{m.tidy_fancy_mule_prosper()}</p>
+		{:then commentsObject}
+			<h2 class="text-lg font-medium">Comments ({commentsObject.amount})</h2>
+
+			<!-- TODO: The comments constantely reorder each other. -->
+			{#each commentsObject.comments as comment (comment.id)}
+				<div class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white">
+					<a href={resolve("/user/[uuid]", { uuid: comment.author.id })}>
+						<div class="flex gap-2">
+							<!-- TODO: Add avatar -->
+							<div class="p-4 bg-white rounded-full"></div>
+							<p class="text-lg self-center font-mono">{comment.author.username}</p>
+							{#if satisfiesRole(comment.author, "Moderator")}
+								<Badge class="bg-yellow-300 h-fit self-center text-black"
+									>{comment.author.role}</Badge
+								>
+							{/if}
+						</div>
+					</a>
+
+					<pre class="text-black font-sans">{comment.text}</pre>
+
+					<!-- TODO: Get the form message here. -->
+					{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+					<div class="flex gap-4">
+						<form
+							action={resolve("/pack/[uuid]/comments/[commentId]", {
+								uuid: packs.latest.uuid,
+								commentId: comment.id,
+							}) + "?/like"}
+							method="post"
+							use:enhance
+						>
+							<!-- TODO: These are glitchy on the card page. -->
+							<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
+								<ThumbsUp class={comment.likes.hasLiked ? "fill-green-400" : ""} />
+								<p class="font-mono text-lg">{comment.likes.positive}</p>
+							</button>
+						</form>
+
+						<form
+							action={resolve("/pack/[uuid]/comments/[commentId]", {
+								uuid: packs.latest.uuid,
+								commentId: comment.id,
+							}) + "?/dislike"}
+							method="post"
+							use:enhance
+						>
+							<!-- TODO: Get the form message here. -->
+							<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
+								<ThumbsDown class={comment.likes.hasDisliked ? "fill-red-400" : ""} />
+								<p class="font-mono text-lg">{comment.likes.negative}</p>
+							</button>
+						</form>
+					</div>
+				</div>
+			{/each}
+
+			<!-- <pre>{JSON.stringify(comments, null, 4)}</pre> -->
+		{/await}
+	</div>
 {/await}

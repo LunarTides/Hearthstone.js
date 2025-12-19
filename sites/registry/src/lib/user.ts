@@ -1,3 +1,4 @@
+import { exclude } from "$lib";
 import type { Profile, Role, User } from "./db/schema";
 import type { ClientUser } from "./server/auth";
 
@@ -15,20 +16,9 @@ export function satisfiesRole(user: ClientUser, role: Role) {
 	return table[user.role] >= table[role];
 }
 
-export type CensoredUser = Exclude<User, "passwordHash">;
-export function censorUser(user: User | null): CensoredUser {
-	const censored = ["passwordHash"];
-	const censoredUser: CensoredUser = {} as any;
-
-	for (const [key, value] of Object.entries(user)) {
-		if (censored.includes(key)) {
-			continue;
-		}
-
-		(censoredUser as any)[key] = value;
-	}
-
-	return censoredUser;
+export type CensoredUser = ReturnType<typeof censorUser>;
+export function censorUser(user: User) {
+	return exclude(user, ["passwordHash", "creationDate"]);
 }
 
 export interface UserAndProfile extends CensoredUser {

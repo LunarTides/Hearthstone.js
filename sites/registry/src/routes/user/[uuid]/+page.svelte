@@ -19,9 +19,19 @@
 	{:then packs}
 		{#if packs}
 			<div class="m-2 flex flex-col w-fit gap-1">
-				{#each packs.toSorted((a, b) => a.relevantPacks
-							.at(0)
-							?.name.localeCompare(b.relevantPacks.at(0)?.name ?? "") ?? 0) as versions (versions.uuid)}
+				{#each packs.toSorted((a, b) => {
+					const ap = a.relevantPacks.at(0);
+					if (!ap) {
+						return 1;
+					}
+
+					const bp = b.relevantPacks.at(0);
+					if (!bp) {
+						return -1;
+					}
+
+					return ap.name.localeCompare(bp.name);
+				}) as versions (versions.uuid)}
 					{#if versions.relevantPacks.length > 0}
 						<div class="flex flex-col p-5 bg-slate-700 rounded-xl gap-1">
 							<p class="m-2 mb-0 text-3xl text-white font-bold">
