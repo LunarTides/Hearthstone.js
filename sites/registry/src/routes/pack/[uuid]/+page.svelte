@@ -18,31 +18,34 @@
 	<!-- TODO: Replace with spinner. -->
 	<p>{m.tidy_fancy_mule_prosper()}</p>
 {:then packs}
-	{#if packs}
-		{#await data.cards}
-			<p>{m.tidy_fancy_mule_prosper()}</p>
-		{:then cards}
-			<PackBig {packs} cards={{ all: cards! }} user={data.user} {form} />
+	{#await data.cards}
+		<p>{m.tidy_fancy_mule_prosper()}</p>
+	{:then cards}
+		<PackBig {packs} cards={{ all: cards }} user={data.user} {form} />
 
-			<div class="m-2 flex flex-wrap gap-1">
-				{#each cards as card (card.id)}
-					<CardSmall {card} pack={packs.latest} />
-				{/each}
-			</div>
-		{/await}
-	{/if}
+		<div class="m-2 p-5 bg-slate-600 rounded-xl">
+			<details open>
+				<summary class="text-lg text-white">Cards ({cards.length})</summary>
+				<div class="flex flex-wrap gap-1 mt-2">
+					{#each cards as card (card.id)}
+						<CardSmall {card} pack={packs.latest} />
+					{/each}
+				</div>
+			</details>
+		</div>
+	{/await}
 
 	<!-- <pre>{JSON.stringify(packs, null, 4)}</pre> -->
 
 	<!-- <hr /> -->
 
-	<div class="m-2 p-5 bg-blue-300 rounded-xl">
+	<div class="m-2 p-5 bg-slate-600 rounded-xl">
 		{#await data.commentsObject}
-			<h2 class="text-lg font-medium">Comments</h2>
+			<h2 class="text-lg font-medium mb-4 text-white">Comments</h2>
 
 			<p>{m.tidy_fancy_mule_prosper()}</p>
 		{:then commentsObject}
-			<h2 class="text-lg font-medium">Comments ({commentsObject.amount})</h2>
+			<h2 class="text-lg font-medium mb-4 text-white">Comments ({commentsObject.amount})</h2>
 
 			<form
 				action={resolve("/pack/[uuid]/comments", { uuid: page.params.uuid! }) + "?/post"}
@@ -53,9 +56,10 @@
 				<textarea name="text" placeholder="Comment..." class="rounded-xl resize h-24"></textarea>
 				<button
 					type="submit"
-					class="bg-blue-500 rounded-full p-1 text-white hover:cursor-pointer hover:bg-blue-400 active:bg-blue-600"
-					>Post</button
+					class="bg-indigo-500 rounded-full p-1 text-white hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
 				>
+					Post
+				</button>
 			</form>
 
 			<!-- TODO: The comments constantely reorder each other. -->

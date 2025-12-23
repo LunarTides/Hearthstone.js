@@ -2,8 +2,7 @@ import { resolve } from "$app/paths";
 import type { Card } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack.js";
 import { loadGetPack } from "$lib/server/db/pack";
-import type { ServerLoadEvent } from "@sveltejs/kit";
-import { error } from "console";
+import { error, type ServerLoadEvent } from "@sveltejs/kit";
 
 const getCards = async (event: ServerLoadEvent, version: CensoredPack) => {
 	const response = await event.fetch(

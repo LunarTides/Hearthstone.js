@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { type Card, type PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
@@ -71,10 +70,7 @@
 </script>
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
-<div
-	class={`rounded-xl rounded-t-none p-7 bg-cover bg-gray-300 bg-blend-multiply text-white ${className ?? ""}`}
-	style={`background-image: url(${cardboard});`}
->
+<div class={`rounded-xl rounded-t-none p-7 bg-cover bg-slate-600 text-white ${className ?? ""}`}>
 	{#if !hideButtons}
 		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
@@ -302,7 +298,7 @@
 				</div>
 			</div>
 
-			{#if satisfiesRole(user, "Moderator")}
+			{#if pack.approved && satisfiesRole(user, "Moderator")}
 				<div class="flex mt-4 gap-2">
 					<div>
 						<p class="text-lg font-semibold">Approved By</p>

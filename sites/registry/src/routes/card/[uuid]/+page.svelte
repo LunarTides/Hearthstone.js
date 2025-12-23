@@ -13,5 +13,6 @@
 	<PackBig packs={cards.packs} {cards} user={data.user} {form} class="rounded-b-none" />
 	<CardBig {cards} packs={cards.packs} />
 
+	<!-- TODO: Show the card's code. -->
 	<!-- <pre>{JSON.stringify(cards, null, 4)}</pre> -->
 {/await}

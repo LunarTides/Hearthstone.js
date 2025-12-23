@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import cardboard from "$lib/assets/cardboard-texture.avif";
 	import { type PackWithExtras } from "$lib/db/schema";
 	import { Download, ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import Badge from "./badge.svelte";
@@ -21,8 +20,7 @@
 			: resolve("/pack/[uuid]", { uuid: pack.uuid })}
 	>
 		<div
-			class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-gray-300 bg-blend-multiply hover:scale-105 hover:drop-shadow-2xl"
-			style={`background-image: url(${cardboard})`}
+			class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-slate-600 hover:scale-105 hover:drop-shadow-2xl"
 		>
 			<p class="font-bold">{pack.name} ({pack.packVersion})</p>
 			<p class="text-xs mb-2">{pack.authors.join(", ")}</p>

@@ -24,7 +24,7 @@ export async function DELETE(event) {
 			clientUser &&
 			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
 		) {
-            // eslint-disable no-empty
+			// eslint-disable no-empty
 		} else {
 			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
 		}
