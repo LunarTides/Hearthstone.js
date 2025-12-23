@@ -4,7 +4,6 @@ import seven from "7zip-min";
 import { fileTypeFromBuffer } from "file-type";
 import { join, resolve } from "path";
 import { tmpdir } from "os";
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card, pack } from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
@@ -72,7 +71,7 @@ function parseCardField(content: string, name: string) {
 export async function POST(event) {
 	const user = event.locals.user;
 	if (!user) {
-		return json({ message: m.login_required() }, { status: 401 });
+		return json({ message: "Please log in." }, { status: 401 });
 	}
 
 	const uuid = event.params.uuid;
@@ -81,7 +80,7 @@ export async function POST(event) {
 
 	// TODO: Move to settings.
 	if (file.size > 100 * 1024 * 1024) {
-		return json({ message: m.upload_too_large() }, { status: 413 });
+		return json({ message: "Upload too large." }, { status: 413 });
 	}
 
 	const bytes = await file.bytes();
@@ -92,13 +91,13 @@ export async function POST(event) {
 
 	// 7z magic byte.
 	if (magic !== "37 7A BC AF 27 1C") {
-		return json({ message: m.invalid_file_type() }, { status: 415 });
+		return json({ message: "Invalid file type." }, { status: 415 });
 	}
 
 	// Double check.
 	const ft = await fileTypeFromBuffer(bytes);
 	if (ft === undefined || ft.ext !== "7z" || ft.mime !== "application/x-7z-compressed") {
-		return json({ message: m.invalid_file_type() }, { status: 415 });
+		return json({ message: "Invalid file type." }, { status: 415 });
 	}
 
 	// Isolate temporarily.
@@ -109,13 +108,13 @@ export async function POST(event) {
 	const files = await seven.list(compressedPath);
 	// TODO: Move to settings.
 	if (files.length > 5000) {
-		return json({ message: m.archive_too_many_files() }, { status: 413 });
+		return json({ message: "Too many files in archive." }, { status: 413 });
 	}
 
 	const uncompressedSize = files.map((f) => parseInt(f.size, 10)).reduce((p, c) => p + c, 0);
 	// TODO: Move to settings.
 	if (uncompressedSize > 100 * 1024 * 1024) {
-		return json({ message: m.upload_too_large() }, { status: 413 });
+		return json({ message: "Upload too large." }, { status: 413 });
 	}
 
 	// TODO: Move to settings.
@@ -127,12 +126,12 @@ export async function POST(event) {
 	for (const file of files) {
 		const target = resolve(tmpPath, file.name);
 		if (!target.startsWith(tmpPath)) {
-			return json({ message: m.archive_invalid() }, { status: 400 });
+			return json({ message: "Archive invalid." }, { status: 400 });
 		}
 
 		// Allow directories.
 		if (!allowedExtensions.some((ext) => file.name.endsWith(ext)) && /\../.test(file.name)) {
-			return json({ message: m.archive_illegal_file_types() }, { status: 400 });
+			return json({ message: "Archive contains illegal file types." }, { status: 400 });
 		}
 
 		if (file.name.endsWith("meta.jsonc")) {
@@ -141,7 +140,7 @@ export async function POST(event) {
 	}
 
 	if (!hasMeta) {
-		return json({ message: m.meta_not_found() }, { status: 400 });
+		return json({ message: "'meta.jsonc' not found." }, { status: 400 });
 	}
 
 	// TODO: This could maybe create symlinks, which would be bad?
@@ -153,12 +152,12 @@ export async function POST(event) {
 	try {
 		const folderStats = await fs.stat(innerFolderPath);
 		if (!folderStats.isDirectory()) {
-			return json({ message: m.archive_invalid() }, { status: 400 });
+			return json({ message: "Archive invalid." }, { status: 400 });
 		}
 	} catch (err: any) {
 		// Folder not found.
 		if (err?.code === "ENOENT") {
-			return json({ message: m.archive_invalid() }, { status: 400 });
+			return json({ message: "Archive invalid." }, { status: 400 });
 		}
 	}
 
@@ -169,7 +168,7 @@ export async function POST(event) {
 	const metadata: Metadata = JSON.parse(metadataContent);
 
 	if (!semver.valid(metadata.versions.pack)) {
-		error(400, m.tiny_hotel_fox_tough());
+		error(400, "Invalid pack version.");
 	}
 
 	// Check if a pack with that name / uuid already exists,
@@ -193,7 +192,7 @@ export async function POST(event) {
 				// update = true;
 			} else {
 				// No permission.
-				error(403, m.fluffy_bluffy_biome_mall());
+				error(403, "You do not have permission to edit this pack.");
 			}
 		} else if (semver.gt(metadata.versions.pack, version.packVersion)) {
 			// TODO: Only do this when the pack is approved. If the approval process is disabled, do this here.

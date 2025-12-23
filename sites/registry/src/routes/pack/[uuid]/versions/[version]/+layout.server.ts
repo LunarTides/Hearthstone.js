@@ -1,6 +1,5 @@
 import { resolve } from "$app/paths";
 import type { FileTree } from "$lib/api/types";
-import { m } from "$lib/paraglide/messages";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "assert";
 
@@ -12,7 +11,7 @@ export const load = async (event) => {
 
 	const version = packs.all.find((v) => v.packVersion === event.params.version);
 	if (!version) {
-		return fail(404, { message: m.pack_not_found() });
+		return fail(404, { message: "Pack not found." });
 	}
 
 	const response = await event.fetch(

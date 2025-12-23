@@ -1,5 +1,4 @@
 import { resolve } from "$app/paths";
-import { m } from "$lib/paraglide/messages.js";
 import { APIGetPack } from "$lib/server/db/pack.js";
 import { fail, redirect } from "@sveltejs/kit";
 
@@ -12,7 +11,7 @@ export const actions = {
 
 		const version = packs.all.find((v) => v.packVersion === event.params.version);
 		if (!version) {
-			return fail(404, { message: m.pack_not_found() });
+			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await event.fetch(
@@ -34,7 +33,7 @@ export const actions = {
 			?.split('filename="')[1]
 			.split('"')[0];
 		if (!filename) {
-			return fail(400, { message: m.terrible_pool_weapon_pot() });
+			return fail(400, { message: "Invalid filename found." });
 		}
 
 		const blob = await response.blob();
@@ -49,7 +48,7 @@ export const actions = {
 
 		const version = packs.all.find((v) => v.packVersion === event.params.version);
 		if (!version) {
-			return fail(404, { message: m.pack_not_found() });
+			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await event.fetch(
@@ -78,7 +77,7 @@ export const actions = {
 
 		const version = packs.all.find((v) => v.packVersion === event.params.version);
 		if (!version) {
-			return fail(404, { message: m.pack_not_found() });
+			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await event.fetch(

@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages";
 import { fail, redirect } from "@sveltejs/kit";
 import { resolve } from "$app/paths";
 
@@ -7,11 +6,11 @@ export const actions = {
 		const formData = await event.request.formData();
 		const file = formData.get("file");
 		if (!file) {
-			return fail(422, { message: m.supply_file() });
+			return fail(422, { message: "Please supply a file." });
 		}
 
 		if (!(file instanceof File)) {
-			return fail(422, { message: m.invalid_file() });
+			return fail(422, { message: "Invalid file." });
 		}
 
 		const buffer = await file.arrayBuffer();

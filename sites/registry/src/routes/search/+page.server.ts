@@ -1,11 +1,10 @@
-import { m } from "$lib/paraglide/messages.js";
 import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
 export const load = (event) => {
 	const query = event.url.searchParams.get("q");
 	if (!query) {
-		error(400, { message: m.query_not_found() });
+		error(400, { message: "Please specify a search query." });
 	}
 
 	const page = event.url.searchParams.get("page") || "1";

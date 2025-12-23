@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packCommentLike } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
@@ -9,7 +8,7 @@ import { satisfiesRole } from "$lib/user.js";
 export async function POST(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
-		return json({ message: m.login_required() }, { status: 401 });
+		return json({ message: "Please log in." }, { status: 401 });
 	}
 
 	const uuid = event.params.uuid;
@@ -21,14 +20,14 @@ export async function POST(event) {
 			.limit(1)
 	).at(0);
 	if (!p) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	if (!p.approved) {
 		// eslint-disable-next-line no-empty
 		if (p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator")) {
 		} else {
-			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 
@@ -52,7 +51,7 @@ export async function POST(event) {
 
 	await db.insert(packCommentLike).values({
 		commentId,
-		userId: event.locals.user.id,
+		userId: clientUser.id,
 		dislike: true,
 	});
 

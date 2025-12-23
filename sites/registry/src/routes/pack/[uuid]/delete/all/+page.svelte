@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
 	import PackBig from "$lib/components/pack-big.svelte";
-	import { m } from "$lib/paraglide/messages.js";
 
 	let { data, form } = $props();
 
@@ -9,10 +8,10 @@
 </script>
 
 {#await data.packs}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then packs}
 	<PackBig
-		packs={packs!}
+		{packs}
 		cards={{ all: data.cards! }}
 		user={data.user}
 		{form}

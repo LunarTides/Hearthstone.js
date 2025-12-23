@@ -2,7 +2,6 @@
 	import { page } from "$app/state";
 	import PackBig from "$lib/components/pack-big.svelte";
 	import type { PackWithExtras } from "$lib/db/schema.js";
-	import { m } from "$lib/paraglide/messages";
 
 	let { data, form, children } = $props();
 
@@ -26,7 +25,7 @@
 </script>
 
 {#await packs}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then versions}
 	<PackBig
 		packs={{

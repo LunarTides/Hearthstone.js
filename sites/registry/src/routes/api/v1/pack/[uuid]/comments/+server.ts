@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packComment } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
@@ -11,7 +10,7 @@ export async function GET(event) {
 	// TODO: Extract page logic.
 	const page = parseInt(event.url.searchParams.get("page") || "1");
 	if (Number.isNaN(page) || page <= 0) {
-		return json({ message: m.gray_steep_husky_gaze() }, { status: 400 });
+		return json({ message: "Please specify a valid page." }, { status: 400 });
 	}
 
 	const clientUser = event.locals.user;
@@ -22,7 +21,7 @@ export async function GET(event) {
 		.from(pack)
 		.where(and(eq(pack.uuid, uuid)));
 	if (packs.length <= 0) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
@@ -33,7 +32,7 @@ export async function GET(event) {
 		) {
 			// eslint-disable no-empty
 		} else {
-			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 
@@ -63,13 +62,13 @@ export async function GET(event) {
 export async function POST(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
-		return json({ message: m.login_required() }, { status: 401 });
+		return json({ message: "Please log in." }, { status: 401 });
 	}
 
 	const uuid = event.params.uuid;
 	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
 	if (packs.length <= 0) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
@@ -80,13 +79,12 @@ export async function POST(event) {
 		) {
 			// eslint-disable no-empty
 		} else {
-			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 
 	const result = CommentRequest.safeParse(await event.request.json());
 	if (!result.success) {
-		// TODO: i18n
 		return json(
 			{ message: `Invalid data provided. ${JSON.parse(result.error.message)[0].message}` },
 			{ status: 422 },

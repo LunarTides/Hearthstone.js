@@ -1,6 +1,5 @@
 import { resolve } from "$app/paths";
 import { pack, type Card } from "$lib/db/schema.js";
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { getFullPacks } from "$lib/server/db/pack";
 import { satisfiesRole } from "$lib/user.js";
@@ -62,13 +61,12 @@ export const actions = {
 	edit: async (event) => {
 		const user = event.locals.user;
 		if (!user) {
-			return fail(401, { message: m.login_required() });
+			return fail(401, { message: "Please log in." });
 		}
 
 		const uuid = event.params.uuid;
 
 		if (user.id !== uuid && !satisfiesRole(user, "Admin")) {
-			// TODO: i18n
 			return fail(403, { message: "You do not have the the necessary privileges to do this." });
 		}
 

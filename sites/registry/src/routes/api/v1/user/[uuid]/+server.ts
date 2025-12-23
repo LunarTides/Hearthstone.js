@@ -1,5 +1,4 @@
 import { profile, user } from "$lib/db/schema";
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db";
 import { censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
@@ -14,7 +13,6 @@ export async function GET(event) {
 		.where(eq(user.id, uuid))
 		.innerJoin(profile, eq(profile.userId, user.id));
 	if (users.length <= 0) {
-		// TODO: i18n
 		return json({ message: "User not found." }, { status: 404 });
 	}
 
@@ -32,13 +30,12 @@ export async function GET(event) {
 export async function PUT(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
-		error(401, { message: m.login_required() });
+		error(401, { message: "Please log in." });
 	}
 
 	const uuid = event.params.uuid;
 
 	if (clientUser.id !== uuid && !satisfiesRole(clientUser, "Admin")) {
-		// TODO: i18n
 		error(403, { message: "You do not have the the necessary privileges to do this." });
 	}
 

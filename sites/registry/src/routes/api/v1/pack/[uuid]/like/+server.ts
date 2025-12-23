@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packLike } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
@@ -6,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 
 export async function POST(event) {
 	if (!event.locals.user) {
-		return json({ message: m.login_required() }, { status: 401 });
+		return json({ message: "Please log in." }, { status: 401 });
 	}
 
 	const uuid = event.params.uuid;
@@ -18,11 +17,11 @@ export async function POST(event) {
 			.limit(1)
 	).at(0);
 	if (!p) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	if (!p.approved) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const like = (

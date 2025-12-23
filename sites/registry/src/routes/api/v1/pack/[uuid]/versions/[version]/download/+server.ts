@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
@@ -17,11 +16,11 @@ export async function POST(event) {
 			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
 	).at(0);
 	if (!version) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	if (!version.approved) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	// TODO: Only do this if this IP hasn't already downloaded this? To prevent download inflation by the authors.

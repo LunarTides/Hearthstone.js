@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import { m } from "$lib/paraglide/messages.js";
 	import type { Card } from "$lib/db/schema.js";
 	import CardBig from "$lib/components/card-big.svelte";
 	import PackBig from "$lib/components/pack-big.svelte";
@@ -29,7 +28,7 @@
 </script>
 
 {#await data.cards}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then cards}
 	<PackBig
 		packs={{
@@ -44,7 +43,7 @@
 	/>
 
 	{#await card}
-		<p>{m.tidy_fancy_mule_prosper()}</p>
+		<p>Loading...</p>
 	{:then card}
 		<CardBig
 			{cards}

@@ -4,7 +4,6 @@ import { eq } from "drizzle-orm";
 import * as auth from "$lib/server/auth";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
-import { m } from "$lib/paraglide/messages.js";
 import type { Actions, PageServerLoad } from "./$types";
 import { randomUUID } from "crypto";
 import z from "zod";
@@ -45,7 +44,7 @@ export const actions: Actions = {
 
 		const existingUser = results.at(0);
 		if (!existingUser) {
-			return setError(form, m.incorrect_login());
+			return setError(form, "Incorrect username or password");
 		}
 
 		const validPassword = await verify(existingUser.passwordHash, password, {
@@ -55,7 +54,7 @@ export const actions: Actions = {
 			parallelism: 1,
 		});
 		if (!validPassword) {
-			return setError(form, m.incorrect_login());
+			return setError(form, "Incorrect username or password");
 		}
 
 		const sessionToken = auth.generateSessionToken();
@@ -91,7 +90,7 @@ export const actions: Actions = {
 
 			await db.insert(table.profile).values({ userId, aboutMe: "" });
 		} catch {
-			return setError(form, m.generic_error(), { status: 500 });
+			return setError(form, "An error has occurred", { status: 500 });
 		}
 
 		return redirect(302, "/");

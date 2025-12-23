@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
@@ -16,7 +15,7 @@ export const load = (event) => {
 			.from(card)
 			.where(and(eq(card.uuid, uuid)));
 		if (cards.length <= 0) {
-			error(404, { message: m.card_not_found() });
+			error(404, { message: "Card not found." });
 		}
 
 		const latest = cards.find((c) => c.isLatestVersion)!;

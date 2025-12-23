@@ -1,13 +1,12 @@
 <script lang="ts">
 	import FileTree from "$lib/components/file-tree.svelte";
-	import { m } from "$lib/paraglide/messages.js";
 	import { HighlightAuto, LineNumbers } from "svelte-highlight";
 
 	let { data } = $props();
 </script>
 
 {#await data.relevantFile}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then fileInfo}
 	<FileTree files={fileInfo.tree?.children} />
 

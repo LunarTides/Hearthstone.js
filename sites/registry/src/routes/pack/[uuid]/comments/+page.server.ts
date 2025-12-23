@@ -16,7 +16,6 @@ export const actions = {
 		const text = formData.get("text");
 
 		if (!text) {
-			// TODO: i18n
 			return fail(422, { message: "Invalid form data." });
 		}
 

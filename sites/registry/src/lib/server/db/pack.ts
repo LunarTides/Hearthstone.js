@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { pack, packLike, user, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
@@ -30,7 +29,7 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 		// To to parse uuid as a version id.
 		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
 		if (!id) {
-			error(404, { message: m.pack_not_found() });
+			error(404, { message: "Pack not found." });
 		}
 
 		packs = await getFullPacks(
@@ -64,7 +63,7 @@ export const APIGetPack = async (user: ClientUser, uuid: string) => {
 	packs = filterApproved(user, packs);
 
 	if (packs.length <= 0) {
-		return { error: { message: m.pack_not_found(), status: 404 } };
+		return { error: { message: "Pack not found.", status: 404 } };
 	}
 
 	const censoredPacks = packs.map((p) => censorPack(p, user));

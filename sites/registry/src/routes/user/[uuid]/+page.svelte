@@ -1,21 +1,20 @@
 <script lang="ts">
 	import PackSmall from "$lib/components/pack-small.svelte";
 	import UserSmall from "$lib/components/user-small.svelte";
-	import { m } from "$lib/paraglide/messages.js";
 	import semver from "semver";
 
 	let { data } = $props();
 </script>
 
 {#await data.currentUser}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then user}
 	<div class="m-2">
 		<UserSmall {user} loggedInUser={data.user} />
 	</div>
 
 	{#await data.packs}
-		<p>{m.tidy_fancy_mule_prosper()}</p>
+		<p>Loading...</p>
 	{:then packs}
 		{#if packs}
 			<div class="m-2 flex flex-col w-fit gap-1">

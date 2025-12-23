@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { m } from "$lib/paraglide/messages.js";
 	import PackBig from "$lib/components/pack-big.svelte";
 
 	let { data, form } = $props();
@@ -8,7 +7,7 @@
 
 <!-- TODO: Deduplicate from `pack/[uuid]/versions/+page.svelte` -->
 {#await data.packs}
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then packs}
 	{#if packs}
 		<PackBig {packs} cards={{ all: data.cards! }} user={data.user} {form} class="rounded-b-none" />

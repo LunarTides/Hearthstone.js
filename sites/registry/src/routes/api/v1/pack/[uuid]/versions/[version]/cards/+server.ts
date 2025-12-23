@@ -1,4 +1,3 @@
-import { m } from "$lib/paraglide/messages.js";
 import { db } from "$lib/server/db/index.js";
 import { card, pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
@@ -17,14 +16,14 @@ export async function GET(event) {
 			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
 	).at(0);
 	if (!version) {
-		return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	if (!version.approved) {
 		// eslint-disable-next-line no-empty
 		if (user && (version.userIds.includes(user.id) || satisfiesRole(user, "Moderator"))) {
 		} else {
-			return json({ message: m.illegal_bog_like_salmon() }, { status: 404 });
+			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 

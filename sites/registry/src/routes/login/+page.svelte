@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { m } from "$lib/paraglide/messages.js";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data } = $props();
@@ -17,7 +16,7 @@
 		{/if}
 
 		<div class="bg-slate-500 flex flex-col gap-1 p-5 rounded-xl">
-			<label for="username" class="text-xl font-bold">{m.neat_wise_falcon_conquer()}</label>
+			<label for="username" class="text-xl font-bold">Username</label>
 			<input
 				name="username"
 				class="rounded-lg"
@@ -29,7 +28,7 @@
 		</div>
 
 		<div class="bg-slate-500 flex flex-col gap-1 p-5 rounded-xl">
-			<label for="password" class="text-xl font-bold">{m.large_teal_lobster_chop()}</label>
+			<label for="password" class="text-xl font-bold">Password</label>
 			<input
 				type="password"
 				name="password"
@@ -45,13 +44,13 @@
 			<button
 				class="w-full text-white px-4 py-2 rounded-lg bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
 			>
-				{m.muddy_fluffy_gibbon_prosper()}
+				Login
 			</button>
 			<button
 				formaction="?/register"
 				class="w-full text-white px-4 py-2 rounded-lg bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
 			>
-				{m.polite_agent_hound_quiz()}
+				Register
 			</button>
 		</div>
 	</form>

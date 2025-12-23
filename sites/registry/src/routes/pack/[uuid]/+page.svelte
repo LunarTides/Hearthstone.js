@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { m } from "$lib/paraglide/messages.js";
 	import PackBig from "$lib/components/pack-big.svelte";
 	import CardSmall from "$lib/components/card-small.svelte";
 	import { resolve } from "$app/paths";
@@ -16,10 +15,10 @@
 
 {#await data.packs}
 	<!-- TODO: Replace with spinner. -->
-	<p>{m.tidy_fancy_mule_prosper()}</p>
+	<p>Loading...</p>
 {:then packs}
 	{#await data.cards}
-		<p>{m.tidy_fancy_mule_prosper()}</p>
+		<p>Loading...</p>
 	{:then cards}
 		<PackBig {packs} cards={{ all: cards }} user={data.user} {form} />
 
@@ -43,7 +42,7 @@
 		{#await data.commentsObject}
 			<h2 class="text-lg font-medium mb-4 text-white">Comments</h2>
 
-			<p>{m.tidy_fancy_mule_prosper()}</p>
+			<p>Loading...</p>
 		{:then commentsObject}
 			<h2 class="text-lg font-medium mb-4 text-white">Comments ({commentsObject.amount})</h2>
 

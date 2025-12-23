@@ -3,8 +3,6 @@
 	import favicon from "$lib/assets/favicon.svg";
 	import { goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
-	import { getLocale, setLocale, locales } from "$lib/paraglide/runtime";
-	import { m } from "$lib/paraglide/messages.js";
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
 
@@ -21,7 +19,7 @@
 </svelte:head>
 
 <nav class="flex items-center p-5 bg-slate-500 text-white gap-2">
-	<a href={resolve("/")} class="font-bold uppercase text-xl">{m.bald_trite_myna_pet()}</a>
+	<a href={resolve("/")} class="font-bold uppercase text-xl">Registry</a>
 	<p class="text-4xl font-thin">|</p>
 
 	<!-- TODO: Use superforms. -->
@@ -35,33 +33,25 @@
 	>
 		<input
 			type="text"
-			placeholder={m.acidic_seemly_marmot_peel()}
+			placeholder="Search..."
 			bind:value={searchQuery}
 			class="text-black rounded-full"
 		/>
 	</form>
 
 	{#if data.user}
-		<a href={resolve("/upload")}>{m.inclusive_quaint_butterfly_push()}</a>
+		<a href={resolve("/upload")}>Upload</a>
 	{/if}
 
 	<span class="flex items-center gap-2 ml-auto">
 		{#if data.user}
 			<!-- TODO: Use superforms. -->
 			<form action="/?/logout" method="post" use:enhance>
-				<button type="submit" class="hover:cursor-pointer">{m.loose_drab_warthog_cut()}</button>
+				<button type="submit" class="hover:cursor-pointer">Logout</button>
 			</form>
 		{:else}
-			<a href={resolve("/login")}>{m.muddy_fluffy_gibbon_prosper()}</a>
+			<a href={resolve("/login")}>Login</a>
 		{/if}
-
-		<select class="text-black rounded-full">
-			{#each locales as locale (locale)}
-				<option onclick={() => setLocale(locale)} selected={getLocale() === locale}>
-					{locale}
-				</option>
-			{/each}
-		</select>
 
 		{#if data.user}
 			<a
