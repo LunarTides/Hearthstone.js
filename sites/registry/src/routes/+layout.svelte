@@ -5,6 +5,7 @@
 	import { resolve } from "$app/paths";
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
+	import { satisfiesRole } from "$lib/user.js";
 
 	let { children, data } = $props();
 
@@ -41,6 +42,10 @@
 
 	{#if data.user}
 		<a href={resolve("/upload")}>Upload</a>
+
+		{#if satisfiesRole(data.user, "Moderator")}
+			<a href={resolve("/dashboard/packs")}>Dashboard</a>
+		{/if}
 	{/if}
 
 	<span class="flex items-center gap-2 ml-auto">

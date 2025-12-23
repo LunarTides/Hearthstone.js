@@ -31,6 +31,7 @@ export const load: PageServerLoad = async (event) => {
 };
 
 export const actions: Actions = {
+	// TODO: Move logic to API.
 	login: async (event) => {
 		const form = await superValidate(event.request, zod4(schema));
 		if (!form.valid) {
