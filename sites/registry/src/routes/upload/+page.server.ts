@@ -1,5 +1,5 @@
 import { m } from "$lib/paraglide/messages";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { resolve } from "$app/paths";
 
 export const actions = {
@@ -15,18 +15,18 @@ export const actions = {
 		}
 
 		const buffer = await file.arrayBuffer();
+		const uuid = file.name.split(".").slice(0, -1).join(".");
 
-		const response = await event.fetch(
-			resolve("/api/v1/pack/upload/[filename]", { filename: file.name }),
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/octet-stream" },
-				body: buffer,
-			},
-		);
-		if (response.status !== 200) {
+		const response = await event.fetch(resolve("/api/v1/pack/upload/[uuid]", { uuid }), {
+			method: "POST",
+			headers: { "Content-Type": "application/octet-stream" },
+			body: buffer,
+		});
+		if (response.status >= 300) {
 			const json = await response.json();
 			return fail(response.status, { message: json.message });
 		}
+
+		redirect(303, resolve("/pack/[uuid]", { uuid }));
 	},
 };

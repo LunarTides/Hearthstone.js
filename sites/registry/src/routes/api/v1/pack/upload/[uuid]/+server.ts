@@ -75,9 +75,9 @@ export async function POST(event) {
 		return json({ message: m.login_required() }, { status: 401 });
 	}
 
-	const filename = event.params.filename;
+	const uuid = event.params.uuid;
 	const fileBytes = await event.request.arrayBuffer();
-	const file = new File([fileBytes], filename);
+	const file = new File([fileBytes], uuid);
 
 	// TODO: Move to settings.
 	if (file.size > 100 * 1024 * 1024) {
@@ -149,9 +149,7 @@ export async function POST(event) {
 	// await seven.unpack(tmpPackPath, tmpDirPath);
 	await seven.cmd(["x", "-snl", "-y", compressedPath, "-o" + tmpPath]);
 
-	const folderName = file.name.split(".").slice(0, -1).join(".");
-	const innerFolderPath = resolve(tmpPath, folderName);
-
+	const innerFolderPath = resolve(tmpPath, uuid);
 	try {
 		const folderStats = await fs.stat(innerFolderPath);
 		if (!folderStats.isDirectory()) {
@@ -184,7 +182,7 @@ export async function POST(event) {
 	const otherVersions = await db
 		.select()
 		.from(pack)
-		.where(or(eq(pack.uuid, folderName), eq(pack.name, metadata.name)));
+		.where(or(eq(pack.uuid, uuid), eq(pack.name, metadata.name)));
 	for (const version of otherVersions) {
 		if (semver.eq(metadata.versions.pack, version.packVersion)) {
 			// TODO: Add ability for the uploader to limit who can edit the pack.
@@ -235,7 +233,7 @@ export async function POST(event) {
 
 	// TODO: Delete pack from db if adding cards goes wrong.
 	const packInDB = await updateDB({
-		uuid: folderName,
+		uuid,
 		userIds: [user.id],
 		metadataVersion: metadata.versions.metadata,
 		gameVersion: metadata.versions.game,
@@ -314,7 +312,7 @@ export async function POST(event) {
 
 	// TODO: Add links.
 
-	const finalPath = `./static/assets/packs/${folderName}/${metadata.versions.pack}`;
+	const finalPath = `./static/assets/packs/${uuid}/${metadata.versions.pack}`;
 	await fs.mkdir(finalPath, { recursive: true });
 
 	await fs.cp(innerFolderPath, finalPath, { recursive: true });
