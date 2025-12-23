@@ -66,30 +66,32 @@
 			{#each commentsObject.comments as comment (comment.id)}
 				<div class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white">
 					<div>
-						{#if deleteConfirm === comment.id}
-							<!-- TODO: Use superforms. -->
-							<form
-								action={resolve("/pack/[uuid]/comments/[commentId]", {
-									uuid: page.params.uuid!,
-									commentId: comment.id,
-								}) + "?/delete"}
-								method="post"
-								use:enhance
-							>
+						{#if comment.authorId === data.user?.id || satisfiesRole(data.user, "Moderator")}
+							{#if deleteConfirm === comment.id}
+								<!-- TODO: Use superforms. -->
+								<form
+									action={resolve("/pack/[uuid]/comments/[commentId]", {
+										uuid: page.params.uuid!,
+										commentId: comment.id,
+									}) + "?/delete"}
+									method="post"
+									use:enhance
+								>
+									<button
+										type="submit"
+										class="float-right m-1 animate-pulse text-red-400 hover:cursor-pointer"
+									>
+										<Trash2 />
+									</button>
+								</form>
+							{:else}
 								<button
-									type="submit"
-									class="float-right m-1 animate-pulse text-red-400 hover:cursor-pointer"
+									class="float-right m-1 hover:cursor-pointer"
+									onclick={() => (deleteConfirm = comment.id)}
 								>
 									<Trash2 />
 								</button>
-							</form>
-						{:else}
-							<button
-								class="float-right m-1 hover:cursor-pointer"
-								onclick={() => (deleteConfirm = comment.id)}
-							>
-								<Trash2 />
-							</button>
+							{/if}
 						{/if}
 
 						<div class="flex gap-2">

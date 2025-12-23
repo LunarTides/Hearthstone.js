@@ -12,7 +12,7 @@ export async function DELETE(event) {
 
 	const uuid = event.params.uuid;
 	const commentId = event.params.commentId;
-	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
+	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
 	if (packs.length <= 0) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
@@ -29,8 +29,18 @@ export async function DELETE(event) {
 		}
 	}
 
-	if (!p.userIds.includes(clientUser.id) && !satisfiesRole(clientUser, "Moderator")) {
-		return json({ message: "You do not have the the necessary privileges to do this." });
+	const c = (await db.select().from(packComment).where(eq(packComment.id, commentId)).limit(1)).at(
+		0,
+	);
+	if (!c) {
+		return json({ message: "No comment found with that id." }, { status: 404 });
+	}
+
+	if (c.authorId !== clientUser.id && !satisfiesRole(clientUser, "Moderator")) {
+		return json(
+			{ message: "You do not have the the necessary privileges to do this." },
+			{ status: 403 },
+		);
 	}
 
 	await db.delete(packComment).where(eq(packComment.id, commentId));

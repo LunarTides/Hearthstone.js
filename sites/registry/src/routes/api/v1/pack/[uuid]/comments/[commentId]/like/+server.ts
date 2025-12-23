@@ -35,7 +35,13 @@ export async function POST(event) {
 	const commentId = event.params.commentId;
 
 	const like = (
-		await db.select().from(packCommentLike).where(eq(packCommentLike.commentId, commentId)).limit(1)
+		await db
+			.select()
+			.from(packCommentLike)
+			.where(
+				and(eq(packCommentLike.commentId, commentId), eq(packCommentLike.userId, clientUser.id)),
+			)
+			.limit(1)
 	).at(0);
 	if (like) {
 		if (like.dislike) {

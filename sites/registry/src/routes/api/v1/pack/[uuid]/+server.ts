@@ -19,7 +19,10 @@ export async function DELETE(event) {
 	}
 
 	if (!version.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
-		return json({ message: "You do not have the the necessary privileges to do this." });
+		return json(
+			{ message: "You do not have the the necessary privileges to do this." },
+			{ status: 403 },
+		);
 	}
 
 	await db.delete(pack).where(eq(pack.uuid, version.uuid));

@@ -66,7 +66,7 @@ export async function POST(event) {
 	}
 
 	const uuid = event.params.uuid;
-	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid)).limit(1);
+	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
 	if (packs.length <= 0) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
