@@ -145,6 +145,7 @@ export const packComment = pgTable("packComment", {
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),
+	heartedById: uuid("hearted_by_id"),
 });
 
 export const packCommentRelations = relations(packComment, ({ many }) => ({
@@ -196,4 +197,5 @@ export type PackCommentWithExtras = PackComment & {
 		hasLiked: boolean;
 		hasDisliked: boolean;
 	};
+	heartedBy: CensoredUser | null;
 };

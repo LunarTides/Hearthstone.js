@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 
 // TODO: Deduplicate.
+// TODO: Split into POST and DELETE for likes and unlikes.
 export async function POST(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {

@@ -1,17 +1,20 @@
 import { packCommentLike, user, type PackCommentWithExtras, packComment } from "$lib/db/schema";
 import { censorUser } from "$lib/user";
 import { asc, eq } from "drizzle-orm";
-import type { PgSelect } from "drizzle-orm/pg-core";
+import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 
 export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 	clientUser: ClientUser | null,
 	query: T,
 ) => {
+	const heartedBy = alias(user, "heartedBy");
+
 	const packComments = await query
 		.orderBy(asc(packComment.creationDate))
 		.fullJoin(packCommentLike, eq(packComment.id, packCommentLike.commentId))
-		.fullJoin(user, eq(packComment.authorId, user.id));
+		.fullJoin(user, eq(packComment.authorId, user.id))
+		.fullJoin(heartedBy, eq(packComment.heartedById, heartedBy.id));
 
 	// Show all comments.
 	// TODO: Deduplicate.
@@ -33,6 +36,7 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 				negative: dislikes.size,
 				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
 			},
+			heartedBy: p.heartedBy ? censorUser(p.heartedBy) : null,
 		};
 	});
 

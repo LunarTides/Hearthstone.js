@@ -5,7 +5,7 @@
 	import Badge from "$lib/components/badge.svelte";
 	import { satisfiesRole } from "$lib/user.js";
 	import { enhance } from "$app/forms";
-	import { ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
+	import { Heart, HeartPlus, ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
 	import { page } from "$app/state";
 
 	let { data, form } = $props();
@@ -142,6 +142,54 @@
 								<p class="font-mono text-lg">{comment.likes.negative}</p>
 							</button>
 						</form>
+
+						{#if data.user && packs.latest.userIds.includes(data.user.id)}
+							{#if comment.heartedBy}
+								<!-- TODO: Use superforms. -->
+								<form
+									action={resolve("/pack/[uuid]/comments/[commentId]", {
+										uuid: packs.latest.uuid,
+										commentId: comment.id,
+									}) + "?/unheart"}
+									method="post"
+									use:enhance
+								>
+									<!-- TODO: Get the form message here. -->
+									<button
+										type="submit"
+										class="flex mt-4 hover:cursor-pointer"
+										title={`Hearted by ${comment.heartedBy.username} <3`}
+									>
+										<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
+										<Heart class="-ml-4.5 mt-1 fill-rose-400" />
+									</button>
+								</form>
+							{:else}
+								<!-- TODO: Use superforms. -->
+								<form
+									action={resolve("/pack/[uuid]/comments/[commentId]", {
+										uuid: packs.latest.uuid,
+										commentId: comment.id,
+									}) + "?/heart"}
+									method="post"
+									use:enhance
+								>
+									<!-- TODO: Get the form message here. -->
+									<button
+										type="submit"
+										class="flex mt-4 hover:cursor-pointer"
+										title="Heart this comment"
+									>
+										<HeartPlus />
+									</button>
+								</form>
+							{/if}
+						{:else if comment.heartedBy}
+							<div class="flex mt-4" title={`Hearted by ${comment.heartedBy.username} <3`}>
+								<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
+								<Heart class="-ml-4.5 mt-1 fill-rose-400" />
+							</div>
+						{/if}
 					</div>
 				</div>
 			{/each}
