@@ -50,6 +50,7 @@
 	</div>
 
 	{#if edit}
+		<!-- TODO: Use superforms. -->
 		<form
 			action={resolve("/user/[uuid]", { uuid: user.id }) + "?/edit"}
 			method="post"

@@ -75,6 +75,7 @@
 		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
 				{#if showDownloadButton && pack.approved}
+					<!-- TODO: Use superforms. -->
 					<form
 						action={resolve("/pack/[uuid]/versions/[version]", {
 							uuid: pack.uuid,
@@ -160,6 +161,7 @@
 								{/if}
 							</button>
 						{:else}
+							<!-- TODO: Use superforms. -->
 							<form
 								action={resolve("/pack/[uuid]/versions/[version]", {
 									uuid: pack.uuid,
@@ -313,6 +315,7 @@
 			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
 			<div class="flex gap-4">
+				<!-- TODO: Use superforms. -->
 				<form
 					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
 					method="post"
@@ -325,6 +328,7 @@
 					</button>
 				</form>
 
+				<!-- TODO: Use superforms. -->
 				<form
 					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
 					method="post"

@@ -47,6 +47,7 @@
 		{:then commentsObject}
 			<h2 class="text-lg font-medium mb-4 text-white">Comments ({commentsObject.amount})</h2>
 
+			<!-- TODO: Use superforms. -->
 			<form
 				action={resolve("/pack/[uuid]/comments", { uuid: page.params.uuid! }) + "?/post"}
 				method="post"
@@ -67,6 +68,7 @@
 				<div class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white">
 					<div>
 						{#if deleteConfirm === comment.id}
+							<!-- TODO: Use superforms. -->
 							<form
 								action={resolve("/pack/[uuid]/comments/[commentId]", {
 									uuid: page.params.uuid!,
@@ -110,6 +112,7 @@
 					<!-- TODO: Get the form message here. -->
 					{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
 					<div class="flex gap-4">
+						<!-- TODO: Use superforms. -->
 						<form
 							action={resolve("/pack/[uuid]/comments/[commentId]", {
 								uuid: packs.latest.uuid,
@@ -125,6 +128,7 @@
 							</button>
 						</form>
 
+						<!-- TODO: Use superforms. -->
 						<form
 							action={resolve("/pack/[uuid]/comments/[commentId]", {
 								uuid: packs.latest.uuid,

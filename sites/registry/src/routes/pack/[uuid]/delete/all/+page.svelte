@@ -31,6 +31,7 @@
 			{/if}
 		</button>
 	{:else}
+		<!-- TODO: Use superforms. -->
 		<form method="post" use:enhance>
 			<button
 				type="submit"

@@ -6,6 +6,7 @@
 	import { getLocale, setLocale, locales } from "$lib/paraglide/runtime";
 	import { m } from "$lib/paraglide/messages.js";
 	import { githubDarkDimmed } from "svelte-highlight/styles";
+	import { enhance } from "$app/forms";
 
 	let { children, data } = $props();
 
@@ -23,6 +24,7 @@
 	<a href={resolve("/")} class="font-bold uppercase text-xl">{m.bald_trite_myna_pet()}</a>
 	<p class="text-4xl font-thin">|</p>
 
+	<!-- TODO: Use superforms. -->
 	<form
 		onsubmit={(event) => {
 			event.preventDefault();
@@ -45,7 +47,8 @@
 
 	<span class="flex items-center gap-2 ml-auto">
 		{#if data.user}
-			<form action="/?/logout" method="post">
+			<!-- TODO: Use superforms. -->
+			<form action="/?/logout" method="post" use:enhance>
 				<button type="submit" class="hover:cursor-pointer">{m.loose_drab_warthog_cut()}</button>
 			</form>
 		{:else}
