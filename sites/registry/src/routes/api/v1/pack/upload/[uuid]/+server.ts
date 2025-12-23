@@ -9,6 +9,7 @@ import { card, pack } from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import semver from "semver";
+import { getCategorySettings } from "$lib/server/db/setting.js";
 
 interface Metadata {
 	versions: {
@@ -78,8 +79,10 @@ export async function POST(event) {
 	const fileBytes = await event.request.arrayBuffer();
 	const file = new File([fileBytes], uuid);
 
-	// TODO: Move to settings.
-	if (file.size > 100 * 1024 * 1024) {
+	const settings = await getCategorySettings({
+		upload: ["maxFileSize", "maxFileAmount", "allowedExtensions", "requireApproval"],
+	});
+	if (file.size > settings.upload.maxFileSize) {
 		return json({ message: "Upload too large." }, { status: 413 });
 	}
 
@@ -106,19 +109,14 @@ export async function POST(event) {
 	await fs.writeFile(compressedPath, bytes);
 
 	const files = await seven.list(compressedPath);
-	// TODO: Move to settings.
-	if (files.length > 5000) {
+	if (files.length > settings.upload.maxFileAmount) {
 		return json({ message: "Too many files in archive." }, { status: 413 });
 	}
 
 	const uncompressedSize = files.map((f) => parseInt(f.size, 10)).reduce((p, c) => p + c, 0);
-	// TODO: Move to settings.
-	if (uncompressedSize > 100 * 1024 * 1024) {
+	if (uncompressedSize > settings.upload.maxFileSize) {
 		return json({ message: "Upload too large." }, { status: 413 });
 	}
-
-	// TODO: Move to settings.
-	const allowedExtensions = [".ts", ".jsonc", ".md"];
 
 	// Prevent path traversal.
 	let hasMeta = false;
@@ -130,7 +128,10 @@ export async function POST(event) {
 		}
 
 		// Allow directories.
-		if (!allowedExtensions.some((ext) => file.name.endsWith(ext)) && /\../.test(file.name)) {
+		if (
+			!settings.upload.allowedExtensions.some((ext: string) => file.name.endsWith(ext)) &&
+			/\../.test(file.name)
+		) {
 			return json({ message: "Archive contains illegal file types." }, { status: 400 });
 		}
 
@@ -195,8 +196,9 @@ export async function POST(event) {
 				error(403, "You do not have permission to edit this pack.");
 			}
 		} else if (semver.gt(metadata.versions.pack, version.packVersion)) {
-			// TODO: Only do this when the pack is approved. If the approval process is disabled, do this here.
-			if (false) {
+			// If the approval process is disabled, do this here.
+			// TODO: Test this.
+			if (!settings.upload.requireApproval) {
 				if (version.isLatestVersion) {
 					await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
 
@@ -225,10 +227,10 @@ export async function POST(event) {
 		}
 	}
 
-	// TODO: Only do this if the approval process is enabled.
-	if (true) {
-		isLatestVersion = false;
-	}
+	// Only do this if the approval process is disabled.
+	// if (!settings.upload.requireApproval) {
+	// 	isLatestVersion = false;
+	// }
 
 	// TODO: Delete pack from db if adding cards goes wrong.
 	const packInDB = await updateDB({
@@ -245,8 +247,7 @@ export async function POST(event) {
 		unpackedSize: uncompressedSize,
 
 		isLatestVersion,
-		// TODO: Add setting for this.
-		approved: false,
+		approved: !settings.upload.requireApproval,
 	});
 
 	// Parse cards.
@@ -299,8 +300,7 @@ export async function POST(event) {
 
 			enchantmentPriority: p("enchantmentPriority"),
 
-			// TODO: Add setting for this.
-			approved: false,
+			approved: !settings.upload.requireApproval,
 			isLatestVersion,
 		};
 

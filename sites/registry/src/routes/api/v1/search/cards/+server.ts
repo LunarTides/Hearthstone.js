@@ -2,6 +2,7 @@ import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import { card, pack } from "$lib/db/schema";
 import { like, and, eq } from "drizzle-orm";
+import { getSetting } from "$lib/server/db/setting.js";
 
 export async function GET(event) {
 	const query = event.url.searchParams.get("q");
@@ -14,6 +15,8 @@ export async function GET(event) {
 		return json({ message: "Please specify a valid page." }, { status: 400 });
 	}
 
+	const pageSize = (await getSetting("api.pageSize")) as number;
+
 	const cards = async () => {
 		const cards = await db
 			.select()
@@ -24,9 +27,8 @@ export async function GET(event) {
 				and(like(card.name, `%${query}%`), eq(pack.approved, true), eq(card.isLatestVersion, true)),
 			)
 			.innerJoin(pack, eq(card.packId, pack.id))
-			// TODO: Add setting for page size.
-			.limit(10)
-			.offset((page - 1) * 10);
+			.limit(pageSize)
+			.offset((page - 1) * pageSize);
 
 		return cards;
 	};

@@ -3,6 +3,7 @@ import { db } from "$lib/server/db";
 import { pack } from "$lib/db/schema";
 import { like, and, eq } from "drizzle-orm";
 import { getFullPacks } from "$lib/server/db/pack";
+import { getSetting } from "$lib/server/db/setting";
 
 export async function GET(event) {
 	const query = event.url.searchParams.get("q");
@@ -20,6 +21,8 @@ export async function GET(event) {
 	// 	setTimeout(resolve, 1000);
 	// });
 
+	const pageSize = (await getSetting("api.pageSize")) as number;
+
 	const packs = await getFullPacks(
 		event.locals.user,
 		db
@@ -28,9 +31,8 @@ export async function GET(event) {
 			// TODO: Ignore caps.
 			// TODO: Make this smarter.
 			.where(and(like(pack.name, `%${query}%`), eq(pack.approved, true)))
-			// TODO: Add setting for page size.
-			.limit(10)
-			.offset((page - 1) * 10)
+			.limit(pageSize)
+			.offset((page - 1) * pageSize)
 			.$dynamic(),
 	);
 

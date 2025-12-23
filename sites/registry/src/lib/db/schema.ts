@@ -1,4 +1,13 @@
-import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	integer,
+	pgEnum,
+	pgTable,
+	text,
+	timestamp,
+	uuid,
+	json,
+} from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
 
@@ -151,6 +160,11 @@ export const packCommentLike = pgTable("packCommentLike", {
 		.notNull()
 		.references(() => user.id),
 	dislike: boolean("dislike").notNull(),
+});
+
+export const setting = pgTable("setting", {
+	key: text("key").primaryKey(),
+	value: json("value"),
 });
 
 export type Session = typeof session.$inferSelect;
