@@ -95,14 +95,25 @@
 						{/if}
 
 						<div class="flex gap-2">
-							<a href={resolve("/user/[uuid]", { uuid: comment.author.id })} class="flex gap-2">
-								<!-- TODO: Add avatar -->
-								<div class="p-4 bg-white rounded-full"></div>
-								<p class="text-lg self-center font-mono">{comment.author.username}</p>
-							</a>
-							{#if satisfiesRole(comment.author, "Moderator")}
-								<Badge class="bg-yellow-300 h-fit self-center text-black">
-									{comment.author.role}
+							{#if comment.author}
+								<a href={resolve("/user/[uuid]", { uuid: comment.author.id })} class="flex gap-2">
+									<!-- TODO: Add avatar -->
+									<div class="p-4 bg-white rounded-full"></div>
+									<p class="text-lg self-center font-mono">{comment.author.username}</p>
+								</a>
+								{#if satisfiesRole(comment.author, "Moderator")}
+									<Badge class="bg-yellow-300 h-fit self-center text-black">
+										{comment.author.role}
+									</Badge>
+								{/if}
+							{:else}
+								<div class="flex gap-2">
+									<!-- TODO: Add avatar -->
+									<div class="p-4 bg-red-400 rounded-full"></div>
+									<p class="text-lg self-center font-mono">(Deleted)</p>
+								</div>	
+								<Badge class="bg-red-400 h-fit self-center text-black">
+									Deleted User
 								</Badge>
 							{/if}
 						</div>

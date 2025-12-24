@@ -35,14 +35,14 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 
 		comments.push({
 			...p.packComment,
-			author: censorUser(p.user!),
+			author: p.user && censorUser(p.user),
 			likes: {
 				positive: likes.size,
 				hasLiked: clientUser ? likes.has(clientUser.id) : false,
 				negative: dislikes.size,
 				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
 			},
-			heartedBy: p.heartedBy ? censorUser(p.heartedBy) : null,
+			heartedBy: p.heartedBy && censorUser(p.heartedBy),
 		});
 	}
 

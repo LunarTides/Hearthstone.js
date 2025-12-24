@@ -59,7 +59,7 @@ export const pack = pgTable("pack", {
 
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean().notNull(),
-	approvedBy: uuid("approved_by").references(() => user.id),
+	approvedBy: uuid("approved_by").references(() => user.id, { onDelete: "set null" }),
 });
 
 export const packRelations = relations(pack, ({ many }) => ({
@@ -139,8 +139,7 @@ export const cardRelations = relations(card, ({ one }) => ({
 export const packComment = pgTable("packComment", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	authorId: uuid("author_id")
-		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
@@ -191,7 +190,7 @@ export type PackWithExtras = Pack & {
 };
 
 export type PackCommentWithExtras = PackComment & {
-	author: CensoredUser;
+	author: CensoredUser | null;
 	likes: {
 		positive: number;
 		negative: number;
