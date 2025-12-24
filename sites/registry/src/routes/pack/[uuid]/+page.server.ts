@@ -21,6 +21,7 @@ const getComments = async (event: ServerLoadEvent, version: CensoredPack) => {
 };
 
 export const load = async (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const packs = await loadGetPack(event.locals.user, event.params.uuid);
 	const version = packs.latest;
 

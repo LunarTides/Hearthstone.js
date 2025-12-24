@@ -1,6 +1,7 @@
-import { profile, user } from "$lib/db/schema";
+import { resolve } from "$app/paths";
+import { notification, profile, user } from "$lib/db/schema";
 import { db } from "$lib/server/db";
-import { censorUser, satisfiesRole } from "$lib/user.js";
+import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
@@ -51,6 +52,25 @@ export async function PUT(event) {
 	// Only allow admins and up to change the role of users.
 	if (satisfiesRole(clientUser, "Admin")) {
 		role = body.role;
+
+		if (role !== u.role) {
+			const a = RoleTable[role];
+			const b = RoleTable[u.role];
+
+			let message;
+
+			if (a < b) {
+				message = `You have been demoted to ${role}!`;
+			} else {
+				message = `You have been promoted to ${role}!`;
+			}
+
+			await db.insert(notification).values({
+				userId: u.id,
+				text: message,
+				route: resolve("/user/[uuid]", { uuid: u.id }),
+			});
+		}
 	}
 
 	// TODO: Check if the username is taken.

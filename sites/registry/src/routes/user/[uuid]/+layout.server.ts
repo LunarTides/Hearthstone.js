@@ -3,6 +3,7 @@ import type { UserAndProfile } from "$lib/user.js";
 import { error } from "@sveltejs/kit";
 
 export const load = (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const uuid = event.params.uuid;
 
 	const getUser = async () => {

@@ -1,9 +1,10 @@
 import { resolve } from "$app/paths";
 import type { FileTree } from "$lib/api/types";
 import { APIGetPack } from "$lib/server/db/pack";
-import { fail } from "assert";
+import { fail } from "@sveltejs/kit";
 
 export const load = async (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const packs = await APIGetPack(event.locals.user, event.params.uuid);
 	if (packs.error) {
 		return fail(packs.error.status, { message: packs.error.message });

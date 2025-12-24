@@ -2,6 +2,7 @@ import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
 export const load = (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const query = event.url.searchParams.get("q");
 	if (!query) {
 		error(400, { message: "Please specify a search query." });

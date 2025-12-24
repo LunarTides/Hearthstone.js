@@ -9,6 +9,7 @@ export const load = (event) => {
 	const user = event.locals.user;
 	const uuid = event.params.uuid;
 
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const getCards = async () => {
 		let cards = await db
 			.select()

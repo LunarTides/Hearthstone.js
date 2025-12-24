@@ -138,8 +138,7 @@ export const cardRelations = relations(card, ({ one }) => ({
 
 export const packComment = pgTable("packComment", {
 	id: uuid("id").primaryKey().defaultRandom(),
-	authorId: uuid("author_id")
-		.references(() => user.id, { onDelete: "set null" }),
+	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
@@ -162,6 +161,17 @@ export const packCommentLike = pgTable("packCommentLike", {
 	dislike: boolean("dislike").notNull(),
 });
 
+export const notification = pgTable("notification", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	userId: uuid("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	date: timestamp("date").notNull().defaultNow(),
+
+	text: text("text").notNull(),
+	route: text("route"),
+});
+
 export const setting = pgTable("setting", {
 	key: text("key").primaryKey(),
 	value: json("value"),
@@ -177,6 +187,9 @@ export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
 
 export type PackComment = typeof packComment.$inferSelect;
+
+export type Notification = typeof notification.$inferSelect;
+export type Setting = typeof setting.$inferSelect;
 
 export type PackWithExtras = Pack & {
 	totalDownloadCount: number;

@@ -26,6 +26,7 @@ const getRelevantFile = (files: FileTree[], path: string | undefined): FileTree 
 };
 
 export const load = async (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const response = await event.fetch(
 		resolve("/api/v1/pack/[uuid]/versions/[version]/files/[...path]", {
 			uuid: event.params.uuid,

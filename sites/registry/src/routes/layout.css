@@ -3,4 +3,5 @@
 
 body {
 	background-color: slategray;
+	/* @apply bg-slate-400; */
 }

@@ -5,6 +5,7 @@ import { eq, and, count } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import { CommentRequest } from "$lib/api/types";
+import { getSetting } from "$lib/server/db/setting";
 
 export async function GET(event) {
 	// TODO: Extract page logic.
@@ -36,14 +37,16 @@ export async function GET(event) {
 		}
 	}
 
+	const pageSize = (await getSetting("api.pageSize")) as number;
+
 	const comments = await getFullPackComment(
 		clientUser,
 		db
 			.select()
 			.from(packComment)
 			.where(eq(packComment.packId, p.uuid))
-			.limit(10)
-			.offset((page - 1) * 10)
+			.limit(pageSize)
+			.offset((page - 1) * pageSize)
 			.$dynamic(),
 	);
 

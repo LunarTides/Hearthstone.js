@@ -8,6 +8,7 @@ import { and, arrayContains } from "drizzle-orm";
 
 // TODO: Deduplicate from `pack/[uuid]/+layout.server.ts`
 export const load = async (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
 	const user = event.locals.user;
 	const uuid = event.params.uuid;
 

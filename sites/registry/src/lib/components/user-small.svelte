@@ -22,7 +22,7 @@
 <div class="flex gap-1">
 	<div class="p-3 bg-slate-400 text-white w-fit rounded-lg">
 		<div class="flex float-right gap-1">
-			{#if user.id === loggedInUser?.id || satisfiesRole(user, "Admin")}
+			{#if user.id === loggedInUser?.id || satisfiesRole(loggedInUser, "Admin")}
 				<button onclick={() => (edit = true)} class="self-center hover:cursor-pointer">
 					<SquarePen />
 				</button>

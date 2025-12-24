@@ -6,6 +6,7 @@
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user.js";
+	import { Bell, BellDot } from "lucide-svelte";
 
 	let { children, data } = $props();
 
@@ -59,6 +60,18 @@
 		{/if}
 
 		{#if data.user}
+			<a href={resolve("/notifications")}>
+				{#await data.notifications}
+					<Bell />
+				{:then notifications}
+					{#if notifications.length <= 0}
+						<Bell />
+					{:else}
+						<BellDot class="fill-blue-500" />
+					{/if}
+				{/await}
+			</a>
+
 			<a
 				href={resolve("/user/[uuid]", { uuid: data.user.id })}
 				class="p-5 bg-white rounded-full"

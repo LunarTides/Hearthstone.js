@@ -64,7 +64,10 @@
 
 			<!-- TODO: The comments constantely reorder each other. -->
 			{#each commentsObject.comments as comment (comment.id)}
-				<div class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white">
+				<div
+					id={`c-${comment.id}`}
+					class="flex flex-col gap-2 m-1 p-2 bg-slate-500 rounded-xl text-white target:outline"
+				>
 					<div>
 						{#if comment.authorId === data.user?.id || satisfiesRole(data.user, "Moderator")}
 							{#if deleteConfirm === comment.id}
@@ -101,6 +104,9 @@
 									<div class="p-4 bg-white rounded-full"></div>
 									<p class="text-lg self-center font-mono">{comment.author.username}</p>
 								</a>
+								{#if comment.authorId === data.user?.id}
+									<Badge class="bg-blue-300 h-fit self-center text-black">You</Badge>
+								{/if}
 								{#if satisfiesRole(comment.author, "Moderator")}
 									<Badge class="bg-yellow-300 h-fit self-center text-black">
 										{comment.author.role}
@@ -111,10 +117,8 @@
 									<!-- TODO: Add avatar -->
 									<div class="p-4 bg-red-400 rounded-full"></div>
 									<p class="text-lg self-center font-mono">(Deleted)</p>
-								</div>	
-								<Badge class="bg-red-400 h-fit self-center text-black">
-									Deleted User
-								</Badge>
+								</div>
+								<Badge class="bg-red-400 h-fit self-center text-black">Deleted User</Badge>
 							{/if}
 						</div>
 					</div>

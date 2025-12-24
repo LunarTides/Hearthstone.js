@@ -2,7 +2,7 @@ import { exclude } from "$lib";
 import type { Profile, Role, User } from "./db/schema";
 import type { ClientUser } from "./server/auth";
 
-const table: Record<Role, number> = {
+export const RoleTable: Record<Role, number> = {
 	User: 0,
 	Moderator: 1,
 	Admin: 2,
@@ -13,7 +13,7 @@ export function satisfiesRole(user: ClientUser, role: Role) {
 		return false;
 	}
 
-	return table[user.role] >= table[role];
+	return RoleTable[user.role] >= RoleTable[role];
 }
 
 export type CensoredUser = ReturnType<typeof censorUser>;

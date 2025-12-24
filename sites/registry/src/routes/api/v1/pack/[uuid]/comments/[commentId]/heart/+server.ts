@@ -1,10 +1,11 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packComment } from "$lib/db/schema.js";
+import { notification, pack, packComment } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
+import { resolve } from "$app/paths";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const uuid = event.params.uuid;
@@ -60,6 +61,14 @@ export async function POST(event) {
 			heartedById: clientUser.id,
 		})
 		.where(eq(packComment.id, c.id));
+
+	if (c.authorId && c.authorId !== clientUser.id) {
+		await db.insert(notification).values({
+			userId: c.authorId,
+			text: "Your comment has been hearted!",
+			route: resolve("/pack/[uuid]", { uuid: c.packId }) + `#c-${c.id}`,
+		});
+	}
 
 	return json({}, { status: 200 });
 }
