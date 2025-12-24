@@ -1,9 +1,10 @@
 import { db } from "$lib/server/db/index.js";
-import { card, pack } from "$lib/db/schema.js";
+import { card, notification, pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
+import { resolve } from "$app/paths";
 
 export async function POST(event) {
 	const user = event.locals.user;
@@ -43,13 +44,28 @@ export async function POST(event) {
 		.from(pack)
 		.where(eq(pack.uuid, uuid));
 
-	const newLatestPack = packs
+	let newLatestPack = packs
 		.filter((p) => p.approved)
 		.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
 		.at(0);
 	if (newLatestPack?.id === version.id) {
 		await db.update(pack).set({ isLatestVersion: true }).where(eq(pack.id, newLatestPack.id));
 		await db.update(card).set({ isLatestVersion: true }).where(eq(card.packId, newLatestPack.id));
+	}
+
+	if (!newLatestPack) {
+		newLatestPack = version;
+	}
+
+	for (const userId of version.userIds) {
+		await db.insert(notification).values({
+			userId,
+			text: `Your pack (${version.name} v${newLatestPack.packVersion}) has been approved!`,
+			route: resolve("/pack/[uuid]/versions/[version]", {
+				uuid: version.uuid,
+				version: newLatestPack.packVersion,
+			}),
+		});
 	}
 
 	return json({}, { status: 200 });
