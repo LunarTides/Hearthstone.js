@@ -166,6 +166,7 @@ export const packCommentLike = pgTable("packCommentLike", {
 export const setting = pgTable("setting", {
 	key: text("key").primaryKey(),
 	value: json("value"),
+	description: text("description"),
 });
 
 export type Session = typeof session.$inferSelect;

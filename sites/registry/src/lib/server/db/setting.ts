@@ -48,10 +48,31 @@ export async function getCategorySettings<C extends string, K extends string>(
 export async function generateDefaultSettings() {
 	// TODO: Move default values to a settings.ts file.
 	await db.insert(setting).values([
-		{ key: "upload.maxFileSize", value: 100 * 1024 * 1024 },
-		{ key: "upload.maxFileAmount", value: 5000 },
-		{ key: "upload.allowedExtensions", value: [".ts", ".jsonc", ".md"] },
-		{ key: "upload.requireApproval", value: true },
-		{ key: "api.pageSize", value: 10 },
+		{
+			key: "upload.maxFileSize",
+			value: 100 * 1024 * 1024,
+			description: "The maximum size of packs allowed in uploads.",
+		},
+		{
+			key: "upload.maxFileAmount",
+			value: 5000,
+			description: "The maximum amount of files allowed in packs.",
+		},
+		{
+			key: "upload.allowedExtensions",
+			value: [".ts", ".jsonc", ".md"],
+			description:
+				"The file extensions allowed in packs. If a pack contains a file with with a disallowed extension, the upload will be rejected.",
+		},
+		{
+			key: "upload.requireApproval",
+			value: true,
+			description: "If packs require an approval by a Moderator to be listed.",
+		},
+		{
+			key: "api.pageSize",
+			value: 10,
+			description: "The amount of items per page the API returns.",
+		},
 	]);
 }

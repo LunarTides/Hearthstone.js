@@ -3,6 +3,7 @@ import { pack } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
+import fs from "fs/promises";
 
 // TODO: Deduplicate.
 export async function DELETE(event) {
@@ -26,6 +27,7 @@ export async function DELETE(event) {
 	}
 
 	await db.delete(pack).where(eq(pack.uuid, version.uuid));
+	await fs.rm(`./static/assets/packs/${version.uuid}`, { force: true, recursive: true });
 
 	return json({}, { status: 200 });
 }

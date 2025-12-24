@@ -5,11 +5,12 @@ import { fileTypeFromBuffer } from "file-type";
 import { join, resolve } from "path";
 import { tmpdir } from "os";
 import { db } from "$lib/server/db/index.js";
-import { card, pack } from "$lib/db/schema.js";
+import { card, pack, type Pack } from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
+import { censorPack } from "$lib/pack.js";
 
 interface Metadata {
 	versions: {
@@ -177,7 +178,7 @@ export async function POST(event) {
 	let isLatestVersion = true;
 	// let update = false;
 	let updateDB = async (values: InferInsertModel<typeof pack>) =>
-		db.insert(pack).values(values).returning({ id: pack.id });
+		db.insert(pack).values(values).returning();
 
 	const otherVersions = await db
 		.select()
@@ -189,7 +190,7 @@ export async function POST(event) {
 			if (version.userIds.includes(user.id)) {
 				// Override.
 				updateDB = async (values: InferInsertModel<typeof pack>) =>
-					db.update(pack).set(values).where(eq(pack.id, version.id)).returning({ id: pack.id });
+					db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
 				// update = true;
 			} else {
 				// No permission.
@@ -233,7 +234,7 @@ export async function POST(event) {
 	// }
 
 	// TODO: Delete pack from db if adding cards goes wrong.
-	const packInDB = await updateDB({
+	const packInDB: Pack[] = await updateDB({
 		uuid,
 		userIds: [user.id],
 		metadataVersion: metadata.versions.metadata,
@@ -314,10 +315,10 @@ export async function POST(event) {
 	const finalPath = `./static/assets/packs/${uuid}/${metadata.versions.pack}`;
 	await fs.mkdir(finalPath, { recursive: true });
 
-	await fs.cp(innerFolderPath, finalPath, { recursive: true });
 	await fs.rm(compressedPath);
+	await fs.cp(innerFolderPath, finalPath, { recursive: true });
 	await fs.rm(innerFolderPath, { recursive: true, force: true });
 
 	// TODO: Include link.
-	return json({}, { status: 201 });
+	return json({ pack: censorPack(packInDB[0], user) }, { status: 201 });
 }

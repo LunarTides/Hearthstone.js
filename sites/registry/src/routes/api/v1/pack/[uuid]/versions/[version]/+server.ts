@@ -4,6 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
+import fs from "fs/promises";
 
 export async function DELETE(event) {
 	const user = event.locals.user;
@@ -32,6 +33,10 @@ export async function DELETE(event) {
 	}
 
 	await db.delete(pack).where(eq(pack.id, version.id));
+	await fs.rm(`./static/assets/packs/${version.uuid}/${version.packVersion}`, {
+		force: true,
+		recursive: true,
+	});
 
 	const packs = await db
 		.select({ id: pack.id, packVersion: pack.packVersion })
