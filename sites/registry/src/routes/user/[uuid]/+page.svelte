@@ -1,6 +1,6 @@
 <script lang="ts">
 	import PackSmall from "$lib/components/pack-small.svelte";
-	import UserSmall from "$lib/components/user-small.svelte";
+	import UserBig from "$lib/components/user-big.svelte";
 	import semver from "semver";
 
 	let { data } = $props();
@@ -10,7 +10,7 @@
 	<p>Loading...</p>
 {:then user}
 	<div class="m-2">
-		<UserSmall {user} loggedInUser={data.user} />
+		<UserBig {user} loggedInUser={data.user} />
 	</div>
 
 	{#await data.packs}

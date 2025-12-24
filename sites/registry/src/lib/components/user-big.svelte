@@ -20,7 +20,7 @@
 </script>
 
 <div class="flex gap-1">
-	<div class="p-3 bg-slate-400 text-white w-fit rounded-lg">
+	<div class="p-3 bg-slate-400 text-white w-full rounded-lg">
 		<div class="flex float-right gap-1">
 			{#if user.id === loggedInUser?.id || satisfiesRole(loggedInUser, "Admin")}
 				<button onclick={() => (edit = true)} class="self-center hover:cursor-pointer">
@@ -29,7 +29,7 @@
 			{/if}
 		</div>
 
-		<div>
+		<div class="flex flex-col gap-1">
 			<div class="flex gap-2">
 				<div class="p-6 bg-white rounded-full"></div>
 				<p class="text-xl self-center">{user.username}</p>
@@ -43,9 +43,11 @@
 
 			<pre>{user.profile.aboutMe}</pre>
 
-			{#if satisfiesRole(user, "Moderator")}
-				<Badge class="bg-blue-200 text-slate-600">{user.role}</Badge>
-			{/if}
+			<div class="mt-auto">
+				{#if satisfiesRole(user, "Moderator")}
+					<Badge class="bg-blue-200 text-slate-600">{user.role}</Badge>
+				{/if}
+			</div>
 		</div>
 	</div>
 
