@@ -1,6 +1,5 @@
 import { Rarity } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
-import stripAnsi from "strip-ansi";
 
 export const colorFunctions = {
 	/**
@@ -96,7 +95,7 @@ export const colorFunctions = {
 	 * Removes ansi color codes from a string.
 	 */
 	stripColors(text: string): string {
-		return stripAnsi(text);
+		return Bun.stripANSI(text);
 	},
 
 	/**
