@@ -25,7 +25,7 @@ export const session = pgTable("session", {
 	id: text("id").primaryKey(),
 	userId: uuid("user_id")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
 		mode: "date",
@@ -36,7 +36,7 @@ export const profile = pgTable("profile", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	userId: uuid("user_id")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 	aboutMe: text("about_me").notNull(),
 	pronouns: text("pronouns"),
 });
