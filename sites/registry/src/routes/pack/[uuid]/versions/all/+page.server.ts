@@ -4,7 +4,7 @@ import { fail, redirect } from "@sveltejs/kit";
 
 export const actions = {
 	// TODO: Deduplicate.
-	default: async (event) => {
+	delete: async (event) => {
 		const packs = await APIGetPack(event.locals.user, event.params.uuid);
 		if (packs.error) {
 			return fail(packs.error.status, { message: packs.error.message });

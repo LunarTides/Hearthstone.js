@@ -14,7 +14,6 @@
 		user,
 		hideButtons = false,
 		showDownloadButton = false,
-		deleteButtonBuiltin = false,
 		individual = false,
 		form = undefined,
 		class: className,
@@ -30,7 +29,6 @@
 		user: ClientUser;
 		hideButtons?: boolean;
 		showDownloadButton?: boolean;
-		deleteButtonBuiltin?: boolean;
 		individual?: boolean;
 		form?: any;
 		class?: string;
@@ -40,9 +38,6 @@
 
 	const canEditPack = $derived(pack.userIds.includes(user?.id || "0"));
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
-
-	let deleteConfirm = $state(0);
-	let approveConfirm = $state(0);
 
 	// https://stackoverflow.com/a/18650828
 	function formatBytes(bytes: number, decimals = 2) {
@@ -128,68 +123,6 @@
 				{/if}
 			</div>
 
-			{#if canEditPack || canModeratePack}
-				<div
-					class="flex bg-red-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black"
-				>
-					<a
-						href={resolve("/pack/[uuid]/edit", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-l-full hover:bg-red-200 active:bg-red-400"
-					>
-						Edit
-					</a>
-					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]/edit", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full hover:bg-red-200 active:bg-red-400"
-					>
-						(Reserved)
-					</a>
-					<div class="border-l ml-auto h-auto"></div>
-					{#if deleteButtonBuiltin}
-						{#if deleteConfirm < 2}
-							<button
-								class="px-5 py-3 w-full rounded-r-full hover:cursor-pointer hover:bg-red-200 active:bg-red-400"
-								onclick={() => {
-									deleteConfirm++;
-								}}
-							>
-								{#if deleteConfirm === 0}
-									Delete Version
-								{:else if deleteConfirm === 1}
-									Really delete?
-								{/if}
-							</button>
-						{:else}
-							<!-- TODO: Use superforms. -->
-							<form
-								action={resolve("/pack/[uuid]/versions/[version]", {
-									uuid: pack.uuid,
-									version: pack.packVersion,
-								}) + "?/delete"}
-								method="post"
-								use:enhance
-							>
-								{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-								<button
-									type="submit"
-									class="px-5 py-3 w-full rounded-r-full bg-red-500 hover:cursor-pointer hover:bg-red-400 active:bg-red-600"
-								>
-									<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
-								</button>
-							</form>
-						{/if}
-					{:else}
-						<a
-							href={resolve("/pack/[uuid]/delete", { uuid: pack.uuid })}
-							class="px-5 py-3 w-full rounded-r-full hover:bg-red-200 active:bg-red-400"
-						>
-							Delete Pack
-						</a>
-					{/if}
-				</div>
-			{/if}
-
 			{#if canModeratePack}
 				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
 					{#if pack.approved}
@@ -201,32 +134,10 @@
 							(Un)list
 						</a>
 					{:else}
-						<!-- Approve -->
-						{#if approveConfirm === 0}
-							<button
-								class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-								onclick={() => approveConfirm++}
-							>
-								Approve
-							</button>
-						{:else}
-							<form
-								action={resolve("/pack/[uuid]/versions/[version]", {
-									uuid: pack.uuid,
-									version: pack.packVersion,
-								}) + "?/approve"}
-								method="post"
-								use:enhance
-							>
-								{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-								<button
-									type="submit"
-									class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-								>
-									Are you sure?
-								</button>
-							</form>
-						{/if}
+						<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
+							<!-- TODO: Change depending on if it's listed or not. -->
+							(Un)list
+						</p>
 					{/if}
 					<div class="border-l ml-auto h-auto"></div>
 					<a
