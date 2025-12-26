@@ -16,6 +16,8 @@
 		loggedInUser: ClientUser;
 	} = $props();
 
+	const avatarPromise = import(`$lib/../../static/avatars/${user.id}.avif`).catch(() => {});
+
 	let edit = $state(false);
 </script>
 
@@ -31,7 +33,11 @@
 
 		<div class="flex flex-col gap-1">
 			<div class="flex gap-2">
-				<div class="p-6 bg-white rounded-full"></div>
+				{#await avatarPromise}
+					<div class="p-6 bg-white rounded-full"></div>
+				{:then avatar}
+					<img class="size-12" src={avatar.default.split("/static")[1]} />
+				{/await}
 				<p class="text-xl self-center">{user.username}</p>
 
 				{#if user.profile.pronouns}
@@ -63,9 +69,14 @@
 				<div class="flex flex-col gap-1">
 					<div class="flex gap-1">
 						<!-- TODO: Add changing avatars. -->
-						<div class="p-4 bg-white rounded-full not-hover:text-white">
-							<SquarePen />
-						</div>
+						{#await avatarPromise}
+							<div class="p-4 bg-white rounded-full not-hover:text-white">
+								<SquarePen />
+							</div>
+						{:then avatar}
+							<img class="size-14" src={avatar.default.split("/static")[1]} />
+							<SquarePen class="fixed text-white not-hover:opacity-0 size-10 m-2" />
+						{/await}
 						<input
 							class="text-xl bg-slate-200 rounded-full self-center"
 							placeholder="Username"

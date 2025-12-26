@@ -177,6 +177,7 @@
 										class="flex mt-4 hover:cursor-pointer"
 										title={`Hearted by ${comment.heartedBy.username} <3`}
 									>
+										<!-- TODO: Add avatar. -->
 										<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
 										<Heart class="-ml-4.5 mt-1 fill-rose-400" />
 									</button>
@@ -203,6 +204,7 @@
 							{/if}
 						{:else if comment.heartedBy}
 							<div class="flex mt-4" title={`Hearted by ${comment.heartedBy.username} <3`}>
+								<!-- TODO: Add avatar. -->
 								<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
 								<Heart class="-ml-4.5 mt-1 fill-rose-400" />
 							</div>

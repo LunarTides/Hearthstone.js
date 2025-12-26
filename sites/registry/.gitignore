@@ -3,6 +3,7 @@ pgdata
 1
 
 static/assets/**
+static/avatars
 
 # Output
 .output

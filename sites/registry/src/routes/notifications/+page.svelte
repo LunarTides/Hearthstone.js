@@ -10,30 +10,29 @@
 	<form action="?/clear" method="post" class="flex" use:enhance>
 		<button
 			type="submit"
-			class="m-1 py-1 w-full bg-indigo-400 rounded-full hover:cursor-pointer hover:bg-indigo-300 active:bg-indigo-500"
+			class="m-1 py-2 w-full bg-indigo-400 text-white rounded-full hover:cursor-pointer hover:bg-indigo-300 active:bg-indigo-500"
 			>Clear</button
 		>
 	</form>
 
 	<div class="flex flex-col gap-1">
 		{#each data.notifications as notification (notification.id)}
-			<div class="flex p-3 bg-blue-300 rounded-xl outline">
+			<div class="flex p-3 bg-blue-300 rounded-xl outline max-h-12">
 				{#if notification.route}
 					<a href={notification.route}>{notification.text}</a>
 				{:else}
 					<p>{notification.text}</p>
 				{/if}
 
-				<div class="flex ml-auto">
+				<div class="flex ml-auto gap-2">
 					<p>{new Date(notification.date).toUTCString()}</p>
 					<form
-						class="self-center"
 						action={resolve("/notifications/[uuid]", { uuid: notification.id }) + "?/delete"}
 						method="post"
 						use:enhance
 					>
 						<button type="submit" class="hover:cursor-pointer">
-							<X class="size-4 text-gray-500" />
+							<X class="size-6 text-gray-500" />
 						</button>
 					</form>
 				</div>
