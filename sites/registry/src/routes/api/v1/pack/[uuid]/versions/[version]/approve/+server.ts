@@ -32,7 +32,10 @@ export async function POST(event) {
 		);
 	}
 
-	await db.update(pack).set({ approved: true, approvedBy: user.id }).where(eq(pack.id, version.id));
+	await db
+		.update(pack)
+		.set({ approved: true, approvedBy: user.id, approvedAt: new Date() })
+		.where(eq(pack.id, version.id));
 	await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.uuid, version.uuid));
 	await db
 		.update(card)

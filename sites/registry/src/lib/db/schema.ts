@@ -58,8 +58,11 @@ export const pack = pgTable("pack", {
 	unpackedSize: integer("unpacked_size").notNull(),
 
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
-	approved: boolean().notNull(),
+	approved: boolean("approved").notNull(),
 	approvedBy: uuid("approved_by").references(() => user.id, { onDelete: "set null" }),
+	approvedAt: timestamp("approved_at"),
+
+	createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 export const packRelations = relations(pack, ({ many }) => ({
