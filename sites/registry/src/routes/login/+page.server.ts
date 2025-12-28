@@ -4,6 +4,8 @@ import { superValidate, setError } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { loginSchema } from "$lib/api/schemas";
 import { resolve } from "$app/paths";
+import { string } from "zod";
+import { requestAPI } from "$lib/api/helper";
 
 export const load: PageServerLoad = async (event) => {
 	// If the user is already logged in, take them to the home menu.
@@ -22,13 +24,12 @@ const request = async (event: RequestEvent, url: string) => {
 		return fail(400, { form });
 	}
 
-	const response = await event.fetch(url, {
+	const response = await requestAPI<{}>(event, url, {
 		method: "POST",
 		body: JSON.stringify(form.data),
 	});
-	if (response.status >= 300) {
-		const json = await response.json();
-		return setError(form, json.message, { status: response.status });
+	if (response.error) {
+		return setError(form, response.error.message, { status: response.error.status });
 	}
 
 	return redirect(302, resolve("/"));

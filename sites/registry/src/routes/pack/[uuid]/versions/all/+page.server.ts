@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail, redirect } from "@sveltejs/kit";
 
@@ -12,7 +13,8 @@ export const actions = {
 
 		const pack = packs.latest;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]", {
 				uuid: pack.uuid,
 			}),
@@ -20,9 +22,8 @@ export const actions = {
 				method: "DELETE",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
 		redirect(302, "/");

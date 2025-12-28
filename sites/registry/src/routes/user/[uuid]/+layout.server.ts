@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { UserAndProfile } from "$lib/user.js";
 import { error } from "@sveltejs/kit";
 
@@ -7,13 +8,15 @@ export const load = (event) => {
 	const uuid = event.params.uuid;
 
 	const getUser = async () => {
-		const usersResponse = await event.fetch(resolve(`/api/v1/user/[uuid]`, { uuid }));
-		const u = await usersResponse.json();
-		if (usersResponse.status !== 200) {
-			error(usersResponse.status, { message: u.message });
+		const response = await requestAPI<UserAndProfile>(
+			event,
+			resolve(`/api/v1/user/[uuid]`, { uuid }),
+		);
+		if (response.error) {
+			error(response.error.status, { message: response.error.message });
 		}
 
-		return u as UserAndProfile;
+		return response.json;
 	};
 
 	return {

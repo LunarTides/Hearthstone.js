@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import { APIGetPack } from "$lib/server/db/pack.js";
 import { fail, redirect } from "@sveltejs/kit";
 
@@ -14,7 +15,8 @@ export const actions = {
 			return fail(404, { message: "Pack not found." });
 		}
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]/download", {
 				uuid: version.uuid,
 				version: version.packVersion,
@@ -23,12 +25,11 @@ export const actions = {
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
-		const filename = response.headers
+		const filename = response.raw.headers
 			.get("Content-Disposition")
 			?.split('filename="')[1]
 			.split('"')[0];
@@ -36,7 +37,7 @@ export const actions = {
 			return fail(400, { message: "Invalid filename found." });
 		}
 
-		const blob = await response.blob();
+		const blob = await response.raw.blob();
 		return { file: await blob.bytes(), filename };
 	},
 	// TODO: Deduplicate.
@@ -51,7 +52,8 @@ export const actions = {
 			return fail(404, { message: "Pack not found." });
 		}
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]", {
 				uuid: version.uuid,
 				version: version.packVersion,
@@ -60,9 +62,8 @@ export const actions = {
 				method: "DELETE",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.
@@ -80,7 +81,8 @@ export const actions = {
 			return fail(404, { message: "Pack not found." });
 		}
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]/approve", {
 				uuid: version.uuid,
 				version: version.packVersion,
@@ -89,9 +91,8 @@ export const actions = {
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.

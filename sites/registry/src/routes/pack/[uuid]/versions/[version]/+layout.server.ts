@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { FileTree } from "$lib/api/types";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "@sveltejs/kit";
@@ -15,17 +16,16 @@ export const load = async (event) => {
 		return fail(404, { message: "Pack not found." });
 	}
 
-	const response = await event.fetch(
+	const response = await requestAPI<FileTree[]>(
+		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/files", {
 			uuid: version.uuid,
 			version: version.packVersion,
 		}),
 	);
-
-	const json = await response.json();
-	if (response.status !== 200) {
-		return fail(response.status, { message: json.message });
+	if (response.error) {
+		return fail(response.error.status, { message: response.error.message });
 	}
 
-	return { files: json as FileTree[] };
+	return { files: response.json };
 };

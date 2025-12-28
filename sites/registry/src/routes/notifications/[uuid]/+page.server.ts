@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const actions = {
@@ -6,7 +7,8 @@ export const actions = {
 	delete: async (event) => {
 		const uuid = event.params.uuid;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/notifications/[uuid]", {
 				uuid,
 			}),
@@ -14,9 +16,8 @@ export const actions = {
 				method: "DELETE",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
 		redirect(302, resolve("/notifications"));

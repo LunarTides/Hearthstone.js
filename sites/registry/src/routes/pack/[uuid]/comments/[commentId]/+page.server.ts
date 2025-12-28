@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "@sveltejs/kit";
 
@@ -12,15 +13,15 @@ export const actions = {
 		const version = packs.latest;
 		const commentId = event.params.commentId;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/like", { uuid: version.uuid, commentId }),
 			{
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 	dislike: async (event) => {
@@ -32,7 +33,8 @@ export const actions = {
 		const version = packs.latest;
 		const commentId = event.params.commentId;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/dislike", {
 				uuid: version.uuid,
 				commentId,
@@ -41,9 +43,8 @@ export const actions = {
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 	heart: async (event) => {
@@ -55,15 +56,15 @@ export const actions = {
 		const version = packs.latest;
 		const commentId = event.params.commentId;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/heart", { uuid: version.uuid, commentId }),
 			{
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 	unheart: async (event) => {
@@ -75,7 +76,8 @@ export const actions = {
 		const version = packs.latest;
 		const commentId = event.params.commentId;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/heart", {
 				uuid: version.uuid,
 				commentId,
@@ -84,9 +86,8 @@ export const actions = {
 				method: "DELETE",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 	// TODO: Deduplicate.
@@ -99,7 +100,8 @@ export const actions = {
 		const version = packs.latest;
 		const commentId = event.params.commentId;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]", {
 				uuid: version.uuid,
 				commentId,
@@ -108,9 +110,8 @@ export const actions = {
 				method: "DELETE",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 };

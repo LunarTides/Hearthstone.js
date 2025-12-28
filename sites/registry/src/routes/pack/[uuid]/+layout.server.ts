@@ -1,23 +1,23 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { Card } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack.js";
 import { loadGetPack } from "$lib/server/db/pack";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 
 const getCards = async (event: ServerLoadEvent, version: CensoredPack) => {
-	const response = await event.fetch(
+	const response = await requestAPI<Card[]>(
+		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/cards", {
 			uuid: version.uuid,
 			version: version.packVersion,
 		}),
 	);
-
-	const json = await response.json();
-	if (response.status !== 200) {
-		return error(response.status, { message: json.message });
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
 	}
 
-	return json as Card[];
+	return response.json;
 };
 
 export const load = async (event) => {

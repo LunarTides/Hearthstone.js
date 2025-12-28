@@ -1,28 +1,29 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { Notification } from "$lib/db/schema";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const response = await event.fetch(resolve("/api/v1/notifications"));
-
-	const json = await response.json();
-	if (response.status !== 200) {
-		return fail(response.status, { message: json.message });
+	const response = await requestAPI<{ notifications: Notification[] }>(
+		event,
+		resolve("/api/v1/notifications"),
+	);
+	if (response.error) {
+		return fail(response.error.status, { message: response.error.message });
 	}
 
-	return { notifications: json.notifications as Notification[] };
+	return { notifications: response.json.notifications };
 };
 
 export const actions = {
 	// TODO: Deduplicate.
 	clear: async (event) => {
-		const response = await event.fetch(resolve("/api/v1/notifications/clear"), {
+		const response = await requestAPI(event, resolve("/api/v1/notifications/clear"), {
 			method: "POST",
 		});
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 
 		redirect(302, resolve("/notifications"));

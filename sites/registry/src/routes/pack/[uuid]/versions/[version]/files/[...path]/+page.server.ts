@@ -1,9 +1,13 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { File, FileTree } from "$lib/api/types";
 import { error } from "@sveltejs/kit";
 
-const getRelevantFile = (files: FileTree[], path: string | undefined): FileTree | undefined => {
-	if (!path) {
+const getRelevantFile = (
+	files: FileTree[] | undefined,
+	path: string | undefined,
+): FileTree | undefined => {
+	if (!files || !path) {
 		return;
 	}
 
@@ -27,17 +31,16 @@ const getRelevantFile = (files: FileTree[], path: string | undefined): FileTree 
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const response = await event.fetch(
+	const response = await requestAPI<File>(
+		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/files/[...path]", {
 			uuid: event.params.uuid,
 			version: event.params.version,
 			path: event.params.path,
 		}),
 	);
-
-	const json = await response.json();
-	if (response.status !== 200) {
-		return error(response.status, { message: json.message });
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
 	}
 
 	const parent = await event.parent();
@@ -45,7 +48,7 @@ export const load = async (event) => {
 	return {
 		relevantFile: {
 			tree: getRelevantFile(parent.files, event.params.path),
-			file: json as File,
+			file: response.json,
 		},
 	};
 };

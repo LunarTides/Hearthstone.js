@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import { pack, type Card } from "$lib/db/schema.js";
 import { db } from "$lib/server/db/index.js";
 import { getFullPacks } from "$lib/server/db/pack";
@@ -40,21 +41,20 @@ export const load = async (event) => {
 		});
 	}
 
-	const response = await event.fetch(
+	const response = await requestAPI<Card[]>(
+		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/cards", {
 			uuid: version.uuid,
 			version: version.packVersion,
 		}),
 	);
-
-	const json = await response.json();
-	if (response.status !== 200) {
-		return error(response.status, { message: json.message });
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
 	}
 
 	return {
 		packs: packsToReturn,
-		cards: json as Card[],
+		cards: response.json,
 	};
 };
 
@@ -72,7 +72,8 @@ export const actions = {
 		}
 
 		const formData = await event.request.formData();
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/user/[uuid]", {
 				uuid,
 			}),
@@ -86,9 +87,8 @@ export const actions = {
 				}),
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 };

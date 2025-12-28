@@ -1,4 +1,5 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { PackCommentWithExtras } from "$lib/db/schema";
 import type { CensoredPack } from "$lib/pack.js";
 import { APIGetPack, loadGetPack } from "$lib/server/db/pack.js";
@@ -6,18 +7,18 @@ import { error, fail, type ServerLoadEvent } from "@sveltejs/kit";
 
 const getComments = async (event: ServerLoadEvent, version: CensoredPack) => {
 	// return error(400, { message: "hi" });
-	const response = await event.fetch(
+	const response = await requestAPI<PackCommentWithExtras[]>(
+		event,
 		resolve("/api/v1/pack/[uuid]/comments", { uuid: version.uuid }),
 	);
 
-	const json = await response.json();
-	if (response.status !== 200) {
-		return error(response.status, { message: json.message });
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
 	}
 
-	const amount = parseInt(response.headers.get("X-Comment-Amount")!, 10);
+	const amount = parseInt(response.raw.headers.get("X-Comment-Amount")!, 10);
 
-	return { comments: json as PackCommentWithExtras[], amount };
+	return { comments: response.json, amount };
 };
 
 export const load = async (event) => {
@@ -41,15 +42,15 @@ export const actions = {
 
 		const version = packs.latest;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/like", { uuid: version.uuid }),
 			{
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 	// TODO: Deduplicate.
@@ -61,15 +62,15 @@ export const actions = {
 
 		const version = packs.latest;
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/dislike", { uuid: version.uuid }),
 			{
 				method: "POST",
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 };

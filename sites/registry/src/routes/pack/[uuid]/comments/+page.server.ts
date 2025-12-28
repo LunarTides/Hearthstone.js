@@ -2,6 +2,7 @@ import { resolve } from "$app/paths";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "@sveltejs/kit";
 import { CommentRequest } from "$lib/api/types";
+import { requestAPI } from "$lib/api/helper.js";
 
 export const actions = {
 	post: async (event) => {
@@ -21,16 +22,16 @@ export const actions = {
 
 		const data: CommentRequest = { text: text.valueOf().toString() };
 
-		const response = await event.fetch(
+		const response = await requestAPI(
+			event,
 			resolve("/api/v1/pack/[uuid]/comments", { uuid: version.uuid }),
 			{
 				method: "POST",
 				body: JSON.stringify({ ...data }),
 			},
 		);
-		if (response.status !== 200) {
-			const json = await response.json();
-			return fail(response.status, { message: json.message });
+		if (response.error) {
+			return fail(response.error.status, { message: response.error.message });
 		}
 	},
 };
