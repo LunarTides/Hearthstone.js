@@ -2,8 +2,6 @@ services:
   registry-db:
     image: postgres
     restart: always
-    ports:
-      - 5432:5432
     env_file:
       - .env
     environment:
@@ -22,7 +20,5 @@ services:
       - NODE_ENV=production
       - PORT=3002
       - ORIGIN=${DOMAIN}
-    ports:
-      - 3002:3002
     depends_on:
       - registry-db

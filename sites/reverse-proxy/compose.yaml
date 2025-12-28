@@ -5,10 +5,11 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
       - "80:80"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     networks:
       - registry_default
+      - docs_default
 networks:
   registry_default:
+    external: true
+  docs_default:
     external: true
