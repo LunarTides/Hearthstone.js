@@ -8,7 +8,7 @@ import { resolve } from "$app/paths";
 export const load: PageServerLoad = async (event) => {
 	// If the user is already logged in, take them to the home menu.
 	if (event.locals.user) {
-		return redirect(302, "/");
+		return redirect(302, resolve("/"));
 	}
 
 	const form = await superValidate(zod4(loginSchema));
@@ -31,7 +31,7 @@ const request = async (event: RequestEvent, url: string) => {
 		return setError(form, json.message, { status: response.status });
 	}
 
-	return redirect(302, "/");
+	return redirect(302, resolve("/"));
 };
 
 export const actions: Actions = {

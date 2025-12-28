@@ -32,7 +32,7 @@
 			event.preventDefault();
 
 			// eslint-disable-next-line svelte/no-navigation-without-resolve
-			goto(`/search?q=${searchQuery}`);
+			goto(resolve("/search") + `?q=${searchQuery}`);
 		}}
 	>
 		<input
@@ -54,7 +54,7 @@
 	<span class="flex items-center gap-2 ml-auto">
 		{#if data.user}
 			<!-- TODO: Use superforms. -->
-			<form action="/?/logout" method="post" use:enhance>
+			<form action={resolve("/") + "?/logout"} method="post" use:enhance>
 				<button type="submit" class="hover:cursor-pointer">Logout</button>
 			</form>
 		{:else}

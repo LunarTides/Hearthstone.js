@@ -1,0 +1,14 @@
+services:
+  reverse-proxy:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - registry_default
+networks:
+  registry_default:
+    external: true

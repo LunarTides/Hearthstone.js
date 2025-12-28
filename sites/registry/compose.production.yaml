@@ -1,5 +1,5 @@
 services:
-  db:
+  registry-db:
     image: postgres
     restart: always
     ports:
@@ -12,7 +12,7 @@ services:
       POSTGRES_DB: ${DATABASE_DB}
     volumes:
       - ./pgdata_prod:/var/lib/postgresql
-  frontend:
+  registry-frontend:
     build:
       context: ./
       dockerfile: frontend.dockerfile
@@ -20,8 +20,9 @@ services:
       - .env
     environment:
       - NODE_ENV=production
-      - ORIGIN=${DOMAIN}:${PORT}
+      - PORT=3002
+      - ORIGIN=${DOMAIN}
     ports:
-      - ${PORT}:${PORT}
+      - 3002:3002
     depends_on:
-      - db
+      - registry-db
