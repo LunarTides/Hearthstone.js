@@ -15,8 +15,9 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"lint": "prettier --check '!./pgdata' . && eslint .",
-		"format": "prettier --write '!./pgdata' ."
+		"prod": "docker compose -f ./compose.production.yaml up",
+		"lint": "prettier --check '!./pgdata_{dev,prod}' . && eslint .",
+		"format": "prettier --write '!./pgdata_{dev,prod}' ."
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
@@ -24,6 +25,7 @@
 		"@oslojs/crypto": "^1.0.1",
 		"@oslojs/encoding": "^1.1.0",
 		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/adapter-node": "^5.4.0",
 		"@sveltejs/kit": "^2.48.5",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/forms": "^0.5.10",

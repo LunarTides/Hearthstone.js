@@ -78,7 +78,7 @@
 				{#await avatarPromise}
 					<div class="p-5 bg-white rounded-full"></div>
 				{:then avatar}
-					<img class="size-10" src={avatar.default.split("/static")[1]} />
+					<img alt="Avatar" class="size-10" src={avatar.default.split("/static")[1]} />
 				{/await}
 			</a>
 		{/if}

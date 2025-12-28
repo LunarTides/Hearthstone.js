@@ -36,7 +36,7 @@
 				{#await avatarPromise}
 					<div class="p-6 bg-white rounded-full"></div>
 				{:then avatar}
-					<img class="size-12" src={avatar.default.split("/static")[1]} />
+					<img alt="Avatar" class="size-12" src={avatar.default.split("/static")[1]} />
 				{/await}
 				<p class="text-xl self-center">{user.username}</p>
 
@@ -74,7 +74,7 @@
 								<SquarePen />
 							</div>
 						{:then avatar}
-							<img class="size-14" src={avatar.default.split("/static")[1]} />
+							<img alt="Avatar" class="size-14" src={avatar.default.split("/static")[1]} />
 							<SquarePen class="fixed text-white not-hover:opacity-0 size-10 m-2" />
 						{/await}
 						<input
