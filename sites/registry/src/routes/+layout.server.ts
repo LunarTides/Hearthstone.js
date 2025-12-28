@@ -1,16 +1,19 @@
 import { resolve } from "$app/paths";
+import { requestAPI } from "$lib/api/helper.js";
 import type { Notification } from "$lib/db/schema";
 
 export const load = async (event) => {
 	const user = event.locals.user;
 
-	const notifications = event.fetch(resolve("/api/v1/notifications")).then(async (response) => {
-		const json = await response.json();
-		if (response.status !== 200) {
+	const notifications = requestAPI<{ notifications: Notification[] }>(
+		event,
+		resolve("/api/v1/notifications"),
+	).then(async (response) => {
+		if (response.error) {
 			return [];
 		}
 
-		return json.notifications as Notification[];
+		return response.json.notifications;
 	});
 
 	return { user, notifications };
