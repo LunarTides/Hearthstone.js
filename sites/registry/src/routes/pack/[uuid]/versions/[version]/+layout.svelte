@@ -21,7 +21,7 @@
 
 	$effect(() => {
 		(async () => {
-			const ps = await data.packs!;
+			const ps = await data.packs;
 			const found = ps.all.find((v) => v.packVersion === page.params.version);
 			if (!found) {
 				// TODO: Error handling.

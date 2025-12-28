@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack } from "$lib/db/schema.js";
+import { pack, packComment, packLike } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -26,6 +26,8 @@ export async function DELETE(event) {
 		);
 	}
 
+	await db.delete(packComment).where(eq(packComment.packId, version.uuid));
+	await db.delete(packLike).where(eq(packLike.packId, version.uuid));
 	await db.delete(pack).where(eq(pack.uuid, version.uuid));
 	await fs.rm(`./static/assets/packs/${version.uuid}`, { force: true, recursive: true });
 

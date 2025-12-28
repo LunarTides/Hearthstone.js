@@ -48,7 +48,10 @@
 
 			<div class="flex gap-1 not-empty:mt-1">
 				{#if !pack.approved}
-					<Badge class="bg-yellow-300 text-slate-600">Waiting for approval</Badge>
+					<Badge
+						class="bg-yellow-300 text-slate-600"
+						title="This pack is waiting to be approved by a Moderator.">Waiting for approval</Badge
+					>
 				{/if}
 			</div>
 		</div>
