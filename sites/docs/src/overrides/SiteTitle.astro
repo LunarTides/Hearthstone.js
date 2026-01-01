@@ -1,0 +1,37 @@
+---
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+---
+
+<Default><slot /></Default>
+
+<div>
+  <!-- TODO: This doesn't quite work in production. -->
+  <a href="/guides/introduction">Docs</a>
+  <a href="/blog">Blog</a>
+  <a href="/registry">Registry</a>
+</div>
+
+<style>
+  div {
+    border-inline-start: 1px solid var(--sl-color-gray-5);
+    margin-inline-start: 1rem;
+    padding-inline-start: 1rem;
+    display: flex;
+    gap: 16px;
+  }
+
+  @media (min-width: 50rem) {
+    div {
+      align-items: center;
+    }
+  }
+
+  a {
+    color: white;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--sl-color-text-accent);
+  }
+</style>
