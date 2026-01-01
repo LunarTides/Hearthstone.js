@@ -5,7 +5,7 @@
 	let { children, data } = $props();
 </script>
 
-<nav class="flex items-center p-5 bg-slate-600 text-white gap-2">
+<nav class="flex items-center my-1 rounded-md p-5 bg-header text-white gap-2">
 	<a href={resolve("/dashboard/packs")} class="font-bold uppercase text-xl">Dashboard</a>
 	<p class="text-4xl font-thin">|</p>
 

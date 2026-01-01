@@ -12,4 +12,4 @@
 	} = $props();
 </script>
 
-<p class={`p-1 px-2 rounded-full text-sm w-fit ${className}`} {title}>{@render children()}</p>
+<p class={`p-1 px-2 rounded-md text-sm w-fit ${className}`} {title}>{@render children()}</p>

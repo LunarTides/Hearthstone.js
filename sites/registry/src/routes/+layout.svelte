@@ -22,7 +22,7 @@
 	{@html githubDarkDimmed}
 </svelte:head>
 
-<nav class="flex items-center p-5 bg-slate-500 text-white gap-2">
+<nav class="flex items-center p-3 text-white gap-2" style="background-color: var(--color-header);">
 	<a href={resolve("/")} class="font-bold uppercase text-xl">Registry</a>
 	<p class="text-4xl font-thin">|</p>
 
@@ -39,7 +39,7 @@
 			type="text"
 			placeholder="Search..."
 			bind:value={searchQuery}
-			class="text-black rounded-full"
+			class="rounded-md bg-background"
 		/>
 	</form>
 

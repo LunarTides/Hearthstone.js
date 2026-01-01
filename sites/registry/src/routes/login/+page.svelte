@@ -6,7 +6,7 @@
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 </script>
 
-<div class="fixed inset-0 w-fit h-fit m-auto">
+<div class="fixed inset-0 w-fit h-fit m-auto flex gap-1">
 	<form method="post" action="?/login" class="flex flex-col gap-1 w-lg text-center" use:enhance>
 		{#if $message}<h3>{$message}</h3>{/if}
 		{#if $errors._errors}
@@ -15,11 +15,11 @@
 			{/each}
 		{/if}
 
-		<div class="bg-slate-500 flex flex-col gap-1 p-5 rounded-xl">
+		<div class="bg-header flex flex-col gap-1 p-5 rounded-xl">
 			<label for="username" class="text-xl font-bold">Username</label>
 			<input
 				name="username"
-				class="rounded-lg"
+				class="rounded-lg bg-background"
 				aria-invalid={$errors.username ? "true" : undefined}
 				bind:value={$form.username}
 				{...$constraints.username}
@@ -27,12 +27,12 @@
 			{#if $errors.username}<span class="text-red-500">{$errors.username}</span>{/if}
 		</div>
 
-		<div class="bg-slate-500 flex flex-col gap-1 p-5 rounded-xl">
+		<div class="bg-header flex flex-col gap-1 p-5 rounded-xl">
 			<label for="password" class="text-xl font-bold">Password</label>
 			<input
 				type="password"
 				name="password"
-				class="rounded-lg"
+				class="rounded-lg bg-background"
 				aria-invalid={$errors.password ? "true" : undefined}
 				bind:value={$form.password}
 				{...$constraints.password}
@@ -41,17 +41,8 @@
 		</div>
 
 		<div class="flex gap-1 text-lg">
-			<button
-				class="w-full text-white px-4 py-2 rounded-lg bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
-			>
-				Login
-			</button>
-			<button
-				formaction="?/register"
-				class="w-full text-white px-4 py-2 rounded-lg bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
-			>
-				Register
-			</button>
+			<button class="custom-button w-full px-4 py-2"> Login </button>
+			<button formaction="?/register" class="custom-button w-full px-4 py-2"> Register </button>
 		</div>
 	</form>
 </div>

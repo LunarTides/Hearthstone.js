@@ -17,7 +17,7 @@
 		<p>Loading...</p>
 	{:then packs}
 		{#if packs}
-			<div class="m-2 flex flex-col w-fit gap-1">
+			<div class="flex flex-col w-fit gap-1">
 				{#each packs.toSorted((a, b) => {
 					const ap = a.relevantPacks.at(0);
 					if (!ap) {
@@ -32,12 +32,12 @@
 					return ap.name.localeCompare(bp.name);
 				}) as versions (versions.uuid)}
 					{#if versions.relevantPacks.length > 0}
-						<div class="flex flex-col p-5 bg-slate-700 rounded-xl gap-1">
+						<div class="flex flex-col p-5 rounded-xl gap-1">
 							<p class="m-2 mb-0 text-3xl text-white font-bold">
 								{versions.relevantPacks.at(0)?.name ?? ""}
 							</p>
 							<hr class="border mb-1" />
-							<div class="flex bg-slate-700 rounded-xl gap-1">
+							<div class="flex bg-background rounded-xl gap-1">
 								<!-- Latest version -->
 								<PackSmall
 									pack={versions.relevantPacks.toSorted((a, b) =>

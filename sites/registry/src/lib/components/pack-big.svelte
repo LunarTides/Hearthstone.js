@@ -65,7 +65,7 @@
 </script>
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
-<div class={`rounded-xl rounded-t-none p-7 bg-cover bg-slate-600 text-white ${className ?? ""}`}>
+<div class={`rounded-xl rounded-t-none p-7 bg-cover text-white ${className ?? ""}`}>
 	{#if !hideButtons}
 		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
@@ -234,7 +234,7 @@
 				>
 					<!-- TODO: These are glitchy on the card page. -->
 					<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
-						<ThumbsUp class={pack.likes.hasLiked ? "fill-green-400" : ""} />
+						<ThumbsUp class={pack.likes.hasLiked ? "fill-green-500" : ""} />
 						<p class="font-mono text-lg">{pack.likes.positive}</p>
 					</button>
 				</form>
@@ -257,7 +257,7 @@
 		<div class="flex gap-1 not-empty:mt-2">
 			{#if !pack.approved}
 				<Badge
-					class="bg-yellow-300 text-slate-600"
+					class="bg-yellow-400 text-black"
 					title="This pack is waiting to be approved by a Moderator.">Waiting for approval</Badge
 				>
 			{/if}

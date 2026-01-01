@@ -24,24 +24,18 @@
 		</thead>
 		<tbody>
 			{#each settings as setting, i (i)}
-				<tr>
-					<td
-						><input
-							bind:value={setting.key}
-							class="bg-inherit drop-shadow-slate-600 drop-shadow-md border-0 font-mono p-1 w-60"
-						/></td
-					>
-					<td
-						><input
-							bind:value={setting.description}
-							class="bg-inherit drop-shadow-slate-600 drop-shadow-md border-0 p-1 w-5xl"
-						/></td
-					>
+				<tr class="alternating-children">
+					<td>
+						<input bind:value={setting.key} class="bg-inherit border-0 font-mono p-1 w-60" />
+					</td>
+					<td>
+						<input bind:value={setting.description} class="bg-inherit border-0 p-1 w-5xl" />
+					</td>
 					<td>
 						{#if typeof setting.value === "boolean"}
 							<select
 								id={`value-${i}`}
-								class="rounded-md w-full"
+								class="rounded-md bg-background w-full"
 								onchange={(event) => {
 									const v = event.currentTarget.value;
 									setting.value = v === "true";
@@ -62,7 +56,7 @@
 							<input
 								type="number"
 								id={`value-${i}`}
-								class="rounded-md"
+								class="rounded-md bg-background"
 								defaultValue={setting.value}
 								oninput={(event) => {
 									setting.value = parseInt(event.currentTarget.value, 10) || "";
@@ -75,7 +69,7 @@
 						{:else}
 							<input
 								id={`value-${i}`}
-								class="rounded-md"
+								class="rounded-md bg-background"
 								defaultValue={setting.value === "" ? "" : JSON.stringify(setting.value)}
 								oninput={(event) => {
 									const v = event.currentTarget.value;
@@ -119,16 +113,13 @@
 
 	<form action="?/save" method="post" use:enhance>
 		<input type="hidden" name="settings" value={JSON.stringify(settings)} />
-		<button
-			type="submit"
-			class="flex gap-1 w-full py-2 justify-center mt-4 text-white bg-indigo-400 hover:cursor-pointer hover:bg-indigo-300 active:bg-indigo-500"
-		>
+		<button type="submit" class="flex gap-1 w-full py-2 justify-center mt-4 custom-button">
 			<Cog />
 			Save
 		</button>
 	</form>
 
-	<div class="p-2 bg-slate-500 mt-4 rounded-xl">
+	<div class="p-2 bg-header mt-4 rounded-md">
 		<p class="font-bold text-2xl">Raw</p>
 		<pre>{JSON.stringify(settings, null, 4)}</pre>
 	</div>

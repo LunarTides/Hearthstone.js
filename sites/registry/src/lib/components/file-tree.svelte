@@ -11,15 +11,15 @@
 	} = $props();
 </script>
 
-<table class="text-yellow-100 w-full">
+<table class="w-full">
 	<tbody>
 		{#if page.params.path}
 			<!-- Add ".." -->
-			<tr class="flex gap-1 bg-slate-500 p-2">
-				<th>
+			<tr class="flex gap-1 bg-background p-2">
+				<th class="text-yellow-100">
 					<Folder />
 				</th>
-				<td class="text-white">
+				<td>
 					<a
 						href={resolve("/pack/[uuid]/versions/[version]/files/[...path]", {
 							uuid: page.params.uuid!,
@@ -40,15 +40,15 @@
 
 			return a.type === "directory" ? -1 : 1;
 		}) as file (file.path)}
-			<tr class="flex gap-1 odd:bg-slate-500 even:bg-slate-400 p-2">
-				<th>
+			<tr class="flex gap-1 p-2 alternating-children">
+				<th class="text-yellow-100">
 					{#if file.type === "directory"}
 						<Folder />
 					{:else if file.type === "file"}
 						<File />
 					{/if}
 				</th>
-				<td class="text-white">
+				<td>
 					<a
 						href={resolve("/pack/[uuid]/versions/[version]/files/[...path]", {
 							uuid: page.params.uuid!,
