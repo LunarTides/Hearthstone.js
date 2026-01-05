@@ -1,0 +1,39 @@
+import { db } from "$lib/server/db/index.js";
+import { card } from "$lib/db/schema.js";
+import { error } from "@sveltejs/kit";
+import { eq, and } from "drizzle-orm";
+import { loadGetPack } from "$lib/server/db/pack.js";
+import { satisfiesRole } from "$lib/user.js";
+
+export const load = (event) => {
+	const user = event.locals.user;
+	const uuid = event.params.uuid;
+
+	// TODO: Stream like in `routes/+layout.server.ts`.
+	const getCards = async () => {
+		let cards = await db
+			.select()
+			.from(card)
+			.where(and(eq(card.uuid, uuid)));
+		if (cards.length <= 0) {
+			error(404, { message: "Card not found." });
+		}
+
+		const latest = cards.find((c) => c.isLatestVersion)!;
+		const packs = await loadGetPack(user, cards[0].packId);
+
+		if (!user || (!packs.latest.userIds.includes(user.id) && !satisfiesRole(user, "Moderator"))) {
+			cards = cards.filter((c) => c.approved);
+		}
+
+		return {
+			packs,
+			latest: latest,
+			all: cards,
+		};
+	};
+
+	return {
+		cards: getCards(),
+	};
+};

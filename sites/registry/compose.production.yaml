@@ -1,0 +1,24 @@
+services:
+  registry-db:
+    image: postgres
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_DB}
+    volumes:
+      - ./pgdata_prod:/var/lib/postgresql
+  registry-frontend:
+    build:
+      context: ./
+      dockerfile: frontend.dockerfile
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3002
+      - ORIGIN=${DOMAIN}
+    depends_on:
+      - registry-db

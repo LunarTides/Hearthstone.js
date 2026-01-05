@@ -1,0 +1,17 @@
+*ockerfile
+.dockerignore
+.git
+.gitignore
+.gitattributes
+README.md
+.npmrc
+.prettierrc
+.eslintrc.cjs
+.graphqlrc
+.editorconfig
+.svelte-kit
+.vscode
+pgdata*
+node_modules
+build
+package
