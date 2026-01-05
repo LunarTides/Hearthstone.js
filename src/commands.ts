@@ -525,39 +525,11 @@ export const commands: CommandList = {
 					newValue.push(await doValue(value, player, shouldHide));
 				}
 
-				if (key === Event.ChangeLocation) {
-					console.log();
-				}
-
-				let entry = game
-					.translate(game.config.advanced.readableHistory[key] ?? "")
-					.replace("{plr}", player.getName());
-				if (entry) {
-					const encode = (a: string) => {
-						return a
-							?.replaceAll("{", "__HS_LEFT_CURLY_BRACKET__")
-							.replaceAll("}", "__HS_RIGHT_CURLY_BRACKET__");
-					};
-					const decode = (a: string) => {
-						return a
-							?.replaceAll("__HS_LEFT_CURLY_BRACKET__", "{")
-							.replaceAll("__HS_RIGHT_CURLY_BRACKET__", "}");
-					};
-
-					for (const match of entry.matchAll(/\{(\d+)\}/g)) {
-						if (!Array.isArray(value)) {
-							entry = entry.replaceAll(match[0], encode(newValue?.toString()));
-						}
-
-						const index = parseInt(match[1], 10);
-						entry = entry.replaceAll(
-							match[0],
-							encode(newValue[index]?.toString()),
-						);
-					}
-
-					entry = decode(entry);
-				} else {
+				let entry = await game.config.advanced.readableHistory[key]?.(
+					player,
+					value,
+				);
+				if (!entry) {
 					entry = `${key}: ${newValue?.join(", ")}`;
 				}
 

@@ -1,4 +1,10 @@
-import { Ability, Event, type GameConfig } from "@Game/types.ts";
+import {
+	Ability,
+	Alignment,
+	Event,
+	type GameConfig,
+	TargetType,
+} from "@Game/types.ts";
 
 export const config: GameConfig = {
 	general: {
@@ -347,47 +353,118 @@ export const config: GameConfig = {
 			Event.AddCardToDeck,
 		],
 
+		/**
+		 * For each event here, it will show the return value of the function in the history command.
+		 */
+		// TODO: When this is complete, most of the history command functionality can be revised.
+		// TODO: This doesn't account for hidden cards.
 		readableHistory: {
-			[Event.FatalDamage]: "{plr} was dealt fatal damage",
-			[Event.EndTurn]: "{plr} ended their turn",
-			[Event.StartTurn]: "{plr} started their turn",
-			[Event.HealthRestored]: "{plr} restored <b>{0}</b> health",
-			[Event.UnspentMana]:
-				"{plr} ended their turn with <b>{0}</b> unspent mana",
-			[Event.GainOverload]: "{plr} gained <b>{0}</b> overload",
-			[Event.GainHeroAttack]: "{plr} gained <b>{0}</b> attack",
-			[Event.TakeDamage]: "{plr} took <b>{0}</b> damage",
-			[Event.PlayCard]: "{plr} played {0}",
-			[Event.PlayCardUnsafe]: "{plr} is trying to play a {0}",
-			[Event.SummonCard]: "{plr} summoned a {0}",
-			[Event.DestroyCard]: "{0} was destroyed",
-			[Event.DamageCard]: "{0} was dealt <b>{1}</b> damage",
-			[Event.SilenceCard]: "{0} was silenced",
-			[Event.DiscardCard]: "{0} was discarded",
-			[Event.CancelCard]: "{0}'s <b>{1}</b> was cancelled",
-			[Event.TradeCard]: "{0} was traded",
-			[Event.ForgeCard]: "{0} was forged",
-			[Event.FreezeCard]: "{0} was frozen",
-			[Event.CreateCard]: "{0} was created",
-			[Event.RevealCard]: "{0} was revealed",
-			[Event.Titan]: "{0}'s titan ability ({1}) was triggered",
-			[Event.AddCardToDeck]: "{0} was added to {plr}'s deck",
-			[Event.AddCardToHand]: "{0} was added to {plr}'s hand",
-			[Event.DrawCard]: "{plr} drew a {0}",
-			[Event.ChangeLocation]: "{0}'s location was changed to <b>{1}</b>",
-			// NOTE: {0} is the old hero, {1} is the new hero.
-			[Event.ChangeHero]: "{plr}'s hero has become {1}",
-			[Event.SpellDealsDamage]: "{0} dealt <b>{1}<b> damage",
-			[Event.Attack]: "{0} attacked {1} [Flags: {2}]",
-			[Event.HeroPower]: "{plr} used their hero power",
-			[Event.TargetSelectionStarts]:
-				"{plr} started selecting a target. [Prompt: {0}, Host: {1}, Flags: {2}]",
-			[Event.TargetSelected]: "{plr} selected a {1} [Host: {0}]",
-			// [Event.CardEvent]: "",
-			// [Event.Dummy]: "",
-			// [Event.Eval]: "",
-			// [Event.Input]: "",
-			// [Event.GameLoop]: "",
+			[Event.FatalDamage]: async (plr, value) =>
+				`${plr.getName()} was dealt fatal damage`,
+
+			[Event.EndTurn]: async (plr, value) =>
+				`${plr.getName()} ended their turn`,
+
+			[Event.StartTurn]: async (plr, value) =>
+				`${plr.getName()} started their turn`,
+
+			[Event.HealthRestored]: async (plr, value) =>
+				`${plr.getName()} restored <b>${value}</b> health`,
+
+			[Event.UnspentMana]: async (plr, value) =>
+				`${plr.getName()} ended their turn with <b>${value}</b> unspent mana`,
+
+			[Event.GainOverload]: async (plr, value) =>
+				`${plr.getName()} gained <b>${value}</b> overload`,
+
+			[Event.GainHeroAttack]: async (plr, value) =>
+				`${plr.getName()} gained <b>${value}</b> attack`,
+
+			[Event.TakeDamage]: async (plr, value) =>
+				`${plr.getName()} took <b>${value}</b> damage`,
+
+			[Event.PlayCard]: async (plr, value) =>
+				`${plr.getName()} played ${await value.readable()}`,
+
+			[Event.PlayCardUnsafe]: async (plr, value) =>
+				`${plr.getName()} is trying to play a ${await value.readable()}`,
+
+			[Event.SummonCard]: async (plr, value) =>
+				`${plr.getName()} summoned a ${await value.readable()}`,
+
+			[Event.DestroyCard]: async (plr, value) =>
+				`${await value.readable()} was destroyed`,
+
+			[Event.DamageCard]: async (plr, value) =>
+				`${await value[0].readable()} was dealt <b>${value[1]}</b> damage`,
+
+			[Event.SilenceCard]: async (plr, value) =>
+				`${await value.readable()} was silenced`,
+
+			[Event.DiscardCard]: async (plr, value) =>
+				`${await value.readable()} was discarded`,
+
+			[Event.CancelCard]: async (plr, value) =>
+				`${await value[0].readable()}'s <b>${value[1]}</b> was cancelled`,
+
+			[Event.TradeCard]: async (plr, value) =>
+				`${await value.readable()} was traded`,
+
+			[Event.ForgeCard]: async (plr, value) =>
+				`${await value.readable()} was forged`,
+
+			[Event.FreezeCard]: async (plr, value) =>
+				`${await value.readable()} was frozen`,
+
+			[Event.CreateCard]: async (plr, value) =>
+				`${await value.readable()} was created`,
+
+			[Event.RevealCard]: async (plr, value) =>
+				`${await value[0].readable()} was revealed due to ${value[1]}`,
+
+			[Event.Titan]: async (plr, value) =>
+				`${await value[0].readable()}'s titan ability (${await value[1].readable()}) was triggered`,
+
+			[Event.AddCardToDeck]: async (plr, value) =>
+				`${await value.readable()} was added to ${plr.getName()}'s deck`,
+
+			[Event.AddCardToHand]: async (plr, value) =>
+				`${await value.readable()} was added to ${plr.getName()}'s hand`,
+
+			[Event.DrawCard]: async (plr, value) =>
+				`${plr.getName()} drew ${await value.readable()}`,
+
+			[Event.ChangeLocation]: async (plr, value) =>
+				`${await value[0].readable()}'s location was changed to <b>${value[1]}</b>`,
+
+			// NOTE: value[0] is the old hero, value[1] is the new hero.
+			[Event.ChangeHero]: async (plr, value) =>
+				`${plr.getName()}'s hero has become ${await value[1].readable()}`,
+
+			[Event.SpellDealsDamage]: async (plr, value) =>
+				`${await value[0].readable()} dealt <b>${value[1]}<b> damage`,
+
+			[Event.Attack]: async (plr, value) =>
+				`${await value[0].readable()} attacked ${await value[1].readable()}`,
+
+			[Event.HeroPower]: async (plr, value) =>
+				`${plr.getName()} used their hero power`,
+
+			[Event.TargetSelectionStarts]: async (plr, value) =>
+				`${plr.getName()} started selecting a target. [Prompt: "${value[0]}", Host: ${(await value[1]?.readable()) ?? "Game"}, Type: ${value[2].targetType ? TargetType[value[2].targetType] : "All"}, Alignment: ${value[2].alignment ? Alignment[value[2].alignment] : "All"}]`,
+
+			[Event.TargetSelected]: async (plr, value) =>
+				`${plr.getName()} selected ${await value[1].readable()} [Host: ${(await value[0]?.readable()) ?? "Game"}]`,
+
+			// [Event.CardEvent]: async (plr, value) => ``,
+
+			// [Event.Dummy]: async (plr, value) => ``,
+
+			// [Event.Eval]: async (plr, value) => ``,
+
+			// [Event.Input]: async (plr, value) => ``,
+
+			// [Event.GameLoop]: async (plr, value) => ``,
 		},
 	},
 

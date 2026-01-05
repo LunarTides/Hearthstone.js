@@ -2068,6 +2068,7 @@ export class Card {
 		sb += cost;
 		sb += this.colorFromRarity(this.name);
 
+		// TODO: Move this to the end of the card and make it always visible.
 		if (
 			game.isDebugSettingEnabled(game.config.debug.additionalInfoInReadable)
 		) {
