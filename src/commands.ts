@@ -369,9 +369,6 @@ export const commands: CommandList = {
 		const history = game.event.history;
 		let finished = "";
 
-		const showCard = async (value: Card) =>
-			`${await value.readable()} which belongs to: <blue>${value.owner.getName()}</blue>, and has uuid: ${value.coloredUUID()}`;
-
 		/**
 		 * Transform the `value` into a readable string
 		 *
@@ -386,6 +383,10 @@ export const commands: CommandList = {
 				return `Player ${value.id + 1}`;
 			}
 
+			if (typeof value === "string") {
+				return value;
+			}
+
 			if (!(value instanceof Card)) {
 				// Stringify it to show '{}' instead of '[object Object]'.
 				return JSON.stringify(value);
@@ -393,7 +394,7 @@ export const commands: CommandList = {
 
 			// If the card is not hidden, or the card belongs to the current player, show it
 			if (!hide || value.owner === player) {
-				return await showCard(value);
+				return await value.readable();
 			}
 
 			// Hide the card
@@ -440,7 +441,7 @@ export const commands: CommandList = {
 			}
 
 			if (revealed) {
-				return `Hidden > Revealed as: ${await showCard(value)}`;
+				return `Hidden > Revealed as: ${await value.readable()}`;
 			}
 
 			return "Hidden";
@@ -510,24 +511,57 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				let newValue: string | undefined = "";
+				const newValue: unknown[] = [];
 
 				if (Array.isArray(value)) {
-					newValue = (
-						await Promise.all(
+					newValue.push(
+						...(await Promise.all(
 							value.map(
-								async (element) =>
-									await doValue(element, game.player, shouldHide),
+								async (element) => await doValue(element, player, shouldHide),
 							),
-						)
-					).join(", ");
+						)),
+					);
 				} else {
-					newValue = (
-						await doValue(value, game.player, shouldHide)
-					)?.toString();
+					newValue.push(await doValue(value, player, shouldHide));
 				}
 
-				finished += `${key}: ${newValue?.toString()}\n`;
+				if (key === Event.ChangeLocation) {
+					console.log();
+				}
+
+				let entry = game
+					.translate(game.config.advanced.readableHistory[key] ?? "")
+					.replace("{plr}", player.getName());
+				if (entry) {
+					const encode = (a: string) => {
+						return a
+							?.replaceAll("{", "__HS_LEFT_CURLY_BRACKET__")
+							.replaceAll("}", "__HS_RIGHT_CURLY_BRACKET__");
+					};
+					const decode = (a: string) => {
+						return a
+							?.replaceAll("__HS_LEFT_CURLY_BRACKET__", "{")
+							.replaceAll("__HS_RIGHT_CURLY_BRACKET__", "}");
+					};
+
+					for (const match of entry.matchAll(/\{(\d+)\}/g)) {
+						if (!Array.isArray(value)) {
+							entry = entry.replaceAll(match[0], encode(newValue?.toString()));
+						}
+
+						const index = parseInt(match[1], 10);
+						entry = entry.replaceAll(
+							match[0],
+							encode(newValue[index]?.toString()),
+						);
+					}
+
+					entry = decode(entry);
+				} else {
+					entry = `${key}: ${newValue?.join(", ")}`;
+				}
+
+				finished += `${entry}\n`;
 			}
 		}
 

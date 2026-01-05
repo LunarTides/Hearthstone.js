@@ -203,6 +203,7 @@ export type GameConfig = {
 		noBounceOnCancelAbilities: Ability[];
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
+		readableHistory: Record<Event, string>;
 	};
 
 	info: {
