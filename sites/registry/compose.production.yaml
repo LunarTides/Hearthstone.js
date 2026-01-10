@@ -1,7 +1,8 @@
 services:
+  # TODO: Change this to `db`.
   registry-db:
     image: postgres
-    restart: always
+    restart: unless-stopped
     env_file:
       - .env
     environment:
@@ -10,15 +11,23 @@ services:
       POSTGRES_DB: ${DATABASE_DB}
     volumes:
       - ./pgdata_prod:/var/lib/postgresql
+    networks:
+      - hsjs
   registry-frontend:
     build:
       context: ./
       dockerfile: frontend.dockerfile
+    restart: unless-stopped
     env_file:
       - .env
     environment:
       - NODE_ENV=production
-      - PORT=3002
+      - PORT=80
       - ORIGIN=${DOMAIN}
     depends_on:
       - registry-db
+    networks:
+      - hsjs
+networks:
+  hsjs:
+    external: true

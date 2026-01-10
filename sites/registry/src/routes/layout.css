@@ -21,10 +21,10 @@ body {
 
 .alternating-children {
 	&:nth-child(even) {
-		background-color: var(--color-background);
+		background-color: var(--color-header);
 	}
 	&:nth-child(odd) {
-		background-color: var(--color-header);
+		background-color: var(--color-background);
 	}
 }
 
