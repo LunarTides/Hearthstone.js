@@ -16,8 +16,13 @@ export async function requestAPI<R>(
 	try {
 		json = await response.json();
 	} catch {}
+	// if (response.headers.get("Content-Type") === "application/json") {
+	// 	try {
+	// 		json = await response.json();
+	// 	} catch {}
+	// }
 
-	if (response.status >= 300) {
+	if (response.status >= 400) {
 		return {
 			json: undefined,
 			error: { message: json.message ?? "An error occurred.", status: response.status },
