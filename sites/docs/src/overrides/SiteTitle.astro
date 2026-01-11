@@ -2,6 +2,9 @@
 import Default from '@astrojs/starlight/components/SiteTitle.astro';
 ---
 
+<a href="https://lunartides.dev" set:text="<" class="home"></a>
+<div class="seperator"></div>
+
 <Default><slot /></Default>
 
 <div>
@@ -32,5 +35,16 @@ import Default from '@astrojs/starlight/components/SiteTitle.astro';
 
   a:hover {
     color: var(--sl-color-text-accent);
+  }
+
+  .home {
+    font-size: 32px;
+    color: slategray;
+    margin-right: 1%;
+    align-self: center;
+  }
+
+  .seperator {
+    border-inline-start: 1px solid var(--sl-color-gray-5);
   }
 </style>

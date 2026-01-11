@@ -6,7 +6,8 @@
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user.js";
-	import { Bell, BellDot } from "lucide-svelte";
+	import { ArrowLeft, Bell, BellDot } from "lucide-svelte";
+	import { PUBLIC_DOMAIN } from "$env/static/public";
 
 	let { children, data } = $props();
 
@@ -23,8 +24,16 @@
 </svelte:head>
 
 <nav class="flex items-center p-3 text-white gap-2" style="background-color: var(--color-header);">
+	{#if PUBLIC_DOMAIN !== "http://localhost"}
+		<a href={PUBLIC_DOMAIN}>
+			<ArrowLeft />
+		</a>
+
+		<p class="text-4xl font-thin text-gray-600">|</p>
+	{/if}
+
 	<a href={resolve("/")} class="font-bold uppercase text-xl">Registry</a>
-	<p class="text-4xl font-thin">|</p>
+	<p class="text-4xl font-thin text-gray-600">|</p>
 
 	<!-- TODO: Use superforms. -->
 	<form

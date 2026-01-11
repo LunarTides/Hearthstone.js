@@ -23,7 +23,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=80
-      - ORIGIN=${DOMAIN}
+      - ORIGIN=${PUBLIC_DOMAIN}
     depends_on:
       - registry-db
     networks:
