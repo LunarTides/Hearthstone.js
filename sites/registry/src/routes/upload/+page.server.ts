@@ -32,6 +32,6 @@ export const actions = {
 		}
 
 		const pack = response.json.pack;
-		redirect(303, resolve("/pack/[uuid]/versions/[version]", { uuid, version: pack.packVersion }));
+		redirect(303, resolve("/pack/[uuid]/versions/[version]/[id]", { uuid, version: pack.packVersion, id: pack.id }));
 	},
 };

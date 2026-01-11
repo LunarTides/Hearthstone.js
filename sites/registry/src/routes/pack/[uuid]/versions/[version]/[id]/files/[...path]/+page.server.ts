@@ -33,9 +33,10 @@ export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
 	const response = await requestAPI<File>(
 		event,
-		resolve("/api/v1/pack/[uuid]/versions/[version]/files/[...path]", {
+		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/files/[...path]", {
 			uuid: event.params.uuid,
 			version: event.params.version,
+			id: event.params.id,
 			path: event.params.path,
 		}),
 	);

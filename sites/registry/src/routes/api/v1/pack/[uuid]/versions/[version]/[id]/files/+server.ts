@@ -38,11 +38,13 @@ export async function GET(event) {
 
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
+	const id = event.params.id;
+
 	const version = (
 		await db
 			.select()
 			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
+			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
 	).at(0);
 	if (!version) {
 		return json({ message: "Version not found." }, { status: 404 });
@@ -56,7 +58,7 @@ export async function GET(event) {
 		}
 	}
 
-	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}`;
+	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}/${version.id}`;
 
 	// TODO: Validate. Make sure the path isn't too long, etc...
 	const tree = await getTree(folder);

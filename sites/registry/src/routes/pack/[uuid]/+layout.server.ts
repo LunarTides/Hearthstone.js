@@ -8,9 +8,10 @@ import { error, type ServerLoadEvent } from "@sveltejs/kit";
 const getCards = async (event: ServerLoadEvent, version: CensoredPack) => {
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/v1/pack/[uuid]/versions/[version]/cards", {
+		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/cards", {
 			uuid: version.uuid,
 			version: version.packVersion,
+			id: version.id,
 		}),
 	);
 	if (response.error) {

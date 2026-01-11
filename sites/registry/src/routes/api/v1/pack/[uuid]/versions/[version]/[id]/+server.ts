@@ -14,12 +14,13 @@ export async function DELETE(event) {
 
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
+	const id = event.params.id;
 
 	const version = (
 		await db
 			.select()
 			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
+			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
 	).at(0);
 	if (!version) {
 		return json({ message: "Version not found." }, { status: 404 });
@@ -33,7 +34,7 @@ export async function DELETE(event) {
 	}
 
 	await db.delete(pack).where(eq(pack.id, version.id));
-	await fs.rm(`./static/assets/packs/${version.uuid}/${version.packVersion}`, {
+	await fs.rm(`./static/assets/packs/${version.uuid}/${version.packVersion}/${version.id}`, {
 		force: true,
 		recursive: true,
 	});

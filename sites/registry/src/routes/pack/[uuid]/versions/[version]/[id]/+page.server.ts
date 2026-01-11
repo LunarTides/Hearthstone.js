@@ -10,16 +10,17 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.all.find((v) => v.packVersion === event.params.version);
+		const version = packs.all.find((v) => v.id === event.params.id);
 		if (!version) {
 			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/versions/[version]/download", {
+			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/download", {
 				uuid: version.uuid,
 				version: version.packVersion,
+				id: version.id,
 			}),
 			{
 				method: "POST",
@@ -47,16 +48,17 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.all.find((v) => v.packVersion === event.params.version);
+		const version = packs.all.find((v) => v.id === event.params.id);
 		if (!version) {
 			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/versions/[version]", {
+			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]", {
 				uuid: version.uuid,
 				version: version.packVersion,
+				id: version.id,
 			}),
 			{
 				method: "DELETE",
@@ -76,16 +78,17 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.all.find((v) => v.packVersion === event.params.version);
+		const version = packs.all.find((v) => v.id === event.params.id);
 		if (!version) {
 			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/versions/[version]/approve", {
+			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/approve", {
 				uuid: version.uuid,
 				version: version.packVersion,
+				id: version.id,
 			}),
 			{
 				method: "POST",

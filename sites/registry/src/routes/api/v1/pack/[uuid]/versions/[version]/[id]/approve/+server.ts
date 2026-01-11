@@ -14,12 +14,13 @@ export async function POST(event) {
 
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
+	const id = event.params.id;
 
 	const version = (
 		await db
 			.select()
 			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
+			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
 	).at(0);
 	if (!version) {
 		return json({ message: "Version not found." }, { status: 404 });
@@ -29,6 +30,14 @@ export async function POST(event) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
+		);
+	}
+
+	const blocking = await db.select({ id: pack.id }).from(pack).where(and(eq(pack.approved, true), eq(pack.packVersion, version.packVersion)));
+	if (blocking.length > 0) {
+		return json(
+			{ message: `A pack with this version (${version.packVersion}) has already been approved.` },
+			{ status: 409 },
 		);
 	}
 
@@ -63,10 +72,11 @@ export async function POST(event) {
 	for (const userId of version.userIds) {
 		await db.insert(notification).values({
 			userId,
-			text: `Your pack (${version.name} v${newLatestPack.packVersion}) has been approved!`,
-			route: resolve("/pack/[uuid]/versions/[version]", {
+			text: `Your pack (${version.name} v${newLatestPack.packVersion} - ${newLatestPack.id.slice(0, 6)}) has been approved!`,
+			route: resolve("/pack/[uuid]/versions/[version]/[id]", {
 				uuid: version.uuid,
 				version: newLatestPack.packVersion,
+				id: newLatestPack.id,
 			}),
 		});
 	}

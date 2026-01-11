@@ -16,7 +16,7 @@
 	$effect(() => {
 		(async () => {
 			const cards = await data.cards;
-			const found = cards.packs.all.find((v) => v.packVersion === page.params.version);
+			const found = cards.packs.all.find((v) => v.id === page.params.id);
 			if (!found) {
 				// TODO: Error handling.
 				return;
@@ -33,7 +33,7 @@
 	<PackBig
 		packs={{
 			...cards.packs,
-			current: cards.packs.all.find((p) => p.packVersion === page.params.version)!,
+			current: cards.packs.all.find((p) => p.id === page.params.id)!,
 		}}
 		{cards}
 		user={data.user}

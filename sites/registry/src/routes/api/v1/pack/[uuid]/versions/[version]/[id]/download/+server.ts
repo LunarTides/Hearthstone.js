@@ -9,11 +9,13 @@ import { resolve } from "path";
 export async function POST(event) {
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
+	const id = event.params.id;
+
 	const version = (
 		await db
 			.select()
 			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion)))
+			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
 	).at(0);
 	if (!version) {
 		return json({ message: "Version not found." }, { status: 404 });
@@ -29,7 +31,7 @@ export async function POST(event) {
 		.set({ downloadCount: version.downloadCount + 1 })
 		.where(eq(pack.id, version.id));
 
-	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}`;
+	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}/${version.id}`;
 	const filename = resolve(folder, `${version.uuid}.7z`);
 
 	// TODO: Is this safe?
@@ -41,6 +43,7 @@ export async function POST(event) {
 	return new Response(file, {
 		headers: {
 			"Content-Type": "application/x-7z-compressed",
+			// TODO: The filename should be something like "uuid+id.7z"
 			"Content-Disposition": `attachment; filename="${version.uuid}.7z"`,
 		},
 	});

@@ -22,7 +22,7 @@
 	$effect(() => {
 		(async () => {
 			const ps = await data.packs;
-			const found = ps.all.find((v) => v.packVersion === page.params.version);
+			const found = ps.all.find((v) => v.id === page.params.id);
 			if (!found) {
 				// TODO: Error handling.
 				return;
@@ -75,9 +75,10 @@
 			{:else}
 				<!-- TODO: Use superforms. -->
 				<form
-					action={resolve("/pack/[uuid]/versions/[version]", {
+					action={resolve("/pack/[uuid]/versions/[version]/[id]", {
 						uuid: versions.current.uuid,
 						version: versions.current.packVersion,
+						id: versions.current.id,
 					}) + "?/delete"}
 					method="post"
 					class="w-full"
@@ -107,9 +108,10 @@
 				</button>
 			{:else}
 				<form
-					action={resolve("/pack/[uuid]/versions/[version]", {
+					action={resolve("/pack/[uuid]/versions/[version]/[id]", {
 						uuid: versions.current.uuid,
 						version: versions.current.packVersion,
+						id: versions.current.id,
 					}) + "?/approve"}
 					method="post"
 					class="w-full"

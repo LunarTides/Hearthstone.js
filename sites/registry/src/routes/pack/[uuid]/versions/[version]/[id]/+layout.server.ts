@@ -11,16 +11,17 @@ export const load = async (event) => {
 		return fail(packs.error.status, { message: packs.error.message });
 	}
 
-	const version = packs.all.find((v) => v.packVersion === event.params.version);
+	const version = packs.all.find((v) => v.id === event.params.id);
 	if (!version) {
 		return fail(404, { message: "Pack not found." });
 	}
 
 	const response = await requestAPI<FileTree[]>(
 		event,
-		resolve("/api/v1/pack/[uuid]/versions/[version]/files", {
+		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/files", {
 			uuid: version.uuid,
 			version: version.packVersion,
+			id: version.id,
 		}),
 	);
 	if (response.error) {

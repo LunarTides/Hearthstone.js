@@ -72,9 +72,10 @@
 				{#if showDownloadButton && pack.approved}
 					<!-- TODO: Use superforms. -->
 					<form
-						action={resolve("/pack/[uuid]/versions/[version]", {
+						action={resolve("/pack/[uuid]/versions/[version]/[id]", {
 							uuid: pack.uuid,
 							version: pack.packVersion,
+							id: pack.id,
 						}) + "?/download"}
 						method="post"
 						use:enhance

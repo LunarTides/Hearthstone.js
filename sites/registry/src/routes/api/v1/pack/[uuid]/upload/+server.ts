@@ -177,7 +177,7 @@ export async function POST(event) {
 	// if it does, and the current user is one of that pack's authors, update it.
 	let isLatestVersion = true;
 	// let update = false;
-	let updateDB = async (values: InferInsertModel<typeof pack>) =>
+	const updateDB = async (values: InferInsertModel<typeof pack>) =>
 		db.insert(pack).values(values).returning();
 
 	const otherVersions = await db
@@ -185,18 +185,19 @@ export async function POST(event) {
 		.from(pack)
 		.where(or(eq(pack.uuid, uuid), eq(pack.name, metadata.name)));
 	for (const version of otherVersions) {
-		if (semver.eq(metadata.versions.pack, version.packVersion)) {
-			// TODO: Add ability for the uploader to limit who can edit the pack.
-			if (version.userIds.includes(user.id)) {
-				// Override.
-				updateDB = async (values: InferInsertModel<typeof pack>) =>
-					db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
-				// update = true;
-			} else {
-				// No permission.
-				error(403, "You do not have permission to edit this pack.");
-			}
-		} else if (semver.gt(metadata.versions.pack, version.packVersion)) {
+		// if (semver.eq(metadata.versions.pack, version.packVersion)) {
+		// 	// TODO: Add ability for the uploader to limit who can edit the pack.
+		// 	if (version.userIds.includes(user.id)) {
+		// 		// Override.
+		// 		updateDB = async (values: InferInsertModel<typeof pack>) =>
+		// 			db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
+		// 		// // update = true;
+		// 	} else {
+		// 		// No permission.
+		// 		error(403, "You do not have permission to edit this pack.");
+		// 	}
+		// } else
+		if (semver.gt(metadata.versions.pack, version.packVersion)) {
 			// If the approval process is disabled, do this here.
 			// TODO: Test this.
 			if (!settings.upload.requireApproval) {
@@ -311,8 +312,9 @@ export async function POST(event) {
 	}
 
 	// TODO: Add links.
+	const id = packInDB[0].id;
 
-	const finalPath = `./static/assets/packs/${uuid}/${metadata.versions.pack}`;
+	const finalPath = `./static/assets/packs/${uuid}/${metadata.versions.pack}/${id}`;
 	await fs.mkdir(finalPath, { recursive: true });
 
 	await fs.rm(compressedPath);

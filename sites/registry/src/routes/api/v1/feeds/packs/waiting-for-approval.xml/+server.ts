@@ -31,7 +31,7 @@ export async function GET(event) {
         ${packs.map(
 					(p) => `        <item>
             <title>${p.name} v${p.packVersion}</title>
-            <link>${resolve("/pack/[uuid]/versions/[version]", { uuid: p.uuid, version: p.packVersion })}</link>
+            <link>${resolve("/pack/[uuid]/versions/[version]/[id]", { uuid: p.uuid, version: p.packVersion, id: p.id })}</link>
             <uuid>${p.uuid}</uuid>
             <guid>${p.id}</guid>
             <description>${p.description}</description>

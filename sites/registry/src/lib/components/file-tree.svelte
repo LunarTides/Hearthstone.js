@@ -21,9 +21,10 @@
 				</th>
 				<td>
 					<a
-						href={resolve("/pack/[uuid]/versions/[version]/files/[...path]", {
+						href={resolve("/pack/[uuid]/versions/[version]/[id]/files/[...path]", {
 							uuid: page.params.uuid!,
 							version: page.params.version!,
+							id: page.params.id!,
 							path: page.params.path.split("/").slice(0, -1).join("/"),
 						})}
 					>
@@ -50,8 +51,9 @@
 				</th>
 				<td>
 					<a
-						href={resolve("/pack/[uuid]/versions/[version]/files/[...path]", {
+						href={resolve("/pack/[uuid]/versions/[version]/[id]/files/[...path]", {
 							uuid: page.params.uuid!,
+							id: page.params.id!,
 							version: page.params.version!,
 							path: file.path,
 						})}
