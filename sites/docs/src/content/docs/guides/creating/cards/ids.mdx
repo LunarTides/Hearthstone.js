@@ -3,4 +3,26 @@ title: IDs, UUIDs, and Names
 description: TODO
 ---
 
-TODO
+The differences between ids, uuids, and names of cards is something I expect would be confusing, so I will try my best to explain.
+
+## Names
+Names are the easiest to explain. They can be anything, and are non-unique.
+
+The name of a card can be access through `card.name`.
+
+## IDs
+IDs need to be unique **per blueprint**. This means that every instance of the Sheep card as defined by the blueprint in the `cards/sheep-668b9054.ts` file needs to share the same id:
+`668b9054-7ca9-49af-9dd9-4f0126c6894c`. 
+
+You can see in this picture that the 3 Sheep share the same id. (`#668b90`) \
+![Screenshot of Hand](../../../../../assets/guides/game/state/hand.webp)
+
+The id of a card can be access through `card.id`.
+
+## UUIDs
+UUIDs need to be unique **per card**. Every card *needs* to have a different uuid.
+
+You can see this in this picture that the 3 Sheep have unique uuids. (`@db8df1a`, `@e7a2c92`, `@5b7ede7`) \
+![Screenshot of Hand](../../../../../assets/guides/game/state/hand.webp)
+
+The uuid of a card can be access through `card.uuid`.

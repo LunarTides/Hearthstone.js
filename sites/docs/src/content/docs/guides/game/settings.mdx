@@ -3,4 +3,53 @@ title: Settings
 description: TODO
 ---
 
-TODO
+You can find the settings by opening the `config.ts` file in your favorite text/code editor.
+
+The file will look something like this:
+
+```ts
+// config.ts
+
+export const config: GameConfig = {
+    general: {
+        // The locale (aka. language) to use. If the specified locale doesn't exist, it will default to 'en_US'.
+		    locale: "en_US",
+
+        /*
+		     * The editor that gets launched whenever the game wants to launch an editor.
+		     * This happens after creating a card using the Custom Card Creator, for example.
+		     * You can set this to any path you want. (e.g. /usr/bin/code or vim)
+		     */
+		    editor: "code",
+
+        // ...
+    },
+
+    decks: {
+        /*
+		     * If the game should validate deck codes.
+		     * If this is disabled, the game will accept ANY correctly formatted deckcode.
+		     */
+		    validate: true,
+        
+        // ...
+    },
+
+    debug: {
+        /*
+		     * If this is enabled, ALL debug settings under this category gets enabled.
+		     *
+		     * Disable this to pick and choose which debug settings to enable.
+		     */
+		    all: true,
+
+        // ...
+    }
+
+    // ...
+}
+```
+
+Every setting will be in a category, and will have a description above it. You can, for example, disable debug mode by changing `Debug > All` to `false`.
+
+I won't go over every setting and what they do here, since they're already explained in the file itself. 
