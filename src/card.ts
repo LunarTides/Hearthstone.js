@@ -1126,10 +1126,15 @@ export class Card {
 	 * @returns If this card can be attacked
 	 */
 	canBeAttacked(): boolean {
+		const hasTaunt = this.owner.board.some((card) =>
+			card.hasKeyword(Keyword.Taunt),
+		);
+
 		return (
 			!this.hasKeyword(Keyword.Dormant) &&
 			!this.hasKeyword(Keyword.Immune) &&
-			!this.hasKeyword(Keyword.Stealth)
+			!this.hasKeyword(Keyword.Stealth) &&
+			(!hasTaunt || this.hasKeyword(Keyword.Taunt))
 		);
 	}
 
@@ -2100,8 +2105,8 @@ export class Card {
 					);
 		} else if (this.type === Type.Location) {
 			const durability = this.durability;
-			const maxDurability = this.backups.init.durability;
-			const maxCooldown = this.backups.init.cooldown!;
+			const maxDurability = this.blueprint.durability;
+			const maxCooldown = this.blueprint.cooldown!;
 
 			sb += ` {<bright:green>Durability: ${durability} / ${maxDurability}</bright:green>,`;
 			sb += ` <cyan>Cooldown: ${this.cooldown} / ${maxCooldown}</cyan>}`;
@@ -2111,13 +2116,15 @@ export class Card {
 		sb += `<yellow>(${this.type})</yellow>`;
 
 		// Add the keywords
+		// NOTE: `keywords` can be an array when used in the custom card creator.
 		// TODO: `DivineShield` => `Divine Shield`.
-		sb += Object.keys(this.keywords)
-			.map(
-				(keyword) =>
-					` <gray>{${Object.keys(Keyword)[parseInt(keyword, 10)]}}</gray>`,
-			)
-			.join("");
+		if (Array.isArray(this.keywords)) {
+			sb += this.keywords.map((keyword) => ` <gray>{${keyword}}</gray>`);
+		} else {
+			sb += Object.keys(this.keywords)
+				.map((keyword) => ` <gray>{${keyword}}</gray>`)
+				.join("");
+		}
 
 		return sb;
 	}

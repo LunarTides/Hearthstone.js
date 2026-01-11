@@ -581,6 +581,9 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
+		// Happy little bug that only happened to Player 2 :)
+		card.owner = game.player;
+
 		await game.player.addToHand(await card.imperfectCopy());
 		return true;
 	},

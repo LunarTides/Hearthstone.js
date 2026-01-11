@@ -140,7 +140,10 @@ async function importPack() {
 		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
 			packs.map((p) => p.uuid),
-			undefined,
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
 			new Separator(),
 			"Refresh",
 			"Done",

@@ -1006,7 +1006,9 @@ export class Player {
 	 * @returns If the player can attack
 	 */
 	canBeAttacked(): boolean {
-		return !this.immune;
+		const hasTaunt = this.board.some((card) => card.hasKeyword(Keyword.Taunt));
+
+		return !this.immune && !hasTaunt;
 	}
 
 	/**

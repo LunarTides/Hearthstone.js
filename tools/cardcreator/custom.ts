@@ -287,6 +287,10 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				},
 			);
 
+			if (booleanChoice === "Back") {
+				continue;
+			}
+
 			set(key, booleanChoice === "true");
 			continue;
 		}
