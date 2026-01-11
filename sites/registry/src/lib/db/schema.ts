@@ -12,6 +12,7 @@ import { relations } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
+export const packMessageType = pgEnum("messageType", ["public", "internal"]);
 
 export const user = pgTable("user", {
 	id: uuid("id").primaryKey(),
@@ -164,6 +165,16 @@ export const packCommentLike = pgTable("packCommentLike", {
 	dislike: boolean("dislike").notNull(),
 });
 
+export const packMessage = pgTable("packMessage", {
+	id: uuid("id").primaryKey().defaultRandom(),
+	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
+	packId: uuid("pack_id").notNull(),
+	creationDate: timestamp().notNull().defaultNow(),
+
+	type: packMessageType().notNull(),
+	text: text("text").notNull(),
+});
+
 export const notification = pgTable("notification", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	userId: uuid("user_id")
@@ -190,6 +201,7 @@ export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
 
 export type PackComment = typeof packComment.$inferSelect;
+export type PackMessage = typeof packMessage.$inferSelect;
 
 export type Notification = typeof notification.$inferSelect;
 export type Setting = typeof setting.$inferSelect;
@@ -203,6 +215,7 @@ export type PackWithExtras = Pack & {
 		hasDisliked: boolean;
 	};
 	approvedByUser: CensoredUser | null;
+	messages: (PackMessage & { author: CensoredUser | null })[];
 };
 
 export type PackCommentWithExtras = PackComment & {

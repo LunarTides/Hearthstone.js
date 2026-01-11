@@ -1,7 +1,10 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
+import { approveSchema } from "$lib/api/schemas.js";
 import { APIGetPack } from "$lib/server/db/pack.js";
 import { fail, redirect } from "@sveltejs/kit";
+import { message, superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 export const actions = {
 	download: async (event) => {
@@ -73,14 +76,19 @@ export const actions = {
 	},
 	// TODO: Deduplicate.
 	approve: async (event) => {
+		const form = await superValidate(event.request, zod4(approveSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
 		const packs = await APIGetPack(event.locals.user, event.params.uuid);
 		if (packs.error) {
-			return fail(packs.error.status, { message: packs.error.message });
+			return message(form, packs.error.message, { status: packs.error.status as any });
 		}
 
 		const version = packs.all.find((v) => v.id === event.params.id);
 		if (!version) {
-			return fail(404, { message: "Pack not found." });
+			return message(form, "Pack not found.", { status: 404 });
 		}
 
 		const response = await requestAPI(
@@ -92,10 +100,11 @@ export const actions = {
 			}),
 			{
 				method: "POST",
+				body: JSON.stringify(form.data),
 			},
 		);
 		if (response.error) {
-			return fail(response.error.status, { message: response.error.message });
+			return message(form, response.error.message, { status: response.error.status as any });
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.

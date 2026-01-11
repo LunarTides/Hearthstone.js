@@ -8,3 +8,8 @@ export const loginSchema = z.object({
 		.regex(/^[a-zA-Z0-9_-]+$/),
 	password: z.string().min(6).max(255),
 });
+
+export const approveSchema = z.object({
+	message: z.string().default(""),
+	messageType: z.enum(["public", "internal"]),
+});

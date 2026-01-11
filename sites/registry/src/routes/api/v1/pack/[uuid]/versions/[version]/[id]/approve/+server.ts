@@ -1,10 +1,13 @@
 import { db } from "$lib/server/db/index.js";
-import { card, notification, pack } from "$lib/db/schema.js";
+import { card, notification, pack, packMessage } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
 import { resolve } from "$app/paths";
+import { superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+import { approveSchema } from "$lib/api/schemas.js";
 
 export async function POST(event) {
 	const user = event.locals.user;
@@ -15,6 +18,19 @@ export async function POST(event) {
 	const uuid = event.params.uuid;
 	const packVersion = event.params.version;
 	const id = event.params.id;
+
+	const j = await event.request.json();
+
+	const form = await superValidate(j, zod4(approveSchema));
+	if (!form.valid) {
+		return json(
+			{ message: `Invalid request. (${form.errors._errors?.join(", ")})` },
+			{ status: 422 },
+		);
+	}
+
+	const message = form.data.message;
+	const messageType = form.data.messageType;
 
 	const version = (
 		await db
@@ -33,7 +49,10 @@ export async function POST(event) {
 		);
 	}
 
-	const blocking = await db.select({ id: pack.id }).from(pack).where(and(eq(pack.approved, true), eq(pack.packVersion, version.packVersion)));
+	const blocking = await db
+		.select({ id: pack.id })
+		.from(pack)
+		.where(and(eq(pack.approved, true), eq(pack.packVersion, version.packVersion)));
 	if (blocking.length > 0) {
 		return json(
 			{ message: `A pack with this version (${version.packVersion}) has already been approved.` },
@@ -80,6 +99,13 @@ export async function POST(event) {
 			}),
 		});
 	}
+
+	await db.insert(packMessage).values({
+		packId: newLatestPack.id,
+		authorId: user.id,
+		type: messageType,
+		text: message ? `> Approved this pack: ${message}` : `> Approved this pack.`,
+	});
 
 	return json({}, { status: 200 });
 }

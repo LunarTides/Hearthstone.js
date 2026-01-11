@@ -123,6 +123,8 @@
 						</div>
 
 						<pre class="font-sans">{comment.text}</pre>
+						<!-- TODO: `comment.creationDate` is a string for some reason? -->
+						<p class="text-gray-600">{new Date(comment.creationDate).toLocaleString()}</p>
 
 						<!-- TODO: Get the form message here. -->
 						{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}

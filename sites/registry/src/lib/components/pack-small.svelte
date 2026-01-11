@@ -16,7 +16,11 @@
 <div class="w-fit">
 	<a
 		href={navigateToVersion
-			? resolve("/pack/[uuid]/versions/[version]/[id]", { uuid: pack.uuid, version: pack.packVersion, id: pack.id })
+			? resolve("/pack/[uuid]/versions/[version]/[id]", {
+					uuid: pack.uuid,
+					version: pack.packVersion,
+					id: pack.id,
+				})
 			: resolve("/pack/[uuid]", { uuid: pack.uuid })}
 	>
 		<div

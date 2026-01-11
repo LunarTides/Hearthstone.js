@@ -1,8 +1,11 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
+import { approveSchema } from "$lib/api/schemas.js";
 import type { FileTree } from "$lib/api/types";
 import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "@sveltejs/kit";
+import { superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
@@ -28,5 +31,7 @@ export const load = async (event) => {
 		return fail(response.error.status, { message: response.error.message });
 	}
 
-	return { files: response.json };
+	const form = await superValidate(zod4(approveSchema));
+
+	return { form, files: response.json };
 };

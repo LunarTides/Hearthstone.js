@@ -1,7 +1,7 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packLike, user, type PackWithExtras } from "$lib/db/schema.js";
+import { pack, packLike, packMessage, user, type PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
@@ -89,29 +89,49 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 		.fullJoin(user, eq(pack.approvedBy, user.id));
 
 	// Show all downloads from all versions.
-	let packs: PackWithExtras[] = packsAndLikes.map((p) => {
-		const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
+	let packs: PackWithExtras[] = await Promise.all(
+		packsAndLikes.map(async (p) => {
+			const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
 
-		// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
-		const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
-		const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
-		const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
-		const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
+			// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
+			const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
+			const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
+			const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
+			const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
 
-		return {
-			...p.pack,
-			totalDownloadCount: relevantPacks
-				.map((p) => p.pack!.downloadCount)
-				.reduce((p, v) => p + v, 0),
-			likes: {
-				positive: likes.size,
-				hasLiked: clientUser ? likes.has(clientUser.id) : false,
-				negative: dislikes.size,
-				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
-			},
-			approvedByUser: p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
-		};
-	});
+			let messagesQuery = db
+				.select()
+				.from(packMessage)
+				.where(eq(packMessage.packId, p.pack.id))
+				.orderBy(desc(packMessage.creationDate))
+				.fullJoin(user, eq(packMessage.authorId, user.id))
+				.$dynamic();
+			if (!satisfiesRole(clientUser, "Moderator")) {
+				messagesQuery = messagesQuery.where(eq(packMessage.type, "public"));
+			}
+
+			const messages = await messagesQuery;
+
+			return {
+				...p.pack,
+				totalDownloadCount: relevantPacks
+					.map((p) => p.pack!.downloadCount)
+					.reduce((p, v) => p + v, 0),
+				likes: {
+					positive: likes.size,
+					hasLiked: clientUser ? likes.has(clientUser.id) : false,
+					negative: dislikes.size,
+					hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
+				},
+				approvedByUser:
+					p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
+				messages: messages.map((message) => ({
+					...message.packMessage,
+					author: message.user ? censorUser(message.user) : null,
+				})),
+			};
+		}),
+	);
 
 	// Remove duplicates.
 	const ids = new Set(packsAndLikes.map((p) => p.pack.id));

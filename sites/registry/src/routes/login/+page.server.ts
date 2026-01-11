@@ -1,10 +1,9 @@
 import { fail, redirect, type RequestEvent } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { superValidate, setError } from "sveltekit-superforms";
+import { superValidate, message } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { loginSchema } from "$lib/api/schemas";
 import { resolve } from "$app/paths";
-import { string } from "zod";
 import { requestAPI } from "$lib/api/helper";
 
 export const load: PageServerLoad = async (event) => {
@@ -29,7 +28,7 @@ const request = async (event: RequestEvent, url: string) => {
 		body: JSON.stringify(form.data),
 	});
 	if (response.error) {
-		return setError(form, response.error.message, { status: response.error.status });
+		return message(form, response.error.message, { status: response.error.status as any });
 	}
 
 	return redirect(302, resolve("/"));

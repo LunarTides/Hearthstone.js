@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { card, pack } from "$lib/db/schema.js";
+import { card, pack, packMessage } from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -38,6 +38,8 @@ export async function DELETE(event) {
 		force: true,
 		recursive: true,
 	});
+
+	await db.delete(packMessage).where(eq(packMessage.packId, version.id));
 
 	const packs = await db
 		.select({ id: pack.id, packVersion: pack.packVersion })

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { goto } from "$app/navigation";
 	import PackBig from "$lib/components/pack-big.svelte";
 
 	let { data, form } = $props();
