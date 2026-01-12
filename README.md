@@ -1,8 +1,15 @@
+<!--
+Maybe this is a little too much.
+<a href="https://buymeacoffee.com/lunartides" alt="Buy me a coffee">
+    <img src="https://img.shields.io/badge/buy_me_a_coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" />
+</a>
+-->
+
 # Hearthstone.js
 
 <img width="1363" height="596" alt="Game faded from bottom to top" src="https://github.com/user-attachments/assets/12699101-463a-446b-801f-96429be16546" />
 
-Hearthstone.js is a console-based clone of Hearthstone.
+A console-based recreation of Hearthstone.
 
 ## Features
 
@@ -23,7 +30,7 @@ Hearthstone.js is a console-based clone of Hearthstone.
 > Hearthstone.js is a hobby project I'm working on in my free time. I don't
 > always have the time nor energy to work on it. Therefore, I can't guarantee
 > that updates will be released in a reasonable timeframe. Update 2.0 took ~4
-> months to come out, whereas 3.0 has taken >23 months. I work in my own pace,
+> months to come out, whereas 3.0 took almost 2 years. I work in my own pace,
 > so don't expect constant updates.
 >
 > If you notice any issues, or want to request a new feature, open an
