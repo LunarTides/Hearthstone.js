@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from "$app/paths";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data } = $props();
@@ -39,6 +40,13 @@
 			/>
 			{#if $errors.password}<span class="text-red-500">{$errors.password}</span>{/if}
 		</div>
+
+		<p class="text-nowrap self-center">
+			By creating an account, you agree to the
+			<a href={resolve("/terms")} class="underline">Terms of Service</a>
+			and the
+			<a href={resolve("/privacy")} class="underline">Privacy Policy</a>.
+		</p>
 
 		<div class="flex gap-1 text-lg">
 			<button class="custom-button w-full px-4 py-2"> Login </button>

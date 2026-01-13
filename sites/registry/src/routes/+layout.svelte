@@ -61,6 +61,8 @@
 	{/if}
 
 	<span class="flex items-center gap-2 ml-auto">
+		<a href={resolve("/contact")}>Contact</a>
+
 		{#if data.user}
 			<!-- TODO: Use superforms. -->
 			<form action={resolve("/") + "?/logout"} method="post" use:enhance>
