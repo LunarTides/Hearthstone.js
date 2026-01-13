@@ -153,6 +153,13 @@ export type GameConfig = {
 		maxOfOneLegendary: number;
 	};
 
+	networking: {
+		allow: {
+			game: boolean;
+			packs: boolean;
+		};
+	};
+
 	debug: {
 		all: boolean;
 		commands: boolean;
