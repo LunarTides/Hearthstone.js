@@ -51,6 +51,7 @@ export default defineConfig({
 								{
 									label: 'Cards',
 									items: [
+										{ label: "Introduction", slug: 'guides/creating/cards/introduction' },
 										{
 											label: 'Generators',
 											items: [
@@ -58,6 +59,7 @@ export default defineConfig({
 												{ label: 'Vanilla', slug: 'guides/creating/cards/generators/vanilla' },
 											],
 										},
+										{ label: 'Color Tags', slug: 'guides/creating/cards/color-tags' },
 										{
 											label: 'Adding Logic',
 											items: [
@@ -67,11 +69,12 @@ export default defineConfig({
 										},
 										{ label: 'IDs, UUIDs, and Names', slug: 'guides/creating/cards/ids' },
 										{
-											label: 'Packaging',
+											label: 'Packs',
 											items: [
+												{ label: 'Introduction', slug: 'guides/creating/cards/packs/introduction' },
 												{ label: 'Exporting a Pack', slug: 'guides/creating/cards/packs/export' },
 												{ label: 'Importing a Pack', slug: 'guides/creating/cards/packs/import' },
-												{ label: 'Registry Website', slug: 'guides/creating/cards/packs/web' },
+												{ label: 'Registry', slug: 'guides/creating/cards/packs/registry' },
 											],
 										},
 									],
