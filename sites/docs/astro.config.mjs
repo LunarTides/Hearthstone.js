@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightKbd from 'starlight-kbd';
 import starlightBlog from 'starlight-blog';
+// import starlightVersions from 'starlight-versions';
 
 // https://astro.build/config
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
 			},
 			components: {
 				SiteTitle: './src/overrides/SiteTitle.astro',
+				ThemeSelect: './src/overrides/ThemeSelect.astro',
 			},
 			sidebar: [
 				{
@@ -134,6 +136,7 @@ export default defineConfig({
 						{ id: 'linux', label: "Linux" },
 						{ id: 'mac', label: "Mac" },
 					],
+					globalPicker: false,
 				}),
 				starlightBlog({
 					authors: {
@@ -148,6 +151,13 @@ export default defineConfig({
 						readingTime: true,
 					},
 				}),
+				// starlightVersions({
+				// 	versions: [
+				// 		{
+				// 			slug: "v4",
+				// 		}
+				// 	]
+				// }),
 			],
 		}),
 	],
