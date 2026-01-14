@@ -67,6 +67,14 @@ export default defineConfig({
 											items: [
 												{ label: 'The Blueprint', slug: 'guides/creating/cards/logic/blueprint' },
 												{ label: 'Abilities', slug: 'guides/creating/cards/logic/abilities' },
+												{ label: 'Card-to-Card Interaction', slug: 'guides/creating/cards/logic/card-to-card' },
+												{ label: 'Passives', slug: 'guides/creating/cards/logic/passives' },
+												{
+													label: 'Concepts',
+													items: [
+														{ label: 'The Event System', slug: 'guides/creating/cards/logic/concepts/event-system' },
+													],
+												},
 											],
 										},
 										{ label: 'IDs, UUIDs, and Names', slug: 'guides/creating/cards/ids' },
@@ -120,6 +128,12 @@ export default defineConfig({
 								{ label: 'FAQ', slug: 'guides/contributing/faq' },
 								{ label: 'Project Structure', slug: 'guides/contributing/structure' },
 								{ label: 'Tests', slug: 'guides/contributing/tests' },
+								{
+									label: 'Game',
+									items: [
+										{ label: 'Explaining the Gameloop', slug: 'guides/contributing/game/gameloop' },
+									],
+								},
 							],
 						},
 					],

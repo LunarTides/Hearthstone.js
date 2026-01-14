@@ -1,0 +1,52 @@
+---
+title: Explaining the Gameloop
+description: TODO
+---
+
+import { Steps } from "@astrojs/starlight/components";
+
+These functions are relevant for the gameloop.
+```ts
+// src/functions/interact.ts
+
+export const interactFunctions = {
+    async processCommand(cmd: string);
+    async _gameloopHandleInput(input: string);
+    async gameloop();
+}
+```
+
+<Steps>
+
+1. The `gameloop` function is called first, which will either get
+handled by the player's AI, or will prompt the player to select an action.
+
+2. Either way, the resulting action will be turned into a string value, and passed to `_gameloopHandleInput`.
+This will either first send the string to `processCommand`, which will check if the action is a valid command.
+If it is, it will call the relevant function in:
+    ```ts
+    // src/commands.ts
+
+    export const commands: CommandList = {
+        async end(): Promise<boolean>;
+        async "hero power"(): Promise<boolean>;
+        async attack(): Promise<boolean>;
+        // ...
+    }
+    ```
+    and the `_gameloopHandleInput` will return early.
+
+3. If the action is not a command, it will try to parse it to a card in the players hand.
+If this is successfull, it will call the `play` function as defined here:
+    ```ts
+    // src/game.ts
+
+    const playCard = {
+        async play(card: Card, player: Player): Promise<GamePlayCardReturn>;
+    }
+    ```
+
+4. Now, once the command / play is over, the game goes back to step 1 and calls `gameloop` again.
+It continues this until `game.running` becomes `false`.
+
+</Steps>
