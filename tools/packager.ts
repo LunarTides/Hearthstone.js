@@ -3,7 +3,6 @@
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
-import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
 import seven from "7zip-min";
@@ -289,7 +288,7 @@ async function exportPack() {
 				)) as string,
 			);
 		} else {
-			uuid = randomUUID();
+			uuid = Bun.randomUUIDv7();
 
 			metadata = {
 				versions: {

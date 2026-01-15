@@ -4,7 +4,6 @@ import {
 	EnchantmentPriority,
 	Type,
 } from "@Game/types.ts";
-import { randomUUID } from "node:crypto";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
 
 // If this is set to true, this will force debug mode.
@@ -293,7 +292,7 @@ export async function create(
 	blueprint.keywords = undefined;
 
 	// Create a random id.
-	const id = randomUUID();
+	const id = Bun.randomUUIDv7();
 	blueprint.id = id;
 
 	// Create a path to put the card in.

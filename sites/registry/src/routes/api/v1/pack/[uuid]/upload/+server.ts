@@ -8,7 +8,6 @@ import { db } from "$lib/server/db/index.js";
 import type { Pack } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
-import { randomUUID } from "crypto";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
@@ -272,7 +271,6 @@ export async function POST(event) {
 
 		const f = parseCardField.bind(null, content);
 		const card: InferInsertModel<typeof table.card> = {
-			id: randomUUID(),
 			uuid: f("id"),
 			abilities,
 			packId: pack[0].id,

@@ -23,7 +23,6 @@ import {
 	type Tribe,
 	Type,
 } from "@Game/types.ts";
-import { randomUUID } from "node:crypto";
 import { parseTags } from "chalk-tags";
 
 /**
@@ -554,7 +553,7 @@ export class Card {
 	 * Randomizes the uuid for this card to prevent cards from being "linked"
 	 */
 	randomizeUUID(): void {
-		this.uuid = randomUUID();
+		this.uuid = Bun.randomUUIDv7();
 	}
 
 	/**
