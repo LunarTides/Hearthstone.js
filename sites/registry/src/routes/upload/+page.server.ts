@@ -16,7 +16,7 @@ export const actions = {
 		}
 
 		const buffer = await file.arrayBuffer();
-		const uuid = file.name.split(".").slice(0, -1).join(".");
+		const uuid = file.name.split(".").slice(0, -2).join(".");
 
 		const response = await requestAPI<{ pack: Pack }>(
 			event,

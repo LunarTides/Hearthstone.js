@@ -6,7 +6,7 @@
 
 <!-- TODO: Use superforms. -->
 <form method="post" enctype="multipart/form-data" class="flex flex-col gap-1">
-	<input name="file" type="file" accept=".7z" />
+	<input name="file" type="file" accept=".tar.gz" />
 
 	<div class="p-2 mx-1 bg-header w-fit rounded-md">
 		<div class="flex gap-1">

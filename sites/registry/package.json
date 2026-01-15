@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "bunx -b vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -50,8 +50,8 @@
 		"vite": "^7.2.2"
 	},
 	"dependencies": {
-		"7zip-min": "^2.1.0",
 		"@node-rs/argon2": "^2.0.2",
+		"bun": "^1.3.6",
 		"file-type": "^21.1.1",
 		"lucide-svelte": "^0.561.0",
 		"postgres": "^3.4.7",

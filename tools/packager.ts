@@ -1,11 +1,11 @@
-// Allows importing / exporting .hspkg files.
+// Allows importing / exporting packs.
 // PERF: This tool is *not* performant.
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
 import { resolve } from "node:path";
+import fs from "fs/promises";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
-import seven from "7zip-min";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
@@ -53,6 +53,7 @@ async function getPacks() {
 		path: string;
 		parentPath: string;
 		compressed: boolean;
+		bytes: Buffer;
 	}[] = [];
 
 	await game.functions.util.searchFolder(
@@ -61,7 +62,7 @@ async function getPacks() {
 			if (
 				!file.parentPath.endsWith("packs") ||
 				!(
-					(file.isFile() && file.name.endsWith(".7z")) ||
+					(file.isFile() && file.name.endsWith(".tar.gz")) ||
 					(file.isDirectory() &&
 						(await game.functions.util.fs(
 							"exists",
@@ -74,15 +75,22 @@ async function getPacks() {
 
 			const uuid = file.isDirectory()
 				? file.name
-				: file.name.split(".").slice(0, -1).join(".");
+				: file.name.split(".").slice(0, -2).join(".");
+
+			let bytes = Buffer.alloc(0);
+			if (file.isFile()) {
+				bytes = (await fs.readFile(path)) as Buffer;
+			}
 
 			packs.push({
 				uuid,
 				path,
 				parentPath: file.parentPath,
-				compressed: file.name.endsWith(".7z"),
+				compressed: file.name.endsWith(".tar.gz"),
+				bytes,
 			});
 		},
+		false,
 	);
 
 	return packs;
@@ -173,10 +181,13 @@ async function importPack() {
 		const pack = packs[index];
 
 		if (pack.compressed) {
-			await seven.unpack(pack.path, pack.parentPath);
+			const archive = new Bun.Archive(pack.bytes);
+			const folderPath = `${pack.parentPath}/${pack.uuid}`;
+			await game.functions.util.fs("mkdir", folderPath);
+			await archive.extract(folderPath);
 			await game.functions.util.fs("rm", pack.path);
 
-			pack.path = pack.path.split(".").slice(0, -1).join(".");
+			pack.path = folderPath;
 			pack.compressed = false;
 		}
 
@@ -259,10 +270,13 @@ async function exportPack() {
 			const pack = packs[index];
 
 			if (pack.compressed) {
-				await seven.unpack(pack.path, pack.parentPath);
+				const archive = new Bun.Archive(pack.bytes);
+				const folderPath = `${pack.parentPath}/${pack.uuid}`;
+				await game.functions.util.fs("mkdir", folderPath);
+				await archive.extract(folderPath);
 				await game.functions.util.fs("rm", pack.path);
 
-				pack.path = pack.path.split(".").slice(0, -1).join(".");
+				pack.path = folderPath;
 				pack.compressed = false;
 			}
 
@@ -344,10 +358,23 @@ async function exportPack() {
 			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
 		);
 
-		await seven.pack(
-			game.functions.util.restrictPath(`/packs/${uuid}`),
-			game.functions.util.restrictPath(`/packs/${uuid}.7z`),
+		const files: Record<string, string> = {};
+
+		await game.functions.util.searchFolder(
+			`/packs/${uuid}`,
+			async (index, path, file, content) => {
+				if (!content) {
+					return;
+				}
+
+				const relativePath = path.split(uuid)[1];
+				files[relativePath] = content;
+			},
 		);
+
+		const archive = new Bun.Archive(files, { compress: "gzip" });
+		const bytes = await archive.bytes();
+		await game.functions.util.fs("writeFile", `/packs/${uuid}.tar.gz`, bytes);
 
 		await game.functions.util.fs("rm", `/packs/${uuid}`, {
 			recursive: true,

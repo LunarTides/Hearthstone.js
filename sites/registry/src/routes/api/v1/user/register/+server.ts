@@ -30,7 +30,12 @@ export async function POST(event) {
 	});
 
 	try {
-		const user = (await db.insert(table.user).values({ username, passwordHash }).returning({ id: table.user.id }))[0];
+		const user = (
+			await db
+				.insert(table.user)
+				.values({ username, passwordHash })
+				.returning({ id: table.user.id })
+		)[0];
 
 		const sessionToken = auth.generateSessionToken();
 		const session = await auth.createSession(sessionToken, user.id);

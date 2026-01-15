@@ -8,7 +8,7 @@
 	import { Cog } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
 
-	let { data, children } = $props();
+	let { data, form: rawForm, children } = $props();
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 
 	// Some real typescript magic right here. Wow...
@@ -50,6 +50,7 @@
 		cards={{ all: data.cards! }}
 		user={data.user}
 		{form}
+		{rawForm}
 		showDownloadButton
 		individual
 		class="rounded-b-none"

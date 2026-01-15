@@ -16,6 +16,8 @@
 		showDownloadButton = false,
 		individual = false,
 		form = undefined,
+		rawForm = undefined,
+		file = undefined,
 		class: className,
 	}: {
 		packs: {
@@ -31,6 +33,8 @@
 		showDownloadButton?: boolean;
 		individual?: boolean;
 		form?: any;
+		rawForm?: any;
+		file?: File;
 		class?: string;
 	} = $props();
 
@@ -55,10 +59,11 @@
 
 	$effect(() => {
 		// Download the file.
-		if (form?.file) {
+		if (rawForm?.file) {
+			console.log("filio");
 			const element = document.createElement("a");
-			element.href = window.URL.createObjectURL(new Blob([form.file]));
-			element.download = form.filename;
+			element.href = window.URL.createObjectURL(new Blob([rawForm.file]));
+			element.download = rawForm.filename;
 			element.click();
 		}
 	});

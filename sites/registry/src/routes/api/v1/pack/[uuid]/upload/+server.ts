@@ -1,6 +1,5 @@
 import { error, json } from "@sveltejs/kit";
 import fs from "fs/promises";
-import seven from "7zip-min";
 import { fileTypeFromBuffer } from "file-type";
 import { join, resolve } from "path";
 import { tmpdir } from "os";
@@ -92,33 +91,36 @@ export async function POST(event) {
 	}
 
 	const bytes = await file.bytes();
-	const magic = Array.from(bytes.slice(0, 6) as Uint8Array)
+	const magic = Array.from(bytes.slice(0, 2) as Uint8Array)
 		.map((v) => v.toString(16))
 		.join(" ")
 		.toUpperCase();
 
-	// 7z magic byte.
-	if (magic !== "37 7A BC AF 27 1C") {
+	// tar.gz magic byte. https://en.wikipedia.org/wiki/List_of_file_signatures
+	if (magic !== "1F 8B") {
 		return json({ message: "Invalid file type." }, { status: 415 });
 	}
 
 	// Double check.
 	const ft = await fileTypeFromBuffer(bytes);
-	if (ft === undefined || ft.ext !== "7z" || ft.mime !== "application/x-7z-compressed") {
+	if (ft === undefined || ft.ext !== "tar.gz" || ft.mime !== "application/gzip") {
 		return json({ message: "Invalid file type." }, { status: 415 });
 	}
 
 	// Isolate temporarily.
 	const tmpPath = await fs.mkdtemp(join(tmpdir(), "pack-"));
-	const compressedPath = `${tmpPath}/pack.7z`;
+	const compressedPath = `${tmpPath}/pack.tar.gz`;
 	await fs.writeFile(compressedPath, bytes);
 
-	const files = await seven.list(compressedPath);
+	// Get the
+	const archive = new Bun.Archive(bytes);
+
+	const files = Array.from((await archive.files()).values());
 	if (files.length > settings.upload.maxFileAmount) {
 		return json({ message: "Too many files in archive." }, { status: 413 });
 	}
 
-	const uncompressedSize = files.map((f) => parseInt(f.size, 10)).reduce((p, c) => p + c, 0);
+	const uncompressedSize = files.map((f) => f.size).reduce((p, c) => p + c, 0);
 	if (uncompressedSize > settings.upload.maxFileSize) {
 		return json({ message: "Upload too large." }, { status: 413 });
 	}
@@ -127,14 +129,9 @@ export async function POST(event) {
 	let hasMeta = false;
 
 	for (const file of files) {
-		const target = resolve(tmpPath, file.name);
-		if (!target.startsWith(tmpPath)) {
-			return json({ message: "Archive invalid." }, { status: 400 });
-		}
-
-		// Allow directories.
 		if (
 			!settings.upload.allowedExtensions.some((ext: string) => file.name.endsWith(ext)) &&
+			// Allow directories.
 			/\../.test(file.name)
 		) {
 			return json({ message: "Archive contains illegal file types." }, { status: 400 });
@@ -149,14 +146,10 @@ export async function POST(event) {
 		return json({ message: "'meta.jsonc' not found." }, { status: 400 });
 	}
 
-	// TODO: This could maybe create symlinks, which would be bad?
-	// TODO: Guard against zip bombs. `ulimit -f`
-	// await seven.unpack(tmpPackPath, tmpDirPath);
-	await seven.cmd(["x", "-snl", "-y", compressedPath, "-o" + tmpPath]);
+	await archive.extract(tmpPath);
 
-	const innerFolderPath = resolve(tmpPath, uuid);
 	try {
-		const folderStats = await fs.stat(innerFolderPath);
+		const folderStats = await fs.stat(tmpPath);
 		if (!folderStats.isDirectory()) {
 			return json({ message: "Archive invalid." }, { status: 400 });
 		}
@@ -167,7 +160,7 @@ export async function POST(event) {
 		}
 	}
 
-	const metadataContent = await fs.readFile(`${innerFolderPath}/meta.jsonc`, "utf8");
+	const metadataContent = await fs.readFile(`${tmpPath}/meta.jsonc`, "utf8");
 
 	// TODO: Parse via zod.
 	// TODO: Reject proprietary packs.
@@ -255,7 +248,7 @@ export async function POST(event) {
 
 		const abilityRegex = /\tasync (\w+).*? {/g;
 
-		const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
+		const content = await fs.readFile(`${tmpPath}${file.name}`, "utf8");
 
 		const abilities = [];
 		for (const match of content.matchAll(abilityRegex)) {
@@ -315,8 +308,8 @@ export async function POST(event) {
 	await fs.mkdir(finalPath, { recursive: true });
 
 	await fs.rm(compressedPath);
-	await fs.cp(innerFolderPath, finalPath, { recursive: true });
-	await fs.rm(innerFolderPath, { recursive: true, force: true });
+	await fs.cp(tmpPath, finalPath, { recursive: true });
+	await fs.rm(tmpPath, { recursive: true, force: true });
 
 	// TODO: Include link.
 	return json({ pack: censorPack(pack[0], user) }, { status: 201 });

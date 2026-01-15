@@ -15,7 +15,9 @@ export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
 
 export const user = pgTable("user", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	username: text("username").notNull().unique(),
 	passwordHash: text("password_hash").notNull(),
 	role: rolesEnum("role").notNull().default("User"),
@@ -34,7 +36,9 @@ export const session = pgTable("session", {
 });
 
 export const profile = pgTable("profile", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	userId: uuid("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
@@ -43,7 +47,9 @@ export const profile = pgTable("profile", {
 });
 
 export const pack = pgTable("pack", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	uuid: uuid("uuid"),
 	userIds: uuid("user_ids").array().notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
@@ -76,7 +82,9 @@ export const packRelations = relations(pack, ({ many }) => ({
 }));
 
 export const packLike = pgTable("packLike", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	// TODO: Delete pack likes when the pack is deleted.
 	packId: uuid("pack_id").notNull(),
 	userId: uuid("user_id")
@@ -90,7 +98,9 @@ export const packLikeRelations = relations(pack, ({ one }) => ({
 }));
 
 export const packLink = pgTable("packLink", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	packId: uuid("pack_id")
 		.notNull()
 		.references(() => pack.id, { onDelete: "cascade" }),
@@ -99,7 +109,9 @@ export const packLink = pgTable("packLink", {
 });
 
 export const card = pgTable("card", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	uuid: uuid("uuid").notNull(),
 	abilities: text("abilities").array().notNull(),
 
@@ -143,7 +155,9 @@ export const cardRelations = relations(card, ({ one }) => ({
 }));
 
 export const packComment = pgTable("packComment", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
@@ -157,7 +171,9 @@ export const packCommentRelations = relations(packComment, ({ many }) => ({
 }));
 
 export const packCommentLike = pgTable("packCommentLike", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	commentId: uuid("comment_id")
 		.notNull()
 		.references(() => packComment.id, { onDelete: "cascade" }),
@@ -168,7 +184,9 @@ export const packCommentLike = pgTable("packCommentLike", {
 });
 
 export const packMessage = pgTable("packMessage", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
@@ -178,7 +196,9 @@ export const packMessage = pgTable("packMessage", {
 });
 
 export const notification = pgTable("notification", {
-	id: uuid("id").primaryKey().default(sql`uuidv7()`),
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
 	userId: uuid("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),

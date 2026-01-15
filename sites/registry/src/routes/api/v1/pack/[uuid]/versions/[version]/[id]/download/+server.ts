@@ -3,8 +3,8 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import fs from "fs/promises";
-import seven from "7zip-min";
 import { resolve } from "path";
+import { searchFolder } from "$lib/server/helper";
 
 export async function POST(event) {
 	const uuid = event.params.uuid;
@@ -38,19 +38,38 @@ export async function POST(event) {
 		.where(eq(table.pack.id, pack.id));
 
 	const folder = `./static/assets/packs/${pack.uuid}/${pack.packVersion}/${pack.id}`;
-	const filename = resolve(folder, `${pack.uuid}.7z`);
+	const filename = resolve(folder, `${pack.uuid}.tar.gz`);
 
-	// TODO: Is this safe?
-	await seven.pack(folder, resolve(folder, `${pack.uuid}.7z`));
+	// Compress the folder.
+	const files: Record<string, string> = {};
 
+	await searchFolder(
+		folder,
+		async (index, path, file, content) => {
+			if (!content) {
+				return;
+			}
+
+			const relativePath = path.split(id)[1];
+			files[relativePath] = content;
+		},
+		true,
+		false,
+	);
+
+	const archive = new Bun.Archive(files, { compress: "gzip" });
+	const bytes = await archive.bytes();
+	await fs.writeFile(resolve(folder, `${pack.uuid}.tar.gz`), bytes);
+
+	// Get the compressed file.
 	const file = await fs.readFile(filename);
 	await fs.unlink(filename);
 
 	return new Response(file, {
 		headers: {
-			"Content-Type": "application/x-7z-compressed",
-			// TODO: The filename should be something like "uuid+id.7z"
-			"Content-Disposition": `attachment; filename="${pack.uuid}.7z"`,
+			"Content-Type": "application/gzip",
+			// TODO: The filename should be something like "uuid+id.tar.gz"
+			"Content-Disposition": `attachment; filename="${pack.uuid}.tar.gz"`,
 		},
 	});
 }
