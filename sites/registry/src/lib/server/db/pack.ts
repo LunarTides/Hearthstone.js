@@ -110,7 +110,9 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
 				.$dynamic();
 			if (!satisfiesRole(clientUser, "Moderator")) {
-				messagesQuery = messagesQuery.where(and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")));
+				messagesQuery = messagesQuery.where(
+					and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
+				);
 			}
 
 			const messages = await messagesQuery;

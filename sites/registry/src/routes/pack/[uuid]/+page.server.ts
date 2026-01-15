@@ -3,34 +3,20 @@ import { requestAPI } from "$lib/api/helper.js";
 import type { PackCommentWithExtras } from "$lib/db/schema";
 import type { CensoredPack } from "$lib/pack.js";
 import { APIGetPack, loadGetPack } from "$lib/server/db/pack.js";
-import { error, fail, type ServerLoadEvent } from "@sveltejs/kit";
-
-const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
-	// return error(400, { message: "hi" });
-	const response = await requestAPI<PackCommentWithExtras[]>(
-		event,
-		resolve("/api/v1/pack/[uuid]/comments", { uuid: pack.uuid }),
-	);
-
-	if (response.error) {
-		return error(response.error.status, { message: response.error.message });
-	}
-
-	const amount = parseInt(response.raw.headers.get("X-Comment-Amount")!, 10);
-
-	return { comments: response.json, amount };
-};
+import { error, fail, redirect, type ServerLoadEvent } from "@sveltejs/kit";
 
 export const load = async (event) => {
-	// TODO: Stream like in `routes/+layout.server.ts`.
 	const packs = await loadGetPack(event.locals.user, event.params.uuid);
 	const latest = packs.latest;
 
-	const commentsObject = await getComments(event, latest);
-
-	return {
-		commentsObject,
-	};
+	redirect(
+		302,
+		resolve("/pack/[uuid]/versions/[version]/[id]", {
+			uuid: event.params.uuid,
+			version: latest.packVersion,
+			id: latest.id,
+		}),
+	);
 };
 
 export const actions = {

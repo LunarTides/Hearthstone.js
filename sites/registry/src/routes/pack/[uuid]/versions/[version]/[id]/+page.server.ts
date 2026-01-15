@@ -1,10 +1,40 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "$lib/api/schemas.js";
+import type { PackCommentWithExtras } from "$lib/db/schema.js";
+import type { CensoredPack } from "$lib/pack";
 import { APIGetPack } from "$lib/server/db/pack.js";
-import { fail, redirect } from "@sveltejs/kit";
+import { error, fail, redirect, type ServerLoadEvent } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+
+const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
+	// return error(400, { message: "hi" });
+	const response = await requestAPI<PackCommentWithExtras[]>(
+		event,
+		resolve("/api/v1/pack/[uuid]/comments", { uuid: pack.uuid }),
+	);
+
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
+	}
+
+	const amount = parseInt(response.raw.headers.get("X-Comment-Amount")!, 10);
+
+	return { comments: response.json, amount };
+};
+
+export const load = async (event) => {
+	// TODO: Stream like in `routes/+layout.server.ts`.
+	const parent = await event.parent();
+	const latest = (await parent.packs).latest;
+
+	const commentsObject = await getComments(event, latest);
+
+	return {
+		commentsObject,
+	};
+};
 
 export const actions = {
 	download: async (event) => {

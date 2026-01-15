@@ -15,7 +15,7 @@
 	<tbody>
 		{#if page.params.path}
 			<!-- Add ".." -->
-			<tr class="flex gap-1 bg-background p-2">
+			<tr class="flex gap-1 bg-background p-2 rounded-lg">
 				<th class="text-yellow-100">
 					<Folder />
 				</th>
@@ -41,7 +41,7 @@
 
 			return a.type === "directory" ? -1 : 1;
 		}) as file (file.path)}
-			<tr class="flex gap-1 p-2 alternating-children">
+			<tr class="flex gap-1 p-2 alternating-children rounded-lg">
 				<th class="text-yellow-100">
 					{#if file.type === "directory"}
 						<Folder />

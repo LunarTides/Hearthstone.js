@@ -2,6 +2,7 @@
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import Badge from "$lib/components/badge.svelte";
+	import CardSmall from "$lib/components/card-small.svelte";
 	import PackBig from "$lib/components/pack-big.svelte";
 	import type { PackWithExtras } from "$lib/db/schema.js";
 	import { satisfiesRole } from "$lib/user";
@@ -64,187 +65,214 @@
 	{/if}
 
 	{#if canEditPack || canModeratePack}
-		<div class="flex text-white">
-			<a
-				href={resolve("/pack/[uuid]/edit", { uuid: versions.current.uuid })}
-				class="px-5 py-3 w-full text-center bg-red-400 hover:bg-red-300 active:bg-red-500"
-			>
-				Edit
-			</a>
-			<div class="border-l text-slate-700 ml-auto h-auto"></div>
-			{#if deleteConfirm < 2}
-				<button
-					class="px-5 py-3 w-full hover:cursor-pointer bg-red-400 hover:bg-red-300 active:bg-red-500"
-					onclick={() => {
-						deleteConfirm++;
-					}}
-				>
-					{#if deleteConfirm === 0}
-						Delete Version
-					{:else if deleteConfirm === 1}
-						Really delete?
-					{/if}
-				</button>
-			{:else}
-				<!-- TODO: Use superforms. -->
-				<form
-					action={resolve("/pack/[uuid]/versions/[version]/[id]", {
-						uuid: versions.current.uuid,
-						version: versions.current.packVersion,
-						id: versions.current.id,
-					}) + "?/delete"}
-					method="post"
-					class="w-full"
-					use:enhance
-				>
-					<button
-						type="submit"
-						class="px-5 py-3 w-full bg-red-500 hover:cursor-pointer hover:bg-red-400 active:bg-red-600"
+		<div class="m-1 p-2 bg-header rounded-md">
+			<details open>
+				<summary class="text-red-500">Edit</summary>
+				<div class="flex m-2 gap-1">
+					<a
+						href={resolve("/pack/[uuid]/edit", { uuid: versions.current.uuid })}
+						class="px-5 py-3 w-full text-center bg-red-400 hover:bg-red-300 active:bg-red-500"
 					>
-						<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
-					</button>
-				</form>
-			{/if}
+						Edit
+					</a>
+					{#if deleteConfirm < 2}
+						<button
+							class="px-5 py-3 w-full hover:cursor-pointer bg-red-400 hover:bg-red-300 active:bg-red-500"
+							onclick={() => {
+								deleteConfirm++;
+							}}
+						>
+							{#if deleteConfirm === 0}
+								Delete Version
+							{:else if deleteConfirm === 1}
+								Really delete?
+							{/if}
+						</button>
+					{:else}
+						<!-- TODO: Use superforms. -->
+						<form
+							action={resolve("/pack/[uuid]/versions/[version]/[id]", {
+								uuid: versions.current.uuid,
+								version: versions.current.packVersion,
+								id: versions.current.id,
+							}) + "?/delete"}
+							method="post"
+							class="w-full"
+							use:enhance
+						>
+							<button
+								type="submit"
+								class="px-5 py-3 w-full bg-red-500 hover:cursor-pointer hover:bg-red-400 active:bg-red-600"
+							>
+								<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
+							</button>
+						</form>
+					{/if}
+				</div>
+			</details>
 		</div>
 	{/if}
 
 	{#if canModeratePack}
-		<!-- Approve -->
-		<div class="flex flex-col m-2 gap-2">
-			<h3 class="text-2xl">Approve</h3>
-			{#if approveConfirm === 0}
-				<div class="flex gap-1">
-					<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
-						<button
-							class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-							onclick={() => {
-								approveConfirm++;
-								approveType = true;
-							}}
-						>
-							{versions.current.approved ? "Unapprove" : "Approve"}
-						</button>
-					</div>
-					{#if !versions.current.approved}
-						<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
-							<button
-								class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-								onclick={() => {
-									approveConfirm++;
-									approveType = false;
-								}}
-							>
-								{versions.current.denied ? "Remove denial" : "Deny"}
-							</button>
+		<div class="m-1 p-2 bg-header rounded-md">
+			<details open>
+				<summary class="text-indigo-500">Moderate</summary>
+				<!-- Approve -->
+				<div class="flex flex-col m-2 gap-2">
+					<h3 class="text-2xl">Approve</h3>
+					{#if approveConfirm === 0}
+						<div class="flex gap-1">
+							<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
+								<button
+									class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+									onclick={() => {
+										approveConfirm++;
+										approveType = true;
+									}}
+								>
+									{versions.current.approved ? "Unapprove" : "Approve"}
+								</button>
+							</div>
+							{#if !versions.current.approved}
+								<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
+									<button
+										class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+										onclick={() => {
+											approveConfirm++;
+											approveType = false;
+										}}
+									>
+										{versions.current.denied ? "Remove denial" : "Deny"}
+									</button>
+								</div>
+							{/if}
 						</div>
+					{:else}
+						<form
+							action={resolve("/pack/[uuid]/versions/[version]/[id]", {
+								uuid: versions.current.uuid,
+								version: versions.current.packVersion,
+								id: versions.current.id,
+							}) +
+								(approveType
+									? versions.current.approved
+										? "?/unapprove"
+										: "?/approve"
+									: versions.current.denied
+										? "?/approve-deny-remove"
+										: "?/approve-deny")}
+							method="post"
+							use:enhance
+						>
+							<div class="flex flex-col gap-1">
+								<textarea
+									name="message"
+									class="bg-background min-h-24 invalid:border-red-500"
+									placeholder="Comment..."
+									aria-invalid={$errors.message ? "true" : undefined}
+									bind:value={$form.message}
+									{...$constraints.message}
+								></textarea>
+
+								<select
+									name="messageType"
+									class="bg-background invalid:border-red-500"
+									aria-invalid={$errors.messageType ? "true" : undefined}
+									bind:value={$form.messageType}
+									{...$constraints.messageType}
+								>
+									<option value="public">Public</option>
+									<option value="internal">Internal</option>
+								</select>
+
+								<div class="flex bg-black text-white outline-1 -outline-offset-1">
+									<button
+										type="submit"
+										class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+									>
+										{#if approveType}
+											{versions.current.approved ? "Unapprove!" : "Approve!"}
+										{:else}
+											{versions.current.denied ? "Remove denial!" : "Deny!"}
+										{/if}
+									</button>
+								</div>
+							</div>
+						</form>
 					{/if}
 				</div>
-			{:else}
-				<form
-					action={resolve("/pack/[uuid]/versions/[version]/[id]", {
-						uuid: versions.current.uuid,
-						version: versions.current.packVersion,
-						id: versions.current.id,
-					}) +
-						(approveType
-							? versions.current.approved
-								? "?/unapprove"
-								: "?/approve"
-							: versions.current.denied
-								? "?/approve-deny-remove"
-								: "?/approve-deny")}
-					method="post"
-					use:enhance
-				>
-					<div class="flex flex-col gap-1">
-						<textarea
-							name="message"
-							class="bg-background min-h-24 invalid:border-red-500"
-							placeholder="Comment..."
-							aria-invalid={$errors.message ? "true" : undefined}
-							bind:value={$form.message}
-							{...$constraints.message}
-						></textarea>
-
-						<select
-							name="messageType"
-							class="bg-background invalid:border-red-500"
-							aria-invalid={$errors.messageType ? "true" : undefined}
-							bind:value={$form.messageType}
-							{...$constraints.messageType}
-						>
-							<option value="public">Public</option>
-							<option value="internal">Internal</option>
-						</select>
-
-						<div class="flex bg-black text-white outline-1 -outline-offset-1">
-							<button
-								type="submit"
-								class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-							>
-								{#if approveType}
-									{versions.current.approved ? "Unapprove!" : "Approve!"}
-								{:else}
-									{versions.current.denied ? "Remove denial!" : "Deny!"}
-								{/if}
-							</button>
-						</div>
-					</div>
-				</form>
-			{/if}
+			</details>
 		</div>
 	{/if}
 
-	<details class="m-2" open>
-		<summary>Messages</summary>
-
-		<!-- TODO: Add posting messages as Moderator+ -->
-
-		<div class="flex flex-col gap-1">
-			{#each versions.current.messages as message (message.id)}
-				<div
-					id={`message-${message.id}`}
-					class="flex flex-col gap-2 p-2 bg-header rounded-xl text-white target:outline"
-				>
-					<div>
-						<div class="flex gap-2">
-							{#if message.author}
-								<a href={resolve("/user/[uuid]", { uuid: message.author.id })} class="flex gap-2">
-									<!-- TODO: Add avatar -->
-									<div class="p-4 bg-white rounded-full"></div>
-									<p class="text-lg self-center font-mono">{message.author.username}</p>
-								</a>
-								<div class="flex gap-1">
-									{#if message.authorId === data.user?.id}
-										<Badge class="bg-indigo-300 h-fit self-center text-black">You</Badge>
-									{/if}
-									{#if satisfiesRole(message.author, "Moderator")}
-										<Badge class="bg-blue-200 h-fit self-center text-black">
-											{message.author.role}
-										</Badge>
-									{/if}
-								</div>
-								{#if message.type !== "public"}
-									<p class="text-lg self-center font-mono bg-background py-0.5 px-2 rounded-full">
-										{message.type[0].toUpperCase() + message.type.slice(1)}
-									</p>
-								{/if}
-							{:else}
-								<div class="flex gap-2">
-									<Cog class="size-7" />
-									<p class="text-lg self-center font-mono">System</p>
-								</div>
-								<Badge class="bg-indigo-400 h-fit self-center text-black">System</Badge>
-							{/if}
-						</div>
-					</div>
-
-					<pre class="font-sans">{message.text}</pre>
-					<p class="text-gray-600">{message.creationDate.toLocaleString()}</p>
+	{#await data.cards}
+		<p>Loading...</p>
+	{:then cards}
+		<div class="m-1 p-2 bg-header rounded-md">
+			<details open>
+				<summary>Cards ({cards.length})</summary>
+				<div class="flex flex-wrap gap-1 mt-2">
+					<!-- TODO: This doesn't show cards in not-approved versions. -->
+					{#each cards as card (card.id)}
+						<CardSmall {card} pack={versions.current} />
+					{/each}
 				</div>
-			{/each}
+			</details>
 		</div>
-	</details>
+	{/await}
+
+	<div class="m-1 p-2 bg-header rounded-md">
+		<details open>
+			<summary>Messages ({versions.current.messages.length})</summary>
+
+			<!-- TODO: Add posting messages as Moderator+ -->
+
+			<div class="flex flex-col gap-1">
+				{#each versions.current.messages as message (message.id)}
+					<div
+						id={`message-${message.id}`}
+						class="flex flex-col gap-2 p-2 bg-background rounded-xl text-white target:outline"
+					>
+						<div>
+							<div class="flex gap-2">
+								{#if message.author}
+									<a href={resolve("/user/[uuid]", { uuid: message.author.id })} class="flex gap-2">
+										<!-- TODO: Add avatar -->
+										<div class="p-4 bg-white rounded-full"></div>
+										<p class="text-lg self-center font-mono">{message.author.username}</p>
+									</a>
+									<div class="flex gap-1">
+										{#if message.authorId === data.user?.id}
+											<Badge class="bg-indigo-300 h-fit self-center text-black">You</Badge>
+										{/if}
+										{#if satisfiesRole(message.author, "Moderator")}
+											<Badge class="bg-blue-200 h-fit self-center text-black">
+												{message.author.role}
+											</Badge>
+										{/if}
+									</div>
+									{#if message.type !== "public"}
+										<p class="text-lg self-center font-mono bg-background py-0.5 px-2 rounded-full">
+											{message.type[0].toUpperCase() + message.type.slice(1)}
+										</p>
+									{/if}
+								{:else}
+									<div class="flex gap-2">
+										<Cog class="size-7" />
+										<p class="text-lg self-center font-mono">System</p>
+									</div>
+									<Badge class="bg-indigo-400 h-fit self-center text-black">System</Badge>
+								{/if}
+							</div>
+						</div>
+
+						<pre class="font-sans">{message.text}</pre>
+						<p class="text-gray-600">{message.creationDate.toLocaleString()}</p>
+					</div>
+				{/each}
+			</div>
+		</details>
+	</div>
 {/await}
 
 {@render children()}
