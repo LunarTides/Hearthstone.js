@@ -64,7 +64,7 @@ export async function POST(event) {
 		.update(pack)
 		.set({ approved: true, approvedBy: user.id, approvedAt: new Date() })
 		.where(eq(pack.id, version.id));
-	await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.uuid, version.uuid));
+
 	await db
 		.update(card)
 		.set({ approved: true, isLatestVersion: false })
@@ -80,6 +80,20 @@ export async function POST(event) {
 		.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
 		.at(0);
 	if (newLatestPack?.id === version.id) {
+		// Demote other packs / cards.
+		await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.uuid, version.uuid));
+		const cards = await db
+			.select()
+			.from(card)
+			.innerJoin(pack, eq(pack.id, card.packId))
+			.where(eq(pack.uuid, version.uuid));
+		for (const c of cards) {
+			if (c.card.packId !== version.id) {
+				await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.card.id));
+			}
+		}
+
+		// Promote currnet (latest) pack.
 		await db.update(pack).set({ isLatestVersion: true }).where(eq(pack.id, newLatestPack.id));
 		await db.update(card).set({ isLatestVersion: true }).where(eq(card.packId, newLatestPack.id));
 	}
