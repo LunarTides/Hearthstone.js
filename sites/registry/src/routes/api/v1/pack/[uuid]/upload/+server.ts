@@ -272,6 +272,8 @@ export async function POST(event) {
 			abilities.push(ability);
 		}
 
+		const filePath = file.name.replaceAll("\\", "/").split(`${uuid}/`).slice(1).join(`${uuid}/`);
+
 		const p = parseCardField.bind(null, content);
 		const c: InferInsertModel<typeof card> = {
 			id: randomUUID(),
@@ -304,6 +306,7 @@ export async function POST(event) {
 
 			approved: !settings.upload.requireApproval,
 			isLatestVersion,
+			filePath,
 		};
 
 		// TODO: Validate c using zod.

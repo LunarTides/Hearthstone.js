@@ -131,6 +131,7 @@ export const card = pgTable("card", {
 
 	approved: boolean("approved").notNull(),
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
+	filePath: text("filePath").notNull(),
 });
 
 export const cardRelations = relations(card, ({ one }) => ({

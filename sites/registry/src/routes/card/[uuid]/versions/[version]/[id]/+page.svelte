@@ -3,12 +3,10 @@
 	import type { Card } from "$lib/db/schema.js";
 	import CardBig from "$lib/components/card-big.svelte";
 	import PackBig from "$lib/components/pack-big.svelte";
+	import { Highlight, LineNumbers } from "svelte-highlight";
+	import { typescript } from "svelte-highlight/languages/typescript";
 
 	let { data, form } = $props();
-
-	const getPack = (cards: Awaited<typeof data.cards>, card: Card) => {
-		return cards.packs.all.find((p) => p.id === card.packId)!;
-	};
 
 	// Some real typescript magic right here. Wow...
 	let card = $state<Promise<Card>>(Promise.resolve() as any);
@@ -46,13 +44,24 @@
 		<p>Loading...</p>
 	{:then card}
 		<CardBig
-			{cards}
+			cards={{
+				...cards,
+				current: card,
+			}}
 			packs={{
 				...cards.packs,
-				current: getPack(cards, card),
+				current: cards.packs.all.find((p) => p.id === card.packId)!,
 			}}
 		/>
 
-		<!-- TODO: Show the card's code. -->
+		<div class="m-1">
+			<Highlight
+				language={typescript}
+				code={cards.files.find((f) => f.id === card.id)!.file.content}
+				let:highlighted
+			>
+				<LineNumbers class="rounded-md" {highlighted} />
+			</Highlight>
+		</div>
 	{/await}
 {/await}
