@@ -17,12 +17,5 @@
 		<p>Dont worry, they are easily understandable :)</p>
 	</div>
 
-	<div class="p-2 mx-1 bg-header w-fit rounded-md">
-		<label>
-			Uses Networking
-			<input type="checkbox" name="networking" />
-		</label>
-	</div>
-
 	<button type="submit" class="custom-button w-fit p-2">Submit</button>
 </form>

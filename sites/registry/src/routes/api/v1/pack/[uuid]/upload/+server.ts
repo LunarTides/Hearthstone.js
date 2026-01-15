@@ -23,6 +23,10 @@ interface Metadata {
 	license: string;
 	authors: string[];
 	links: Record<string, string>;
+	permissions: {
+		network: boolean;
+		fileSystem: boolean;
+	};
 	requires: {
 		packs: string[];
 		cards: string[];
@@ -245,6 +249,9 @@ export async function POST(event) {
 		description: metadata.description,
 		license: metadata.license,
 		authors: metadata.authors,
+		permissions: Object.entries(metadata.permissions)
+			.filter(([_, value]) => Boolean(value))
+			.map(([key]) => key),
 
 		unpackedSize: uncompressedSize,
 

@@ -223,6 +223,18 @@
 			{/if}
 		</div>
 
+		<div>
+			<div class="w-fit">
+				<p class="text-lg font-semibold">Permissions</p>
+				<hr />
+				{#if pack.permissions.length > 0}
+					<p class="text-amber-300">{pack.permissions.join(", ")}</p>
+				{:else}
+					<p class="text-green-300">None</p>
+				{/if}
+			</div>
+		</div>
+
 		{#if !hideButtons && pack.approved}
 			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}

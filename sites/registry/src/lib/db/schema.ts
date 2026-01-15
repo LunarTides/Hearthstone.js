@@ -53,6 +53,7 @@ export const pack = pgTable("pack", {
 	description: text("description").notNull(),
 	license: text("license").notNull(),
 	authors: text("authors").array().notNull(),
+	permissions: text("permissions").array().notNull().default([]),
 	// TODO: Add requires.
 
 	downloadCount: integer("download_count").notNull().default(0),
