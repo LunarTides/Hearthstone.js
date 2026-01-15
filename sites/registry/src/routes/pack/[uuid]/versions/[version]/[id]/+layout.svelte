@@ -134,7 +134,7 @@
 									approveType = false;
 								}}
 							>
-								Deny
+								{versions.current.denied ? "Remove denial" : "Deny"}
 							</button>
 						</div>
 					{/if}
@@ -150,7 +150,9 @@
 							? versions.current.approved
 								? "?/unapprove"
 								: "?/approve"
-							: "?/approve-deny")}
+							: versions.current.denied
+								? "?/approve-deny-remove"
+								: "?/approve-deny")}
 					method="post"
 					use:enhance
 				>
@@ -183,8 +185,7 @@
 								{#if approveType}
 									{versions.current.approved ? "Unapprove!" : "Approve!"}
 								{:else}
-									<!-- TODO: Make deny work. -->
-									Deny!
+									{versions.current.denied ? "Remove denial!" : "Deny!"}
 								{/if}
 							</button>
 						</div>

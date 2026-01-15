@@ -94,3 +94,80 @@ export async function POST(event) {
 
 	return json({}, { status: 200 });
 }
+
+// TODO: Deduplicate from POST.
+export async function DELETE(event) {
+	const user = event.locals.user;
+	if (!user) {
+		return json({ message: "Please log in." });
+	}
+
+	const uuid = event.params.uuid;
+	const packVersion = event.params.version;
+	const id = event.params.id;
+
+	const j = await event.request.json();
+
+	const form = await superValidate(j, zod4(approveSchema));
+	if (!form.valid) {
+		return json(
+			{ message: `Invalid request. (${form.errors._errors?.join(", ")})` },
+			{ status: 422 },
+		);
+	}
+
+	const message = form.data.message;
+	const messageType = form.data.messageType;
+
+	const pack = (
+		await db
+			.select()
+			.from(table.pack)
+			.where(
+				and(
+					eq(table.pack.uuid, uuid),
+					eq(table.pack.packVersion, packVersion),
+					eq(table.pack.id, id),
+				),
+			)
+	).at(0);
+	if (!pack) {
+		return json({ message: "Version not found." }, { status: 404 });
+	}
+
+	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+		return json(
+			{ message: "You do not have the the necessary privileges to do this." },
+			{ status: 403 },
+		);
+	}
+
+	await db.update(table.pack).set({ denied: false }).where(eq(table.pack.id, pack.id));
+
+	const packMessage = await db
+		.insert(table.packMessage)
+		.values({
+			packId: id,
+			authorId: user.id,
+			type: messageType,
+			text: message
+				? `> Removed deny tag from this pack: ${message}`
+				: `> Removed deny tag from this pack.`,
+		})
+		.returning({ id: table.packMessage.id });
+
+	for (const userId of pack.userIds) {
+		await notify(event, {
+			userId,
+			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.slice(0, 6)}) is being reconsidered for approval!`,
+			route:
+				resolve("/pack/[uuid]/versions/[version]/[id]", {
+					uuid: pack.uuid,
+					version: pack.packVersion,
+					id: pack.id,
+				}) + `#message-${packMessage[0].id}`,
+		});
+	}
+
+	return json({}, { status: 200 });
+}

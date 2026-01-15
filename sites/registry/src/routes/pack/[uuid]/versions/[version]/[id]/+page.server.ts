@@ -108,43 +108,14 @@ export const actions = {
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.
-		redirect(302, resolve("/pack/[uuid]", { uuid: pack.uuid }));
-	},
-	// TODO: Deduplicate.
-	"approve-deny": async (event) => {
-		const form = await superValidate(event.request, zod4(approveSchema));
-		if (!form.valid) {
-			return fail(400, { form });
-		}
-
-		const packs = await APIGetPack(event.locals.user, event.params.uuid);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find((v) => v.id === event.params.id);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
-		const response = await requestAPI(
-			event,
-			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/approve/deny", {
+		redirect(
+			302,
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
 				uuid: pack.uuid,
 				version: pack.packVersion,
 				id: pack.id,
 			}),
-			{
-				method: "POST",
-				body: JSON.stringify(form.data),
-			},
 		);
-		if (response.error) {
-			return message(form, response.error.message, { status: response.error.status as any });
-		}
-
-		// TODO: If there are no more versions, navigate to the homepage.
-		redirect(302, resolve("/pack/[uuid]", { uuid: pack.uuid }));
 	},
 	// TODO: Deduplicate.
 	unapprove: async (event) => {
@@ -180,6 +151,99 @@ export const actions = {
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.
-		redirect(302, resolve("/pack/[uuid]", { uuid: pack.uuid }));
+		redirect(
+			302,
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}),
+		);
+	},
+	// TODO: Deduplicate.
+	"approve-deny": async (event) => {
+		const form = await superValidate(event.request, zod4(approveSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const packs = await APIGetPack(event.locals.user, event.params.uuid);
+		if (packs.error) {
+			return message(form, packs.error.message, { status: packs.error.status as any });
+		}
+
+		const pack = packs.all.find((v) => v.id === event.params.id);
+		if (!pack) {
+			return message(form, "Pack not found.", { status: 404 });
+		}
+
+		const response = await requestAPI(
+			event,
+			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/approve/deny", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}),
+			{
+				method: "POST",
+				body: JSON.stringify(form.data),
+			},
+		);
+		if (response.error) {
+			return message(form, response.error.message, { status: response.error.status as any });
+		}
+
+		// TODO: If there are no more versions, navigate to the homepage.
+		redirect(
+			302,
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}),
+		);
+	},
+	// TODO: Deduplicate.
+	"approve-deny-remove": async (event) => {
+		const form = await superValidate(event.request, zod4(approveSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
+		const packs = await APIGetPack(event.locals.user, event.params.uuid);
+		if (packs.error) {
+			return message(form, packs.error.message, { status: packs.error.status as any });
+		}
+
+		const pack = packs.all.find((v) => v.id === event.params.id);
+		if (!pack) {
+			return message(form, "Pack not found.", { status: 404 });
+		}
+
+		const response = await requestAPI(
+			event,
+			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/approve/deny", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}),
+			{
+				method: "DELETE",
+				body: JSON.stringify(form.data),
+			},
+		);
+		if (response.error) {
+			return message(form, response.error.message, { status: response.error.status as any });
+		}
+
+		// TODO: If there are no more versions, navigate to the homepage.
+		redirect(
+			302,
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}),
+		);
 	},
 };
