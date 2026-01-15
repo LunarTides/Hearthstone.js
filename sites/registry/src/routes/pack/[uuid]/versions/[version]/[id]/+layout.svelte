@@ -185,17 +185,30 @@
 									<option value="internal">Internal</option>
 								</select>
 
-								<div class="flex bg-black text-white outline-1 -outline-offset-1">
-									<button
-										type="submit"
-										class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-									>
-										{#if approveType}
-											{versions.current.approved ? "Unapprove!" : "Approve!"}
-										{:else}
-											{versions.current.denied ? "Remove denial!" : "Deny!"}
-										{/if}
-									</button>
+								<div class="flex gap-1">
+									<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
+										<button
+											type="button"
+											class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+											onclick={() => {
+												approveConfirm = 0;
+											}}
+										>
+											Cancel
+										</button>
+									</div>
+									<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
+										<button
+											type="submit"
+											class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-indigo-600 active:bg-black"
+										>
+											{#if approveType}
+												{versions.current.approved ? "Unapprove!" : "Approve!"}
+											{:else}
+												{versions.current.denied ? "Remove denial!" : "Deny!"}
+											{/if}
+										</button>
+									</div>
 								</div>
 							</div>
 						</form>
