@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq, desc } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
@@ -110,7 +110,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
 				.$dynamic();
 			if (!satisfiesRole(clientUser, "Moderator")) {
-				messagesQuery = messagesQuery.where(eq(table.packMessage.type, "public"));
+				messagesQuery = messagesQuery.where(and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")));
 			}
 
 			const messages = await messagesQuery;

@@ -17,7 +17,6 @@
 		individual = false,
 		form = undefined,
 		rawForm = undefined,
-		file = undefined,
 		class: className,
 	}: {
 		packs: {
@@ -34,7 +33,6 @@
 		individual?: boolean;
 		form?: any;
 		rawForm?: any;
-		file?: File;
 		class?: string;
 	} = $props();
 
@@ -60,7 +58,6 @@
 	$effect(() => {
 		// Download the file.
 		if (rawForm?.file) {
-			console.log("filio");
 			const element = document.createElement("a");
 			element.href = window.URL.createObjectURL(new Blob([rawForm.file]));
 			element.download = rawForm.filename;

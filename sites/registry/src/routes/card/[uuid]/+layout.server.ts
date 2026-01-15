@@ -12,7 +12,6 @@ export const load = (event) => {
 	const user = event.locals.user;
 	const uuid = event.params.uuid;
 
-	// TODO: Stream like in `routes/+layout.server.ts`.
 	const getCards = async () => {
 		let cards = await db
 			.select()
@@ -42,7 +41,8 @@ export const load = (event) => {
 						uuid: pack.uuid,
 						version: pack.packVersion,
 						id: pack.id,
-						path: card.filePath,
+						// Remove leading slash.
+						path: card.filePath.replace(/^\//, ""),
 					}),
 				);
 				if (response.error) {

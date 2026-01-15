@@ -238,7 +238,7 @@ export async function POST(event) {
 			abilities.push(ability);
 		}
 
-		const filePath = file.name.replaceAll("\\", "/").split(`${uuid}/`).slice(1).join(`${uuid}/`);
+		const filePath = file.name.replaceAll("\\", "/");
 
 		const f = parseCardField.bind(null, content);
 		const card: InferInsertModel<typeof table.card> = {
