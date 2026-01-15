@@ -59,7 +59,7 @@ export const pack = pgTable("pack", {
 	description: text("description").notNull(),
 	license: text("license").notNull(),
 	authors: text("authors").array().notNull(),
-	permissions: text("permissions").array().notNull().default([]),
+	permissions: text("permissions").array().notNull(),
 	// TODO: Add requires.
 
 	downloadCount: integer("download_count").notNull().default(0),
@@ -69,6 +69,7 @@ export const pack = pgTable("pack", {
 	approved: boolean("approved").notNull(),
 	approvedBy: uuid("approved_by").references(() => user.id, { onDelete: "set null" }),
 	approvedAt: timestamp("approved_at"),
+	denied: boolean("denied").notNull().default(false),
 
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 });

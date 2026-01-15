@@ -69,7 +69,7 @@ export async function POST(event) {
 
 	await db
 		.update(table.pack)
-		.set({ approved: true, approvedBy: user.id, approvedAt: new Date() })
+		.set({ approved: true, approvedBy: user.id, approvedAt: new Date(), denied: false })
 		.where(eq(table.pack.id, pack.id));
 
 	await db
@@ -105,6 +105,7 @@ export async function POST(event) {
 	return json({}, { status: 200 });
 }
 
+// TODO: Deduplicate from POST.
 export async function DELETE(event) {
 	const user = event.locals.user;
 	if (!user) {
