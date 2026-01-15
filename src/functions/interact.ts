@@ -22,7 +22,7 @@ import {
 } from "@Game/types.ts";
 import { format } from "node:util";
 import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
-import { checkbox, confirm, input, select } from "@inquirer/prompts";
+import { checkbox, confirm, input, number, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -434,19 +434,45 @@ const prompt = {
 			}
 
 			const key = answer.split("-").slice(1).join("-");
+			const value = object[key];
 
-			if (Array.isArray(object[key])) {
-				const changed = await game.prompt.configureArray(object[key], onLoop);
+			if (Array.isArray(value)) {
+				const changed = await game.prompt.configureArray(value, onLoop);
 
 				// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
 				// Learned that the hard way...
 				dirty ||= changed;
 				continue;
+			} else if (game.lodash.isBoolean(value)) {
+				const newValue = await game.prompt.customSelect(
+					"What will you change this value to?",
+					["True", "False"],
+					{
+						arrayTransform: async (i, element) => ({
+							name: element,
+							value: element.toLowerCase(),
+						}),
+						hideBack: false,
+					},
+				);
+
+				object[key] = newValue === "true";
+				dirty = true;
+				continue;
+			} else if (!Number.isNaN(parseInt(value, 10))) {
+				const newValue = await number({
+					message: "What will you change this value to?",
+					default: value,
+				});
+
+				object[key] = newValue;
+				dirty = true;
+				continue;
 			}
 
 			const newValue = await input({
 				message: "What will you change this value to?",
-				default: object[key],
+				default: value,
 			});
 
 			object[key] = newValue;

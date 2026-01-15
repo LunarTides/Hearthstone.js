@@ -30,12 +30,22 @@ interface Metadata {
 	license: string;
 	authors: string[];
 	links: Record<string, string>;
+	permissions: {
+		network: boolean;
+		fileSystem: boolean;
+	};
 	requires: {
 		packs: string[];
 		cards: string[];
 		classes: string[];
 		// TODO: Add tribes, etc...
 	};
+}
+
+function getPermissions(metadata: Metadata, filter = true) {
+	return Object.entries(metadata.permissions)
+		.filter(([_, value]) => !filter || Boolean(value))
+		.map(([key]) => key);
 }
 
 async function getPacks() {
@@ -84,7 +94,7 @@ async function parseMetadataFile(pack: string) {
 		await game.pause(
 			"<red>Invalid pack. This pack doesn't include a 'meta.jsonc' file.</red>\n",
 		);
-		return false;
+		return null;
 	}
 
 	const metadata: Metadata = JSON.parse(
@@ -104,7 +114,9 @@ async function parseMetadataFile(pack: string) {
 			),
 		});
 
-		return skip;
+		if (skip) {
+			return null;
+		}
 	}
 
 	// Game version
@@ -120,12 +132,14 @@ async function parseMetadataFile(pack: string) {
 			),
 		});
 
-		return skip;
+		if (skip) {
+			return null;
+		}
 	}
 
 	// TODO: Parse requires.
 
-	return true;
+	return metadata;
 }
 
 async function importPack() {
@@ -168,8 +182,25 @@ async function importPack() {
 		}
 
 		// Read and validate metadata.
-		if (!(await parseMetadataFile(pack.uuid))) {
+		const metadata = await parseMetadataFile(pack.uuid);
+		if (!metadata) {
 			continue;
+		}
+
+		if (Object.values(metadata.permissions).some(Boolean)) {
+			console.warn(
+				`<yellow>This pack requires the following permissions: ${getPermissions(metadata).join(", ")}`,
+			);
+
+			const permissionConfirm = await confirm({
+				message: parseTags(
+					`<yellow>Are you sure you want to import this pack? This will grant the pack access to those resources.</yellow>`,
+				),
+				default: false,
+			});
+			if (!permissionConfirm) {
+				continue;
+			}
 		}
 
 		await game.functions.util.fs(
@@ -273,6 +304,10 @@ async function exportPack() {
 				license: "Proprietary",
 				authors: [],
 				links: {},
+				permissions: {
+					network: false,
+					fileSystem: false,
+				},
 				requires: {
 					packs: [],
 					cards: [],
@@ -366,6 +401,12 @@ async function configureMetadata(metadata: Metadata) {
 					value: "links",
 					description:
 						"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
+				},
+				{
+					name: "Permissions",
+					value: "permissions",
+					description:
+						"Resources that the pack needs to function. Check this out before exporting.",
 				},
 				{
 					name: "Requires",
@@ -477,6 +518,14 @@ async function configureMetadata(metadata: Metadata) {
 			);
 
 			dirty ||= changed;
+		} else if (answer === "permissions") {
+			const changed = await game.prompt.configureObject(
+				metadata.permissions,
+				false,
+				async () => hub.watermark(false),
+			);
+
+			dirty ||= changed;
 		} else if (answer === "requires") {
 			// TODO: Capitalize the choices.
 			const changed = await game.prompt.configureObject(
@@ -502,16 +551,34 @@ async function configureMetadata(metadata: Metadata) {
 				return false;
 			}
 		} else if (answer === "done") {
-			let message = "Are you sure you are done configuring the metadata?";
-
 			if (metadata.license === "Proprietary") {
-				message = parseTags(
-					"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
-				);
+				const licenseConfirm = await confirm({
+					message: parseTags(
+						"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
+					),
+					default: false,
+				});
+
+				if (!licenseConfirm) {
+					continue;
+				}
+			}
+
+			if (!Object.values(metadata.permissions).some(Boolean)) {
+				const permissionsConfirm = await confirm({
+					message: parseTags(
+						`<yellow>You haven't set any permissions. <bold>Are you sure your pack doesn't require any of the following permissions: ${getPermissions(metadata, false).join(", ")}?</bold></yellow>`,
+					),
+					default: false,
+				});
+
+				if (!permissionsConfirm) {
+					continue;
+				}
 			}
 
 			const done = await confirm({
-				message,
+				message: "Are you sure you are done configuring the metadata?",
 				default: false,
 			});
 
