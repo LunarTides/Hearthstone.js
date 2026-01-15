@@ -228,7 +228,7 @@ export async function POST(event) {
 	// }
 
 	// TODO: Delete pack from db if adding cards goes wrong.
-	const packInDB: Pack[] = await updateDB({
+	const pack: Pack[] = await updateDB({
 		uuid,
 		userIds: [user.id],
 		metadataVersion: metadata.versions.metadata,
@@ -275,7 +275,7 @@ export async function POST(event) {
 			id: randomUUID(),
 			uuid: f("id"),
 			abilities,
-			packId: packInDB[0].id,
+			packId: pack[0].id,
 
 			name: f("name"),
 			text: f("text"),
@@ -311,7 +311,7 @@ export async function POST(event) {
 	}
 
 	// TODO: Add links.
-	const id = packInDB[0].id;
+	const id = pack[0].id;
 
 	const finalPath = `./static/assets/packs/${uuid}/${metadata.versions.pack}/${id}`;
 	await fs.mkdir(finalPath, { recursive: true });
@@ -321,5 +321,5 @@ export async function POST(event) {
 	await fs.rm(innerFolderPath, { recursive: true, force: true });
 
 	// TODO: Include link.
-	return json({ pack: censorPack(packInDB[0], user) }, { status: 201 });
+	return json({ pack: censorPack(pack[0], user) }, { status: 201 });
 }

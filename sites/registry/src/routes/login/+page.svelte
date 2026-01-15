@@ -9,7 +9,7 @@
 
 <div class="fixed inset-0 w-fit h-fit m-auto flex gap-1">
 	<form method="post" action="?/login" class="flex flex-col gap-1 w-lg text-center" use:enhance>
-		{#if $message}<h3>{$message}</h3>{/if}
+		{#if $message}<h3 class="text-red-500">{$message}</h3>{/if}
 		{#if $errors._errors}
 			{#each $errors._errors as error (error)}
 				<span class="text-red-500 text-xl">{error}</span>
