@@ -8,6 +8,7 @@ import { resolve } from "$app/paths";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { approveSchema } from "$lib/api/schemas.js";
+import { notify } from "$lib/server/helper.js";
 
 export async function POST(event) {
 	const user = event.locals.user;
@@ -124,24 +125,28 @@ export async function POST(event) {
 		newLatestPack = pack;
 	}
 
+	const packMessage = await db
+		.insert(table.packMessage)
+		.values({
+			packId: newLatestPack.id,
+			authorId: user.id,
+			type: messageType,
+			text: message ? `> Approved this pack: ${message}` : `> Approved this pack.`,
+		})
+		.returning({ id: table.packMessage.id });
+
 	for (const userId of pack.userIds) {
-		await db.insert(table.notification).values({
+		await notify(event, {
 			userId,
-			text: `Your pack (${pack.name} v${newLatestPack.packVersion} - ${newLatestPack.id.slice(0, 6)}) has been approved!`,
-			route: resolve("/pack/[uuid]/versions/[version]/[id]", {
-				uuid: pack.uuid,
-				version: newLatestPack.packVersion,
-				id: newLatestPack.id,
-			}),
+			text: `Your pack (${pack.name} v${newLatestPack.packVersion} - #${newLatestPack.id.slice(0, 6)}) has been approved!`,
+			route:
+				resolve("/pack/[uuid]/versions/[version]/[id]", {
+					uuid: pack.uuid,
+					version: newLatestPack.packVersion,
+					id: newLatestPack.id,
+				}) + `#message-${packMessage[0].id}`,
 		});
 	}
-
-	await db.insert(table.packMessage).values({
-		packId: newLatestPack.id,
-		authorId: user.id,
-		type: messageType,
-		text: message ? `> Approved this pack: ${message}` : `> Approved this pack.`,
-	});
 
 	return json({}, { status: 200 });
 }

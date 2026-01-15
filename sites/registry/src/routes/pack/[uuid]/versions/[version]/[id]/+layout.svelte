@@ -196,7 +196,7 @@
 		<div class="flex flex-col gap-1">
 			{#each versions.current.messages as message (message.id)}
 				<div
-					id={`m-${message.id}`}
+					id={`message-${message.id}`}
 					class="flex flex-col gap-2 p-2 bg-header rounded-xl text-white target:outline"
 				>
 					<div>

@@ -1,6 +1,7 @@
 import { resolve } from "$app/paths";
 import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db";
+import { notify } from "$lib/server/helper.js";
 import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
@@ -65,7 +66,7 @@ export async function PUT(event) {
 				message = `You have been promoted to ${role}!`;
 			}
 
-			await db.insert(table.notification).values({
+			await notify(event, {
 				userId: user.id,
 				text: message,
 				route: resolve("/user/[uuid]", { uuid: user.id }),

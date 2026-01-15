@@ -6,6 +6,7 @@ import { satisfiesRole } from "$lib/user.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
+import { notify } from "$lib/server/helper.js";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const uuid = event.params.uuid;
@@ -63,10 +64,10 @@ export async function POST(event) {
 		.where(eq(table.packComment.id, comment.id));
 
 	if (comment.authorId && comment.authorId !== clientUser.id) {
-		await db.insert(table.notification).values({
+		await notify(event, {
 			userId: comment.authorId,
 			text: "Your comment has been hearted!",
-			route: resolve("/pack/[uuid]", { uuid: comment.packId }) + `#c-${comment.id}`,
+			route: resolve("/pack/[uuid]", { uuid: comment.packId }) + `#comment-${comment.id}`,
 		});
 	}
 

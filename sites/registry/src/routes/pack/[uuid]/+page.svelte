@@ -62,7 +62,7 @@
 			<div class="flex flex-col gap-1">
 				{#each commentsObject.comments as comment (comment.id)}
 					<div
-						id={`c-${comment.id}`}
+						id={`comment-${comment.id}`}
 						class="flex flex-col gap-2 p-2 bg-background rounded-xl text-white target:outline"
 					>
 						<div>
