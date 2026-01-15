@@ -1,4 +1,4 @@
-import { notification } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db/index.js";
 import { getSetting } from "$lib/server/db/setting";
 import { json } from "@sveltejs/kit";
@@ -20,9 +20,9 @@ export async function GET(event) {
 
 	const notifications = await db
 		.select()
-		.from(notification)
-		.where(eq(notification.userId, clientUser.id))
-		.orderBy(desc(notification.date))
+		.from(table.notification)
+		.where(eq(table.notification.userId, clientUser.id))
+		.orderBy(desc(table.notification.date))
 		.limit(pageSize)
 		.offset((page - 1) * pageSize);
 

@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { card } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { loadGetPack } from "$lib/server/db/pack.js";
@@ -16,8 +16,8 @@ export const load = (event) => {
 	const getCards = async () => {
 		let cards = await db
 			.select()
-			.from(card)
-			.where(and(eq(card.uuid, uuid)));
+			.from(table.card)
+			.where(and(eq(table.card.uuid, uuid)));
 		if (cards.length <= 0) {
 			error(404, { message: "Card not found." });
 		}

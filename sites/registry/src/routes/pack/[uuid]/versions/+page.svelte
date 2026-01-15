@@ -23,17 +23,17 @@
 
 			<hr class="border" style="border-color: var(--color-header);" />
 
-			{#each packs.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as version (version.id)}
+			{#each packs.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as pack (pack.id)}
 				<a
 					href={resolve("/pack/[uuid]/versions/[version]/[id]", {
-						uuid: version.uuid,
-						version: version.packVersion,
-						id: version.id,
+						uuid: pack.uuid,
+						version: pack.packVersion,
+						id: pack.id,
 					})}
 					class="bg-header p-2 rounded-full text-xl text-center text-white"
 				>
-					{version.packVersion}
-					<span class="text-gray-700">({version.id.slice(0, 6)})</span>
+					{pack.packVersion}
+					<span class="text-gray-700">({pack.id.slice(0, 6)})</span>
 				</a>
 			{/each}
 		</div>

@@ -10,12 +10,12 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 		const commentId = event.params.commentId;
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/comments/[commentId]/like", { uuid: version.uuid, commentId }),
+			resolve("/api/v1/pack/[uuid]/comments/[commentId]/like", { uuid: pack.uuid, commentId }),
 			{
 				method: "POST",
 			},
@@ -30,13 +30,13 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 		const commentId = event.params.commentId;
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/dislike", {
-				uuid: version.uuid,
+				uuid: pack.uuid,
 				commentId,
 			}),
 			{
@@ -53,12 +53,12 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 		const commentId = event.params.commentId;
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/comments/[commentId]/heart", { uuid: version.uuid, commentId }),
+			resolve("/api/v1/pack/[uuid]/comments/[commentId]/heart", { uuid: pack.uuid, commentId }),
 			{
 				method: "POST",
 			},
@@ -73,13 +73,13 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 		const commentId = event.params.commentId;
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]/heart", {
-				uuid: version.uuid,
+				uuid: pack.uuid,
 				commentId,
 			}),
 			{
@@ -97,13 +97,13 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 		const commentId = event.params.commentId;
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/comments/[commentId]", {
-				uuid: version.uuid,
+				uuid: pack.uuid,
 				commentId,
 			}),
 			{

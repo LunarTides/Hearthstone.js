@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { card, pack } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { like, and, eq } from "drizzle-orm";
 import { getSetting } from "$lib/server/db/setting.js";
 
@@ -20,13 +20,17 @@ export async function GET(event) {
 	const cards = async () => {
 		const cards = await db
 			.select()
-			.from(card)
+			.from(table.card)
 			// TODO: Ignore caps.
 			// TODO: Make this smarter.
 			.where(
-				and(like(card.name, `%${query}%`), eq(pack.approved, true), eq(card.isLatestVersion, true)),
+				and(
+					like(table.card.name, `%${query}%`),
+					eq(table.pack.approved, true),
+					eq(table.card.isLatestVersion, true),
+				),
 			)
-			.innerJoin(pack, eq(card.packId, pack.id))
+			.innerJoin(table.pack, eq(table.card.packId, table.pack.id))
 			.limit(pageSize)
 			.offset((page - 1) * pageSize);
 

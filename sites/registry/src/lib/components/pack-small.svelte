@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { type PackWithExtras } from "$lib/db/schema";
+	import type { PackWithExtras } from "$lib/db/schema";
 	import { Download, ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import Badge from "./badge.svelte";
 

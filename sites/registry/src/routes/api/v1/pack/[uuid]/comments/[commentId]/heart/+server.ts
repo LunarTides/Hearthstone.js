@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { notification, pack, packComment } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -9,34 +9,34 @@ import { resolve } from "$app/paths";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const uuid = event.params.uuid;
-	const p = (
+	const pack = (
 		await db
 			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.isLatestVersion, true)))
+			.from(table.pack)
+			.where(and(eq(table.pack.uuid, uuid), eq(table.pack.isLatestVersion, true)))
 			.limit(1)
 	).at(0);
-	if (!p) {
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!p.approved) {
+	if (!pack.approved) {
 		// eslint-disable-next-line no-empty
-		if (p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator")) {
+		if (pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator")) {
 		} else {
 			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 
 	const commentId = event.params.commentId;
-	const c = (await db.select().from(packComment).where(eq(packComment.id, commentId)).limit(1)).at(
-		0,
-	);
-	if (!c) {
+	const comment = (
+		await db.select().from(table.packComment).where(eq(table.packComment.id, commentId)).limit(1)
+	).at(0);
+	if (!comment) {
 		return json({ message: "No comment found with that id." }, { status: 404 });
 	}
 
-	return c;
+	return comment;
 }
 
 // TODO: Deduplicate.
@@ -46,27 +46,27 @@ export async function POST(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
-	const c = await setup(event, clientUser);
-	if (c instanceof Response) {
-		return c;
+	const comment = await setup(event, clientUser);
+	if (comment instanceof Response) {
+		return comment;
 	}
 
-	if (c.heartedById) {
+	if (comment.heartedById) {
 		return json({ message: "This comment has already been hearted." }, { status: 422 });
 	}
 
 	await db
-		.update(packComment)
+		.update(table.packComment)
 		.set({
 			heartedById: clientUser.id,
 		})
-		.where(eq(packComment.id, c.id));
+		.where(eq(table.packComment.id, comment.id));
 
-	if (c.authorId && c.authorId !== clientUser.id) {
-		await db.insert(notification).values({
-			userId: c.authorId,
+	if (comment.authorId && comment.authorId !== clientUser.id) {
+		await db.insert(table.notification).values({
+			userId: comment.authorId,
 			text: "Your comment has been hearted!",
-			route: resolve("/pack/[uuid]", { uuid: c.packId }) + `#c-${c.id}`,
+			route: resolve("/pack/[uuid]", { uuid: comment.packId }) + `#c-${comment.id}`,
 		});
 	}
 
@@ -79,21 +79,21 @@ export async function DELETE(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
-	const c = await setup(event, clientUser);
-	if (c instanceof Response) {
-		return c;
+	const comment = await setup(event, clientUser);
+	if (comment instanceof Response) {
+		return comment;
 	}
 
-	if (!c.heartedById) {
+	if (!comment.heartedById) {
 		return json({ message: "This comment has not been hearted." }, { status: 422 });
 	}
 
 	await db
-		.update(packComment)
+		.update(table.packComment)
 		.set({
 			heartedById: null,
 		})
-		.where(eq(packComment.id, c.id));
+		.where(eq(table.packComment.id, comment.id));
 
 	return json({}, { status: 200 });
 }

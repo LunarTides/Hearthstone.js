@@ -5,7 +5,8 @@ import { fileTypeFromBuffer } from "file-type";
 import { join, resolve } from "path";
 import { tmpdir } from "os";
 import { db } from "$lib/server/db/index.js";
-import { card, pack, type Pack } from "$lib/db/schema.js";
+import type { Pack } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { eq, or, type InferInsertModel } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import semver from "semver";
@@ -181,13 +182,13 @@ export async function POST(event) {
 	// if it does, and the current user is one of that pack's authors, update it.
 	let isLatestVersion = true;
 	// let update = false;
-	const updateDB = async (values: InferInsertModel<typeof pack>) =>
-		db.insert(pack).values(values).returning();
+	const updateDB = async (values: InferInsertModel<typeof table.pack>) =>
+		db.insert(table.pack).values(values).returning();
 
 	const otherVersions = await db
 		.select()
-		.from(pack)
-		.where(or(eq(pack.uuid, uuid), eq(pack.name, metadata.name)));
+		.from(table.pack)
+		.where(or(eq(table.pack.uuid, uuid), eq(table.pack.name, metadata.name)));
 	for (const version of otherVersions) {
 		// if (semver.eq(metadata.versions.pack, version.packVersion)) {
 		// 	// TODO: Add ability for the uploader to limit who can edit the pack.
@@ -204,8 +205,14 @@ export async function POST(event) {
 		if (semver.gt(metadata.versions.pack, version.packVersion)) {
 			// Update other versions.
 			if (version.isLatestVersion) {
-				await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.id, version.id));
-				await db.update(card).set({ isLatestVersion: false }).where(eq(card.packId, version.id));
+				await db
+					.update(table.pack)
+					.set({ isLatestVersion: false })
+					.where(eq(table.pack.id, version.id));
+				await db
+					.update(table.card)
+					.set({ isLatestVersion: false })
+					.where(eq(table.card.packId, version.id));
 			}
 		}
 
@@ -263,35 +270,35 @@ export async function POST(event) {
 
 		const filePath = file.name.replaceAll("\\", "/").split(`${uuid}/`).slice(1).join(`${uuid}/`);
 
-		const p = parseCardField.bind(null, content);
-		const c: InferInsertModel<typeof card> = {
+		const f = parseCardField.bind(null, content);
+		const card: InferInsertModel<typeof table.card> = {
 			id: randomUUID(),
-			uuid: p("id"),
+			uuid: f("id"),
 			abilities,
 			packId: packInDB[0].id,
 
-			name: p("name"),
-			text: p("text"),
-			cost: p("cost"),
-			type: p("type"),
-			classes: p("classes"),
-			rarity: p("rarity"),
-			collectible: p("collectible"),
-			tags: p("tags"),
+			name: f("name"),
+			text: f("text"),
+			cost: f("cost"),
+			type: f("type"),
+			classes: f("classes"),
+			rarity: f("rarity"),
+			collectible: f("collectible"),
+			tags: f("tags"),
 
-			attack: p("attack"),
-			health: p("health"),
-			tribes: p("tribes"),
+			attack: f("attack"),
+			health: f("health"),
+			tribes: f("tribes"),
 
-			spellSchools: p("spellSchools"),
+			spellSchools: f("spellSchools"),
 
-			durability: p("durability"),
-			cooldown: p("cooldown"),
+			durability: f("durability"),
+			cooldown: f("cooldown"),
 
-			armor: p("armor"),
-			heropowerId: p("heropowerId"),
+			armor: f("armor"),
+			heropowerId: f("heropowerId"),
 
-			enchantmentPriority: p("enchantmentPriority"),
+			enchantmentPriority: f("enchantmentPriority"),
 
 			approved: !settings.upload.requireApproval,
 			isLatestVersion,
@@ -300,7 +307,7 @@ export async function POST(event) {
 
 		// TODO: Validate c using zod.
 
-		await db.insert(card).values(c);
+		await db.insert(table.card).values(card);
 	}
 
 	// TODO: Add links.

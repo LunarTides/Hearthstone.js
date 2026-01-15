@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packComment } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -12,16 +12,16 @@ export async function DELETE(event) {
 
 	const uuid = event.params.uuid;
 	const commentId = event.params.commentId;
-	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
+	const packs = await db.select().from(table.pack).where(eq(table.pack.uuid, uuid));
 	if (packs.length <= 0) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!p.approved) {
+	const pack = packs.find((pack) => pack.isLatestVersion) ?? packs[0];
+	if (!pack.approved) {
 		if (
 			clientUser &&
-			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -29,21 +29,21 @@ export async function DELETE(event) {
 		}
 	}
 
-	const c = (await db.select().from(packComment).where(eq(packComment.id, commentId)).limit(1)).at(
-		0,
-	);
-	if (!c) {
+	const comment = (
+		await db.select().from(table.packComment).where(eq(table.packComment.id, commentId)).limit(1)
+	).at(0);
+	if (!comment) {
 		return json({ message: "No comment found with that id." }, { status: 404 });
 	}
 
-	if (c.authorId !== clientUser.id && !satisfiesRole(clientUser, "Moderator")) {
+	if (comment.authorId !== clientUser.id && !satisfiesRole(clientUser, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
 		);
 	}
 
-	await db.delete(packComment).where(eq(packComment.id, commentId));
+	await db.delete(table.packComment).where(eq(table.packComment.id, commentId));
 
 	return json({}, { status: 200 });
 }

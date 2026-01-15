@@ -1,6 +1,7 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { pack, type Card } from "$lib/db/schema.js";
+import type { Card } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { db } from "$lib/server/db/index.js";
 import { getFullPacks } from "$lib/server/db/pack";
 import { satisfiesRole } from "$lib/user.js";
@@ -17,8 +18,8 @@ export const load = async (event) => {
 		user,
 		db
 			.select()
-			.from(pack)
-			.where(and(arrayContains(pack.userIds, [uuid])))
+			.from(table.pack)
+			.where(and(arrayContains(table.pack.userIds, [uuid])))
 			.$dynamic(),
 	);
 	if (packs.length <= 0) {
@@ -28,8 +29,7 @@ export const load = async (event) => {
 		};
 	}
 
-	const version = packs[0];
-
+	const pack = packs[0];
 	const packsToReturn = [];
 
 	const uniquePacks = new Set(packs.map((p) => p.uuid));
@@ -44,9 +44,9 @@ export const load = async (event) => {
 	const response = await requestAPI<Card[]>(
 		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/cards", {
-			uuid: version.uuid,
-			version: version.packVersion,
-			id: version.id,
+			uuid: pack.uuid,
+			version: pack.packVersion,
+			id: pack.id,
 		}),
 	);
 	if (response.error) {

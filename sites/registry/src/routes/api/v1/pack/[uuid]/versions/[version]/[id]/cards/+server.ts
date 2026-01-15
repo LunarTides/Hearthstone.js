@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { card, pack } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -11,25 +11,31 @@ export async function GET(event) {
 	const packVersion = event.params.version;
 	const id = event.params.id;
 
-	const version = (
+	const pack = (
 		await db
 			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
+			.from(table.pack)
+			.where(
+				and(
+					eq(table.pack.uuid, uuid),
+					eq(table.pack.packVersion, packVersion),
+					eq(table.pack.id, id),
+				),
+			)
 	).at(0);
-	if (!version) {
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!version.approved) {
+	if (!pack.approved) {
 		// eslint-disable-next-line no-empty
-		if (user && (version.userIds.includes(user.id) || satisfiesRole(user, "Moderator"))) {
+		if (user && (pack.userIds.includes(user.id) || satisfiesRole(user, "Moderator"))) {
 		} else {
 			return json({ message: "Version not found." }, { status: 404 });
 		}
 	}
 
-	const cards = await db.select().from(card).where(eq(card.packId, version.id));
+	const cards = await db.select().from(table.card).where(eq(table.card.packId, pack.id));
 
 	return json(cards);
 }

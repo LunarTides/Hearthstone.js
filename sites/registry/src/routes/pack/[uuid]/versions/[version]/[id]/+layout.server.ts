@@ -14,17 +14,17 @@ export const load = async (event) => {
 		return fail(packs.error.status, { message: packs.error.message });
 	}
 
-	const version = packs.all.find((v) => v.id === event.params.id);
-	if (!version) {
+	const pack = packs.all.find((v) => v.id === event.params.id);
+	if (!pack) {
 		return fail(404, { message: "Pack not found." });
 	}
 
 	const response = await requestAPI<FileTree[]>(
 		event,
 		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/files", {
-			uuid: version.uuid,
-			version: version.packVersion,
-			id: version.id,
+			uuid: pack.uuid,
+			version: pack.packVersion,
+			id: pack.id,
 		}),
 	);
 	if (response.error) {

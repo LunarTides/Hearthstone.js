@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packLike } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 
@@ -9,40 +9,42 @@ export async function POST(event) {
 	}
 
 	const uuid = event.params.uuid;
-	const p = (
+	const pack = (
 		await db
 			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.isLatestVersion, true)))
+			.from(table.pack)
+			.where(and(eq(table.pack.uuid, uuid), eq(table.pack.isLatestVersion, true)))
 			.limit(1)
 	).at(0);
-	if (!p) {
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!p.approved) {
+	if (!pack.approved) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const like = (
 		await db
 			.select()
-			.from(packLike)
-			.where(and(eq(packLike.packId, p.uuid), eq(packLike.userId, event.locals.user.id)))
+			.from(table.packLike)
+			.where(
+				and(eq(table.packLike.packId, pack.uuid), eq(table.packLike.userId, event.locals.user.id)),
+			)
 			.limit(1)
 	).at(0);
 	if (like) {
 		if (like.dislike) {
-			await db.update(packLike).set({ dislike: false }).where(eq(packLike.id, like.id));
+			await db.update(table.packLike).set({ dislike: false }).where(eq(table.packLike.id, like.id));
 		} else {
-			await db.delete(packLike).where(eq(packLike.id, like.id));
+			await db.delete(table.packLike).where(eq(table.packLike.id, like.id));
 		}
 
 		return json({}, { status: 200 });
 	}
 
-	await db.insert(packLike).values({
-		packId: p.uuid,
+	await db.insert(table.packLike).values({
+		packId: pack.uuid,
 		userId: event.locals.user.id,
 		dislike: false,
 	});

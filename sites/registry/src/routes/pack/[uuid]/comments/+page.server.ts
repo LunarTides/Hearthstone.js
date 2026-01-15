@@ -11,7 +11,7 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.latest;
+		const pack = packs.latest;
 
 		const formData = await event.request.formData();
 		const text = formData.get("text");
@@ -24,7 +24,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/pack/[uuid]/comments", { uuid: version.uuid }),
+			resolve("/api/v1/pack/[uuid]/comments", { uuid: pack.uuid }),
 			{
 				method: "POST",
 				body: JSON.stringify({ ...data }),

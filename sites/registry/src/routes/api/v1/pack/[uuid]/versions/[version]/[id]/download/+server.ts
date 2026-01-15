@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import fs from "fs/promises";
@@ -11,31 +11,37 @@ export async function POST(event) {
 	const packVersion = event.params.version;
 	const id = event.params.id;
 
-	const version = (
+	const pack = (
 		await db
 			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
+			.from(table.pack)
+			.where(
+				and(
+					eq(table.pack.uuid, uuid),
+					eq(table.pack.packVersion, packVersion),
+					eq(table.pack.id, id),
+				),
+			)
 	).at(0);
-	if (!version) {
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!version.approved) {
+	if (!pack.approved) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	// TODO: Only do this if this IP hasn't already downloaded this? To prevent download inflation by the authors.
 	await db
-		.update(pack)
-		.set({ downloadCount: version.downloadCount + 1 })
-		.where(eq(pack.id, version.id));
+		.update(table.pack)
+		.set({ downloadCount: pack.downloadCount + 1 })
+		.where(eq(table.pack.id, pack.id));
 
-	const folder = `./static/assets/packs/${version.uuid}/${version.packVersion}/${version.id}`;
-	const filename = resolve(folder, `${version.uuid}.7z`);
+	const folder = `./static/assets/packs/${pack.uuid}/${pack.packVersion}/${pack.id}`;
+	const filename = resolve(folder, `${pack.uuid}.7z`);
 
 	// TODO: Is this safe?
-	await seven.pack(folder, resolve(folder, `${version.uuid}.7z`));
+	await seven.pack(folder, resolve(folder, `${pack.uuid}.7z`));
 
 	const file = await fs.readFile(filename);
 	await fs.unlink(filename);
@@ -44,7 +50,7 @@ export async function POST(event) {
 		headers: {
 			"Content-Type": "application/x-7z-compressed",
 			// TODO: The filename should be something like "uuid+id.7z"
-			"Content-Disposition": `attachment; filename="${version.uuid}.7z"`,
+			"Content-Disposition": `attachment; filename="${pack.uuid}.7z"`,
 		},
 	});
 }

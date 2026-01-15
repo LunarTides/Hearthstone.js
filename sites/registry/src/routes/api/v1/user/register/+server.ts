@@ -5,7 +5,7 @@ import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import { hash } from "@node-rs/argon2";
 import { db } from "$lib/server/db";
-import { profile, user } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import * as auth from "$lib/server/auth";
 
 export async function POST(event) {
@@ -32,13 +32,13 @@ export async function POST(event) {
 	});
 
 	try {
-		await db.insert(user).values({ id: userId, username, passwordHash });
+		await db.insert(table.user).values({ id: userId, username, passwordHash });
 
 		const sessionToken = auth.generateSessionToken();
 		const session = await auth.createSession(sessionToken, userId);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		await db.insert(profile).values({ userId, aboutMe: "" });
+		await db.insert(table.profile).values({ userId, aboutMe: "" });
 	} catch {
 		return json({ message: "An error has occurred" }, { status: 500 });
 	}

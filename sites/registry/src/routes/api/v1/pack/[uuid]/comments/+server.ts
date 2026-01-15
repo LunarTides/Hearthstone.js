@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packComment } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and, count } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -19,17 +19,17 @@ export async function GET(event) {
 	const uuid = event.params.uuid;
 	const packs = await db
 		.select()
-		.from(pack)
-		.where(and(eq(pack.uuid, uuid)));
+		.from(table.pack)
+		.where(and(eq(table.pack.uuid, uuid)));
 	if (packs.length <= 0) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!p.approved) {
+	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
+	if (!pack.approved) {
 		if (
 			clientUser &&
-			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -43,8 +43,8 @@ export async function GET(event) {
 		clientUser,
 		db
 			.select()
-			.from(packComment)
-			.where(eq(packComment.packId, p.uuid))
+			.from(table.packComment)
+			.where(eq(table.packComment.packId, pack.uuid))
 			.limit(pageSize)
 			.offset((page - 1) * pageSize)
 			.$dynamic(),
@@ -52,8 +52,8 @@ export async function GET(event) {
 
 	const amount = await db
 		.select({ count: count() })
-		.from(packComment)
-		.where(eq(packComment.packId, p.uuid));
+		.from(table.packComment)
+		.where(eq(table.packComment.packId, pack.uuid));
 
 	return json(comments, {
 		headers: {
@@ -69,16 +69,16 @@ export async function POST(event) {
 	}
 
 	const uuid = event.params.uuid;
-	const packs = await db.select().from(pack).where(eq(pack.uuid, uuid));
+	const packs = await db.select().from(table.pack).where(eq(table.pack.uuid, uuid));
 	if (packs.length <= 0) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	const p = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!p.approved) {
+	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
+	if (!pack.approved) {
 		if (
 			clientUser &&
-			(p.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -94,8 +94,8 @@ export async function POST(event) {
 		);
 	}
 
-	await db.insert(packComment).values({
-		packId: p.uuid,
+	await db.insert(table.packComment).values({
+		packId: pack.uuid,
 		authorId: clientUser.id,
 		text: result.data.text,
 	});

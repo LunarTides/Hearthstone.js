@@ -1,6 +1,6 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { pack } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { like, and, eq } from "drizzle-orm";
 import { getFullPacks } from "$lib/server/db/pack";
 import { getSetting } from "$lib/server/db/setting";
@@ -27,10 +27,10 @@ export async function GET(event) {
 		event.locals.user,
 		db
 			.select()
-			.from(pack)
+			.from(table.pack)
 			// TODO: Ignore caps.
 			// TODO: Make this smarter.
-			.where(and(like(pack.name, `%${query}%`), eq(pack.approved, true)))
+			.where(and(like(table.pack.name, `%${query}%`), eq(table.pack.approved, true)))
 			.limit(pageSize)
 			.offset((page - 1) * pageSize)
 			.$dynamic(),

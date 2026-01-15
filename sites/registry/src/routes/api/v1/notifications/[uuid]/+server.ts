@@ -1,5 +1,6 @@
 import { db } from "$lib/server/db/index.js";
-import { notification, type Notification } from "$lib/db/schema.js";
+import type { Notification } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
@@ -12,22 +13,22 @@ export async function DELETE(event) {
 	const notificationId = event.params.uuid;
 	const notifications = await db
 		.select()
-		.from(notification)
-		.where(eq(notification.id, notificationId));
+		.from(table.notification)
+		.where(eq(table.notification.id, notificationId));
 	if (notifications.length <= 0) {
 		return json({ message: "Notification not found." }, { status: 404 });
 	}
 
-	const n: Notification = notifications[0];
+	const notification: Notification = notifications[0];
 
-	if (n.userId !== clientUser.id) {
+	if (notification.userId !== clientUser.id) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
 		);
 	}
 
-	await db.delete(notification).where(eq(notification.id, notificationId));
+	await db.delete(table.notification).where(eq(table.notification.id, notificationId));
 
 	return json({}, { status: 200 });
 }

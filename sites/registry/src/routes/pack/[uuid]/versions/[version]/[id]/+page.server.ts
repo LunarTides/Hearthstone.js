@@ -13,17 +13,17 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.all.find((v) => v.id === event.params.id);
-		if (!version) {
+		const pack = packs.all.find((v) => v.id === event.params.id);
+		if (!pack) {
 			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/download", {
-				uuid: version.uuid,
-				version: version.packVersion,
-				id: version.id,
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
 			}),
 			{
 				method: "POST",
@@ -51,17 +51,17 @@ export const actions = {
 			return fail(packs.error.status, { message: packs.error.message });
 		}
 
-		const version = packs.all.find((v) => v.id === event.params.id);
-		if (!version) {
+		const pack = packs.all.find((v) => v.id === event.params.id);
+		if (!pack) {
 			return fail(404, { message: "Pack not found." });
 		}
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]", {
-				uuid: version.uuid,
-				version: version.packVersion,
-				id: version.id,
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
 			}),
 			{
 				method: "DELETE",
@@ -72,7 +72,7 @@ export const actions = {
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.
-		redirect(302, resolve("/pack/[uuid]", { uuid: version.uuid }));
+		redirect(302, resolve("/pack/[uuid]", { uuid: pack.uuid }));
 	},
 	// TODO: Deduplicate.
 	approve: async (event) => {
@@ -86,17 +86,17 @@ export const actions = {
 			return message(form, packs.error.message, { status: packs.error.status as any });
 		}
 
-		const version = packs.all.find((v) => v.id === event.params.id);
-		if (!version) {
+		const pack = packs.all.find((v) => v.id === event.params.id);
+		if (!pack) {
 			return message(form, "Pack not found.", { status: 404 });
 		}
 
 		const response = await requestAPI(
 			event,
 			resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/approve", {
-				uuid: version.uuid,
-				version: version.packVersion,
-				id: version.id,
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
 			}),
 			{
 				method: "POST",
@@ -108,6 +108,6 @@ export const actions = {
 		}
 
 		// TODO: If there are no more versions, navigate to the homepage.
-		redirect(302, resolve("/pack/[uuid]", { uuid: version.uuid }));
+		redirect(302, resolve("/pack/[uuid]", { uuid: pack.uuid }));
 	},
 };

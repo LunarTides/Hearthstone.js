@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packComment, packLike, packMessage } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -14,24 +14,24 @@ export async function DELETE(event) {
 
 	const uuid = event.params.uuid;
 
-	const version = (await db.select().from(pack).where(eq(pack.uuid, uuid))).at(0);
-	if (!version) {
+	const pack = (await db.select().from(table.pack).where(eq(table.pack.uuid, uuid))).at(0);
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!version.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
 		);
 	}
 
-	await db.delete(packComment).where(eq(packComment.packId, version.uuid));
+	await db.delete(table.packComment).where(eq(table.packComment.packId, pack.uuid));
 	// TODO: Delete *all* pack messages.
-	await db.delete(packMessage).where(eq(packMessage.packId, version.id));
-	await db.delete(packLike).where(eq(packLike.packId, version.uuid));
-	await db.delete(pack).where(eq(pack.uuid, version.uuid));
-	await fs.rm(`./static/assets/packs/${version.uuid}`, { force: true, recursive: true });
+	await db.delete(table.packMessage).where(eq(table.packMessage.packId, pack.id));
+	await db.delete(table.packLike).where(eq(table.packLike.packId, pack.uuid));
+	await db.delete(table.pack).where(eq(table.pack.uuid, pack.uuid));
+	await fs.rm(`./static/assets/packs/${pack.uuid}`, { force: true, recursive: true });
 
 	return json({}, { status: 200 });
 }

@@ -1,5 +1,5 @@
 import { resolve } from "$app/paths";
-import { notification, profile, user } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db";
 import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
@@ -10,19 +10,19 @@ export async function GET(event) {
 
 	const users = await db
 		.select()
-		.from(user)
-		.where(eq(user.id, uuid))
-		.innerJoin(profile, eq(profile.userId, user.id));
+		.from(table.user)
+		.where(eq(table.user.id, uuid))
+		.innerJoin(table.profile, eq(table.profile.userId, table.user.id));
 	if (users.length <= 0) {
 		return json({ message: "User not found." }, { status: 404 });
 	}
 
-	const u = users[0];
+	const user = users[0];
 
 	return json(
 		{
-			profile: u.profile,
-			...censorUser(u.user),
+			profile: user.profile,
+			...censorUser(user.user),
 		},
 		{ status: 200 },
 	);
@@ -40,22 +40,22 @@ export async function PUT(event) {
 		error(403, { message: "You do not have the the necessary privileges to do this." });
 	}
 
-	const u = (await db.select().from(user).where(eq(user.id, uuid))).at(0);
-	if (!u) {
+	const user = (await db.select().from(table.user).where(eq(table.user.id, uuid))).at(0);
+	if (!user) {
 		return json({ message: "User not found." }, { status: 404 });
 	}
 
 	const body = JSON.parse(await event.request.text());
 
-	let role = u.role;
+	let role = user.role;
 
 	// Only allow admins and up to change the role of users.
 	if (satisfiesRole(clientUser, "Admin")) {
 		role = body.role;
 
-		if (role !== u.role) {
+		if (role !== user.role) {
 			const a = RoleTable[role];
-			const b = RoleTable[u.role];
+			const b = RoleTable[user.role];
 
 			let message;
 
@@ -65,30 +65,30 @@ export async function PUT(event) {
 				message = `You have been promoted to ${role}!`;
 			}
 
-			await db.insert(notification).values({
-				userId: u.id,
+			await db.insert(table.notification).values({
+				userId: user.id,
 				text: message,
-				route: resolve("/user/[uuid]", { uuid: u.id }),
+				route: resolve("/user/[uuid]", { uuid: user.id }),
 			});
 		}
 	}
 
 	// TODO: Check if the username is taken.
 	const updatedUsers = await db
-		.update(user)
+		.update(table.user)
 		.set({
 			username: body.username,
 			role,
 		})
-		.where(eq(user.id, uuid))
+		.where(eq(table.user.id, uuid))
 		.returning();
 	const updatedProfiles = await db
-		.update(profile)
+		.update(table.profile)
 		.set({
 			pronouns: body.pronouns,
 			aboutMe: body.aboutMe.replaceAll("\r\n", "\n"),
 		})
-		.where(eq(profile.userId, uuid))
+		.where(eq(table.profile.userId, uuid))
 		.returning();
 
 	const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0])] : [];

@@ -1,5 +1,5 @@
 import { db } from "$lib/server/db/index.js";
-import { card, notification, pack, packMessage } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
@@ -32,17 +32,23 @@ export async function POST(event) {
 	const message = form.data.message;
 	const messageType = form.data.messageType;
 
-	const version = (
+	const pack = (
 		await db
 			.select()
-			.from(pack)
-			.where(and(eq(pack.uuid, uuid), eq(pack.packVersion, packVersion), eq(pack.id, id)))
+			.from(table.pack)
+			.where(
+				and(
+					eq(table.pack.uuid, uuid),
+					eq(table.pack.packVersion, packVersion),
+					eq(table.pack.id, id),
+				),
+			)
 	).at(0);
-	if (!version) {
+	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!version.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
@@ -50,71 +56,87 @@ export async function POST(event) {
 	}
 
 	const blocking = await db
-		.select({ id: pack.id })
-		.from(pack)
-		.where(and(eq(pack.approved, true), eq(pack.packVersion, version.packVersion)));
+		.select({ id: table.pack.id })
+		.from(table.pack)
+		.where(and(eq(table.pack.approved, true), eq(table.pack.packVersion, pack.packVersion)));
 	if (blocking.length > 0) {
 		return json(
-			{ message: `A pack with this version (${version.packVersion}) has already been approved.` },
+			{ message: `A pack with this version (${pack.packVersion}) has already been approved.` },
 			{ status: 409 },
 		);
 	}
 
 	await db
-		.update(pack)
+		.update(table.pack)
 		.set({ approved: true, approvedBy: user.id, approvedAt: new Date() })
-		.where(eq(pack.id, version.id));
+		.where(eq(table.pack.id, pack.id));
 
 	await db
-		.update(card)
+		.update(table.card)
 		.set({ approved: true, isLatestVersion: false })
-		.where(eq(card.packId, version.id));
+		.where(eq(table.card.packId, pack.id));
 
 	const packs = await db
-		.select({ id: pack.id, packVersion: pack.packVersion, approved: pack.approved })
-		.from(pack)
-		.where(eq(pack.uuid, uuid));
+		.select({
+			id: table.pack.id,
+			packVersion: table.pack.packVersion,
+			approved: table.pack.approved,
+		})
+		.from(table.pack)
+		.where(eq(table.pack.uuid, uuid));
 
 	let newLatestPack = packs
 		.filter((p) => p.approved)
 		.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
 		.at(0);
-	if (newLatestPack?.id === version.id) {
+	if (newLatestPack?.id === pack.id) {
 		// Demote other packs / cards.
-		await db.update(pack).set({ isLatestVersion: false }).where(eq(pack.uuid, version.uuid));
+		await db
+			.update(table.pack)
+			.set({ isLatestVersion: false })
+			.where(eq(table.pack.uuid, pack.uuid));
 		const cards = await db
 			.select()
-			.from(card)
-			.innerJoin(pack, eq(pack.id, card.packId))
-			.where(eq(pack.uuid, version.uuid));
+			.from(table.card)
+			.innerJoin(table.pack, eq(table.pack.id, table.card.packId))
+			.where(eq(table.pack.uuid, pack.uuid));
 		for (const c of cards) {
-			if (c.card.packId !== version.id) {
-				await db.update(card).set({ isLatestVersion: false }).where(eq(card.id, c.card.id));
+			if (c.card.packId !== pack.id) {
+				await db
+					.update(table.card)
+					.set({ isLatestVersion: false })
+					.where(eq(table.card.id, c.card.id));
 			}
 		}
 
 		// Promote currnet (latest) pack.
-		await db.update(pack).set({ isLatestVersion: true }).where(eq(pack.id, newLatestPack.id));
-		await db.update(card).set({ isLatestVersion: true }).where(eq(card.packId, newLatestPack.id));
+		await db
+			.update(table.pack)
+			.set({ isLatestVersion: true })
+			.where(eq(table.pack.id, newLatestPack.id));
+		await db
+			.update(table.card)
+			.set({ isLatestVersion: true })
+			.where(eq(table.card.packId, newLatestPack.id));
 	}
 
 	if (!newLatestPack) {
-		newLatestPack = version;
+		newLatestPack = pack;
 	}
 
-	for (const userId of version.userIds) {
-		await db.insert(notification).values({
+	for (const userId of pack.userIds) {
+		await db.insert(table.notification).values({
 			userId,
-			text: `Your pack (${version.name} v${newLatestPack.packVersion} - ${newLatestPack.id.slice(0, 6)}) has been approved!`,
+			text: `Your pack (${pack.name} v${newLatestPack.packVersion} - ${newLatestPack.id.slice(0, 6)}) has been approved!`,
 			route: resolve("/pack/[uuid]/versions/[version]/[id]", {
-				uuid: version.uuid,
+				uuid: pack.uuid,
 				version: newLatestPack.packVersion,
 				id: newLatestPack.id,
 			}),
 		});
 	}
 
-	await db.insert(packMessage).values({
+	await db.insert(table.packMessage).values({
 		packId: newLatestPack.id,
 		authorId: user.id,
 		type: messageType,

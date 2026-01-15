@@ -50,8 +50,8 @@
 								<!-- Other versions -->
 								{#each versions.relevantPacks
 									.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
-									.slice(1) as version (version.id)}
-									<PackSmall pack={version} navigateToVersion />
+									.slice(1) as pack (pack.id)}
+									<PackSmall {pack} navigateToVersion />
 								{/each}
 							</div>
 						</div>

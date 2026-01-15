@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { type Card, type PackWithExtras } from "$lib/db/schema";
+	import type { Card, PackWithExtras } from "$lib/db/schema";
 
 	let {
 		card,

@@ -1,5 +1,6 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packLike, packMessage, user, type PackWithExtras } from "$lib/db/schema.js";
+import type { PackWithExtras } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq, desc } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
@@ -20,21 +21,23 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db.select().from(table.pack).where(eq(table.pack.uuid, uuid)).$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
 
 	if (packs.length <= 0) {
 		// To to parse uuid as a version id.
-		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
+		const id = (
+			await db.select({ uuid: table.pack.uuid }).from(table.pack).where(eq(table.pack.id, uuid))
+		).at(0);
 		if (!id) {
 			error(404, { message: "Pack not found." });
 		}
 
 		packs = await getFullPacks(
 			user,
-			db.select().from(pack).where(eq(pack.uuid, id.uuid)).$dynamic(),
+			db.select().from(table.pack).where(eq(table.pack.uuid, id.uuid)).$dynamic(),
 		);
 
 		packs = filterApproved(user, packs);
@@ -57,7 +60,7 @@ export const APIGetPack = async (user: ClientUser, uuid: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db.select().from(table.pack).where(eq(table.pack.uuid, uuid)).$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
@@ -85,8 +88,8 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	query: T,
 ) => {
 	const packsAndLikes = await query
-		.fullJoin(packLike, eq(pack.uuid, packLike.packId))
-		.fullJoin(user, eq(pack.approvedBy, user.id));
+		.fullJoin(table.packLike, eq(table.pack.uuid, table.packLike.packId))
+		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.id));
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
@@ -101,13 +104,13 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 			let messagesQuery = db
 				.select()
-				.from(packMessage)
-				.where(eq(packMessage.packId, p.pack.id))
-				.orderBy(desc(packMessage.creationDate))
-				.fullJoin(user, eq(packMessage.authorId, user.id))
+				.from(table.packMessage)
+				.where(eq(table.packMessage.packId, p.pack.id))
+				.orderBy(desc(table.packMessage.creationDate))
+				.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
 				.$dynamic();
 			if (!satisfiesRole(clientUser, "Moderator")) {
-				messagesQuery = messagesQuery.where(eq(packMessage.type, "public"));
+				messagesQuery = messagesQuery.where(eq(table.packMessage.type, "public"));
 			}
 
 			const messages = await messagesQuery;

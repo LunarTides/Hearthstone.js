@@ -1,4 +1,5 @@
-import { packCommentLike, user, type PackCommentWithExtras, packComment } from "$lib/db/schema";
+import type { PackCommentWithExtras } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { censorUser } from "$lib/user";
 import { asc, eq } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
@@ -8,13 +9,13 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 	clientUser: ClientUser | null,
 	query: T,
 ) => {
-	const heartedBy = alias(user, "heartedBy");
+	const heartedBy = alias(table.user, "heartedBy");
 
 	const packComments = await query
-		.orderBy(asc(packComment.creationDate))
-		.fullJoin(packCommentLike, eq(packComment.id, packCommentLike.commentId))
-		.fullJoin(user, eq(packComment.authorId, user.id))
-		.fullJoin(heartedBy, eq(packComment.heartedById, heartedBy.id));
+		.orderBy(asc(table.packComment.creationDate))
+		.fullJoin(table.packCommentLike, eq(table.packComment.id, table.packCommentLike.commentId))
+		.fullJoin(table.user, eq(table.packComment.authorId, table.user.id))
+		.fullJoin(heartedBy, eq(table.packComment.heartedById, heartedBy.id));
 
 	// Show all comments.
 	// TODO: Deduplicate.

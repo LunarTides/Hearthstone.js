@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { type Card, type PackWithExtras } from "$lib/db/schema";
+	import type { Card, PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user";
