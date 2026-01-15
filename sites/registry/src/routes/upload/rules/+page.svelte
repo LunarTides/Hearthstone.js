@@ -12,7 +12,10 @@ Breaking any of these rules could result in anything from a warning, to a perma-
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL"
-in this document are to be interpreted as described in <a href="https://datatracker.ietf.org/doc/html/rfc2119" class="underline">RFC 2119</a>.
+in this document are to be interpreted as described in <a
+		href="https://datatracker.ietf.org/doc/html/rfc2119"
+		class="underline">RFC 2119</a
+	>.
 
 
 1. General code restrictions

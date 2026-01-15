@@ -13,7 +13,7 @@
 			<p>Want to upload a pack?</p>
 			<a href={resolve("/upload/rules")} class="underline">Check out the rules.</a>
 		</div>
-	
+
 		<p>Dont worry, they are easily understandable :)</p>
 	</div>
 
