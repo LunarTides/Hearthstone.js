@@ -131,34 +131,17 @@
 
 			{#if canModeratePack}
 				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
-					{#if pack.approved}
-						<a
-							href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-							class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
-						>
-							<!-- TODO: Change depending on if it's listed or not. -->
-							(Un)list
-						</a>
-					{:else}
-						<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
-							<!-- TODO: Change depending on if it's listed or not. -->
-							(Un)list
-						</p>
-					{/if}
-					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full hover:bg-gray-800 active:bg-black"
-					>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
 						(Reserved)
-					</a>
+					</p>
 					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-r-full hover:bg-gray-800 active:bg-black"
-					>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
 						(Reserved)
-					</a>
+					</p>
+					<div class="border-l ml-auto h-auto"></div>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
+						(Reserved)
+					</p>
 				</div>
 			{/if}
 		</div>

@@ -50,7 +50,7 @@ export const pack = pgTable("pack", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	uuid: uuid("uuid"),
+	uuid: uuid("uuid").notNull(),
 	userIds: uuid("user_ids").array().notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
 	gameVersion: text("game_version").notNull(),

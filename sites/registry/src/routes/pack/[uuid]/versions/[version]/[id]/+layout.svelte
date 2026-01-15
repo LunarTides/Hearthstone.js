@@ -110,22 +110,22 @@
 
 	{#if canModeratePack}
 		<!-- Approve -->
-		{#if !versions.current.approved}
-			<div class="flex flex-col m-2 gap-2">
-				<h3 class="text-2xl">Approve</h3>
-				{#if approveConfirm === 0}
-					<div class="flex gap-1">
-						<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
-							<button
-								class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-								onclick={() => {
-									approveConfirm++;
-									approveType = true;
-								}}
-							>
-								Approve
-							</button>
-						</div>
+		<div class="flex flex-col m-2 gap-2">
+			<h3 class="text-2xl">Approve</h3>
+			{#if approveConfirm === 0}
+				<div class="flex gap-1">
+					<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
+						<button
+							class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
+							onclick={() => {
+								approveConfirm++;
+								approveType = true;
+							}}
+						>
+							{versions.current.approved ? "Unapprove" : "Approve"}
+						</button>
+					</div>
+					{#if !versions.current.approved}
 						<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
 							<button
 								class="px-5 py-3 w-full hover:cursor-pointer hover:bg-gray-800 active:bg-black"
@@ -137,56 +137,61 @@
 								Deny
 							</button>
 						</div>
-					</div>
-				{:else}
-					<form
-						action={resolve("/pack/[uuid]/versions/[version]/[id]", {
-							uuid: versions.current.uuid,
-							version: versions.current.packVersion,
-							id: versions.current.id,
-						}) + (approveType ? "?/approve" : "?/approve-deny")}
-						method="post"
-						use:enhance
-					>
-						<div class="flex flex-col gap-1">
-							<textarea
-								name="message"
-								class="bg-background min-h-24 invalid:border-red-500"
-								placeholder="Comment..."
-								aria-invalid={$errors.message ? "true" : undefined}
-								bind:value={$form.message}
-								{...$constraints.message}
-							></textarea>
+					{/if}
+				</div>
+			{:else}
+				<form
+					action={resolve("/pack/[uuid]/versions/[version]/[id]", {
+						uuid: versions.current.uuid,
+						version: versions.current.packVersion,
+						id: versions.current.id,
+					}) +
+						(approveType
+							? versions.current.approved
+								? "?/unapprove"
+								: "?/approve"
+							: "?/approve-deny")}
+					method="post"
+					use:enhance
+				>
+					<div class="flex flex-col gap-1">
+						<textarea
+							name="message"
+							class="bg-background min-h-24 invalid:border-red-500"
+							placeholder="Comment..."
+							aria-invalid={$errors.message ? "true" : undefined}
+							bind:value={$form.message}
+							{...$constraints.message}
+						></textarea>
 
-							<select
-								name="messageType"
-								class="bg-background invalid:border-red-500"
-								aria-invalid={$errors.messageType ? "true" : undefined}
-								bind:value={$form.messageType}
-								{...$constraints.messageType}
+						<select
+							name="messageType"
+							class="bg-background invalid:border-red-500"
+							aria-invalid={$errors.messageType ? "true" : undefined}
+							bind:value={$form.messageType}
+							{...$constraints.messageType}
+						>
+							<option value="public">Public</option>
+							<option value="internal">Internal</option>
+						</select>
+
+						<div class="flex bg-black text-white outline-1 -outline-offset-1">
+							<button
+								type="submit"
+								class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
 							>
-								<option value="public">Public</option>
-								<option value="internal">Internal</option>
-							</select>
-
-							<div class="flex bg-black text-white outline-1 -outline-offset-1">
-								<button
-									type="submit"
-									class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-gray-800 active:bg-black"
-								>
-									{#if approveType}
-										Approve!
-									{:else}
-										<!-- TODO: Make deny work. -->
-										Deny!
-									{/if}
-								</button>
-							</div>
+								{#if approveType}
+									{versions.current.approved ? "Unapprove!" : "Approve!"}
+								{:else}
+									<!-- TODO: Make deny work. -->
+									Deny!
+								{/if}
+							</button>
 						</div>
-					</form>
-				{/if}
-			</div>
-		{/if}
+					</div>
+				</form>
+			{/if}
+		</div>
 	{/if}
 
 	<details class="m-2" open>

@@ -142,3 +142,55 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 	return packs;
 };
+
+export async function setLatestVersion(uuid: string) {
+	let packs = await db
+		.select({
+			id: table.pack.id,
+			uuid: table.pack.uuid,
+			packVersion: table.pack.packVersion,
+			approved: table.pack.approved,
+		})
+		.from(table.pack)
+		.where(eq(table.pack.uuid, uuid))
+		.orderBy(desc(table.pack.packVersion));
+
+	{
+		const filtered = packs.filter((pack) => pack.approved);
+		if (filtered.length > 0) {
+			packs = filtered;
+		}
+	}
+
+	const latest = packs[0];
+	if (!latest) {
+		return;
+	}
+
+	// Demote other packs / cards.
+	await db
+		.update(table.pack)
+		.set({ isLatestVersion: false })
+		.where(eq(table.pack.uuid, latest.uuid));
+	const cards = await db
+		.select()
+		.from(table.card)
+		.innerJoin(table.pack, eq(table.pack.id, table.card.packId))
+		.where(eq(table.pack.uuid, latest.uuid));
+	for (const c of cards) {
+		// TODO: Should the latest version of a card be true if there is no earlier version of that card even though that version isn't the latest version?
+		if (c.card.packId !== latest.id) {
+			await db
+				.update(table.card)
+				.set({ isLatestVersion: false })
+				.where(eq(table.card.id, c.card.id));
+		}
+	}
+
+	// Promote currnet (latest) pack.
+	await db.update(table.pack).set({ isLatestVersion: true }).where(eq(table.pack.id, latest.id));
+	await db
+		.update(table.card)
+		.set({ isLatestVersion: true })
+		.where(eq(table.card.packId, latest.id));
+}

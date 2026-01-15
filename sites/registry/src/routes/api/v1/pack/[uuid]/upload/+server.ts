@@ -1,15 +1,16 @@
 import { error, json } from "@sveltejs/kit";
 import fs from "fs/promises";
 import { fileTypeFromBuffer } from "file-type";
-import { join, resolve } from "path";
+import { join } from "path";
 import { tmpdir } from "os";
 import { db } from "$lib/server/db/index.js";
 import type { Pack } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
-import { eq, or, type InferInsertModel } from "drizzle-orm";
+import type { InferInsertModel } from "drizzle-orm";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
+import { setLatestVersion } from "$lib/server/db/pack.js";
 
 interface Metadata {
 	versions: {
@@ -172,51 +173,28 @@ export async function POST(event) {
 
 	// Check if a pack with that name / uuid already exists,
 	// if it does, and the current user is one of that pack's authors, update it.
-	let isLatestVersion = true;
+	// let isLatestVersion = true;
 	// let update = false;
 	const updateDB = async (values: InferInsertModel<typeof table.pack>) =>
 		db.insert(table.pack).values(values).returning();
 
-	const otherVersions = await db
-		.select()
-		.from(table.pack)
-		.where(or(eq(table.pack.uuid, uuid), eq(table.pack.name, metadata.name)));
-	for (const version of otherVersions) {
-		// if (semver.eq(metadata.versions.pack, version.packVersion)) {
-		// 	// TODO: Add ability for the uploader to limit who can edit the pack.
-		// 	if (version.userIds.includes(user.id)) {
-		// 		// Override.
-		// 		updateDB = async (values: InferInsertModel<typeof pack>) =>
-		// 			db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
-		// 		// // update = true;
-		// 	} else {
-		// 		// No permission.
-		// 		error(403, "You do not have permission to edit this pack.");
-		// 	}
-		// } else
-		if (semver.gt(metadata.versions.pack, version.packVersion)) {
-			// Update other versions.
-			if (version.isLatestVersion) {
-				await db
-					.update(table.pack)
-					.set({ isLatestVersion: false })
-					.where(eq(table.pack.id, version.id));
-				await db
-					.update(table.card)
-					.set({ isLatestVersion: false })
-					.where(eq(table.card.packId, version.id));
-			}
-		}
-
-		// If there exists a later version in the db, this version is not the latest one.
-		else if (semver.lt(metadata.versions.pack, version.packVersion)) {
-			isLatestVersion = false;
-		}
-	}
-
-	// Only do this if the approval process is disabled.
-	// if (!settings.upload.requireApproval) {
-	// 	isLatestVersion = false;
+	// const otherVersions = await db
+	// 	.select()
+	// 	.from(table.pack)
+	// 	.where(or(eq(table.pack.uuid, uuid), eq(table.pack.name, metadata.name)));
+	// for (const version of otherVersions) {
+	// if (semver.eq(metadata.versions.pack, version.packVersion)) {
+	// 	// TODO: Add ability for the uploader to limit who can edit the pack.
+	// 	if (version.userIds.includes(user.id)) {
+	// 		// Override.
+	// 		updateDB = async (values: InferInsertModel<typeof pack>) =>
+	// 			db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
+	// 		// // update = true;
+	// 	} else {
+	// 		// No permission.
+	// 		error(403, "You do not have permission to edit this pack.");
+	// 	}
+	// }
 	// }
 
 	// TODO: Delete pack from db if adding cards goes wrong.
@@ -236,7 +214,7 @@ export async function POST(event) {
 
 		unpackedSize: uncompressedSize,
 
-		isLatestVersion,
+		isLatestVersion: false,
 		approved: !settings.upload.requireApproval,
 	});
 
@@ -292,7 +270,7 @@ export async function POST(event) {
 			enchantmentPriority: f("enchantmentPriority"),
 
 			approved: !settings.upload.requireApproval,
-			isLatestVersion,
+			isLatestVersion: false,
 			filePath,
 		};
 
@@ -300,6 +278,8 @@ export async function POST(event) {
 
 		await db.insert(table.card).values(card);
 	}
+
+	await setLatestVersion(uuid);
 
 	// TODO: Add links.
 	const id = pack[0].id;
