@@ -197,6 +197,18 @@
 				</div>
 			</div>
 
+			<div>
+				<div class="w-fit">
+					<p class="text-lg font-semibold">Permissions</p>
+					<hr />
+					{#if pack.permissions.length > 0}
+						<p class="text-amber-300">{pack.permissions.join(", ")}</p>
+					{:else}
+						<p class="text-green-300">None</p>
+					{/if}
+				</div>
+			</div>
+
 			{#if pack.approved && satisfiesRole(user, "Moderator")}
 				<div class="flex mt-4 gap-2">
 					<div>
@@ -206,18 +218,6 @@
 					</div>
 				</div>
 			{/if}
-		</div>
-
-		<div>
-			<div class="w-fit">
-				<p class="text-lg font-semibold">Permissions</p>
-				<hr />
-				{#if pack.permissions.length > 0}
-					<p class="text-amber-300">{pack.permissions.join(", ")}</p>
-				{:else}
-					<p class="text-green-300">None</p>
-				{/if}
-			</div>
 		</div>
 
 		{#if !hideButtons && pack.approved}

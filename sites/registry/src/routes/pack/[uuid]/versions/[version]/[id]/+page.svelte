@@ -28,7 +28,7 @@
 
 			<p>Loading...</p>
 		{:then commentsObject}
-			<details open>
+			<details>
 				<summary>Comments ({commentsObject.amount})</summary>
 
 				<!-- TODO: Use superforms. -->

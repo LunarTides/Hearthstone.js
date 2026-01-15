@@ -93,7 +93,18 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
-		packsAndLikes.map(async (p) => {
+		packsAndLikes.filter(p => {
+			// Hide unapproved packs from unauthorized users.
+			if (p.pack.approved) {
+				return true;
+			}
+
+			if ((clientUser && p.pack.userIds.includes(clientUser.id)) || satisfiesRole(clientUser, "Moderator")) {
+				return true;
+			}
+
+			return false;
+		}).map(async (p) => {
 			const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
 
 			// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.

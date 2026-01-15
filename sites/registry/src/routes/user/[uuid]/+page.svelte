@@ -1,9 +1,20 @@
 <script lang="ts">
 	import PackSmall from "$lib/components/pack-small.svelte";
 	import UserBig from "$lib/components/user-big.svelte";
+	import type { PackWithExtras } from "$lib/db/schema.js";
 	import semver from "semver";
 
 	let { data } = $props();
+
+	const packSortingFunction = (a: PackWithExtras, b: PackWithExtras) => {
+		if (!a.approved && b.approved) {
+			return 1;
+		} else if (a.approved && !b.approved) {
+			return -1;	
+		}
+
+		return semver.compare(b.packVersion, a.packVersion);
+	}
 </script>
 
 {#await data.currentUser}
@@ -40,16 +51,15 @@
 							<div class="flex bg-background rounded-xl gap-1">
 								<!-- Latest version -->
 								<PackSmall
-									pack={versions.relevantPacks.toSorted((a, b) =>
-										semver.compare(b.packVersion, a.packVersion),
-									)[0]}
+									pack={versions.relevantPacks.toSorted(packSortingFunction)[0]}
+									navigateToVersion
 								/>
 
 								<div class="border-l-2 mx-2 h-auto"></div>
 
 								<!-- Other versions -->
 								{#each versions.relevantPacks
-									.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
+									.toSorted(packSortingFunction)
 									.slice(1) as pack (pack.id)}
 									<PackSmall {pack} navigateToVersion />
 								{/each}
