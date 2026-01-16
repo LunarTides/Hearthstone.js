@@ -307,7 +307,7 @@ export async function create(
 	let filename = `${blueprint.name
 		.toLowerCase()
 		.replaceAll(" ", "-")
-		.replaceAll(/[^a-z\d-]/g, "")}-${id.slice(0, 8)}.ts`;
+		.replaceAll(/[^a-z\d-]/g, "")}-${id.split("-").at(-1)!.slice(0, 8)}.ts`;
 
 	// If this function was passed in a filename, use that instead.
 	if (overrideFilename) {

@@ -452,7 +452,7 @@ ${mainContent}
 		// Use Promise.all to read all the files in parallel
 		await Promise.all(
 			files.map(async (file, i) => {
-				const fullPath = resolve(actualPath, file.parentPath, file.name);
+				const fullPath = `/${resolve(actualPath, file.parentPath, file.name)}`;
 				let fileContent: string | undefined;
 
 				if (readFiles && file.isFile()) {

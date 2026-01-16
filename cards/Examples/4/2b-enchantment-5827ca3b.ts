@@ -1,0 +1,88 @@
+// Created by Hand
+
+import {
+	type Blueprint,
+	Class,
+	Event,
+	EventListenerMessage,
+	Rarity,
+	Tribe,
+	Type,
+} from "@Game/types.ts";
+
+export const blueprint: Blueprint = {
+	name: "Enchantment Apply Example",
+	text: "Your cards cost (1) less.",
+	cost: 1,
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
+	collectible: false,
+	tags: [],
+	id: "019bc665-4f80-7011-8b35-5827ca3ba4d4",
+
+	attack: 1,
+	health: 1,
+	tribes: [Tribe.None],
+
+	/*
+	 * `tick` works the same as passive, except it's called more often, and isn't dependent on events.
+	 * More on ticks in '4-5'
+	 */
+	async tick(self, owner, key, value) {
+		// Your cards cost (1) less.
+
+		// addEnchantment broadcasts the CreateCard event. Return here to avoid an infinite loop.
+		if (
+			game.event.is(key, value, Event.CreateCard) &&
+			value.id ===
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e
+		) {
+			return;
+		}
+
+		/*
+		 * When changing cost of a card USE THE ENCHANTMENT SYSTEM. This will ensure that mutliple cards can change the cost of cards without interfering with each other.
+		 * We don't care about the event, we just want to run this code every now and then.
+		 */
+
+		for (const card of owner.hand) {
+			// If the card was already given the enchantment from this card, ignore it.
+			if (
+				card.enchantmentExists(
+					game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
+					self,
+				)
+			) {
+				continue;
+			}
+
+			// Give the card the enchantment.
+			await card.addEnchantment(
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
+				self,
+			);
+		}
+	},
+
+	/*
+	 * This ability triggers whenever this card is about to be removed from the game.
+	 * It exists to allow cards to undo changes made by `passive`-related effects (e.g. tick).
+	 */
+	async remove(self, owner) {
+		// Remove the enchantment that was given by this card from all cards in the player's hand.
+
+		for (const card of owner.hand) {
+			// Only remove the enchantment given by this card.
+			await card.removeEnchantment(
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
+				self,
+			);
+		}
+	},
+
+	async test(self, owner) {
+		// TODO: Add proper tests. #325
+		return EventListenerMessage.Skip;
+	},
+};

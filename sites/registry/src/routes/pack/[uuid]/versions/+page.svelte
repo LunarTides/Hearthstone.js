@@ -33,7 +33,7 @@
 					class="bg-header p-2 rounded-full text-xl text-center text-white"
 				>
 					{pack.packVersion}
-					<span class="text-gray-700">({pack.id.slice(0, 6)})</span>
+					<span class="text-gray-700">({pack.id.split("-").at(-1)!.slice(0, 6)})</span>
 				</a>
 			{/each}
 		</div>

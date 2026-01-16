@@ -1,0 +1,40 @@
+// Created by the Custom Card Creator
+
+import { Card } from "@Game/card.ts";
+import {
+	type Blueprint,
+	Class,
+	EventListenerMessage,
+	Rarity,
+	Type,
+} from "@Game/types.ts";
+
+export const blueprint: Blueprint = {
+	name: "Galakrond's Fury",
+	text: "Summon a 2/1 Elemental with <b>Rush</b>.",
+	cost: 2,
+	type: Type.HeroPower,
+	classes: [Class.Shaman],
+	rarity: Rarity.Legendary,
+	collectible: false,
+	tags: [],
+	id: "019bc665-4f81-700a-bd27-2600dc1b8cb1",
+
+	async heropower(self, owner) {
+		// Summon a 2/1 Elemental with Rush.
+		const card = await Card.create(
+			game.cardIds.windsweptElemental_019bc665_4f81_7009_b923_b20c63416603,
+			owner,
+		);
+		if (!card) {
+			return;
+		}
+
+		await owner.summon(card);
+	},
+
+	async test(self, owner) {
+		// TODO: Add proper tests. #325
+		return EventListenerMessage.Skip;
+	},
+};

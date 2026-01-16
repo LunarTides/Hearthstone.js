@@ -541,7 +541,7 @@ const prompt = {
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
 				const sheep = await Card.create(
-					game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+					game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 					player,
 					true,
 				);
@@ -1008,7 +1008,7 @@ const prompt = {
 			for (const [i, card] of Object.entries(player.hand)) {
 				// Don't allow mulliganing the coin.
 				if (
-					card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+					card.id === game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e
 				) {
 					continue;
 				}

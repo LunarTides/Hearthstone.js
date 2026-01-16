@@ -221,6 +221,7 @@ async function importPack() {
 		);
 
 		await validate(false, false);
+		await game.functions.card.generateIdsFile();
 
 		console.log(
 			`<green>The pack has been imported into '/cards/Packs/${pack.uuid}'.</green>\n`,

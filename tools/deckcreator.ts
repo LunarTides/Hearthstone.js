@@ -246,7 +246,7 @@ export async function main(): Promise<void> {
 						.sort((a, b) => a.name.localeCompare(b.name))
 						.map(async (c) => ({
 							name: parseTags(
-								`${await c.readable()} {#<#${c.id.slice(0, 6)}>${c.id.slice(0, 8)}</#>}`,
+								`${await c.readable()} {#<#${c.id.split("-").at(-1)!.slice(0, 6)}>${c.id.split("-").at(-1)!.slice(0, 6)}</#>}`,
 							),
 							value: c.id,
 						})),

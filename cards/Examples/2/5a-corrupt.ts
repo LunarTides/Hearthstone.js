@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "a5d296af-549a-4d7f-8c3e-ac0ed842dd64",
+	id: "019bc665-4f80-702a-a6ec-297a6382f69b",
 
 	attack: 1,
 	health: 1,
@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		 */
 		self.addKeyword(
 			Keyword.Corrupt,
-			game.cardIds.corruptedExample_ba8de33e_a8fd_426e_9ac0_08f5a3c949bc,
+			game.cardIds.corruptedExample_019bc665_4f80_702b_9638_5a8b8e46ef3a,
 		);
 	},
 

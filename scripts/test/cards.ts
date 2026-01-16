@@ -57,11 +57,11 @@ export async function main(): Promise<void> {
 
 		for (let i = 0; i < 30; i++) {
 			const sheep1 = await Card.create(
-				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 				game.player1,
 			);
 			const sheep2 = await Card.create(
-				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 				game.player2,
 			);
 			game.player1.deck.push(sheep1);

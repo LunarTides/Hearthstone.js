@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "ea78e85b-ba81-41f3-a677-af52041ee1c9",
+	id: "019bc665-4f81-7000-8faa-89022618a028",
 
 	attack: 10,
 	health: 10,
@@ -28,9 +28,9 @@ export const blueprint: Blueprint = {
 	async create(self, owner) {
 		// Put the ids of the titan ability cards, like in corrupt, but a list.
 		self.addKeyword(Keyword.Titan, [
-			game.cardIds.ability1_c01749a3_fdf2_4466_8628_858b239ddd92,
-			game.cardIds.ability2_f7886c3e_3473_442b_9513_7de9306dbf3e,
-			game.cardIds.ability3_f62bed5a_647a_45e3_8d2e_c27f16764481,
+			game.cardIds.ability1_019bc665_4f80_702e_803a_28c25a963fff,
+			game.cardIds.ability2_019bc665_4f80_702f_aa1a_88585939e5af,
+			game.cardIds.ability3_019bc665_4f80_7030_81b2_752f0b48159f,
 		]);
 	},
 

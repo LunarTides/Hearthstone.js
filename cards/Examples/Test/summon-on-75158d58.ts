@@ -1,0 +1,76 @@
+// Created by the Custom Card Creator
+
+import { Card } from "@Game/card.ts";
+import {
+	type Blueprint,
+	Class,
+	Keyword,
+	Rarity,
+	Tribe,
+	Type,
+} from "@Game/types.ts";
+import assert from "node:assert";
+
+export const blueprint: Blueprint = {
+	name: "Summon On Draw Test",
+	text: "<b>Summon on Draw. Colossal +2.</b>",
+	cost: 1,
+	type: Type.Minion,
+	classes: [Class.Neutral],
+	rarity: Rarity.Free,
+	collectible: false,
+	tags: [],
+	id: "019bc665-4f80-7004-92b4-75158d5826f8",
+
+	attack: 1,
+	health: 1,
+	tribes: [Tribe.None],
+
+	async create(self, owner) {
+		self.addKeyword(Keyword.SummonOnDraw);
+
+		// Use the preexisting colossal example minions
+		self.addKeyword(Keyword.Colossal, [
+			game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
+			game.cardIds.null,
+			game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
+		]);
+	},
+
+	async test(self, owner) {
+		// Set the player's deck and hand
+		owner.deck = [
+			await Card.create(
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
+				owner,
+			),
+			self,
+		];
+		owner.hand = [];
+
+		// Make the player draw this card
+		await owner.drawCards(1);
+
+		const board = owner.board;
+
+		// Check if this minion and the two arms are on the board
+		assert.ok(
+			board.some(
+				(card) =>
+					card.id === game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
+			),
+		);
+		assert.ok(board.some((card) => card.id === self.id));
+		assert.ok(
+			board.some(
+				(card) =>
+					card.id ===
+					game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
+			),
+		);
+
+		// Check that the player's deck is empty and the player's hand has one card (the sheep)
+		assert.equal(owner.deck.length, 0);
+		assert.equal(owner.hand.length, 1);
+	},
+};

@@ -82,7 +82,7 @@ export async function POST(event) {
 	for (const userId of pack.userIds) {
 		await notify(event, {
 			userId,
-			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.slice(0, 6)}) has been denied.`,
+			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been denied.`,
 			route:
 				resolve("/pack/[uuid]/versions/[version]/[id]", {
 					uuid: pack.uuid,
@@ -159,7 +159,7 @@ export async function DELETE(event) {
 	for (const userId of pack.userIds) {
 		await notify(event, {
 			userId,
-			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.slice(0, 6)}) is being reconsidered for approval!`,
+			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) is being reconsidered for approval!`,
 			route:
 				resolve("/pack/[uuid]/versions/[version]/[id]", {
 					uuid: pack.uuid,

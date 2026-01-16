@@ -659,7 +659,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.deck.length, 30);
 	 *
-	 * const card = game.createCard(game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c, player);
+	 * const card = game.createCard(game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6, player);
 	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
@@ -1099,7 +1099,7 @@ export class Player {
 			// The Coin card shouldn't be mulligan'd
 			if (
 				!this.hand.includes(card) ||
-				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+				card.id === game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e
 			) {
 				continue;
 			}
@@ -1134,7 +1134,7 @@ export class Player {
 		const cost = count < 10 ? count : 10;
 
 		const jade = await Card.create(
-			game.cardIds.jadeGolem_cf300193_f06d_4a16_ae3d_0c3b03781b20,
+			game.cardIds.jadeGolem_019bc665_4f7f_7001_b06d_2944338e60c8,
 			this,
 		);
 		await jade.setStats(count, count);

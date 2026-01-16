@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "b361c5c9-cfb6-4284-86c6-efd23f4dbdfa",
+	id: "019bc665-4f81-7012-a250-21d12f3ad8bc",
 
 	// The schools of the spell.
 	spellSchools: [SpellSchool.Shadow],

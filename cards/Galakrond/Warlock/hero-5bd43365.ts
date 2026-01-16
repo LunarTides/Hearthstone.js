@@ -1,0 +1,82 @@
+// Created by the Custom Card Creator
+
+import { Card } from "@Game/card.ts";
+import {
+	type Blueprint,
+	Class,
+	EventListenerMessage,
+	Rarity,
+	Tag,
+	Tribe,
+	Type,
+} from "@Game/types.ts";
+
+export const blueprint: Blueprint = {
+	name: "Galakrond, the Wretched",
+	text: "<b>Battlecry:</b> Summon {amount} random Demon{plural}.",
+	cost: 7,
+	type: Type.Hero,
+	classes: [Class.Warlock],
+	rarity: Rarity.Legendary,
+	collectible: true,
+	tags: [Tag.Galakrond],
+	id: "019bc665-4f80-7022-9775-5bd433657c8d",
+
+	armor: 5,
+	heropowerId:
+		game.cardIds.galakrondsMalice_019bc665_4f80_7021_896a_55feca3670b0,
+
+	async battlecry(self, owner) {
+		// Summon 1 random Demon.
+		const amount = game.functions.card.galakrondFormula(
+			self.getStorage(self.uuid, "invokeCount") as number,
+		);
+
+		const testDemoness = (card: Card) => {
+			if (!card.tribes) {
+				return false;
+			}
+
+			return game.functions.card.matchTribe(card.tribes, Tribe.Demon);
+		};
+
+		for (let i = 0; i < amount; i++) {
+			// Find all demons
+			const possibleCards = (await Card.all()).filter(
+				(c) => c.type === Type.Minion && testDemoness(c),
+			);
+
+			// Choose a random one
+			let card = game.lodash.sample(possibleCards);
+			if (!card) {
+				break;
+			}
+
+			// Summon it
+			card = await Card.create(card.id, owner);
+			await owner.summon(card);
+		}
+	},
+
+	async invoke(self, owner) {
+		self.galakrondBump("invokeCount");
+	},
+
+	async placeholders(self, owner) {
+		const invokeCount = self.getStorage(self.uuid, "invokeCount");
+		if (!invokeCount) {
+			return { amount: 0, plural: "s", plural2: "They" };
+		}
+
+		const amount = game.functions.card.galakrondFormula(invokeCount);
+		const multiple = amount > 1;
+		const plural = multiple ? "s" : "";
+
+		return { amount, plural };
+	},
+
+	async test(self, owner) {
+		// TODO: Test. #325
+		return EventListenerMessage.Skip;
+	},
+};
