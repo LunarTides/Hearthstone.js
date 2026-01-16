@@ -208,7 +208,7 @@ export async function main(): Promise<void> {
 
 	const filterCards = (c: Card) => {
 		// TODO: Add runes.
-		return c.classes.includes(viewingClass);
+		return showingDeck || c.classes.includes(viewingClass);
 	};
 
 	while (true) {
