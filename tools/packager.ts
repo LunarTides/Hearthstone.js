@@ -3,8 +3,8 @@
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
+import fs from "node:fs/promises";
 import { resolve } from "node:path";
-import fs from "fs/promises";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
@@ -79,7 +79,7 @@ async function getPacks() {
 
 			let bytes = Buffer.alloc(0);
 			if (file.isFile()) {
-				bytes = (await fs.readFile(path)) as Buffer;
+				bytes = (await fs.readFile(path)) as Buffer<ArrayBuffer>;
 			}
 
 			packs.push({

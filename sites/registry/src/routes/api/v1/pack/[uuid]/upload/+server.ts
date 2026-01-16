@@ -1,5 +1,5 @@
 import { error, json } from "@sveltejs/kit";
-import fs from "fs/promises";
+import fs from "node:fs/promises"";
 import { fileTypeFromBuffer } from "file-type";
 import { join } from "path";
 import { tmpdir } from "os";

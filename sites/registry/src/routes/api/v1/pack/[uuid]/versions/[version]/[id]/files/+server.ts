@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import fs from "fs/promises";
+import fs from "node:fs/promises"";
 import { resolve } from "path";
 import { satisfiesRole } from "$lib/user";
 import type { FileTree } from "$lib/api/types.js";
