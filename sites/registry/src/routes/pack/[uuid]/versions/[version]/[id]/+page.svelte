@@ -10,10 +10,13 @@
 	let { data } = $props();
 
 	let commentDeleteConfirm = $state("");
+
+	let fileTreeOpen = $state(true);
+	let commentsOpen = $state(false);
 </script>
 
 <div class="m-1 p-2 bg-header rounded-md">
-	<details open>
+	<details bind:open={fileTreeOpen}>
 		<summary>File Tree ({data.files.length})</summary>
 		<FileTree files={data.files} />
 	</details>
@@ -28,7 +31,7 @@
 
 			<p>Loading...</p>
 		{:then commentsObject}
-			<details>
+			<details bind:open={commentsOpen}>
 				<summary>Comments ({commentsObject.amount})</summary>
 
 				<!-- TODO: Use superforms. -->

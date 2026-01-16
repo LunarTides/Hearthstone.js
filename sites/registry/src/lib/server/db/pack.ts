@@ -93,60 +93,65 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
-		packsAndLikes.filter(p => {
-			// Hide unapproved packs from unauthorized users.
-			if (p.pack.approved) {
-				return true;
-			}
+		packsAndLikes
+			.filter((p) => {
+				// Hide unapproved packs from unauthorized users.
+				if (p.pack.approved) {
+					return true;
+				}
 
-			if ((clientUser && p.pack.userIds.includes(clientUser.id)) || satisfiesRole(clientUser, "Moderator")) {
-				return true;
-			}
+				if (
+					(clientUser && p.pack.userIds.includes(clientUser.id)) ||
+					satisfiesRole(clientUser, "Moderator")
+				) {
+					return true;
+				}
 
-			return false;
-		}).map(async (p) => {
-			const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
+				return false;
+			})
+			.map(async (p) => {
+				const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
 
-			// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
-			const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
-			const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
-			const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
-			const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
+				// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
+				const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
+				const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
+				const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
+				const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
 
-			let messagesQuery = db
-				.select()
-				.from(table.packMessage)
-				.where(eq(table.packMessage.packId, p.pack.id))
-				.orderBy(desc(table.packMessage.creationDate))
-				.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
-				.$dynamic();
-			if (!satisfiesRole(clientUser, "Moderator")) {
-				messagesQuery = messagesQuery.where(
-					and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
-				);
-			}
+				let messagesQuery = db
+					.select()
+					.from(table.packMessage)
+					.where(eq(table.packMessage.packId, p.pack.id))
+					.orderBy(desc(table.packMessage.creationDate))
+					.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
+					.$dynamic();
+				if (!satisfiesRole(clientUser, "Moderator")) {
+					messagesQuery = messagesQuery.where(
+						and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
+					);
+				}
 
-			const messages = await messagesQuery;
+				const messages = await messagesQuery;
 
-			return {
-				...p.pack,
-				totalDownloadCount: relevantPacks
-					.map((p) => p.pack!.downloadCount)
-					.reduce((p, v) => p + v, 0),
-				likes: {
-					positive: likes.size,
-					hasLiked: clientUser ? likes.has(clientUser.id) : false,
-					negative: dislikes.size,
-					hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
-				},
-				approvedByUser:
-					p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
-				messages: messages.map((message) => ({
-					...message.packMessage,
-					author: message.user ? censorUser(message.user) : null,
-				})),
-			};
-		}),
+				return {
+					...p.pack,
+					totalDownloadCount: relevantPacks
+						.map((p) => p.pack!.downloadCount)
+						.reduce((p, v) => p + v, 0),
+					likes: {
+						positive: likes.size,
+						hasLiked: clientUser ? likes.has(clientUser.id) : false,
+						negative: dislikes.size,
+						hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
+					},
+					approvedByUser:
+						p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
+					messages: messages.map((message) => ({
+						...message.packMessage,
+						author: message.user ? censorUser(message.user) : null,
+					})),
+				};
+			}),
 	);
 
 	// Remove duplicates.

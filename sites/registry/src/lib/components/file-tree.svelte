@@ -14,8 +14,32 @@
 <table class="w-full">
 	<tbody>
 		{#if page.params.path}
+			<!--
+				Add a `/` row that takes you to the root of the tree.
+				The path only includes a path if we're inside a file / folder inside another folder.
+				E.g. `sheep.ts`, `b`, `b/sheep.ts`, `b/c`, `b/c/sheep.ts`.
+				     ^ In the cases where the path includes a slash, the `..` row doesn't take you to the root of the tree.
+			-->
+			{#if page.params.path.includes("/")}
+				<tr class="flex gap-1 alternating-children p-2 rounded-lg">
+					<th class="text-yellow-100">
+						<Folder />
+					</th>
+					<td>
+						<a
+							href={resolve("/pack/[uuid]/versions/[version]/[id]/files", {
+								uuid: page.params.uuid!,
+								version: page.params.version!,
+								id: page.params.id!,
+							})}
+						>
+							/
+						</a>
+					</td>
+				</tr>
+			{/if}
 			<!-- Add ".." -->
-			<tr class="flex gap-1 bg-background p-2 rounded-lg">
+			<tr class="flex gap-1 alternating-children p-2 rounded-lg">
 				<th class="text-yellow-100">
 					<Folder />
 				</th>

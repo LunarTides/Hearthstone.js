@@ -25,6 +25,11 @@
 
 	let deleteConfirm = $state(0);
 
+	let editOpen = $state(false);
+	let moderateOpen = $state(false);
+	let cardsOpen = $state(false);
+	let messagesOpen = $state(false);
+
 	$effect(() => {
 		(async () => {
 			const ps = await data.packs;
@@ -66,7 +71,7 @@
 
 	{#if canEditPack || canModeratePack}
 		<div class="m-1 p-2 bg-header rounded-md">
-			<details>
+			<details bind:open={editOpen}>
 				<summary class="text-red-500">Edit</summary>
 				<div class="flex m-2 gap-1">
 					<a
@@ -115,7 +120,7 @@
 
 	{#if canModeratePack}
 		<div class="m-1 p-2 bg-header rounded-md">
-			<details>
+			<details bind:open={moderateOpen}>
 				<summary class="text-indigo-500">Moderate</summary>
 				<!-- Approve -->
 				<div class="flex flex-col m-2 gap-2">
@@ -222,7 +227,7 @@
 		<p>Loading...</p>
 	{:then cards}
 		<div class="m-1 p-2 bg-header rounded-md">
-			<details>
+			<details bind:open={cardsOpen}>
 				<summary>Cards ({cards.length})</summary>
 				<div class="flex flex-wrap gap-1 mt-2">
 					<!-- TODO: This doesn't show cards in not-approved versions. -->
@@ -235,7 +240,7 @@
 	{/await}
 
 	<div class="m-1 p-2 bg-header rounded-md">
-		<details>
+		<details bind:open={messagesOpen}>
 			<summary>Messages ({versions.current.messages.length})</summary>
 
 			<!-- TODO: Add posting messages as Moderator+ -->

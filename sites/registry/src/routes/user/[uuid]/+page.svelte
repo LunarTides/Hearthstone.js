@@ -10,11 +10,11 @@
 		if (!a.approved && b.approved) {
 			return 1;
 		} else if (a.approved && !b.approved) {
-			return -1;	
+			return -1;
 		}
 
 		return semver.compare(b.packVersion, a.packVersion);
-	}
+	};
 </script>
 
 {#await data.currentUser}
