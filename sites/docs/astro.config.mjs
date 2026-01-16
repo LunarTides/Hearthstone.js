@@ -11,6 +11,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Hearthstone.js',
+			favicon: 'favicon.png',
 			logo: {
 				src: './src/assets/logo.webp',
 			},

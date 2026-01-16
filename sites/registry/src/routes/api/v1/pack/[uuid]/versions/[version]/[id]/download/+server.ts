@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import fs from "node:fs/promises"";
+import fs from "node:fs/promises";
 import { resolve } from "path";
 import { searchFolder } from "$lib/server/helper";
 

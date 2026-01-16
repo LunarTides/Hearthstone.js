@@ -3,7 +3,7 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
-import fs from "node:fs/promises"";
+import fs from "node:fs/promises";
 
 // TODO: Deduplicate.
 export async function DELETE(event) {

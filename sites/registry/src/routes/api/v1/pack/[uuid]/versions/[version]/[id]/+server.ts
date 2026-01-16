@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
-import fs from "node:fs/promises"";
+import fs from "node:fs/promises";
 
 export async function DELETE(event) {
 	const user = event.locals.user;
