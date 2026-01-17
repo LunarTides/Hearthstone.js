@@ -20,6 +20,7 @@ export async function GET(event) {
 
 	const packs = await db.select().from(table.pack).where(eq(table.pack.approved, false));
 
+	// TODO: Is any of this safe?
 	const xml = `<?xml version="1.0" encoding="utf-8"?>
     <rss version="2.0">
 
@@ -31,8 +32,8 @@ export async function GET(event) {
         ${packs.map(
 					(pack) => `        <item>
             <title>${pack.name} v${pack.packVersion}</title>
-            <link>${resolve("/pack/[uuid]/versions/[version]/[id]", { uuid: pack.uuid, version: pack.packVersion, id: pack.id })}</link>
-            <uuid>${pack.uuid}</uuid>
+            <link>${resolve("/@[username]/-[packName]/versions/[version]/[id]", { username: pack.ownerName, packName: pack.name, version: pack.packVersion, id: pack.id })}</link>
+            <uuid>${pack.ownerName}/${pack.name}</uuid>
             <guid>${pack.id}</guid>
             <description>${pack.description}</description>
             <versions>

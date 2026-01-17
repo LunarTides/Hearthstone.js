@@ -28,19 +28,20 @@ export const load = async (event) => {
 	const pack = packs[0];
 	const packsToReturn = [];
 
-	const uniquePacks = new Set(packs.map((p) => p.uuid));
-	for (const uniquePack of uniquePacks) {
-		const relevantPacks = packs.filter((p) => p.uuid === uniquePack);
+	const uniquePackNames = new Set(packs.map((p) => p.name));
+	for (const uniquePackName of uniquePackNames) {
+		const relevantPacks = packs.filter((p) => p.name === uniquePackName);
 		packsToReturn.push({
-			uuid: uniquePack,
+			uuid: uniquePackName,
 			relevantPacks,
 		});
 	}
 
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/cards", {
-			uuid: pack.uuid,
+		resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/cards", {
+			username: pack.ownerName,
+			packName: pack.name,
 			version: pack.packVersion,
 			id: pack.id,
 		}),
@@ -71,7 +72,7 @@ export const actions = {
 		const formData = await event.request.formData();
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/user/[username]", {
+			resolve("/api/v1/@[username]", {
 				username,
 			}),
 			{

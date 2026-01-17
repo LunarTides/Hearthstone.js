@@ -16,11 +16,11 @@ export const actions = {
 		}
 
 		const buffer = await file.arrayBuffer();
-		const uuid = file.name.split(".").slice(0, -2).join(".");
+		const [username, packName] = file.name.split(".").slice(0, -2).join(".").split("+");
 
 		const response = await requestAPI<{ pack: Pack }>(
 			event,
-			resolve("/api/v1/pack/[uuid]/upload", { uuid }),
+			resolve("/api/v1/@[username]/-[packName]/upload", { username, packName }),
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/octet-stream" },
@@ -34,8 +34,9 @@ export const actions = {
 		const pack = response.json.pack;
 		redirect(
 			303,
-			resolve("/pack/[uuid]/versions/[version]/[id]", {
-				uuid,
+			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+				username: pack.ownerName,
+				packName: pack.name,
 				version: pack.packVersion,
 				id: pack.id,
 			}),

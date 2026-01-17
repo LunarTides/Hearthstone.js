@@ -44,15 +44,14 @@ export const pack = pgTable("pack", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	uuid: uuid("uuid").notNull(),
 	ownerName: text("owner_name").notNull(),
+	name: text("name").notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
 	gameVersion: text("game_version").notNull(),
 	packVersion: text("pack_version").notNull(),
-	name: text("name").notNull(),
 	description: text("description").notNull(),
 	license: text("license").notNull(),
-	authors: text("authors").array().notNull(),
+	author: text("author").notNull(),
 	permissions: text("permissions").array().notNull(),
 	// TODO: Add requires.
 
@@ -73,7 +72,8 @@ export const packLike = pgTable("packLike", {
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	// TODO: Delete pack likes when the pack is deleted.
-	packId: uuid("pack_id").notNull(),
+	packOwnerName: text("pack_owner_name").notNull(),
+	packName: text("pack_name").notNull(),
 	username: text("username")
 		.notNull()
 		.references(() => user.username, { onDelete: "cascade" }),
@@ -135,7 +135,8 @@ export const packComment = pgTable("packComment", {
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	username: text("username").references(() => user.username, { onDelete: "set null" }),
-	packId: uuid("pack_id").notNull(),
+	packOwnerName: text("pack_owner_name").notNull(),
+	packName: text("pack_name").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),

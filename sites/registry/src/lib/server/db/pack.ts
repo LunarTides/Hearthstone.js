@@ -17,11 +17,15 @@ const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
 	return packs;
 };
 
-export const loadGetPack = async (user: ClientUser, uuid: string) => {
+export const loadGetPack = async (user: ClientUser, username: string, packName: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(table.pack).where(eq(table.pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(table.pack)
+			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
@@ -29,7 +33,10 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	if (packs.length <= 0) {
 		// To to parse uuid as a version id.
 		const id = (
-			await db.select({ uuid: table.pack.uuid }).from(table.pack).where(eq(table.pack.id, uuid))
+			await db
+				.select({ ownerName: table.pack.ownerName, name: table.pack.name })
+				.from(table.pack)
+				.where(and(eq(table.pack.id, username)))
 		).at(0);
 		if (!id) {
 			error(404, { message: "Pack not found." });
@@ -37,7 +44,11 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 
 		packs = await getFullPacks(
 			user,
-			db.select().from(table.pack).where(eq(table.pack.uuid, id.uuid)).$dynamic(),
+			db
+				.select()
+				.from(table.pack)
+				.where(and(eq(table.pack.ownerName, id.ownerName), eq(table.pack.name, id.name)))
+				.$dynamic(),
 		);
 
 		packs = filterApproved(user, packs);
@@ -56,11 +67,15 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	};
 };
 
-export const APIGetPack = async (user: ClientUser, uuid: string) => {
+export const APIGetPack = async (user: ClientUser, username: string, packName: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(table.pack).where(eq(table.pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(table.pack)
+			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
@@ -88,7 +103,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	query: T,
 ) => {
 	const packsAndLikes = await query
-		.fullJoin(table.packLike, eq(table.pack.uuid, table.packLike.packId))
+		.fullJoin(table.packLike, and(eq(table.pack.ownerName, table.packLike.packOwnerName)))
 		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.username));
 
 	// Show all downloads from all versions.
@@ -115,8 +130,8 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
 				const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
 				const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
-				const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
-				const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
+				const likes = new Set(likesPositive.map((p) => p.packLike?.username));
+				const dislikes = new Set(likesNegative.map((p) => p.packLike?.username));
 
 				let messagesQuery = db
 					.select()
@@ -161,16 +176,17 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	return packs;
 };
 
-export async function setLatestVersion(uuid: string) {
+export async function setLatestVersion(ownerName: string, name: string) {
 	let packs = await db
 		.select({
 			id: table.pack.id,
-			uuid: table.pack.uuid,
+			ownerName: table.pack.ownerName,
+			name: table.pack.name,
 			packVersion: table.pack.packVersion,
 			approved: table.pack.approved,
 		})
 		.from(table.pack)
-		.where(eq(table.pack.uuid, uuid))
+		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, name)))
 		.orderBy(desc(table.pack.packVersion));
 
 	{
@@ -189,12 +205,12 @@ export async function setLatestVersion(uuid: string) {
 	await db
 		.update(table.pack)
 		.set({ isLatestVersion: false })
-		.where(eq(table.pack.uuid, latest.uuid));
+		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
 	const cards = await db
 		.select()
 		.from(table.card)
 		.innerJoin(table.pack, eq(table.pack.id, table.card.packId))
-		.where(eq(table.pack.uuid, latest.uuid));
+		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
 	for (const c of cards) {
 		// TODO: Should the latest version of a card be true if there is no earlier version of that card even though that version isn't the latest version?
 		if (c.card.packId !== latest.id) {

@@ -10,7 +10,7 @@ export const load = (event) => {
 	const getUser = async () => {
 		const response = await requestAPI<UserAndProfile>(
 			event,
-			resolve(`/api/v1/user/[username]`, { username }),
+			resolve(`/api/v1/@[username]`, { username }),
 		);
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });

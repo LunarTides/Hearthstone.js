@@ -22,7 +22,8 @@ export const load = (event) => {
 		}
 
 		const latest = cards.find((c) => c.isLatestVersion)!;
-		const packs = await loadGetPack(user, cards[0].packId);
+		// NOTE: Using `packId` works.
+		const packs = await loadGetPack(user, cards[0].packId, "");
 
 		if (!user || (packs.latest.ownerName !== user.username && !satisfiesRole(user, "Moderator"))) {
 			cards = cards.filter((c) => c.approved);
@@ -37,8 +38,9 @@ export const load = (event) => {
 
 				const response = await requestAPI<File>(
 					event,
-					resolve("/api/v1/pack/[uuid]/versions/[version]/[id]/files/[...path]", {
-						uuid: pack.uuid,
+					resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+						username: pack.ownerName,
+						packName: pack.name,
 						version: pack.packVersion,
 						id: pack.id,
 						// Remove leading slash.

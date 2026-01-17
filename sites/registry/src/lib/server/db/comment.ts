@@ -31,8 +31,8 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 		// NOTE: Can't do `!p.packCommentLike?.dislike` since then an undefined `packCommentLike` will return true.
 		const likesPositive = relevantComments.filter((p) => p.packCommentLike?.dislike === false);
 		const likesNegative = relevantComments.filter((p) => p.packCommentLike?.dislike);
-		const likes = new Set(likesPositive.map((p) => p.packCommentLike?.userId));
-		const dislikes = new Set(likesNegative.map((p) => p.packCommentLike?.userId));
+		const likes = new Set(likesPositive.map((p) => p.packCommentLike?.username));
+		const dislikes = new Set(likesNegative.map((p) => p.packCommentLike?.username));
 
 		comments.push({
 			...p.packComment,

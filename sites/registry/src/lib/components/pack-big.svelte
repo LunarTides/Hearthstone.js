@@ -74,8 +74,9 @@
 				{#if showDownloadButton && pack.approved}
 					<!-- TODO: Use superforms. -->
 					<form
-						action={resolve("/pack/[uuid]/versions/[version]/[id]", {
-							uuid: pack.uuid,
+						action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							username: pack.ownerName,
+							packName: pack.name,
 							version: pack.packVersion,
 							id: pack.id,
 						}) + "?/download"}
@@ -97,27 +98,33 @@
 					</p>
 					<div class="border-l ml-auto h-auto"></div>
 				{/if}
-				{#if page.route.id === "/pack/[uuid]/versions"}
+				{#if page.route.id === "/@[username]/-[packName]/versions"}
 					<p class="px-5 py-3 bg-gray-300 text-gray-700 hover:cursor-default">
 						Versions ({packs.all.length})
 					</p>
 				{:else}
 					<a
-						href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+						href={resolve("/@[username]/-[packName]/versions", {
+							username: pack.ownerName,
+							packName: pack.name,
+						})}
 						class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
 					>
 						Versions ({packs.all.length})
 					</a>
 				{/if}
 				<div class="border-l ml-auto h-auto"></div>
-				{#if page.route.id === "/pack/[uuid]"}
+				{#if page.route.id === "/@[username]/-[packName]"}
 					<p class="px-5 py-3 w-full rounded-r-full bg-gray-300 text-gray-700 hover:cursor-default">
 						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
 						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
 					</p>
 				{:else}
 					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						href={resolve("/@[username]/-[packName]", {
+							username: pack.ownerName,
+							packName: pack.name,
+						})}
 						class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
 					>
 						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
@@ -151,8 +158,12 @@
 				<p class="text-gray-300 self-center">(v{pack.packVersion})</p>
 			{/if}
 		</div>
-		<!-- TODO: Add clicking on the author if they have a connected account. -->
-		<p class="font-semibold">({pack.authors.join(", ")})</p>
+		<a
+			href={resolve("/@[username]", { username: pack.author })}
+			class="font-semibold underline text-sm"
+		>
+			@{pack.author}
+		</a>
 		{#if canEditPack}
 			<!-- TODO: Localize. -->
 			<p class="text-green-300">You can administrate this pack.</p>
@@ -223,10 +234,14 @@
 		{#if !hideButtons && pack.approved}
 			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+
 			<div class="flex gap-4">
 				<!-- TODO: Use superforms. -->
 				<form
-					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
+					action={resolve("/@[username]/-[packName]", {
+						username: pack.ownerName,
+						packName: pack.name,
+					}) + "?/like"}
 					method="post"
 					use:enhance
 				>
@@ -239,7 +254,10 @@
 
 				<!-- TODO: Use superforms. -->
 				<form
-					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
+					action={resolve("/@[username]/-[packName]", {
+						username: pack.ownerName,
+						packName: pack.name,
+					}) + "?/dislike"}
 					method="post"
 					use:enhance
 				>

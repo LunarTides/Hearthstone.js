@@ -16,18 +16,19 @@
 <div class="w-fit">
 	<a
 		href={navigateToVersion
-			? resolve("/pack/[uuid]/versions/[version]/[id]", {
-					uuid: pack.uuid,
+			? resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+					username: pack.ownerName,
+					packName: pack.name,
 					version: pack.packVersion,
 					id: pack.id,
 				})
-			: resolve("/pack/[uuid]", { uuid: pack.uuid })}
+			: resolve("/@[username]/-[packName]", { username: pack.ownerName, packName: pack.name })}
 	>
 		<div
 			class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-header hover:scale-105 hover:drop-shadow-2xl"
 		>
 			<p class="font-bold">{pack.name} ({pack.packVersion})</p>
-			<p class="text-xs mb-2">{pack.authors.join(", ")}</p>
+			<p class="text-xs mb-2">{pack.author}</p>
 			<p>{pack.description}</p>
 			<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
 
