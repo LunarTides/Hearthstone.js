@@ -28,7 +28,8 @@
 				})}
 			>
 				{getPack(cards, card).packVersion}
-				<span class="text-gray-700">({getPack(cards, card).id.split("-").at(-1)!.slice(0, 6)})</span>
+				<span class="text-gray-700">({getPack(cards, card).id.split("-").at(-1)!.slice(0, 6)})</span
+				>
 			</a>
 		{/each}
 	</div>

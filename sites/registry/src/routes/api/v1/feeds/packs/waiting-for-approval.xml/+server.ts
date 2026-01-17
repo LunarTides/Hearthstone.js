@@ -41,7 +41,7 @@ export async function GET(event) {
             </versions>
             <size>${pack.unpackedSize}</size>
             <date>${pack.createdAt}</date>
-            <userids>${pack.userIds.join(", ")}</userids>
+            <owner>${pack.ownerName}</owner>
         </item>`,
 				)}
     </channel>

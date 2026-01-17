@@ -155,7 +155,7 @@
 									</button>
 								</form>
 
-								{#if data.user && versions.latest.userIds.includes(data.user.id)}
+								{#if data.user && versions.latest.ownerName === data.user.username}
 									{#if comment.heartedBy}
 										<!-- TODO: Use superforms. -->
 										<form

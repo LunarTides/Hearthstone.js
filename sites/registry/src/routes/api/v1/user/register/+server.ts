@@ -6,6 +6,7 @@ import { hash } from "@node-rs/argon2";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import * as auth from "$lib/server/auth";
+import { count, ilike } from "drizzle-orm";
 
 export async function POST(event) {
 	const j = await event.request.json();
@@ -21,6 +22,14 @@ export async function POST(event) {
 	const username = form.data.username;
 	const password = form.data.password;
 
+	const existingUser = await db
+		.select({ count: count() })
+		.from(table.user)
+		.where(ilike(table.user.username, username));
+	if (existingUser[0].count > 0) {
+		return json({ message: "This username is taken." }, { status: 403 });
+	}
+
 	const passwordHash = await hash(password, {
 		// recommended minimum parameters
 		memoryCost: 19456,
@@ -34,14 +43,14 @@ export async function POST(event) {
 			await db
 				.insert(table.user)
 				.values({ username, passwordHash })
-				.returning({ id: table.user.id })
+				.returning({ username: table.user.username })
 		)[0];
 
 		const sessionToken = auth.generateSessionToken();
-		const session = await auth.createSession(sessionToken, user.id);
+		const session = await auth.createSession(sessionToken, user.username);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		await db.insert(table.profile).values({ userId: user.id, aboutMe: "" });
+		await db.insert(table.profile).values({ username: user.username, aboutMe: "" });
 	} catch {
 		return json({ message: "An error has occurred" }, { status: 500 });
 	}

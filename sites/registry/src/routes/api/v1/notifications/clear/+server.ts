@@ -11,7 +11,7 @@ export async function POST(event) {
 
 	const notifications = await db
 		.delete(table.notification)
-		.where(eq(table.notification.userId, clientUser.id));
+		.where(eq(table.notification.username, clientUser.username));
 
 	return json({ notifications }, { status: 200 });
 }

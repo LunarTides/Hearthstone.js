@@ -16,7 +16,7 @@
 		loggedInUser: ClientUser;
 	} = $props();
 
-	const avatarPromise = import(`$lib/../../static/avatars/${user.id}.avif`).catch(() => {});
+	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
 
 	let edit = $state(false);
 </script>
@@ -24,7 +24,7 @@
 <div class="flex gap-1">
 	<div class="p-3 bg-header text-white w-full rounded-lg">
 		<div class="flex float-right gap-1">
-			{#if user.id === loggedInUser?.id || satisfiesRole(loggedInUser, "Admin")}
+			{#if user.username === loggedInUser?.username || satisfiesRole(loggedInUser, "Admin")}
 				<button onclick={() => (edit = true)} class="self-center hover:cursor-pointer">
 					<SquarePen />
 				</button>
@@ -60,7 +60,7 @@
 	{#if edit}
 		<!-- TODO: Use superforms. -->
 		<form
-			action={resolve("/user/[uuid]", { uuid: user.id }) + "?/edit"}
+			action={resolve("/@[username]", { username: user.username }) + "?/edit"}
 			method="post"
 			in:fly={{ x: -300, duration: 300 }}
 			use:enhance
@@ -123,7 +123,7 @@
 							Cancel
 						</button>
 						<a
-							href={resolve("/user/[uuid]/delete", { uuid: user.id })}
+							href={resolve("/@[username]/delete", { username: user.username })}
 							class="p-2 px-4 w-full rounded-md bg-red-400 hover:cursor-pointer hover:bg-red-300 active:bg-red-500"
 						>
 							Delete

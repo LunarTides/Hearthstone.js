@@ -21,7 +21,7 @@ export async function GET(event) {
 	const notifications = await db
 		.select()
 		.from(table.notification)
-		.where(eq(table.notification.userId, clientUser.id))
+		.where(eq(table.notification.username, clientUser.username))
 		.orderBy(desc(table.notification.date))
 		.limit(pageSize)
 		.offset((page - 1) * pageSize);

@@ -40,7 +40,7 @@
 			}
 
 			packs = Promise.resolve({ current: found, all: ps.all });
-			canEditPack = found.userIds.includes(data.user?.id || "0");
+			canEditPack = found.ownerName === data.user?.username;
 		})();
 	});
 </script>

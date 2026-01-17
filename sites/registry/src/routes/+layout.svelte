@@ -13,7 +13,9 @@
 
 	let searchQuery = $state("");
 
-	const avatarPromise = import(`$lib/../../static/avatars/${data.user?.id}.avif`).catch(() => {});
+	const avatarPromise = import(`$lib/../../static/avatars/${data.user?.username}.avif`).catch(
+		() => {},
+	);
 </script>
 
 <svelte:head>
@@ -85,7 +87,7 @@
 				{/await}
 			</a>
 
-			<a href={resolve("/user/[uuid]", { uuid: data.user.id })} title="Profile">
+			<a href={resolve("/@[username]", { username: data.user.username })} title="Profile">
 				{#await avatarPromise}
 					<div class="p-5 bg-white rounded-full"></div>
 				{:then avatar}

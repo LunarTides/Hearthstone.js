@@ -17,7 +17,7 @@
 		(async () => {
 			const ps = await data.packs;
 			packs = Promise.resolve(ps);
-			canEditPack = ps.latest.userIds.includes(data.user?.id || "0");
+			canEditPack = ps.latest.ownerName === data.user?.username;
 		})();
 	});
 </script>

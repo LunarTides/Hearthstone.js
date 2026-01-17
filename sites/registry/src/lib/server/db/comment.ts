@@ -14,8 +14,8 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 	const packComments = await query
 		.orderBy(asc(table.packComment.creationDate))
 		.fullJoin(table.packCommentLike, eq(table.packComment.id, table.packCommentLike.commentId))
-		.fullJoin(table.user, eq(table.packComment.authorId, table.user.id))
-		.fullJoin(heartedBy, eq(table.packComment.heartedById, heartedBy.id));
+		.fullJoin(table.user, eq(table.packComment.username, table.user.username))
+		.fullJoin(heartedBy, eq(table.packComment.heartedByUsername, heartedBy.username));
 
 	// Show all comments.
 	// TODO: Deduplicate.
@@ -39,9 +39,9 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 			author: p.user && censorUser(p.user),
 			likes: {
 				positive: likes.size,
-				hasLiked: clientUser ? likes.has(clientUser.id) : false,
+				hasLiked: clientUser ? likes.has(clientUser.username) : false,
 				negative: dislikes.size,
-				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
+				hasDisliked: clientUser ? dislikes.has(clientUser.username) : false,
 			},
 			heartedBy: p.heartedBy && censorUser(p.heartedBy),
 		});

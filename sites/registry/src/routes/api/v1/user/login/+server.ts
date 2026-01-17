@@ -40,7 +40,7 @@ export async function POST(event) {
 	}
 
 	const sessionToken = auth.generateSessionToken();
-	const session = await auth.createSession(sessionToken, user.id);
+	const session = await auth.createSession(sessionToken, user.username);
 	auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 	return json({}, { status: 200 });

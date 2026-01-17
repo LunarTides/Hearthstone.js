@@ -21,7 +21,7 @@ export async function DELETE(event) {
 
 	const notification: Notification = notifications[0];
 
-	if (notification.userId !== clientUser.id) {
+	if (notification.username !== clientUser.username) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

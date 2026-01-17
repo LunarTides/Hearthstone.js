@@ -74,6 +74,7 @@ function parseCardField(content: string, name: string) {
 	return JSON.parse(values[0]);
 }
 
+// TODO: Use hemming distance on the pack name to prevent confusion.
 export async function POST(event) {
 	const user = event.locals.user;
 	if (!user) {
@@ -185,7 +186,7 @@ export async function POST(event) {
 	// for (const version of otherVersions) {
 	// if (semver.eq(metadata.versions.pack, version.packVersion)) {
 	// 	// TODO: Add ability for the uploader to limit who can edit the pack.
-	// 	if (version.userIds.includes(user.id)) {
+	// 	if (version.ownerName === user.username) {
 	// 		// Override.
 	// 		updateDB = async (values: InferInsertModel<typeof pack>) =>
 	// 			db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
@@ -200,7 +201,7 @@ export async function POST(event) {
 	// TODO: Delete pack from db if adding cards goes wrong.
 	const pack: Pack[] = await updateDB({
 		uuid,
-		userIds: [user.id],
+		ownerName: user.username,
 		metadataVersion: metadata.versions.metadata,
 		gameVersion: metadata.versions.game,
 		packVersion: metadata.versions.pack,

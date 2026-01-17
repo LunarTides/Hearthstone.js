@@ -8,17 +8,14 @@ import {
 	uuid,
 	json,
 } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
 
 export const user = pgTable("user", {
-	id: uuid("id")
-		.primaryKey()
-		.default(sql`uuidv7()`),
-	username: text("username").notNull().unique(),
+	username: text("username").primaryKey(),
 	passwordHash: text("password_hash").notNull(),
 	role: rolesEnum("role").notNull().default("User"),
 	creationDate: timestamp("creation_date").notNull().defaultNow(),
@@ -26,9 +23,9 @@ export const user = pgTable("user", {
 
 export const session = pgTable("session", {
 	id: text("id").primaryKey(),
-	userId: uuid("user_id")
+	username: text("username")
 		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
+		.references(() => user.username, { onDelete: "cascade" }),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
 		mode: "date",
@@ -36,12 +33,9 @@ export const session = pgTable("session", {
 });
 
 export const profile = pgTable("profile", {
-	id: uuid("id")
+	username: text("username")
 		.primaryKey()
-		.default(sql`uuidv7()`),
-	userId: uuid("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
+		.references(() => user.username, { onDelete: "cascade" }),
 	aboutMe: text("about_me").notNull(),
 	pronouns: text("pronouns"),
 });
@@ -51,7 +45,7 @@ export const pack = pgTable("pack", {
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	uuid: uuid("uuid").notNull(),
-	userIds: uuid("user_ids").array().notNull(),
+	ownerName: text("owner_name").notNull(),
 	metadataVersion: integer("metadata_version").notNull(),
 	gameVersion: text("game_version").notNull(),
 	packVersion: text("pack_version").notNull(),
@@ -67,20 +61,12 @@ export const pack = pgTable("pack", {
 
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean("approved").notNull(),
-	approvedBy: uuid("approved_by").references(() => user.id, { onDelete: "set null" }),
+	approvedBy: text("approved_by").references(() => user.username, { onDelete: "set null" }),
 	approvedAt: timestamp("approved_at"),
 	denied: boolean("denied").notNull().default(false),
 
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 });
-
-export const packRelations = relations(pack, ({ many }) => ({
-	cards: many(card),
-	likes: many(packLike),
-	links: many(packLink),
-	comments: many(packComment),
-	users: many(user, { relationName: "user_ids" }),
-}));
 
 export const packLike = pgTable("packLike", {
 	id: uuid("id")
@@ -88,15 +74,11 @@ export const packLike = pgTable("packLike", {
 		.default(sql`uuidv7()`),
 	// TODO: Delete pack likes when the pack is deleted.
 	packId: uuid("pack_id").notNull(),
-	userId: uuid("user_id")
+	username: text("username")
 		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
+		.references(() => user.username, { onDelete: "cascade" }),
 	dislike: boolean("dislike").notNull(),
 });
-
-export const packLikeRelations = relations(pack, ({ one }) => ({
-	packs: one(pack),
-}));
 
 export const packLink = pgTable("packLink", {
 	id: uuid("id")
@@ -148,28 +130,17 @@ export const card = pgTable("card", {
 	filePath: text("filePath").notNull(),
 });
 
-export const cardRelations = relations(card, ({ one }) => ({
-	heropower: one(card, {
-		fields: [card.heropowerId],
-		references: [card.uuid],
-	}),
-}));
-
 export const packComment = pgTable("packComment", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
+	username: text("username").references(() => user.username, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),
-	heartedById: uuid("hearted_by_id"),
+	heartedByUsername: text("hearted_by_id").references(() => user.username),
 });
-
-export const packCommentRelations = relations(packComment, ({ many }) => ({
-	likes: many(packCommentLike),
-}));
 
 export const packCommentLike = pgTable("packCommentLike", {
 	id: uuid("id")
@@ -178,9 +149,9 @@ export const packCommentLike = pgTable("packCommentLike", {
 	commentId: uuid("comment_id")
 		.notNull()
 		.references(() => packComment.id, { onDelete: "cascade" }),
-	userId: uuid("user_id")
+	username: text("username")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.username),
 	dislike: boolean("dislike").notNull(),
 });
 
@@ -188,7 +159,7 @@ export const packMessage = pgTable("packMessage", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	authorId: uuid("author_id").references(() => user.id, { onDelete: "set null" }),
+	username: text("username").references(() => user.username, { onDelete: "set null" }),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
@@ -200,9 +171,9 @@ export const notification = pgTable("notification", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	userId: uuid("user_id")
+	username: text("user_id")
 		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
+		.references(() => user.username, { onDelete: "cascade" }),
 	date: timestamp("date").notNull().defaultNow(),
 
 	text: text("text").notNull(),

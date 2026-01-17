@@ -49,7 +49,7 @@ export async function POST(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+	if (pack.ownerName !== user.username && !satisfiesRole(user, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
@@ -69,7 +69,7 @@ export async function POST(event) {
 
 	await db
 		.update(table.pack)
-		.set({ approved: true, approvedBy: user.id, approvedAt: new Date(), denied: false })
+		.set({ approved: true, approvedBy: user.username, approvedAt: new Date(), denied: false })
 		.where(eq(table.pack.id, pack.id));
 
 	await db
@@ -83,24 +83,22 @@ export async function POST(event) {
 		.insert(table.packMessage)
 		.values({
 			packId: id,
-			authorId: user.id,
+			username: user.username,
 			type: messageType,
 			text: message ? `> Approved this pack: ${message}` : `> Approved this pack.`,
 		})
 		.returning({ id: table.packMessage.id });
 
-	for (const userId of pack.userIds) {
-		await notify(event, {
-			userId,
-			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
-			route:
-				resolve("/pack/[uuid]/versions/[version]/[id]", {
-					uuid: pack.uuid,
-					version: pack.packVersion,
-					id: pack.id,
-				}) + `#message-${packMessage[0].id}`,
-		});
-	}
+	await notify(event, {
+		username,
+		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
+		route:
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}) + `#message-${packMessage[0].id}`,
+	});
 
 	return json({}, { status: 200 });
 }
@@ -145,7 +143,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+	if (pack.ownerName !== user.username && !satisfiesRole(user, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
@@ -168,7 +166,7 @@ export async function DELETE(event) {
 		.insert(table.packMessage)
 		.values({
 			packId: id,
-			authorId: user.id,
+			username: user.username,
 			type: messageType,
 			text: message
 				? `> Withdrew their approval from this pack: ${message}`
@@ -176,18 +174,16 @@ export async function DELETE(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	for (const userId of pack.userIds) {
-		await notify(event, {
-			userId,
-			text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
-			route:
-				resolve("/pack/[uuid]/versions/[version]/[id]", {
-					uuid: pack.uuid,
-					version: pack.packVersion,
-					id: pack.id,
-				}) + `#message-${packMessage[0].id}`,
-		});
-	}
+	await notify(event, {
+		username,
+		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
+		route:
+			resolve("/pack/[uuid]/versions/[version]/[id]", {
+				uuid: pack.uuid,
+				version: pack.packVersion,
+				id: pack.id,
+			}) + `#message-${packMessage[0].id}`,
+	});
 
 	return json({}, { status: 200 });
 }

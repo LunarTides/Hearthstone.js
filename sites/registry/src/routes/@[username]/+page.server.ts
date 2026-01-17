@@ -6,21 +6,17 @@ import { db } from "$lib/server/db/index.js";
 import { getFullPacks } from "$lib/server/db/pack";
 import { satisfiesRole } from "$lib/user.js";
 import { error, fail } from "@sveltejs/kit";
-import { and, arrayContains } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 // TODO: Deduplicate from `pack/[uuid]/+layout.server.ts`
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
 	const user = event.locals.user;
-	const uuid = event.params.uuid;
+	const username = event.params.username;
 
 	const packs = await getFullPacks(
 		user,
-		db
-			.select()
-			.from(table.pack)
-			.where(and(arrayContains(table.pack.userIds, [uuid])))
-			.$dynamic(),
+		db.select().from(table.pack).where(eq(table.pack.ownerName, username)).$dynamic(),
 	);
 	if (packs.length <= 0) {
 		return {
@@ -66,17 +62,17 @@ export const actions = {
 			return fail(401, { message: "Please log in." });
 		}
 
-		const uuid = event.params.uuid;
+		const username = event.params.username;
 
-		if (user.id !== uuid && !satisfiesRole(user, "Admin")) {
+		if (user.username !== username && !satisfiesRole(user, "Admin")) {
 			return fail(403, { message: "You do not have the the necessary privileges to do this." });
 		}
 
 		const formData = await event.request.formData();
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/user/[uuid]", {
-				uuid,
+			resolve("/api/v1/user/[username]", {
+				username,
 			}),
 			{
 				method: "PUT",

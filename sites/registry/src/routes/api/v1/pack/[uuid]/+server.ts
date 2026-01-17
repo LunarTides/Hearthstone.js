@@ -19,7 +19,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.userIds.includes(user.id) && !satisfiesRole(user, "Moderator")) {
+	if (pack.ownerName !== user.username && !satisfiesRole(user, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

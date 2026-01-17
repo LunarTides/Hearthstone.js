@@ -58,7 +58,7 @@ export async function GET(event) {
 
 	if (!pack.approved) {
 		// eslint-disable-next-line no-empty
-		if (user && (pack.userIds.includes(user.id) || satisfiesRole(user, "Moderator"))) {
+		if (user && (pack.ownerName === user.username || satisfiesRole(user, "Moderator"))) {
 		} else {
 			return json({ message: "Version not found." }, { status: 404 });
 		}

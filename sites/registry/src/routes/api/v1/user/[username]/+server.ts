@@ -7,13 +7,13 @@ import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
 export async function GET(event) {
-	const uuid = event.params.uuid;
+	const username = event.params.username;
 
 	const users = await db
 		.select()
 		.from(table.user)
-		.where(eq(table.user.id, uuid))
-		.innerJoin(table.profile, eq(table.profile.userId, table.user.id));
+		.where(eq(table.user.username, username))
+		.innerJoin(table.profile, eq(table.profile.username, table.user.username));
 	if (users.length <= 0) {
 		return json({ message: "User not found." }, { status: 404 });
 	}
@@ -35,13 +35,13 @@ export async function PUT(event) {
 		error(401, { message: "Please log in." });
 	}
 
-	const uuid = event.params.uuid;
+	const username = event.params.username;
 
-	if (clientUser.id !== uuid && !satisfiesRole(clientUser, "Admin")) {
+	if (clientUser.username !== username && !satisfiesRole(clientUser, "Admin")) {
 		error(403, { message: "You do not have the the necessary privileges to do this." });
 	}
 
-	const user = (await db.select().from(table.user).where(eq(table.user.id, uuid))).at(0);
+	const user = (await db.select().from(table.user).where(eq(table.user.username, username))).at(0);
 	if (!user) {
 		return json({ message: "User not found." }, { status: 404 });
 	}
@@ -67,9 +67,9 @@ export async function PUT(event) {
 			}
 
 			await notify(event, {
-				userId: user.id,
+				username: user.username,
 				text: message,
-				route: resolve("/user/[uuid]", { uuid: user.id }),
+				route: resolve("/@[username]", { username: user.username }),
 			});
 		}
 	}
@@ -81,7 +81,7 @@ export async function PUT(event) {
 			username: body.username,
 			role,
 		})
-		.where(eq(table.user.id, uuid))
+		.where(eq(table.user.username, username))
 		.returning();
 	const updatedProfiles = await db
 		.update(table.profile)
@@ -89,7 +89,7 @@ export async function PUT(event) {
 			pronouns: body.pronouns,
 			aboutMe: body.aboutMe.replaceAll("\r\n", "\n"),
 		})
-		.where(eq(table.profile.userId, uuid))
+		.where(eq(table.profile.username, user.username))
 		.returning();
 
 	const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0])] : [];

@@ -21,7 +21,7 @@ export async function DELETE(event) {
 	if (!pack.approved) {
 		if (
 			clientUser &&
-			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -36,7 +36,7 @@ export async function DELETE(event) {
 		return json({ message: "No comment found with that id." }, { status: 404 });
 	}
 
-	if (comment.authorId !== clientUser.id && !satisfiesRole(clientUser, "Moderator")) {
+	if (comment.username !== clientUser.username && !satisfiesRole(clientUser, "Moderator")) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

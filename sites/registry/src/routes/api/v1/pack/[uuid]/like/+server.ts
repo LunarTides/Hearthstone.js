@@ -29,7 +29,10 @@ export async function POST(event) {
 			.select()
 			.from(table.packLike)
 			.where(
-				and(eq(table.packLike.packId, pack.uuid), eq(table.packLike.userId, event.locals.user.id)),
+				and(
+					eq(table.packLike.packId, pack.uuid),
+					eq(table.packLike.username, event.locals.user.username),
+				),
 			)
 			.limit(1)
 	).at(0);
@@ -45,7 +48,7 @@ export async function POST(event) {
 
 	await db.insert(table.packLike).values({
 		packId: pack.uuid,
-		userId: event.locals.user.id,
+		username: event.locals.user.username,
 		dislike: false,
 	});
 

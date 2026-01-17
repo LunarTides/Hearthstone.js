@@ -23,7 +23,7 @@ async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 
 	if (!pack.approved) {
 		// eslint-disable-next-line no-empty
-		if (pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator")) {
+		if (pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator")) {
 		} else {
 			return json({ message: "Version not found." }, { status: 404 });
 		}
@@ -52,20 +52,20 @@ export async function POST(event) {
 		return comment;
 	}
 
-	if (comment.heartedById) {
+	if (comment.heartedByUsername) {
 		return json({ message: "This comment has already been hearted." }, { status: 422 });
 	}
 
 	await db
 		.update(table.packComment)
 		.set({
-			heartedById: clientUser.id,
+			heartedByUsername: clientUser.username,
 		})
 		.where(eq(table.packComment.id, comment.id));
 
-	if (comment.authorId && comment.authorId !== clientUser.id) {
+	if (comment.username && comment.username !== clientUser.username) {
 		await notify(event, {
-			userId: comment.authorId,
+			username: comment.username,
 			text: "Your comment has been hearted!",
 			route: resolve("/pack/[uuid]", { uuid: comment.packId }) + `#comment-${comment.id}`,
 		});
@@ -85,14 +85,14 @@ export async function DELETE(event) {
 		return comment;
 	}
 
-	if (!comment.heartedById) {
+	if (!comment.heartedByUsername) {
 		return json({ message: "This comment has not been hearted." }, { status: 422 });
 	}
 
 	await db
 		.update(table.packComment)
 		.set({
-			heartedById: null,
+			heartedByUsername: null,
 		})
 		.where(eq(table.packComment.id, comment.id));
 

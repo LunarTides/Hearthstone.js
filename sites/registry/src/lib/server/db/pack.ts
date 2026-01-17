@@ -3,14 +3,14 @@ import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq, and, desc } from "drizzle-orm";
-import type { PgSelect } from "drizzle-orm/pg-core";
+import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
 import semver from "semver";
 import { censorPack } from "$lib/pack";
 
 const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
-	if ((!user || !packs.at(0)?.userIds.includes(user.id)) && !satisfiesRole(user, "Moderator")) {
+	if ((!user || packs.at(0)?.ownerName !== user.username) && !satisfiesRole(user, "Moderator")) {
 		return packs.filter((p) => p.approved);
 	}
 
@@ -89,7 +89,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 ) => {
 	const packsAndLikes = await query
 		.fullJoin(table.packLike, eq(table.pack.uuid, table.packLike.packId))
-		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.id));
+		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.username));
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
@@ -101,7 +101,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				}
 
 				if (
-					(clientUser && p.pack.userIds.includes(clientUser.id)) ||
+					(clientUser && p.pack.ownerName === clientUser.username) ||
 					satisfiesRole(clientUser, "Moderator")
 				) {
 					return true;
@@ -123,7 +123,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 					.from(table.packMessage)
 					.where(eq(table.packMessage.packId, p.pack.id))
 					.orderBy(desc(table.packMessage.creationDate))
-					.fullJoin(table.user, eq(table.packMessage.authorId, table.user.id))
+					.fullJoin(table.user, eq(table.packMessage.username, table.user.username))
 					.$dynamic();
 				if (!satisfiesRole(clientUser, "Moderator")) {
 					messagesQuery = messagesQuery.where(
@@ -140,9 +140,9 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 						.reduce((p, v) => p + v, 0),
 					likes: {
 						positive: likes.size,
-						hasLiked: clientUser ? likes.has(clientUser.id) : false,
+						hasLiked: clientUser ? likes.has(clientUser.username) : false,
 						negative: dislikes.size,
-						hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
+						hasDisliked: clientUser ? dislikes.has(clientUser.username) : false,
 					},
 					approvedByUser:
 						p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,

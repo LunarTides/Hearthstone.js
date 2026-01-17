@@ -29,7 +29,7 @@ export async function GET(event) {
 	if (!pack.approved) {
 		if (
 			clientUser &&
-			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -78,7 +78,7 @@ export async function POST(event) {
 	if (!pack.approved) {
 		if (
 			clientUser &&
-			(pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator"))
+			(pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator"))
 		) {
 			// eslint-disable no-empty
 		} else {
@@ -96,7 +96,7 @@ export async function POST(event) {
 
 	await db.insert(table.packComment).values({
 		packId: pack.uuid,
-		authorId: clientUser.id,
+		username: clientUser.username,
 		text: result.data.text,
 	});
 

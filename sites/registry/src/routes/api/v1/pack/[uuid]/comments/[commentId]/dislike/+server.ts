@@ -26,7 +26,7 @@ export async function POST(event) {
 
 	if (!pack.approved) {
 		// eslint-disable-next-line no-empty
-		if (pack.userIds.includes(clientUser.id) || satisfiesRole(clientUser, "Moderator")) {
+		if (pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator")) {
 		} else {
 			return json({ message: "Version not found." }, { status: 404 });
 		}
@@ -41,7 +41,7 @@ export async function POST(event) {
 			.where(
 				and(
 					eq(table.packCommentLike.commentId, commentId),
-					eq(table.packCommentLike.userId, clientUser.id),
+					eq(table.packCommentLike.username, clientUser.username),
 				),
 			)
 			.limit(1)
@@ -61,7 +61,7 @@ export async function POST(event) {
 
 	await db.insert(table.packCommentLike).values({
 		commentId,
-		userId: clientUser.id,
+		username: clientUser.username,
 		dislike: true,
 	});
 

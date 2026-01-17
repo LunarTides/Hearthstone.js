@@ -38,7 +38,7 @@
 
 	const pack = $derived(packs.current ?? packs.latest);
 
-	const canEditPack = $derived(pack.userIds.includes(user?.id || "0"));
+	const canEditPack = $derived(user?.username === pack.ownerName);
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
 
 	// https://stackoverflow.com/a/18650828
