@@ -91,7 +91,7 @@ export async function POST(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	await notify(event, {
+	await db.insert(table.notification).values({
 		username,
 		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
 		route:
@@ -179,9 +179,9 @@ export async function DELETE(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	await notify(event, {
+	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)})'s approval has been withdrawn!`,
 		route:
 			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
 				username: pack.ownerName,

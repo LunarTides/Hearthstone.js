@@ -72,7 +72,7 @@ export async function POST(event) {
 		.where(eq(table.packComment.id, comment.id));
 
 	if (comment.username && comment.username !== clientUser.username) {
-		await notify(event, {
+		await db.insert(table.notification).values({
 			username: comment.username,
 			text: "Your comment has been hearted!",
 			route:

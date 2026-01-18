@@ -66,7 +66,7 @@ export async function PUT(event) {
 				message = `You have been promoted to ${role}!`;
 			}
 
-			await notify(event, {
+			await db.insert(table.notification).values({
 				username: user.username,
 				text: message,
 				route: resolve("/@[username]", { username: user.username }),
