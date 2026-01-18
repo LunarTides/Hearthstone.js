@@ -69,6 +69,7 @@
 		{/each}
 	{/if}
 
+	<!-- Edit -->
 	{#if canEditPack || canModeratePack}
 		<div class="m-1 p-2 bg-header rounded-md">
 			<details bind:open={editOpen}>
@@ -125,6 +126,7 @@
 		</div>
 	{/if}
 
+	<!-- Moderate -->
 	{#if canModeratePack}
 		<div class="m-1 p-2 bg-header rounded-md">
 			<details bind:open={moderateOpen}>
@@ -233,6 +235,7 @@
 		</div>
 	{/if}
 
+	<!-- Cards -->
 	{#await data.cards}
 		<p>Loading...</p>
 	{:then cards}
@@ -249,6 +252,7 @@
 		</div>
 	{/await}
 
+	<!-- Messages -->
 	<div class="m-1 p-2 bg-header rounded-md">
 		<details bind:open={messagesOpen}>
 			<summary>Messages ({versions.current.messages.length})</summary>

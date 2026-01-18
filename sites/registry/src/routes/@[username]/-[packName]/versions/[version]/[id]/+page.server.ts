@@ -1,6 +1,7 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "$lib/api/schemas.js";
+import type { File } from "$lib/api/types.js";
 import type { PackCommentWithExtras } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack";
 import { APIGetPack } from "$lib/server/db/pack.js";
@@ -29,13 +30,38 @@ const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
+	const { username, packName, version, id } = event.params;
+
 	const parent = await event.parent();
 	const latest = parent.packs.latest;
 
 	const commentsObject = await getComments(event, latest);
 
+	let readmeFile = undefined;
+	const readme = parent.files.find((file) =>
+		["readme.md", "readme"].includes(file.path.toLowerCase()),
+	);
+	if (readme) {
+		const response = await requestAPI<File>(
+			event,
+			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+				username,
+				packName,
+				version,
+				id,
+				path: readme.path,
+			}),
+		);
+		if (response.error) {
+			return error(response.error.status, { message: response.error.message });
+		}
+
+		readmeFile = response.json;
+	}
+
 	return {
 		commentsObject,
+		readme: readmeFile,
 	};
 };
 

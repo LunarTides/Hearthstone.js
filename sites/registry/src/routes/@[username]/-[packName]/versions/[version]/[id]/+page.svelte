@@ -6,15 +6,19 @@
 	import FileTree from "$lib/components/file-tree.svelte";
 	import { satisfiesRole } from "$lib/user";
 	import { Heart, HeartPlus, ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
+	import { marked } from "marked";
+	import DOMPurify from "isomorphic-dompurify";
 
 	let { data } = $props();
 
 	let commentDeleteConfirm = $state("");
 
+	let readmeOpen = $state(true);
 	let fileTreeOpen = $state(true);
 	let commentsOpen = $state(page.url.hash.startsWith("#comment"));
 </script>
 
+<!-- File Tree -->
 <div class="m-1 p-2 bg-header rounded-md">
 	<details bind:open={fileTreeOpen}>
 		<summary>File Tree ({data.files.length})</summary>
@@ -22,6 +26,24 @@
 	</details>
 </div>
 
+<!-- Readme -->
+{#if data.readme}
+	<div class="m-1 p-2 bg-header rounded-md">
+		<details bind:open={readmeOpen}>
+			<summary>README</summary>
+			<div class="markdown">
+				{@html DOMPurify.sanitize(
+					marked
+						.parse(data.readme.content, { async: false, gfm: true })
+						// Make `/files/` actually take you to the correct file.
+						.replace('<a href="files/', `<a href="${page.params.id}/files/`),
+				)}
+			</div>
+		</details>
+	</div>
+{/if}
+
+<!-- Comments -->
 {#await data.packs}
 	<p>Loading...</p>
 {:then versions}
