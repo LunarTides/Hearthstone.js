@@ -6,11 +6,14 @@
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user.js";
-	import { ArrowLeft, Bell, BellDot } from "lucide-svelte";
+	import { ArrowLeft, Bell, BellDot, Search } from "lucide-svelte";
 	import { PUBLIC_DOMAIN } from "$env/static/public";
 
 	let { children, data } = $props();
 
+	let smallSearchElement = $state<Element>();
+	let smallSearchActive = $state(false);
+	let searchForm = $state<HTMLFormElement>();
 	let searchQuery = $state("");
 
 	const avatarPromise = import(`$lib/../../static/avatars/${data.user?.username}.avif`).catch(
@@ -26,19 +29,20 @@
 </svelte:head>
 
 <nav class="flex items-center p-3 text-white gap-2" style="background-color: var(--color-header);">
-	{#if PUBLIC_DOMAIN !== "http://localhost"}
-		<a href={PUBLIC_DOMAIN}>
-			<ArrowLeft />
-		</a>
+	<!-- {#if PUBLIC_DOMAIN !== "http://localhost"} -->
+	<a href={PUBLIC_DOMAIN}>
+		<ArrowLeft />
+	</a>
 
-		<p class="text-4xl font-thin text-gray-600">|</p>
-	{/if}
+	<p class="text-4xl font-thin text-gray-600">|</p>
+	<!-- {/if} -->
 
-	<a href={resolve("/")} class="font-bold uppercase text-xl">Registry</a>
+	<a href={resolve("/")} class="font-bold uppercase text-xl overflow-hidden min-w-3">Registry</a>
 	<p class="text-4xl font-thin text-gray-600">|</p>
 
 	<!-- TODO: Use superforms. -->
 	<form
+		bind:this={searchForm}
 		onsubmit={(event) => {
 			event.preventDefault();
 
@@ -50,20 +54,53 @@
 			type="text"
 			placeholder="Search..."
 			bind:value={searchQuery}
-			class="rounded-md bg-background"
+			class="rounded-md bg-background hidden md:block"
+			onkeydown={(event) => {
+				if (searchForm && event.key === "Enter") {
+					searchForm.requestSubmit();
+				}
+			}}
 		/>
+		<div class="flex gap-2 md:hidden">
+			<button
+				type="button"
+				class="hover:cursor-pointer"
+				onclick={() => {
+					if (smallSearchElement) {
+						smallSearchElement.ariaSelected = smallSearchElement.ariaSelected ? null : "true";
+						smallSearchActive = smallSearchElement.ariaSelected === "true";
+					}
+				}}
+			>
+				<Search />
+			</button>
+			<input
+				type="text"
+				placeholder="Search..."
+				bind:value={searchQuery}
+				bind:this={smallSearchElement}
+				class="rounded-md bg-background hidden aria-selected:block w-24"
+				onkeydown={(event) => {
+					if (searchForm && event.key === "Enter") {
+						searchForm.requestSubmit();
+					}
+				}}
+			/>
+		</div>
 	</form>
 
-	{#if data.user}
-		<a href={resolve("/upload")}>Upload</a>
+	{#if !smallSearchActive}
+		{#if data.user}
+			<a href={resolve("/upload")} class="hidden sm:block">Upload</a>
 
-		{#if satisfiesRole(data.user, "Moderator")}
-			<a href={resolve("/dashboard/packs")}>Dashboard</a>
+			{#if satisfiesRole(data.user, "Moderator")}
+				<a href={resolve("/dashboard/packs")}>Dashboard</a>
+			{/if}
 		{/if}
 	{/if}
 
 	<span class="flex items-center gap-2 ml-auto">
-		<a href={resolve("/contact")}>Contact</a>
+		<a href={resolve("/contact")} class="hidden sm:block">Contact</a>
 
 		{#if data.user}
 			<!-- TODO: Use superforms. -->
