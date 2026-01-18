@@ -121,10 +121,12 @@
 					</p>
 				{:else}
 					<a
-						href={resolve("/@[username]/-[packName]", {
+						href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
 							username: pack.ownerName,
 							packName: pack.name,
-						})}
+							version: packs.latest.packVersion,
+							id: packs.latest.id,
+						}) + "/#card"}
 						class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
 					>
 						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->

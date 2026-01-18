@@ -5,6 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import semver from "semver";
 import fs from "node:fs/promises";
+import { setLatestVersion } from "$lib/server/db/pack.js";
 
 export async function DELETE(event) {
 	const user = event.locals.user;
@@ -52,24 +53,7 @@ export async function DELETE(event) {
 	);
 
 	await db.delete(table.packMessage).where(eq(table.packMessage.packId, pack.id));
-
-	const packs = await db
-		.select({ id: table.pack.id, packVersion: table.pack.packVersion })
-		.from(table.pack)
-		.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)));
-	const newLatestPack = packs
-		.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))
-		.at(0);
-	if (newLatestPack) {
-		await db
-			.update(table.pack)
-			.set({ isLatestVersion: true })
-			.where(eq(table.pack.id, newLatestPack.id));
-		await db
-			.update(table.card)
-			.set({ isLatestVersion: true })
-			.where(eq(table.card.packId, newLatestPack.id));
-	}
+	await setLatestVersion(pack.ownerName, pack.name);
 
 	return json({}, { status: 200 });
 }

@@ -52,7 +52,12 @@
 			{/if}
 
 			<div class="flex gap-1 not-empty:mt-1">
-				{#if !pack.approved}
+				{#if pack.denied}
+					<Badge
+						class="bg-red-400 text-black"
+						title="This pack has been denied public access by a Moderator.">Denied</Badge
+					>
+				{:else if !pack.approved}
 					<Badge
 						class="bg-yellow-300 text-black"
 						title="This pack is waiting to be approved by a Moderator.">Waiting for approval</Badge

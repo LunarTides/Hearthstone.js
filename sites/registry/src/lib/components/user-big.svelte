@@ -19,6 +19,9 @@
 	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
 
 	let edit = $state(false);
+
+	let aboutMe = $derived(user.profile.aboutMe);
+	let pronouns = $derived(user.profile.pronouns);
 </script>
 
 <div class="flex gap-1">
@@ -40,14 +43,14 @@
 				{/await}
 				<p class="text-xl self-center">{user.username}</p>
 
-				{#if user.profile.pronouns}
+				{#if pronouns}
 					<p class="text-sm text-gray-500 self-center min-w-full mr-8">
-						({user.profile.pronouns})
+						({pronouns})
 					</p>
 				{/if}
 			</div>
 
-			<pre>{user.profile.aboutMe}</pre>
+			<pre>{aboutMe}</pre>
 
 			<div class="mt-auto">
 				{#if satisfiesRole(user, "Moderator")}
@@ -87,7 +90,7 @@
 						<input
 							class="bg-background text-white rounded-md self-center"
 							placeholder="Pronouns"
-							defaultValue={user.profile.pronouns ?? ""}
+							bind:value={pronouns}
 							name="pronouns"
 						/>
 					</div>
@@ -96,8 +99,10 @@
 						class="min-h-24 rounded-md bg-background text-white"
 						name="aboutMe"
 						placeholder="About me..."
-						defaultValue={user.profile.aboutMe}>{user.profile.aboutMe}</textarea
+						bind:value={aboutMe}
 					>
+						{user.profile.aboutMe}
+					</textarea>
 
 					{#if satisfiesRole(loggedInUser, "Admin")}
 						<select name="role" class="rounded-md bg-background text-white">

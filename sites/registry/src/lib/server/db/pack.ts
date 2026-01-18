@@ -186,7 +186,13 @@ export async function setLatestVersion(ownerName: string, name: string) {
 			approved: table.pack.approved,
 		})
 		.from(table.pack)
-		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, name)))
+		.where(
+			and(
+				eq(table.pack.ownerName, ownerName),
+				eq(table.pack.name, name),
+				eq(table.pack.denied, false),
+			),
+		)
 		.orderBy(desc(table.pack.packVersion));
 
 	{
