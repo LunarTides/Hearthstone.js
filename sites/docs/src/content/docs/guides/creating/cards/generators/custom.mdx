@@ -1,7 +1,18 @@
 ---
 title: Custom Card Creator
 description: TODO
+sidebar:
+    badge:
+        text: WIP
+        variant: caution
 ---
+
+{/* TODO: Remove when it no longer applies. */}
+:::caution
+This page is a work-in-progress.
+Any information on this page may not be accurate.
+:::
+
 
 import { Steps } from '@astrojs/starlight/components';
 
@@ -31,7 +42,7 @@ This will take you to a screen that looks like this:
 You can now change any aspect of the card.
 
 ### Type
-First, you should change its **type**. This reflects the type of the card.
+First, you should change the card's **type**.
 This can be `Minion`, `Spell`, `Weapon`, etc... It affects the way the game should handle the card.
 If you're familiar with Hearthstone, you should know the drill.
 
@@ -43,17 +54,22 @@ For now, just know that they can be anything and are non-unique.
 After that is the text. This should explain the card and how it works.
 Use [color tags](../../color-tags/) to style the text.
 
+E.g. `Your <b>Battlecries</b> trigger twice.`
+
 ### Cost
-TODO
+This is how much mana the card costs.
 
 ### Classes
-TODO
+TODO: Explain configuring arrays.
 
-### Rarities
-TODO
+This is the classes the card belongs to. A card belonging to the `Druid` class can't be added to the deck of a `Mage` when creating a deck, for example.
+
+### Rarity
+The rarity of the card. This doesn't really do much by itself, other than color the card's name.
 
 ### Collectible
-TODO
+If the card should be collectible. If true, the card can be added to decks.
+If this is false, the game won't add the card to any lists unless explicitly asked to include uncollectible cards.
 
 ### Tags
 TODO
