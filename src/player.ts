@@ -715,6 +715,13 @@ export class Player {
 				continue;
 			}
 
+			// Burn
+			if (this.hand.length >= game.config.general.maxHandLength) {
+				// NOTE: The card has already been removed from the deck due to `deck.pop`.
+				card.setLocation(Location.None);
+				continue;
+			}
+
 			// Cast on draw
 			if (
 				card.type === Type.Spell &&
