@@ -27,14 +27,14 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		rarity: Rarity.Free,
 		collectible: false,
 		tags: [],
-		id: game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+		id: game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 
 		attack: 1,
 		health: 1,
 		tribes: [Tribe.None],
 		spellSchools: [SpellSchool.None],
 		armor: 5,
-		heropowerId: game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+		heropowerId: game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 		durability: 2,
 		cooldown: 2,
 		enchantmentPriority: EnchantmentPriority.Normal,
@@ -50,7 +50,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 	};
 
 	const card = await Card.create(
-		game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+		game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 		game.player,
 	);
 
@@ -286,6 +286,10 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 					hideBack: false,
 				},
 			);
+
+			if (booleanChoice === "Back") {
+				continue;
+			}
 
 			set(key, booleanChoice === "true");
 			continue;

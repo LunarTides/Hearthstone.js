@@ -1,4 +1,4 @@
-import { notification } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db/index.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
@@ -9,7 +9,9 @@ export async function POST(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
-	const notifications = await db.delete(notification).where(eq(notification.userId, clientUser.id));
+	const notifications = await db
+		.delete(table.notification)
+		.where(eq(table.notification.username, clientUser.username));
 
 	return json({ notifications }, { status: 200 });
 }

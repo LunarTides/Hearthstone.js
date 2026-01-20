@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { type PackWithExtras } from "$lib/db/schema";
+	import type { PackWithExtras } from "$lib/db/schema";
 	import { Download, ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import Badge from "./badge.svelte";
 
@@ -16,14 +16,19 @@
 <div class="w-fit">
 	<a
 		href={navigateToVersion
-			? resolve("/pack/[uuid]/versions/[version]", { uuid: pack.uuid, version: pack.packVersion })
-			: resolve("/pack/[uuid]", { uuid: pack.uuid })}
+			? resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+					username: pack.ownerName,
+					packName: pack.name,
+					version: pack.packVersion,
+					id: pack.id,
+				})
+			: resolve("/@[username]/-[packName]", { username: pack.ownerName, packName: pack.name })}
 	>
 		<div
 			class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-header hover:scale-105 hover:drop-shadow-2xl"
 		>
 			<p class="font-bold">{pack.name} ({pack.packVersion})</p>
-			<p class="text-xs mb-2">{pack.authors.join(", ")}</p>
+			<p class="text-xs mb-2">{pack.author}</p>
 			<p>{pack.description}</p>
 			<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
 
@@ -47,7 +52,12 @@
 			{/if}
 
 			<div class="flex gap-1 not-empty:mt-1">
-				{#if !pack.approved}
+				{#if pack.denied}
+					<Badge
+						class="bg-red-400 text-black"
+						title="This pack has been denied public access by a Moderator.">Denied</Badge
+					>
+				{:else if !pack.approved}
 					<Badge
 						class="bg-yellow-300 text-black"
 						title="This pack is waiting to be approved by a Moderator.">Waiting for approval</Badge

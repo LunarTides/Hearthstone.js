@@ -3,12 +3,15 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import starlightKbd from 'starlight-kbd';
 import starlightBlog from 'starlight-blog';
+// import starlightVersions from 'starlight-versions';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://hs.lunartides.dev',
 	integrations: [
 		starlight({
 			title: 'Hearthstone.js',
+			favicon: 'favicon.png',
 			logo: {
 				src: './src/assets/logo.webp',
 			},
@@ -18,13 +21,13 @@ export default defineConfig({
 			},
 			components: {
 				SiteTitle: './src/overrides/SiteTitle.astro',
+				ThemeSelect: './src/overrides/ThemeSelect.astro',
 			},
 			sidebar: [
 				{
 					label: 'Guides',
 					items: [
 						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
 						{ label: 'Introduction', slug: 'guides/introduction' },
 						{ label: 'Installing & Updating', slug: 'guides/installation' },
 						{
@@ -50,6 +53,7 @@ export default defineConfig({
 								{
 									label: 'Cards',
 									items: [
+										{ label: "Introduction", slug: 'guides/creating/cards/introduction' },
 										{
 											label: 'Generators',
 											items: [
@@ -57,20 +61,30 @@ export default defineConfig({
 												{ label: 'Vanilla', slug: 'guides/creating/cards/generators/vanilla' },
 											],
 										},
+										{ label: 'Color Tags', slug: 'guides/creating/cards/color-tags' },
 										{
 											label: 'Adding Logic',
 											items: [
 												{ label: 'The Blueprint', slug: 'guides/creating/cards/logic/blueprint' },
 												{ label: 'Abilities', slug: 'guides/creating/cards/logic/abilities' },
+												{ label: 'Card-to-Card Interaction', slug: 'guides/creating/cards/logic/card-to-card' },
+												{ label: 'Passives', slug: 'guides/creating/cards/logic/passives' },
+												{
+													label: 'Concepts',
+													items: [
+														{ label: 'The Event System', slug: 'guides/creating/cards/logic/concepts/event-system' },
+													],
+												},
 											],
 										},
 										{ label: 'IDs, UUIDs, and Names', slug: 'guides/creating/cards/ids' },
 										{
-											label: 'Packaging',
+											label: 'Packs',
 											items: [
+												{ label: 'Introduction', slug: 'guides/creating/cards/packs/introduction' },
 												{ label: 'Exporting a Pack', slug: 'guides/creating/cards/packs/export' },
 												{ label: 'Importing a Pack', slug: 'guides/creating/cards/packs/import' },
-												{ label: 'Registry Website', slug: 'guides/creating/cards/packs/web' },
+												{ label: 'Registry', slug: 'guides/creating/cards/packs/registry' },
 											],
 										},
 									],
@@ -114,6 +128,12 @@ export default defineConfig({
 								{ label: 'FAQ', slug: 'guides/contributing/faq' },
 								{ label: 'Project Structure', slug: 'guides/contributing/structure' },
 								{ label: 'Tests', slug: 'guides/contributing/tests' },
+								{
+									label: 'Game',
+									items: [
+										{ label: 'Explaining the Gameloop', slug: 'guides/contributing/game/gameloop' },
+									],
+								},
 							],
 						},
 					],
@@ -130,6 +150,7 @@ export default defineConfig({
 						{ id: 'linux', label: "Linux" },
 						{ id: 'mac', label: "Mac" },
 					],
+					globalPicker: false,
 				}),
 				starlightBlog({
 					authors: {
@@ -144,6 +165,13 @@ export default defineConfig({
 						readingTime: true,
 					},
 				}),
+				// starlightVersions({
+				// 	versions: [
+				// 		{
+				// 			slug: "v4",
+				// 		}
+				// 	]
+				// }),
 			],
 		}),
 	],

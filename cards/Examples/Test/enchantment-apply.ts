@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "d697eb1a-3354-40a0-ba56-86071bbf21d5",
+	id: "019bc665-4f7f-7011-81af-dde076586bb3",
 
 	spellSchools: [SpellSchool.None],
 
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 
 		// Give the enchantment.
 		await target.addEnchantment(
-			game.cardIds.enchantmentTest_9737721c_6abd_4817_8aa4_b66cd278de59,
+			game.cardIds.enchantmentTest_019bc665_4f7f_7012_a8c3_818e01ca1c52,
 			self,
 		);
 		return true;
@@ -50,7 +50,7 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		await game.summon(
 			await Card.create(
-				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 				owner,
 			),
 			owner,

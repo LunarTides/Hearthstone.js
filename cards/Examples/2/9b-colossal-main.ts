@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "395c8d57-cfca-466e-9896-3ed1a54add04",
+	id: "019bc665-4f81-7003-8002-97609d2af3ca",
 
 	attack: 5,
 	health: 3,
@@ -39,9 +39,9 @@ export const blueprint: Blueprint = {
 			// Right: leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec
 			// Wrong: leftArm_65ff5692_391d_42d0_861d_ef08f156e566
 			// Look in the `9a-colossal-left.ts` file if you're unsure.
-			game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+			game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
 			game.cardIds.null,
-			game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
+			game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
 		]);
 	},
 
@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 		assert.ok(
 			board.some(
 				(card) =>
-					card.id === game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+					card.id === game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
 			),
 		);
 		assert.ok(board.some((card) => card.id === self.id));
@@ -61,7 +61,7 @@ export const blueprint: Blueprint = {
 			board.some(
 				(card) =>
 					card.id ===
-					game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
+					game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
 			),
 		);
 	},

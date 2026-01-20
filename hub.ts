@@ -175,6 +175,15 @@ export async function devmode() {
 			await crashTest.main();
 			game.interest("Starting Crash Test...OK");
 		} else if (answer === "generateVanilla") {
+			if (!game.config.networking.allow.game) {
+				console.error(
+					"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+				);
+				console.error();
+				await game.pause();
+				continue;
+			}
+
 			const sure = await confirm({
 				message:
 					"Are you sure you want to generate the vanilla cards? Doing this will query an API.",

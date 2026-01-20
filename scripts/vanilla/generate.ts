@@ -45,6 +45,14 @@ function fetchData(url: string): Promise<any> {
 export async function main(): Promise<void> {
 	// Do this, otherwise `game` isn't recognized.
 	const hub = await import("../../hub.ts");
+
+	if (!game.config.networking.allow.game) {
+		console.error(
+			"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+		);
+		return;
+	}
+
 	hub.watermark(false);
 
 	console.log("Querying API...");

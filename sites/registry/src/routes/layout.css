@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
 
 body {
 	background-color: var(--color-background);
@@ -8,7 +9,7 @@ body {
 
 .custom-button {
 	/* @apply text-black bg-indigo-300 hover:cursor-pointer hover:bg-indigo-200 active:bg-indigo-400 rounded-md; */
-	@apply rounded-md bg-amber-500 text-black hover:cursor-pointer hover:bg-amber-400 active:bg-amber-600;
+	@apply rounded-md bg-amber-500 text-black outline-white target:outline hover:cursor-pointer hover:bg-amber-400 active:bg-amber-600;
 }
 
 .bg-header {
@@ -21,14 +22,59 @@ body {
 
 .alternating-children {
 	&:nth-child(even) {
-		background-color: var(--color-background);
+		background-color: var(--color-header);
 	}
 	&:nth-child(odd) {
-		background-color: var(--color-header);
+		background-color: var(--color-background);
 	}
 }
 
 :root {
 	--color-header: #23262f;
 	--color-background: #17181c;
+}
+
+.markdown {
+	@apply m-0 prose text-white;
+	@apply prose-headings:text-white;
+	@apply prose-p:m-0 prose-p:text-white;
+	@apply prose-a:m-0 prose-a:text-blue-500;
+	@apply prose-figure:m-0 prose-figure:text-white;
+	@apply prose-figcaption:m-0 prose-figcaption:text-white;
+	@apply prose-strong:m-0 prose-strong:text-white;
+	@apply prose-em:m-0 prose-em:text-white;
+	@apply prose-kbd:m-0 prose-kbd:text-white;
+	@apply prose-code:m-0 prose-code:text-white;
+	@apply prose-pre:m-0 prose-pre:text-white;
+	@apply prose-ol:m-0 prose-ol:text-white;
+	@apply prose-ul:m-0 prose-ul:text-white;
+	@apply prose-li:m-0 prose-li:text-white;
+	@apply prose-dl:m-0 prose-dl:text-white;
+	@apply prose-dt:m-0 prose-dt:text-white;
+	@apply prose-dd:m-0 prose-dd:text-white;
+	@apply prose-table:m-0 prose-table:text-white;
+	@apply prose-thead:m-0 prose-thead:text-white;
+	@apply prose-tr:m-0 prose-tr:text-white;
+	@apply prose-th:m-0 prose-th:text-white;
+	@apply prose-td:m-0 prose-td:text-white;
+	@apply prose-img:m-0 prose-img:text-white;
+	@apply prose-picture:m-0 prose-picture:text-white;
+	@apply prose-video:m-0 prose-video:text-white;
+	@apply prose-hr:m-0 prose-hr:text-white;
+	@apply prose-lead:m-0 prose-lead:text-white;
+
+	/* Remove quotes and italic. */
+	:where(blockquote):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+		quotes: none;
+		font-style: normal;
+		color: white;
+	}
+
+	/* Remove surrounding ` */
+	:where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before {
+		content: "";
+	}
+	:where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+		content: "";
+	}
 }

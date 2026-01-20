@@ -1,3 +1,4 @@
+import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
@@ -14,7 +15,7 @@ export const load = (event) => {
 	const getResult = async () => {
 		const packsResponse = await requestAPI<PackWithExtras[]>(
 			event,
-			`/api/v1/search/packs?q=${event.url.searchParams.get("q")}&page=${page}`,
+			resolve("/api/v1/search/packs") + `?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
 		if (packsResponse.error) {
 			error(packsResponse.error.status, { message: packsResponse.error.message });
@@ -22,7 +23,7 @@ export const load = (event) => {
 
 		const cardsResponse = await requestAPI<{ card: Card; pack: PackWithExtras }[]>(
 			event,
-			`/api/v1/search/cards?q=${event.url.searchParams.get("q")}&page=${page}`,
+			resolve("/api/v1/search/cards") + `?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
 		// if (cardsResponse.status !== 200) {
 		// 	error(cardsResponse.status, { message: cards.message });

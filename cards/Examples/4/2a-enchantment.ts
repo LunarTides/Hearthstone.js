@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 
 	// Remember this id.
-	id: "f9ef24ac-0556-49d0-9fe8-b859ce689a4e",
+	id: "019bc665-4f80-7010-8ed9-99808369532e",
 
 	// This is how the game should prioritize the enchantment.
 	// Higher priority enchantments get applied before lower priority ones.

@@ -30,7 +30,7 @@ describe("src/card", () => {
 
 	test("hasKeyword", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.hasKeyword(Keyword.Dormant)).toBe(false);
@@ -41,7 +41,7 @@ describe("src/card", () => {
 
 	test("addKeyword", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.addKeyword(Keyword.Dormant)).toBe(true);
@@ -72,7 +72,7 @@ describe("src/card", () => {
 
 	test("removeKeyword", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		card.addKeyword(Keyword.Dormant);
@@ -84,7 +84,7 @@ describe("src/card", () => {
 
 	test("getKeyword", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
@@ -98,7 +98,7 @@ describe("src/card", () => {
 
 	test("setKeyword", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.setKeyword(Keyword.Dormant, 3)).toBe(false);
@@ -112,7 +112,7 @@ describe("src/card", () => {
 
 	test("freeze", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.hasKeyword(Keyword.Frozen)).toBe(false);
@@ -123,7 +123,7 @@ describe("src/card", () => {
 
 	test("decrementAttackTimes", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attackTimes).toBe(0);
@@ -148,7 +148,7 @@ describe("src/card", () => {
 
 	test("ready", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attackTimes).toBe(0);
@@ -181,7 +181,7 @@ describe("src/card", () => {
 
 	test("exhaust", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attackTimes).toBe(0);
@@ -195,7 +195,7 @@ describe("src/card", () => {
 
 	test("setStats", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attack).toBe(1);
@@ -214,7 +214,7 @@ describe("src/card", () => {
 
 	test("addStats", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attack).toBe(1);
@@ -228,7 +228,7 @@ describe("src/card", () => {
 
 	test("removeStats", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.attack).toBe(1);
@@ -243,7 +243,7 @@ describe("src/card", () => {
 
 	test("addHealth", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.health).toBe(1);
@@ -258,7 +258,7 @@ describe("src/card", () => {
 
 	test("removeHealth", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.health).toBe(1);
@@ -293,7 +293,7 @@ describe("src/card", () => {
 
 		// Make sure it DOESN'T destroy the weapon.
 		const weapon = await Card.create(
-			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
 			game.player,
 		);
 		await game.player.setWeapon(weapon);
@@ -306,7 +306,7 @@ describe("src/card", () => {
 
 	test("damage", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.health).toBe(1);
@@ -342,7 +342,7 @@ describe("src/card", () => {
 
 		// Check if it actually destroys the weapon.
 		const weapon = await Card.create(
-			game.cardIds.wickedKnife_ba638767_5692_419f_8032_7f481262db5a,
+			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
 			game.player,
 		);
 		await game.player.setWeapon(weapon);
@@ -353,7 +353,7 @@ describe("src/card", () => {
 
 	test("resetMaxHealth", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.maxHealth).toBe(1);
@@ -365,7 +365,7 @@ describe("src/card", () => {
 
 	test("setStealthDuration", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.stealthDuration).toBe(0);
@@ -378,7 +378,7 @@ describe("src/card", () => {
 
 	test("setLocation", async () => {
 		const card = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		expect(card.location).toBe(Location.None);

@@ -61,6 +61,23 @@ export const config: GameConfig = {
 		maxOfOneLegendary: 1,
 	},
 
+	networking: {
+		allow: {
+			/*
+			 * Allow the game to perform networking requests.
+			 * If this is true, it will still prompt you before making any requests.
+			 */
+			game: false,
+
+			/*
+			 * Allow packs to perform networking requests.
+			 * BE CAREFUL! Packs from official sources have to be approved by a moderator, but they might not be 100% safe.
+			 * Enable at your own risk!
+			 */
+			packs: false,
+		},
+	},
+
 	debug: {
 		/*
 		 * If this is enabled, ALL debug settings under this category gets enabled.
@@ -330,6 +347,7 @@ export const config: GameConfig = {
 			Event.ForgeCard,
 			Event.FreezeCard,
 			Event.RevealCard,
+			Event.BurnCard,
 			Event.Titan,
 			Event.AddCardToDeck,
 			Event.AddCardToHand,
@@ -349,6 +367,7 @@ export const config: GameConfig = {
 		hideValueHistoryKeys: [
 			Event.DrawCard,
 			Event.ForgeCard,
+			Event.BurnCard,
 			Event.AddCardToHand,
 			Event.AddCardToDeck,
 		],

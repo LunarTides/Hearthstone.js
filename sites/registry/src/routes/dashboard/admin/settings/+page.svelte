@@ -78,7 +78,6 @@
 									try {
 										parsed = JSON.parse(v);
 									} catch {}
-									console.log(typeof parsed);
 									if (["boolean", "number"].includes(typeof parsed)) {
 										setting.value = parsed;
 										return;

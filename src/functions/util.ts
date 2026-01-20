@@ -428,6 +428,7 @@ ${mainContent}
 	 *
 	 * @param path The path to search in.
 	 * @param callback The callback to run on the files / folders.
+	 * @param [readFiles=true] If it should read the content of files, and return them in the callback function. Disable for optimization.
 	 */
 	async searchFolder(
 		path: string,
@@ -437,6 +438,7 @@ ${mainContent}
 			file: Dirent<string>,
 			fileContent?: string,
 		) => Promise<void>,
+		readFiles = true,
 	): Promise<void> {
 		const actualPath = this.restrictPath(path);
 
@@ -450,10 +452,10 @@ ${mainContent}
 		// Use Promise.all to read all the files in parallel
 		await Promise.all(
 			files.map(async (file, i) => {
-				const fullPath = resolve(actualPath, file.parentPath, file.name);
+				const fullPath = `/${resolve(actualPath, file.parentPath, file.name)}`;
 				let fileContent: string | undefined;
 
-				if (file.isFile()) {
+				if (readFiles && file.isFile()) {
 					fileContent = (await this.fs(
 						"readFile",
 						fullPath,

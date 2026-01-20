@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { type Card, type PackWithExtras } from "$lib/db/schema";
+	import type { Card, PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user";
@@ -16,6 +16,7 @@
 		showDownloadButton = false,
 		individual = false,
 		form = undefined,
+		rawForm = undefined,
 		class: className,
 	}: {
 		packs: {
@@ -31,12 +32,13 @@
 		showDownloadButton?: boolean;
 		individual?: boolean;
 		form?: any;
+		rawForm?: any;
 		class?: string;
 	} = $props();
 
 	const pack = $derived(packs.current ?? packs.latest);
 
-	const canEditPack = $derived(pack.userIds.includes(user?.id || "0"));
+	const canEditPack = $derived(user?.username === pack.ownerName);
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
 
 	// https://stackoverflow.com/a/18650828
@@ -55,10 +57,10 @@
 
 	$effect(() => {
 		// Download the file.
-		if (form?.file) {
+		if (rawForm?.file) {
 			const element = document.createElement("a");
-			element.href = window.URL.createObjectURL(new Blob([form.file]));
-			element.download = form.filename;
+			element.href = window.URL.createObjectURL(new Blob([rawForm.file]));
+			element.download = rawForm.filename;
 			element.click();
 		}
 	});
@@ -72,9 +74,11 @@
 				{#if showDownloadButton && pack.approved}
 					<!-- TODO: Use superforms. -->
 					<form
-						action={resolve("/pack/[uuid]/versions/[version]", {
-							uuid: pack.uuid,
+						action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							username: pack.ownerName,
+							packName: pack.name,
 							version: pack.packVersion,
+							id: pack.id,
 						}) + "?/download"}
 						method="post"
 						use:enhance
@@ -94,27 +98,35 @@
 					</p>
 					<div class="border-l ml-auto h-auto"></div>
 				{/if}
-				{#if page.route.id === "/pack/[uuid]/versions"}
+				{#if page.route.id === "/@[username]/-[packName]/versions"}
 					<p class="px-5 py-3 bg-gray-300 text-gray-700 hover:cursor-default">
 						Versions ({packs.all.length})
 					</p>
 				{:else}
 					<a
-						href={resolve("/pack/[uuid]/versions", { uuid: pack.uuid })}
+						href={resolve("/@[username]/-[packName]/versions", {
+							username: pack.ownerName,
+							packName: pack.name,
+						})}
 						class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
 					>
 						Versions ({packs.all.length})
 					</a>
 				{/if}
 				<div class="border-l ml-auto h-auto"></div>
-				{#if page.route.id === "/pack/[uuid]"}
+				{#if page.route.id === "/@[username]/-[packName]"}
 					<p class="px-5 py-3 w-full rounded-r-full bg-gray-300 text-gray-700 hover:cursor-default">
 						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
 						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
 					</p>
 				{:else}
 					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
+						href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							username: pack.ownerName,
+							packName: pack.name,
+							version: packs.latest.packVersion,
+							id: packs.latest.id,
+						}) + "/#card"}
 						class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
 					>
 						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
@@ -125,34 +137,17 @@
 
 			{#if canModeratePack}
 				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
-					{#if pack.approved}
-						<a
-							href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-							class="px-5 py-3 w-full rounded-l-full hover:bg-gray-800 active:bg-black"
-						>
-							<!-- TODO: Change depending on if it's listed or not. -->
-							(Un)list
-						</a>
-					{:else}
-						<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
-							<!-- TODO: Change depending on if it's listed or not. -->
-							(Un)list
-						</p>
-					{/if}
-					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full hover:bg-gray-800 active:bg-black"
-					>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
 						(Reserved)
-					</a>
+					</p>
 					<div class="border-l ml-auto h-auto"></div>
-					<a
-						href={resolve("/pack/[uuid]", { uuid: pack.uuid })}
-						class="px-5 py-3 w-full rounded-r-full hover:bg-gray-800 active:bg-black"
-					>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
 						(Reserved)
-					</a>
+					</p>
+					<div class="border-l ml-auto h-auto"></div>
+					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
+						(Reserved)
+					</p>
 				</div>
 			{/if}
 		</div>
@@ -165,8 +160,12 @@
 				<p class="text-gray-300 self-center">(v{pack.packVersion})</p>
 			{/if}
 		</div>
-		<!-- TODO: Add clicking on the author if they have a connected account. -->
-		<p class="font-semibold">({pack.authors.join(", ")})</p>
+		<a
+			href={resolve("/@[username]", { username: pack.author })}
+			class="font-semibold underline text-sm"
+		>
+			@{pack.author}
+		</a>
 		{#if canEditPack}
 			<!-- TODO: Localize. -->
 			<p class="text-green-300">You can administrate this pack.</p>
@@ -211,6 +210,18 @@
 				</div>
 			</div>
 
+			<div>
+				<div class="w-fit">
+					<p class="text-lg font-semibold">Permissions</p>
+					<hr />
+					{#if pack.permissions.length > 0}
+						<p class="text-amber-300">{pack.permissions.join(", ")}</p>
+					{:else}
+						<p class="text-green-300">None</p>
+					{/if}
+				</div>
+			</div>
+
 			{#if pack.approved && satisfiesRole(user, "Moderator")}
 				<div class="flex mt-4 gap-2">
 					<div>
@@ -225,10 +236,14 @@
 		{#if !hideButtons && pack.approved}
 			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+
 			<div class="flex gap-4">
 				<!-- TODO: Use superforms. -->
 				<form
-					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/like"}
+					action={resolve("/@[username]/-[packName]", {
+						username: pack.ownerName,
+						packName: pack.name,
+					}) + "?/like"}
 					method="post"
 					use:enhance
 				>
@@ -241,7 +256,10 @@
 
 				<!-- TODO: Use superforms. -->
 				<form
-					action={resolve("/pack/[uuid]", { uuid: pack.uuid }) + "?/dislike"}
+					action={resolve("/@[username]/-[packName]", {
+						username: pack.ownerName,
+						packName: pack.name,
+					}) + "?/dislike"}
 					method="post"
 					use:enhance
 				>
@@ -255,7 +273,12 @@
 		{/if}
 
 		<div class="flex gap-1 not-empty:mt-2">
-			{#if !pack.approved}
+			{#if pack.denied}
+				<Badge
+					class="bg-red-400 text-black"
+					title="This pack has been denied public access by a Moderator.">Denied</Badge
+				>
+			{:else if !pack.approved}
 				<Badge
 					class="bg-yellow-400 text-black"
 					title="This pack is waiting to be approved by a Moderator.">Waiting for approval</Badge

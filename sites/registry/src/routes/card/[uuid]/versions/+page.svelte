@@ -21,12 +21,15 @@
 		{#each cards.all.toSorted( (a, b) => getPack(cards, b).packVersion.localeCompare(getPack(cards, a).packVersion), ) as card (card.id)}
 			<a
 				class="bg-header p-2 text-center rounded-full text-xl"
-				href={resolve("/card/[uuid]/versions/[version]", {
+				href={resolve("/card/[uuid]/versions/[version]/[id]", {
 					uuid: card.uuid,
 					version: getPack(cards, card).packVersion,
+					id: getPack(cards, card).id,
 				})}
 			>
 				{getPack(cards, card).packVersion}
+				<span class="text-gray-700">({getPack(cards, card).id.split("-").at(-1)!.slice(0, 6)})</span
+				>
 			</a>
 		{/each}
 	</div>

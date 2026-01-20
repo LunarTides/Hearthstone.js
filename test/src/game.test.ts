@@ -31,7 +31,7 @@ describe("src/game", () => {
 		// - Space
 
 		const sheep = await Card.create(
-			game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 			game.player,
 		);
 		const play = async (player = game.player) => {

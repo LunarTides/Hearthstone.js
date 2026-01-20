@@ -1,0 +1,55 @@
+// Created by the Custom Card Creator
+
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
+import assert from "node:assert";
+
+export const blueprint: Blueprint = {
+	name: "Nurture",
+	text: "<b>Choose One -</b> Draw a card; or Gain an empty Mana Crystal.",
+	cost: 2,
+	type: Type.HeroPower,
+	classes: [Class.Druid],
+	rarity: Rarity.Free,
+	collectible: false,
+	tags: [],
+	id: "019bc665-4f82-7014-ac98-f9640e8850da",
+
+	async heropower(self, owner) {
+		// Choose One - Draw a card; or Gain an empty Mana Crystal.
+		await game.prompt.chooseOne(
+			1,
+			[
+				"Draw a card",
+				async () => {
+					// Draw a card
+					await owner.drawCards(1);
+				},
+			],
+			[
+				"Gain an empty Mana Crystal",
+				async () => {
+					// Gain an empty ManaCrystal
+					owner.addEmptyMana(1);
+				},
+			],
+		);
+	},
+
+	async test(self, owner) {
+		// Draw a card
+		const handSize = owner.hand.length;
+
+		owner.inputQueue = ["1"];
+		await self.trigger(Ability.HeroPower);
+
+		assert.equal(owner.hand.length, handSize + 1);
+
+		// Gain an empty Mana Crystal
+		const emptyMana = owner.emptyMana;
+
+		owner.inputQueue = ["2"];
+		await self.trigger(Ability.HeroPower);
+
+		assert.equal(owner.emptyMana, emptyMana + 1);
+	},
+};

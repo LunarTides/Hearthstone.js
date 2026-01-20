@@ -22,7 +22,7 @@ import {
 } from "@Game/types.ts";
 import { format } from "node:util";
 import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
-import { checkbox, confirm, input, select } from "@inquirer/prompts";
+import { checkbox, confirm, input, number, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -434,19 +434,45 @@ const prompt = {
 			}
 
 			const key = answer.split("-").slice(1).join("-");
+			const value = object[key];
 
-			if (Array.isArray(object[key])) {
-				const changed = await game.prompt.configureArray(object[key], onLoop);
+			if (Array.isArray(value)) {
+				const changed = await game.prompt.configureArray(value, onLoop);
 
 				// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
 				// Learned that the hard way...
 				dirty ||= changed;
 				continue;
+			} else if (game.lodash.isBoolean(value)) {
+				const newValue = await game.prompt.customSelect(
+					"What will you change this value to?",
+					["True", "False"],
+					{
+						arrayTransform: async (i, element) => ({
+							name: element,
+							value: element.toLowerCase(),
+						}),
+						hideBack: false,
+					},
+				);
+
+				object[key] = newValue === "true";
+				dirty = true;
+				continue;
+			} else if (!Number.isNaN(parseInt(value, 10))) {
+				const newValue = await number({
+					message: "What will you change this value to?",
+					default: value,
+				});
+
+				object[key] = newValue;
+				dirty = true;
+				continue;
 			}
 
 			const newValue = await input({
 				message: "What will you change this value to?",
-				default: object[key],
+				default: value,
 			});
 
 			object[key] = newValue;
@@ -515,7 +541,7 @@ const prompt = {
 			// Debug mode is enabled, use the 30 Sheep debug deck.
 			while (player.deck.length < 30) {
 				const sheep = await Card.create(
-					game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+					game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 					player,
 					true,
 				);
@@ -982,7 +1008,7 @@ const prompt = {
 			for (const [i, card] of Object.entries(player.hand)) {
 				// Don't allow mulliganing the coin.
 				if (
-					card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+					card.id === game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e
 				) {
 					continue;
 				}

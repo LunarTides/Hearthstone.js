@@ -1,6 +1,93 @@
 ---
 title: Custom Card Creator
 description: TODO
+sidebar:
+    badge:
+        text: WIP
+        variant: caution
 ---
 
+{/* TODO: Remove when it no longer applies. */}
+:::caution
+This page is a work-in-progress.
+Any information on this page may not be accurate.
+:::
+
+
+import { Steps } from '@astrojs/starlight/components';
+
+This is the generator you'll likely use the most. It allows you to create a custom card, with no restrictions.
+
+## Running
+To run the custom card creator, do the following steps:
+
+<Steps>
+
+1. From the HUB, select `Developer Options`:
+![Selecting "Developer Options" from the HUB.](../../../../../../assets/guides/creating/cards/developer-options.webp)
+
+2. Then select `Create a Card`:
+![Selecting "Create a Card" from the HUB.](../../../../../../assets/guides/creating/cards/create-a-card.webp)
+
+3. Then select `Create a Custom Card`:
+![Selecting "Create a Custom Card" from the HUB.](../../../../../../assets/guides/creating/cards/create-a-custom-card.webp)
+
+</Steps>
+
+This will take you to a screen that looks like this:
+![Screenshot of the Custom Card Creator](../../../../../../assets/guides/creating/cards/custom-card-creator.webp)
+> Sorry for the low resolution.
+
+## Configuring the Card
+You can now change any aspect of the card.
+
+### Type
+First, you should change the card's **type**.
+This can be `Minion`, `Spell`, `Weapon`, etc... It affects the way the game should handle the card.
+If you're familiar with Hearthstone, you should know the drill.
+
+### Name
+Next up is the name. Take a look at [this guide](../../ids/) to see more information about names.
+For now, just know that they can be anything and are non-unique.
+
+### Text
+After that is the text. This should explain the card and how it works.
+Use [color tags](../../color-tags/) to style the text.
+
+E.g. `Your <b>Battlecries</b> trigger twice.`
+
+### Cost
+This is how much mana the card costs.
+
+### Classes
+TODO: Explain configuring arrays.
+
+This is the classes the card belongs to. A card belonging to the `Druid` class can't be added to the deck of a `Mage` when creating a deck, for example.
+
+### Rarity
+The rarity of the card. This doesn't really do much by itself, other than color the card's name.
+
+### Collectible
+If the card should be collectible. If true, the card can be added to decks.
+If this is false, the game won't add the card to any lists unless explicitly asked to include uncollectible cards.
+
+### Tags
+TODO
+
+### Type-Specific
+TODO
+
+#### Durability
+TODO
+
+#### Cooldown
+TODO
+
+#### Enchantment Priority
+TODO
+
+### Keywords
+TODO
+
+### Runes
 TODO

@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "f17d78e2-31d3-4a98-803e-c5d1ad7959b0",
+	id: "019bc665-4f80-7011-8b35-5827ca3ba4d4",
 
 	attack: 1,
 	health: 1,
@@ -36,7 +36,7 @@ export const blueprint: Blueprint = {
 		if (
 			game.event.is(key, value, Event.CreateCard) &&
 			value.id ===
-				game.cardIds.enchantmentExample_f9ef24ac_0556_49d0_9fe8_b859ce689a4e
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e
 		) {
 			return;
 		}
@@ -50,7 +50,7 @@ export const blueprint: Blueprint = {
 			// If the card was already given the enchantment from this card, ignore it.
 			if (
 				card.enchantmentExists(
-					game.cardIds.enchantmentExample_f9ef24ac_0556_49d0_9fe8_b859ce689a4e,
+					game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
 					self,
 				)
 			) {
@@ -59,7 +59,7 @@ export const blueprint: Blueprint = {
 
 			// Give the card the enchantment.
 			await card.addEnchantment(
-				game.cardIds.enchantmentExample_f9ef24ac_0556_49d0_9fe8_b859ce689a4e,
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
 				self,
 			);
 		}
@@ -75,7 +75,7 @@ export const blueprint: Blueprint = {
 		for (const card of owner.hand) {
 			// Only remove the enchantment given by this card.
 			await card.removeEnchantment(
-				game.cardIds.enchantmentExample_f9ef24ac_0556_49d0_9fe8_b859ce689a4e,
+				game.cardIds.enchantmentExample_019bc665_4f80_7010_8ed9_99808369532e,
 				self,
 			);
 		}

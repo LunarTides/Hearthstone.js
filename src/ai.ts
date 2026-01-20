@@ -602,7 +602,7 @@ export class AI {
 
 		for (const card of this.player.hand) {
 			if (
-				card.id === game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f
+				card.id === game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e
 			) {
 				continue;
 			}

@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 	 */
 	tags: [Tag.Quest],
 
-	id: "eaa2e16e-b796-46c1-b627-dca7dc2999a4",
+	id: "019bc665-4f80-7013-90e9-46b595d9a1e6",
 
 	spellSchools: [SpellSchool.None],
 

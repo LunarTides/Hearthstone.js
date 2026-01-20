@@ -15,6 +15,7 @@
     "astro": "^5.6.1",
     "sharp": "^0.34.2",
     "starlight-blog": "^0.25.2",
-    "starlight-kbd": "^0.3.0"
+    "starlight-kbd": "^0.3.0",
+    "starlight-versions": "^0.5.6"
   }
 }

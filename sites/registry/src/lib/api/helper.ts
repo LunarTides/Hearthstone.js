@@ -1,5 +1,9 @@
 import type { RequestEvent } from "@sveltejs/kit";
 
+/**
+ * ### NOTE: Pass the `route` through `resolve`. Concatination is fine.
+ * ### WARNING: `json` is only valid if the route returns json.
+ */
 export async function requestAPI<R>(
 	event: RequestEvent,
 	route: string,
@@ -13,11 +17,13 @@ export async function requestAPI<R>(
 	const response = await event.fetch(route, init);
 
 	let json = undefined;
-	try {
-		json = await response.json();
-	} catch {}
+	if (response.headers.get("Content-Type") === "application/json") {
+		try {
+			json = await response.json();
+		} catch {}
+	}
 
-	if (response.status >= 300) {
+	if (response.status >= 400) {
 		return {
 			json: undefined,
 			error: { message: json.message ?? "An error occurred.", status: response.status },

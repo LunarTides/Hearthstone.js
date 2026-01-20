@@ -1432,7 +1432,7 @@ export class Game {
 
 		// Give the coin to the second player
 		const coin = await Card.create(
-			this.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f,
+			this.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e,
 			this.player2,
 		);
 
@@ -1635,7 +1635,7 @@ export class Game {
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
-			 * example: [game.cardIds.leftArm_65ff5692_391d_42d0_861d_ef08f156e566, game.cardIds.null, game.cardIds.rightArm_233440a8_4966_4a88_94b0_b964a52ebf30]
+			 * example: [game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210, game.cardIds.null, game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5]
 			 * the null0 / 0 gets replaced with the main minion
 			 */
 

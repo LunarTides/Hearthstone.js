@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "a90e6fff-f2fa-4756-b861-5096ee4ac749",
+	id: "019bc665-4f80-7007-8422-d43e647ca813",
 
 	attack: 1,
 	health: 1,
@@ -31,7 +31,7 @@ export const blueprint: Blueprint = {
 			self.uuid,
 			"theCoin",
 			await Card.create(
-				game.cardIds.theCoin_e4d1c19c_755a_420b_b1ec_fc949518a25f,
+				game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e,
 				owner,
 			),
 		);

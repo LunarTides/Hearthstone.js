@@ -1,27 +1,27 @@
-import { setting } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { inArray, eq, like } from "drizzle-orm";
 import { db } from ".";
 
 export async function getSetting(key: string) {
-	const settingInDB = await db
-		.select({ value: setting.value })
-		.from(setting)
-		.where(eq(setting.key, key))
+	const setting = await db
+		.select({ value: table.setting.value })
+		.from(table.setting)
+		.where(eq(table.setting.key, key))
 		.limit(1);
-	if (settingInDB.length <= 0) {
+	if (setting.length <= 0) {
 		return undefined;
 	}
 
-	return settingInDB[0].value;
+	return setting[0].value;
 }
 
 export async function getSettings<K extends string>(keys: K[]): Promise<Record<K, any>> {
-	const settingInDB = await db.select().from(setting).where(inArray(setting.key, keys));
-	if (settingInDB.length <= 0) {
+	const setting = await db.select().from(table.setting).where(inArray(table.setting.key, keys));
+	if (setting.length <= 0) {
 		return {} as any;
 	}
 
-	return settingInDB.map((s) => ({ [s.key]: s.value })) as any;
+	return setting.map((s) => ({ [s.key]: s.value })) as any;
 }
 
 export async function getCategorySettings<C extends string, K extends string>(
@@ -29,25 +29,25 @@ export async function getCategorySettings<C extends string, K extends string>(
 ): Promise<Record<C, Record<K, any>>> {
 	const category = Object.keys(keys)[0];
 
-	const settingInDB = await db
+	const setting = await db
 		.select()
-		.from(setting)
-		.where(like(setting.key, `${category}%`));
-	if (settingInDB.length <= 0) {
+		.from(table.setting)
+		.where(like(table.setting.key, `${category}%`));
+	if (setting.length <= 0) {
 		return {} as any;
 	}
 
 	return {
 		[category]: Object.assign(
 			{},
-			...settingInDB.map((s) => ({ [s.key.split(".").slice(1).join(".")]: s.value })),
+			...setting.map((s) => ({ [s.key.split(".").slice(1).join(".")]: s.value })),
 		),
 	} as any;
 }
 
 export async function generateDefaultSettings() {
 	// TODO: Move default values to a settings.ts file.
-	await db.insert(setting).values([
+	await db.insert(table.setting).values([
 		{
 			key: "upload.maxFileSize",
 			value: 100 * 1024 * 1024,

@@ -2,7 +2,7 @@ import { sequence } from "@sveltejs/kit/hooks";
 import * as auth from "$lib/server/auth";
 import type { Handle } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
-import { setting } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { count } from "drizzle-orm";
 import { generateDefaultSettings } from "$lib/server/db/setting";
 
@@ -32,7 +32,7 @@ export const handle: Handle = sequence(handleAuth);
 
 export const init = async () => {
 	// Setup default settings.
-	const amount = await db.select({ value: count(setting.key) }).from(setting);
+	const amount = await db.select({ value: count(table.setting.key) }).from(table.setting);
 	if (amount.length <= 0 || amount[0].value <= 0) {
 		await generateDefaultSettings();
 	}

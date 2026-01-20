@@ -7,5 +7,5 @@ RUN bun install
 COPY . .
 RUN bun run build
 
-FROM nginx
+FROM oven/bun
 COPY --from=builder /app/dist /var/www/docs

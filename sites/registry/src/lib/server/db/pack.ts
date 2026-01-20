@@ -1,40 +1,54 @@
 import { db } from "$lib/server/db/index.js";
-import { pack, packLike, user, type PackWithExtras } from "$lib/db/schema.js";
+import type { PackWithExtras } from "$lib/db/schema.js";
+import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq } from "drizzle-orm";
-import type { PgSelect } from "drizzle-orm/pg-core";
+import { eq, and, desc } from "drizzle-orm";
+import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
 import semver from "semver";
 import { censorPack } from "$lib/pack";
 
 const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
-	if ((!user || !packs.at(0)?.userIds.includes(user.id)) && !satisfiesRole(user, "Moderator")) {
+	if ((!user || packs.at(0)?.ownerName !== user.username) && !satisfiesRole(user, "Moderator")) {
 		return packs.filter((p) => p.approved);
 	}
 
 	return packs;
 };
 
-export const loadGetPack = async (user: ClientUser, uuid: string) => {
+export const loadGetPack = async (user: ClientUser, username: string, packName: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(table.pack)
+			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
 
 	if (packs.length <= 0) {
 		// To to parse uuid as a version id.
-		const id = (await db.select({ uuid: pack.uuid }).from(pack).where(eq(pack.id, uuid))).at(0);
+		const id = (
+			await db
+				.select({ ownerName: table.pack.ownerName, name: table.pack.name })
+				.from(table.pack)
+				.where(and(eq(table.pack.id, username)))
+		).at(0);
 		if (!id) {
 			error(404, { message: "Pack not found." });
 		}
 
 		packs = await getFullPacks(
 			user,
-			db.select().from(pack).where(eq(pack.uuid, id.uuid)).$dynamic(),
+			db
+				.select()
+				.from(table.pack)
+				.where(and(eq(table.pack.ownerName, id.ownerName), eq(table.pack.name, id.name)))
+				.$dynamic(),
 		);
 
 		packs = filterApproved(user, packs);
@@ -53,11 +67,15 @@ export const loadGetPack = async (user: ClientUser, uuid: string) => {
 	};
 };
 
-export const APIGetPack = async (user: ClientUser, uuid: string) => {
+export const APIGetPack = async (user: ClientUser, username: string, packName: string) => {
 	// TODO: Add API to get a single card / pack.
 	let packs = await getFullPacks(
 		user,
-		db.select().from(pack).where(eq(pack.uuid, uuid)).$dynamic(),
+		db
+			.select()
+			.from(table.pack)
+			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.$dynamic(),
 	);
 
 	packs = filterApproved(user, packs);
@@ -85,33 +103,71 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	query: T,
 ) => {
 	const packsAndLikes = await query
-		.fullJoin(packLike, eq(pack.uuid, packLike.packId))
-		.fullJoin(user, eq(pack.approvedBy, user.id));
+		.fullJoin(table.packLike, and(eq(table.pack.ownerName, table.packLike.packOwnerName)))
+		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.username));
 
 	// Show all downloads from all versions.
-	let packs: PackWithExtras[] = packsAndLikes.map((p) => {
-		const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
+	let packs: PackWithExtras[] = await Promise.all(
+		packsAndLikes
+			.filter((p) => {
+				// Hide unapproved packs from unauthorized users.
+				if (p.pack.approved) {
+					return true;
+				}
 
-		// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
-		const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
-		const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
-		const likes = new Set(likesPositive.map((p) => p.packLike?.userId));
-		const dislikes = new Set(likesNegative.map((p) => p.packLike?.userId));
+				if (
+					(clientUser && p.pack.ownerName === clientUser.username) ||
+					satisfiesRole(clientUser, "Moderator")
+				) {
+					return true;
+				}
 
-		return {
-			...p.pack,
-			totalDownloadCount: relevantPacks
-				.map((p) => p.pack!.downloadCount)
-				.reduce((p, v) => p + v, 0),
-			likes: {
-				positive: likes.size,
-				hasLiked: clientUser ? likes.has(clientUser.id) : false,
-				negative: dislikes.size,
-				hasDisliked: clientUser ? dislikes.has(clientUser.id) : false,
-			},
-			approvedByUser: p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
-		};
-	});
+				return false;
+			})
+			.map(async (p) => {
+				const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);
+
+				// NOTE: Can't do `!p.packLike?.dislike` since then an undefined `packLike` will return true.
+				const likesPositive = relevantPacks.filter((p) => p.packLike?.dislike === false);
+				const likesNegative = relevantPacks.filter((p) => p.packLike?.dislike);
+				const likes = new Set(likesPositive.map((p) => p.packLike?.username));
+				const dislikes = new Set(likesNegative.map((p) => p.packLike?.username));
+
+				let messagesQuery = db
+					.select()
+					.from(table.packMessage)
+					.where(eq(table.packMessage.packId, p.pack.id))
+					.orderBy(desc(table.packMessage.creationDate))
+					.fullJoin(table.user, eq(table.packMessage.username, table.user.username))
+					.$dynamic();
+				if (!satisfiesRole(clientUser, "Moderator")) {
+					messagesQuery = messagesQuery.where(
+						and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
+					);
+				}
+
+				const messages = await messagesQuery;
+
+				return {
+					...p.pack,
+					totalDownloadCount: relevantPacks
+						.map((p) => p.pack!.downloadCount)
+						.reduce((p, v) => p + v, 0),
+					likes: {
+						positive: likes.size,
+						hasLiked: clientUser ? likes.has(clientUser.username) : false,
+						negative: dislikes.size,
+						hasDisliked: clientUser ? dislikes.has(clientUser.username) : false,
+					},
+					approvedByUser:
+						p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
+					messages: messages.map((message) => ({
+						...message.packMessage,
+						author: message.user ? censorUser(message.user) : null,
+					})),
+				};
+			}),
+	);
 
 	// Remove duplicates.
 	const ids = new Set(packsAndLikes.map((p) => p.pack.id));
@@ -119,3 +175,62 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 	return packs;
 };
+
+export async function setLatestVersion(ownerName: string, name: string) {
+	let packs = await db
+		.select({
+			id: table.pack.id,
+			ownerName: table.pack.ownerName,
+			name: table.pack.name,
+			packVersion: table.pack.packVersion,
+			approved: table.pack.approved,
+		})
+		.from(table.pack)
+		.where(
+			and(
+				eq(table.pack.ownerName, ownerName),
+				eq(table.pack.name, name),
+				eq(table.pack.denied, false),
+			),
+		)
+		.orderBy(desc(table.pack.packVersion));
+
+	{
+		const filtered = packs.filter((pack) => pack.approved);
+		if (filtered.length > 0) {
+			packs = filtered;
+		}
+	}
+
+	const latest = packs[0];
+	if (!latest) {
+		return;
+	}
+
+	// Demote other packs / cards.
+	await db
+		.update(table.pack)
+		.set({ isLatestVersion: false })
+		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
+	const cards = await db
+		.select()
+		.from(table.card)
+		.innerJoin(table.pack, eq(table.pack.id, table.card.packId))
+		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
+	for (const c of cards) {
+		// TODO: Should the latest version of a card be true if there is no earlier version of that card even though that version isn't the latest version?
+		if (c.card.packId !== latest.id) {
+			await db
+				.update(table.card)
+				.set({ isLatestVersion: false })
+				.where(eq(table.card.id, c.card.id));
+		}
+	}
+
+	// Promote currnet (latest) pack.
+	await db.update(table.pack).set({ isLatestVersion: true }).where(eq(table.pack.id, latest.id));
+	await db
+		.update(table.card)
+		.set({ isLatestVersion: true })
+		.where(eq(table.card.packId, latest.id));
+}

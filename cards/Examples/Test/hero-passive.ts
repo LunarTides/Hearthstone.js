@@ -12,11 +12,11 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "9c0cd911-390b-4988-8d01-a6597492c5e6",
+	id: "019bc665-4f80-7001-b159-bd307f97d633",
 
 	armor: 0,
 	heropowerId:
-		game.cardIds.heropowerExample_d2ab1def_46dc_407f_8b82_ba347afb63ee,
+		game.cardIds.heropowerExample_019bc665_4f80_7026_b3ab_aa5a664f5024,
 
 	async passive(self, owner, key, value, eventPlayer) {
 		// Your opponent can't use their hero power.

@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "e7b9ee97-0066-4b57-b895-e3eee0833fa7",
+	id: "019bc665-4f80-7004-92b4-75158d5826f8",
 
 	attack: 1,
 	health: 1,
@@ -31,9 +31,9 @@ export const blueprint: Blueprint = {
 
 		// Use the preexisting colossal example minions
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+			game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
 			game.cardIds.null,
-			game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
+			game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
 		]);
 	},
 
@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 		// Set the player's deck and hand
 		owner.deck = [
 			await Card.create(
-				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 				owner,
 			),
 			self,
@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 		assert.ok(
 			board.some(
 				(card) =>
-					card.id === game.cardIds.leftArm_b7bfb3c9_d353_42a6_b035_db0afa7d5eec,
+					card.id === game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
 			),
 		);
 		assert.ok(board.some((card) => card.id === self.id));
@@ -65,7 +65,7 @@ export const blueprint: Blueprint = {
 			board.some(
 				(card) =>
 					card.id ===
-					game.cardIds.rightArm_c110e696_d85e_40f1_ad2e_2718f5185e1d,
+					game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
 			),
 		);
 

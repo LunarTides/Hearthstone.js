@@ -1,4 +1,4 @@
-import { setting } from "$lib/db/schema";
+import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db/index.js";
 import { satisfiesRole } from "$lib/user.js";
 import { json } from "@sveltejs/kit";
@@ -16,7 +16,7 @@ export async function GET(event) {
 		);
 	}
 
-	const settings = await db.select().from(setting);
+	const settings = await db.select().from(table.setting);
 	return json({ settings }, { status: 200 });
 }
 
@@ -38,7 +38,7 @@ export async function POST(event) {
 		return json({ message: "Invalid settings object." }, { status: 400 });
 	}
 
-	await db.delete(setting);
-	await db.insert(setting).values(raw.settings);
+	await db.delete(table.setting);
+	await db.insert(table.setting).values(raw.settings);
 	return json({ settings: raw.settings }, { status: 200 });
 }

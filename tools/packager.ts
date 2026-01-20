@@ -1,12 +1,11 @@
-// Allows importing / exporting .hspkg files.
+// Allows importing / exporting packs.
 // PERF: This tool is *not* performant.
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
-import { randomUUID } from "node:crypto";
+import fs from "node:fs/promises";
 import { resolve } from "node:path";
 import { confirm, input, Separator, select } from "@inquirer/prompts";
-import seven from "7zip-min";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
@@ -27,9 +26,13 @@ interface Metadata {
 	};
 	name: string;
 	description: string;
+	author: string;
 	license: string;
-	authors: string[];
 	links: Record<string, string>;
+	permissions: {
+		network: boolean;
+		fileSystem: boolean;
+	};
 	requires: {
 		packs: string[];
 		cards: string[];
@@ -38,12 +41,20 @@ interface Metadata {
 	};
 }
 
+function getPermissions(metadata: Metadata, filter = true) {
+	return Object.entries(metadata.permissions)
+		.filter(([_, value]) => !filter || Boolean(value))
+		.map(([key]) => key);
+}
+
 async function getPacks() {
 	const packs: {
-		uuid: string;
+		ownerName: string;
+		name: string;
 		path: string;
 		parentPath: string;
 		compressed: boolean;
+		bytes: Buffer;
 	}[] = [];
 
 	await game.functions.util.searchFolder(
@@ -52,7 +63,7 @@ async function getPacks() {
 			if (
 				!file.parentPath.endsWith("packs") ||
 				!(
-					(file.isFile() && file.name.endsWith(".7z")) ||
+					(file.isFile() && file.name.endsWith(".tar.gz")) ||
 					(file.isDirectory() &&
 						(await game.functions.util.fs(
 							"exists",
@@ -63,17 +74,30 @@ async function getPacks() {
 				return;
 			}
 
-			const uuid = file.isDirectory()
-				? file.name
-				: file.name.split(".").slice(0, -1).join(".");
+			const [ownerName, name] = (
+				file.isDirectory()
+					? file.name
+					: file.name.split(".").slice(0, -2).join(".")
+			)
+				// "Username/Pack (2)" -> "@Username/Pack". This is for if you download multiple versions of the same pack.
+				.replace(/ \(\d+\)$/, "")
+				.split("+");
+
+			let bytes = Buffer.alloc(0);
+			if (file.isFile()) {
+				bytes = (await fs.readFile(path)) as Buffer<ArrayBuffer>;
+			}
 
 			packs.push({
-				uuid,
+				ownerName,
+				name,
 				path,
 				parentPath: file.parentPath,
-				compressed: file.name.endsWith(".7z"),
+				compressed: file.name.endsWith(".tar.gz"),
+				bytes,
 			});
 		},
+		false,
 	);
 
 	return packs;
@@ -84,7 +108,7 @@ async function parseMetadataFile(pack: string) {
 		await game.pause(
 			"<red>Invalid pack. This pack doesn't include a 'meta.jsonc' file.</red>\n",
 		);
-		return false;
+		return null;
 	}
 
 	const metadata: Metadata = JSON.parse(
@@ -104,7 +128,9 @@ async function parseMetadataFile(pack: string) {
 			),
 		});
 
-		return skip;
+		if (skip) {
+			return null;
+		}
 	}
 
 	// Game version
@@ -120,12 +146,14 @@ async function parseMetadataFile(pack: string) {
 			),
 		});
 
-		return skip;
+		if (skip) {
+			return null;
+		}
 	}
 
 	// TODO: Parse requires.
 
-	return true;
+	return metadata;
 }
 
 async function importPack() {
@@ -139,8 +167,11 @@ async function importPack() {
 		const packs = await getPacks();
 		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
-			packs.map((p) => p.uuid),
-			undefined,
+			packs.map((p) => `@${p.ownerName}/${p.name}`),
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
 			new Separator(),
 			"Refresh",
 			"Done",
@@ -157,33 +188,56 @@ async function importPack() {
 		const pack = packs[index];
 
 		if (pack.compressed) {
-			await seven.unpack(pack.path, pack.parentPath);
+			const archive = new Bun.Archive(pack.bytes);
+			const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
+			await game.functions.util.fs("mkdir", folderPath);
+			await archive.extract(folderPath);
 			await game.functions.util.fs("rm", pack.path);
 
-			pack.path = pack.path.split(".").slice(0, -1).join(".");
+			pack.path = folderPath;
 			pack.compressed = false;
 		}
 
 		// Read and validate metadata.
-		if (!(await parseMetadataFile(pack.uuid))) {
+		const metadata = await parseMetadataFile(`${pack.ownerName}+${pack.name}`);
+		if (!metadata) {
 			continue;
+		}
+
+		if (Object.values(metadata.permissions).some(Boolean)) {
+			console.warn(
+				`<yellow>This pack requires the following permissions: ${getPermissions(metadata).join(", ")}`,
+			);
+
+			const permissionConfirm = await confirm({
+				message: parseTags(
+					`<yellow>Are you sure you want to import this pack? This will grant the pack access to those resources.</yellow>`,
+				),
+				default: false,
+			});
+			if (!permissionConfirm) {
+				continue;
+			}
 		}
 
 		await game.functions.util.fs(
 			"cp",
 			pack.path,
-			game.functions.util.restrictPath(`/cards/Packs/${pack.uuid}`),
+			game.functions.util.restrictPath(
+				`/cards/Packs/@${pack.ownerName}/${pack.name}`,
+			),
 			{ recursive: true },
 		);
 
 		await validate(false, false);
+		await game.functions.card.generateIdsFile();
 
 		console.log(
-			`<green>The pack has been imported into '/cards/Packs/${pack.uuid}'.</green>\n`,
+			`<green>The pack has been imported into '/cards/Packs/@${pack.ownerName}/${pack.name}'.</green>\n`,
 		);
 
 		const deleteConfirm = await confirm({
-			message: `Do you want to delete '/packs/${pack.uuid}'?`,
+			message: `Do you want to delete '/packs/${pack.ownerName}+${pack.name}'?`,
 		});
 		if (deleteConfirm) {
 			await game.functions.util.fs("rm", pack.path, {
@@ -202,7 +256,7 @@ async function exportPack() {
 		const packs = await getPacks();
 		const answer = await game.prompt.customSelect(
 			"Choose a Pack",
-			packs.map((p) => p.uuid),
+			packs.map((p) => `@${p.ownerName}/${p.name}`),
 			{ arrayTransform: undefined, hideBack: true },
 			"New",
 			new Separator(),
@@ -218,18 +272,19 @@ async function exportPack() {
 		}
 
 		const index = parseInt(answer, 10);
-
-		let uuid: string;
 		let metadata: Metadata;
 
 		if (!Number.isNaN(index)) {
 			const pack = packs[index];
 
 			if (pack.compressed) {
-				await seven.unpack(pack.path, pack.parentPath);
+				const archive = new Bun.Archive(pack.bytes);
+				const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
+				await game.functions.util.fs("mkdir", folderPath);
+				await archive.extract(folderPath);
 				await game.functions.util.fs("rm", pack.path);
 
-				pack.path = pack.path.split(".").slice(0, -1).join(".");
+				pack.path = folderPath;
 				pack.compressed = false;
 			}
 
@@ -245,18 +300,15 @@ async function exportPack() {
 				continue;
 			}
 
-			uuid = pack.uuid;
-			metadata = JSON.parse(
+			metadata = Bun.JSONC.parse(
 				(await game.functions.util.fs(
 					"readFile",
 					`${pack.path}/meta.jsonc`,
 					"utf8",
 					{ invalidateCache: true },
 				)) as string,
-			);
+			) as Metadata;
 		} else {
-			uuid = randomUUID();
-
 			metadata = {
 				versions: {
 					metadata: metadataVersion,
@@ -265,11 +317,15 @@ async function exportPack() {
 				},
 				name: "",
 				description: "",
+				author: "",
 				// NOTE: Can't legally license this under an open-source license without express consent from the user.
 				// So it defaults to "Proprietary"
 				license: "Proprietary",
-				authors: [],
 				links: {},
+				permissions: {
+					network: false,
+					fileSystem: false,
+				},
 				requires: {
 					packs: [],
 					cards: [],
@@ -284,7 +340,10 @@ async function exportPack() {
 			continue;
 		}
 
-		await game.functions.util.fs("mkdir", `/packs/${uuid}`, {
+		const author = metadata.author || "You";
+		const name = metadata.name || Bun.randomUUIDv7();
+
+		await game.functions.util.fs("mkdir", `/packs/${author}+${name}`, {
 			recursive: true,
 		});
 		await game.functions.util.searchCardsFolder(async (path, content, file) => {
@@ -292,27 +351,46 @@ async function exportPack() {
 				await game.functions.util.fs(
 					"cp",
 					path,
-					game.functions.util.restrictPath(`/packs/${uuid}/${file.name}`),
+					game.functions.util.restrictPath(
+						`/packs/${author}+${name}/${file.name}`,
+					),
 				);
 			}
 		});
 
 		await game.functions.util.fs(
 			"writeFile",
-			`/packs/${uuid}/meta.jsonc`,
+			`/packs/${author}+${name}/meta.jsonc`,
 			JSON.stringify(metadata, null, 4),
 		);
 
 		await game.pause(
-			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${uuid}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
+			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${author}+${name}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
 		);
 
-		await seven.pack(
-			game.functions.util.restrictPath(`/packs/${uuid}`),
-			game.functions.util.restrictPath(`/packs/${uuid}.7z`),
+		const files: Record<string, string> = {};
+
+		await game.functions.util.searchFolder(
+			`/packs/${author}+${name}`,
+			async (index, path, file, content) => {
+				if (!content) {
+					return;
+				}
+
+				const relativePath = path.split(`${author}+${name}`)[1];
+				files[relativePath] = content;
+			},
 		);
 
-		await game.functions.util.fs("rm", `/packs/${uuid}`, {
+		const archive = new Bun.Archive(files, { compress: "gzip" });
+		const bytes = await archive.bytes();
+		await game.functions.util.fs(
+			"writeFile",
+			`/packs/${author}+${name}.tar.gz`,
+			bytes,
+		);
+
+		await game.functions.util.fs("rm", `/packs/${author}+${name}`, {
 			recursive: true,
 			force: true,
 		});
@@ -348,21 +426,28 @@ async function configureMetadata(metadata: Metadata) {
 					description: "The description of the pack.",
 				},
 				{
+					name: "Author",
+					value: "author",
+					description:
+						"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
+				},
+				{
 					name: "License",
 					value: "license",
 					description:
 						"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
 				},
 				{
-					name: "Authors",
-					value: "authors",
-					description: "The authors of the pack.",
-				},
-				{
 					name: "Links",
 					value: "links",
 					description:
 						"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
+				},
+				{
+					name: "Permissions",
+					value: "permissions",
+					description:
+						"Resources that the pack needs to function. Check this out before exporting.",
 				},
 				{
 					name: "Requires",
@@ -404,6 +489,13 @@ async function configureMetadata(metadata: Metadata) {
 			metadata.description = await input({
 				message: "Set the description of the pack.",
 				default: metadata.description,
+			});
+
+			dirty = true;
+		} else if (answer === "author") {
+			metadata.author = await input({
+				message: "Author.",
+				default: metadata.author,
 			});
 
 			dirty = true;
@@ -457,19 +549,20 @@ async function configureMetadata(metadata: Metadata) {
 
 			metadata.license = license;
 			dirty = true;
-		} else if (answer === "authors") {
-			const changed = await game.prompt.configureArray(
-				metadata.authors,
+		} else if (answer === "links") {
+			const changed = await game.prompt.configureObject(
+				metadata.links,
+				true,
 				async () => hub.watermark(false),
 			);
 
 			// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
 			// Learned that the hard way...
 			dirty ||= changed;
-		} else if (answer === "links") {
+		} else if (answer === "permissions") {
 			const changed = await game.prompt.configureObject(
-				metadata.links,
-				true,
+				metadata.permissions,
+				false,
 				async () => hub.watermark(false),
 			);
 
@@ -499,16 +592,34 @@ async function configureMetadata(metadata: Metadata) {
 				return false;
 			}
 		} else if (answer === "done") {
-			let message = "Are you sure you are done configuring the metadata?";
-
 			if (metadata.license === "Proprietary") {
-				message = parseTags(
-					"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
-				);
+				const licenseConfirm = await confirm({
+					message: parseTags(
+						"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
+					),
+					default: false,
+				});
+
+				if (!licenseConfirm) {
+					continue;
+				}
+			}
+
+			if (!Object.values(metadata.permissions).some(Boolean)) {
+				const permissionsConfirm = await confirm({
+					message: parseTags(
+						`<yellow>You haven't set any permissions. <bold>Are you sure your pack doesn't require any of the following permissions: ${getPermissions(metadata, false).join(", ")}?</bold></yellow>`,
+					),
+					default: false,
+				});
+
+				if (!permissionsConfirm) {
+					continue;
+				}
 			}
 
 			const done = await confirm({
-				message,
+				message: "Are you sure you are done configuring the metadata?",
 				default: false,
 			});
 

@@ -562,8 +562,12 @@ export const debugCommands: CommandList = {
 		let cards = await Card.allFromName(cardName);
 		if (cards.length <= 0) {
 			// Check to see if there are ids starting with the input.
-			cards = game.cards.filter((c) =>
-				c.id.startsWith(cardName.replace(/^#/, "")),
+			const id = cardName.replace(/^#/, "");
+			cards = game.cards.filter(
+				(c) =>
+					c.name.toLowerCase().startsWith(cardName.toLowerCase()) ||
+					c.id.startsWith(id) ||
+					c.id.split("-").at(-1)!.startsWith(id),
 			);
 		}
 
@@ -586,6 +590,9 @@ export const debugCommands: CommandList = {
 			await game.pause(`<red>Invalid card: <yellow>${cardName}</yellow>.\n`);
 			return false;
 		}
+
+		// Happy little bug that only happened to Player 2 :)
+		card.owner = game.player;
 
 		await game.player.addToHand(await card.imperfectCopy());
 		return true;

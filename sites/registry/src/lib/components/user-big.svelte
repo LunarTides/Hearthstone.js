@@ -16,15 +16,18 @@
 		loggedInUser: ClientUser;
 	} = $props();
 
-	const avatarPromise = import(`$lib/../../static/avatars/${user.id}.avif`).catch(() => {});
+	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
 
 	let edit = $state(false);
+
+	let aboutMe = $derived(user.profile.aboutMe);
+	let pronouns = $derived(user.profile.pronouns);
 </script>
 
 <div class="flex gap-1">
 	<div class="p-3 bg-header text-white w-full rounded-lg">
 		<div class="flex float-right gap-1">
-			{#if user.id === loggedInUser?.id || satisfiesRole(loggedInUser, "Admin")}
+			{#if user.username === loggedInUser?.username || satisfiesRole(loggedInUser, "Admin")}
 				<button onclick={() => (edit = true)} class="self-center hover:cursor-pointer">
 					<SquarePen />
 				</button>
@@ -40,14 +43,14 @@
 				{/await}
 				<p class="text-xl self-center">{user.username}</p>
 
-				{#if user.profile.pronouns}
+				{#if pronouns}
 					<p class="text-sm text-gray-500 self-center min-w-full mr-8">
-						({user.profile.pronouns})
+						({pronouns})
 					</p>
 				{/if}
 			</div>
 
-			<pre>{user.profile.aboutMe}</pre>
+			<pre>{aboutMe}</pre>
 
 			<div class="mt-auto">
 				{#if satisfiesRole(user, "Moderator")}
@@ -60,7 +63,7 @@
 	{#if edit}
 		<!-- TODO: Use superforms. -->
 		<form
-			action={resolve("/user/[uuid]", { uuid: user.id }) + "?/edit"}
+			action={resolve("/@[username]", { username: user.username }) + "?/edit"}
 			method="post"
 			in:fly={{ x: -300, duration: 300 }}
 			use:enhance
@@ -87,7 +90,7 @@
 						<input
 							class="bg-background text-white rounded-md self-center"
 							placeholder="Pronouns"
-							defaultValue={user.profile.pronouns ?? ""}
+							bind:value={pronouns}
 							name="pronouns"
 						/>
 					</div>
@@ -96,8 +99,10 @@
 						class="min-h-24 rounded-md bg-background text-white"
 						name="aboutMe"
 						placeholder="About me..."
-						defaultValue={user.profile.aboutMe}>{user.profile.aboutMe}</textarea
+						bind:value={aboutMe}
 					>
+						{user.profile.aboutMe}
+					</textarea>
 
 					{#if satisfiesRole(loggedInUser, "Admin")}
 						<select name="role" class="rounded-md bg-background text-white">
@@ -123,7 +128,7 @@
 							Cancel
 						</button>
 						<a
-							href={resolve("/user/[uuid]/delete", { uuid: user.id })}
+							href={resolve("/@[username]/delete", { username: user.username })}
 							class="p-2 px-4 w-full rounded-md bg-red-400 hover:cursor-pointer hover:bg-red-300 active:bg-red-500"
 						>
 							Delete

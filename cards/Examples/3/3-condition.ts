@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Free,
 	collectible: false,
 	tags: [],
-	id: "d1fb0461-ba50-41e5-9778-9de2539a1e69",
+	id: "019bc665-4f80-701e-b7a7-69588ec1bcbe",
 
 	attack: 5,
 	health: 2,
@@ -70,7 +70,7 @@ export const blueprint: Blueprint = {
 		// The player should fulfill the condition
 		owner.deck = [
 			await Card.create(
-				game.cardIds.sheep_668b9054_7ca9_49af_9dd9_4f0126c6894c,
+				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
 				owner,
 			),
 		];

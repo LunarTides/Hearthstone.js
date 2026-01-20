@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 	rarity: Rarity.Legendary,
 	collectible: false,
 	tags: [],
-	id: "9c1e8082-9ba5-489d-be0d-2b2c75fc1cb3",
+	id: "019bc665-4f81-7006-b0b5-783df0e82116",
 
 	attack: 5,
 	health: 3,
@@ -30,15 +30,15 @@ export const blueprint: Blueprint = {
 		self.runes = [Rune.Blood, Rune.Blood, Rune.Blood];
 
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_65ff5692_391d_42d0_861d_ef08f156e566,
+			game.cardIds.leftArm_019bc665_4f81_7005_b675_5fa77378254f,
 			game.cardIds.null,
-			game.cardIds.rightArm_233440a8_4966_4a88_94b0_b964a52ebf30,
+			game.cardIds.rightArm_019bc665_4f81_7008_a1d2_e9cb03cb8a67,
 		]);
 
 		self.addKeyword(
 			Keyword.Corrupt,
 			game.cardIds
-				.combinedExample2Corrupted_6bc4d4f5_e2fa_4a92_9417_368e1b2fe47d,
+				.combinedExample2Corrupted_019bc665_4f81_7007_a2cb_2144aff06a6e,
 		);
 
 		// The summoned minions get Dormant automatically if the main minion has dormant.
