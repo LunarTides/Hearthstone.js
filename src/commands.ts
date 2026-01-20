@@ -376,7 +376,7 @@ export const commands: CommandList = {
 		 */
 		const handle = async (value: unknown, hide: boolean): Promise<string> => {
 			if (value instanceof Player) {
-				return value.getName();
+				return await value.readable();
 			}
 
 			if (typeof value === "string") {

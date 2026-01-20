@@ -476,7 +476,7 @@ export const config: GameConfig = {
 				[prompt, host, flags],
 				handle,
 			) =>
-				`${await handle(plr)} started selecting a target. [Prompt: "${prompt}", Host: ${host ? await handle(host) : "Game"}, Type: ${flags.targetType ? TargetType[flags.targetType] : "All"}, Alignment: ${flags.alignment ? Alignment[flags.alignment] : "All"}]`,
+				`${await handle(plr)} started selecting a target. [Prompt: "${prompt}", Host: ${host ? await handle(host) : "Game"}, Type: ${flags.targetType === undefined ? "All" : TargetType[flags.targetType]}, Alignment: ${flags.alignment === undefined ? "All" : Alignment[flags.alignment]}]`,
 
 			[Event.TargetSelected]: async (plr, [host, target], handle) =>
 				`${await handle(plr)} selected ${await handle(target)} [Host: ${host ? await handle(host) : "Game"}]`,
