@@ -118,7 +118,6 @@ export enum Event {
 	Dummy = "Dummy",
 	Eval = "Eval",
 	Input = "Input",
-	GameLoop = "GameLoop",
 }
 
 /**
@@ -143,6 +142,7 @@ export type EventValue<Key extends Event> =
 				: /**
 					 * The amount of health after restore
 					 */
+					// TODO: Change the value to be the amount of health restored, not the resulting health.
 					Key extends Event.HealthRestored
 					? number
 					: /**
@@ -322,11 +322,6 @@ export type EventValue<Key extends Event> =
 																																							),
 																																							Target,
 																																						]
-																																					: /**
-																																						 * The turn that the gameloop happened on.
-																																						 */
-																																						Key extends Event.GameLoop
-																																						? number
-																																						: Key extends Event.Dummy
-																																							? undefined
-																																							: never;
+																																					: Key extends Event.Dummy
+																																						? undefined
+																																						: never;

@@ -1678,9 +1678,9 @@ export const interactFunctions = {
 	): Promise<string> {
 		let question = q;
 
-		const wrapper = async (a: string) => {
-			await game.event.broadcast(Event.Input, a, game.player);
-			return a;
+		const wrapper = async (text: string) => {
+			await game.event.broadcast(Event.Input, text, game.player);
+			return text;
 		};
 
 		if (game.noOutput) {
@@ -1839,7 +1839,7 @@ export const interactFunctions = {
 	 * @returns Success | Ignored error code | The return value of doTurnLogic
 	 */
 	async gameloop(): Promise<boolean | string | GamePlayCardReturn> {
-		await game.event.tick(Event.GameLoop, game.turn, game.player);
+		await game.event.tick(Event.Dummy, undefined, game.player);
 
 		if (game.player.ai) {
 			const rawInput = game.player.ai.calcMove();
@@ -1862,11 +1862,9 @@ export const interactFunctions = {
 
 		const oldInterface = async () => {
 			await game.functions.interact.print.gameState(game.player);
-			console.log();
+			console.log("");
 
-			user = await input({
-				message: "Which card do you want to play?",
-			});
+			user = await game.input("Which card do you want to play? ");
 
 			if (!Number.isNaN(parseInt(user, 10))) {
 				user = (parseInt(user, 10) - 1).toString();

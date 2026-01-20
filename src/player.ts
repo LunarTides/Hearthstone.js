@@ -343,6 +343,15 @@ export class Player {
 	}
 
 	/**
+	 * Exists for compatability with cards.
+	 *
+	 * @returns A human readable version of the player.
+	 */
+	async readable() {
+		return this.getName();
+	}
+
+	/**
 	 * Get this player's opponent
 	 *
 	 * # Examples

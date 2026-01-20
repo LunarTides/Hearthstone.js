@@ -1,4 +1,10 @@
-import { Ability, Event, type GameConfig } from "@Game/types.ts";
+import {
+	Ability,
+	Alignment,
+	Event,
+	type GameConfig,
+	TargetType,
+} from "@Game/types.ts";
 
 export const config: GameConfig = {
 	general: {
@@ -365,6 +371,127 @@ export const config: GameConfig = {
 			Event.AddCardToHand,
 			Event.AddCardToDeck,
 		],
+
+		/**
+		 * For each event here, it will show the return value of the function in the history command.
+		 *
+		 * The `handle` function should be called when dealing with the value. Don't change the `hide` parameter unless you have a good reason to.
+		 */
+		readableHistory: {
+			[Event.FatalDamage]: async (plr, value, handle) =>
+				`${await handle(plr)} was dealt fatal damage`,
+
+			[Event.EndTurn]: async (plr, value, handle) =>
+				`${await handle(plr)} ended their turn`,
+
+			[Event.StartTurn]: async (plr, value, handle) =>
+				`${await handle(plr)} started their turn`,
+
+			[Event.HealthRestored]: async (plr, value, handle) =>
+				`${await handle(plr)} restored to <b>${await handle(value)}</b> health`,
+
+			[Event.UnspentMana]: async (plr, value, handle) =>
+				`${await handle(plr)} ended their turn with <b>${await handle(value)}</b> unspent mana`,
+
+			[Event.GainOverload]: async (plr, value, handle) =>
+				`${await handle(plr)} gained <b>${await handle(value)}</b> overload`,
+
+			[Event.GainHeroAttack]: async (plr, value, handle) =>
+				`${await handle(plr)} gained <b>${await handle(value)}</b> attack`,
+
+			[Event.TakeDamage]: async (plr, value, handle) =>
+				`${await handle(plr)} took <b>${await handle(value)}</b> damage`,
+
+			[Event.PlayCard]: async (plr, value, handle) =>
+				`${await handle(plr)} played ${await handle(value)}`,
+
+			[Event.PlayCardUnsafe]: async (plr, value, handle) =>
+				`${await handle(plr)} is trying to play a ${await handle(value)}`,
+
+			[Event.SummonCard]: async (plr, value, handle) =>
+				`${await handle(plr)} summoned a ${await handle(value)}`,
+
+			[Event.DestroyCard]: async (plr, value, handle) =>
+				`${await handle(value)} was destroyed`,
+
+			[Event.DamageCard]: async (plr, [card, amount], handle) =>
+				`${await handle(card)} was dealt <b>${await handle(amount)}</b> damage`,
+
+			[Event.SilenceCard]: async (plr, value, handle) =>
+				`${await handle(value)} was silenced`,
+
+			[Event.DiscardCard]: async (plr, value, handle) =>
+				`${await handle(value)} was discarded`,
+
+			[Event.CancelCard]: async (plr, [card, ability], handle) =>
+				`${await handle(card)}'s <b>${await handle(ability)}</b> was cancelled`,
+
+			[Event.TradeCard]: async (plr, value, handle) =>
+				`${await handle(value)} was traded`,
+
+			[Event.ForgeCard]: async (plr, value, handle) =>
+				`${await handle(value)} was forged`,
+
+			[Event.FreezeCard]: async (plr, value, handle) =>
+				`${await handle(value)} was frozen`,
+
+			[Event.CreateCard]: async (plr, value, handle) =>
+				`${await handle(value)} was created`,
+
+			[Event.RevealCard]: async (plr, [card, reason], handle) =>
+				`${await handle(card)} was revealed due to ${reason}`,
+
+			[Event.BurnCard]: async (plr, value, handle) =>
+				`${await handle(value)} was burned due to a lack of hand space`,
+
+			[Event.Titan]: async (plr, [titan, ability], handle) =>
+				`${await handle(titan)}'s titan ability (${await handle(ability)}) was triggered`,
+
+			[Event.AddCardToDeck]: async (plr, value, handle) =>
+				`${await handle(value)} was added to ${await handle(plr)}'s deck`,
+
+			[Event.AddCardToHand]: async (plr, value, handle) =>
+				`${await handle(value)} was added to ${await handle(plr)}'s hand`,
+
+			[Event.DrawCard]: async (plr, value, handle) =>
+				`${await handle(plr)} drew ${await handle(value)}`,
+
+			[Event.ChangeLocation]: async (plr, [card, location], handle) =>
+				`${await handle(card)}'s location was changed to <b>${await handle(location)}</b>`,
+
+			[Event.ChangeHero]: async (plr, [oldHero, newHero], handle) =>
+				`${await handle(plr)}'s hero has become ${await handle(newHero)}`,
+
+			[Event.SpellDealsDamage]: async (plr, [target, amount], handle) =>
+				`${await handle(target)} dealt <b>${amount}</b> damage`,
+
+			[Event.Attack]: async (plr, [attacker, target, flags], handle) =>
+				`${await handle(attacker)} attacked ${await handle(target)}`,
+
+			[Event.HeroPower]: async (plr, value, handle) =>
+				`${await handle(plr)} used their hero power`,
+
+			[Event.TargetSelectionStarts]: async (
+				plr,
+				[prompt, host, flags],
+				handle,
+			) =>
+				`${await handle(plr)} started selecting a target. [Prompt: "${prompt}", Host: ${host ? await handle(host) : "Game"}, Type: ${flags.targetType === undefined ? "All" : TargetType[flags.targetType]}, Alignment: ${flags.alignment === undefined ? "All" : Alignment[flags.alignment]}]`,
+
+			[Event.TargetSelected]: async (plr, [host, target], handle) =>
+				`${await handle(plr)} selected ${await handle(target)} [Host: ${host ? await handle(host) : "Game"}]`,
+
+			[Event.CardEvent]: async (plr, [card, event], handle) =>
+				`${await handle(card)} said: ${event}`,
+
+			[Event.Dummy]: async (plr, value, handle) => `Dummy Event (Test)`,
+
+			[Event.Eval]: async (plr, value, handle) =>
+				`${await handle(plr)} eval'd: ${await handle(value)}`,
+
+			[Event.Input]: async (plr, value, handle) =>
+				`${await handle(plr)} typed: ${await handle(value)}`,
+		},
 	},
 
 	info: {

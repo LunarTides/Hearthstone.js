@@ -369,21 +369,18 @@ export const commands: CommandList = {
 		const history = game.event.history;
 		let finished = "";
 
-		const showCard = async (value: Card) =>
-			`${await value.readable()} which belongs to: <blue>${value.owner.getName()}</blue>, and has uuid: ${value.coloredUUID()}`;
-
 		/**
 		 * Transform the `value` into a readable string
 		 *
 		 * @param hide If it should hide the card
 		 */
-		const doValue = async (
-			value: unknown,
-			player: Player,
-			hide: boolean,
-		): Promise<unknown> => {
+		const handle = async (value: unknown, hide: boolean): Promise<string> => {
 			if (value instanceof Player) {
-				return `Player ${value.id + 1}`;
+				return await value.readable();
+			}
+
+			if (typeof value === "string") {
+				return value;
 			}
 
 			if (!(value instanceof Card)) {
@@ -392,8 +389,8 @@ export const commands: CommandList = {
 			}
 
 			// If the card is not hidden, or the card belongs to the current player, show it
-			if (!hide || value.owner === player) {
-				return await showCard(value);
+			if (!hide || value.owner === game.player) {
+				return await value.readable();
 			}
 
 			// Hide the card
@@ -440,7 +437,7 @@ export const commands: CommandList = {
 			}
 
 			if (revealed) {
-				return `Hidden > Revealed as: ${await showCard(value)}`;
+				return `Hidden > Revealed as: ${await value.readable()}`;
 			}
 
 			return "Hidden";
@@ -510,24 +507,31 @@ export const commands: CommandList = {
 
 				hasPrintedHeader = true;
 
-				let newValue: string | undefined = "";
+				const newValue: unknown[] = [];
 
 				if (Array.isArray(value)) {
-					newValue = (
-						await Promise.all(
-							value.map(
-								async (element) =>
-									await doValue(element, game.player, shouldHide),
-							),
-						)
-					).join(", ");
+					newValue.push(
+						...(await Promise.all(
+							value.map(async (element) => await handle(element, shouldHide)),
+						)),
+					);
 				} else {
-					newValue = (
-						await doValue(value, game.player, shouldHide)
-					)?.toString();
+					newValue.push(await handle(value, shouldHide));
 				}
 
-				finished += `${key}: ${newValue?.toString()}\n`;
+				let entry = await game.config.advanced.readableHistory[key]?.(
+					player,
+					// Can't narrow the type of `value` here to `EventValue<E>`,
+					// so I'm casting to `never` to suppress the error.
+					value as never,
+					(value: unknown, hide?: boolean) => handle(value, hide ?? shouldHide),
+				);
+				if (!entry) {
+					entry = `${key}: ${newValue?.join(", ")}`;
+				}
+
+				// Add a dash for readability.
+				finished += `- ${entry}\n`;
 			}
 		}
 

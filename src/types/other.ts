@@ -1,6 +1,6 @@
 import type { Card } from "@Game/card.ts";
 import type { Player } from "@Game/player.ts";
-import type { Ability, Blueprint, Event } from "@Game/types.ts";
+import type { Ability, Blueprint, Event, EventValue } from "@Game/types.ts";
 
 /**
  * Game.play return value
@@ -210,6 +210,13 @@ export type GameConfig = {
 		noBounceOnCancelAbilities: Ability[];
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
+		readableHistory: {
+			[E in Event]: (
+				plr: Player,
+				value: EventValue<E>,
+				handle: (value: unknown, hide?: boolean) => Promise<string>,
+			) => Promise<string>;
+		};
 	};
 
 	info: {
