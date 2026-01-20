@@ -3,7 +3,6 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
-import semver from "semver";
 import fs from "node:fs/promises";
 import { setLatestVersion } from "$lib/server/db/pack.js";
 

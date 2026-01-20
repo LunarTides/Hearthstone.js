@@ -15,6 +15,7 @@
 		{#each data.notifications as notification (notification.id)}
 			<div class="mx-1 flex p-3 bg-header rounded-md outline max-h-12">
 				{#if notification.route}
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a href={notification.route}>{notification.text}</a>
 				{:else}
 					<p>{notification.text}</p>

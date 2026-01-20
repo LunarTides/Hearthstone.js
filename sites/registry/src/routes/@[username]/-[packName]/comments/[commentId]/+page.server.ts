@@ -1,6 +1,5 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { APIGetPack } from "$lib/server/db/pack";
 import { fail } from "@sveltejs/kit";
 
 export const actions = {

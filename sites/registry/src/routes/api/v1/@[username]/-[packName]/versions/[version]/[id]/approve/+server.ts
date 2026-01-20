@@ -207,6 +207,5 @@ export async function DELETE(event) {
 	});
 
 	await grantKarma(username, -1);
-
 	return json({}, { status: 200 });
 }

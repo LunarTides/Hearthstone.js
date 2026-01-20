@@ -32,6 +32,7 @@
 		<details bind:open={readmeOpen}>
 			<summary>README</summary>
 			<div class="markdown">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html DOMPurify.sanitize(
 					marked
 						.parse(data.readme.content, { async: false, gfm: true })

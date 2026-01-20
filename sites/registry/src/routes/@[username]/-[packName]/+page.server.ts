@@ -1,6 +1,6 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { APIGetPack, loadGetPack } from "$lib/server/db/pack.js";
+import { loadGetPack } from "$lib/server/db/pack.js";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {

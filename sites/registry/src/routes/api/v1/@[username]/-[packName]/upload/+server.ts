@@ -85,6 +85,14 @@ export async function POST(event) {
 	const username = event.params.username;
 	const packName = event.params.packName;
 
+	// TODO: Account for groups.
+	if (username !== user.username) {
+		return json(
+			{ message: "You do not have permission to upload a pack for this user." },
+			{ status: 403 },
+		);
+	}
+
 	const fileBytes = await event.request.arrayBuffer();
 	const file = new File([fileBytes], `${username}+${packName}.tar.gz`);
 
@@ -153,7 +161,6 @@ export async function POST(event) {
 
 	// TODO: Only allow alphanumeric characters and - in pack names.
 	// TODO: Check for username + packName conflicts.
-	// TODO: Check if the current user can upload packs for this username.
 
 	await archive.extract(tmpPath);
 

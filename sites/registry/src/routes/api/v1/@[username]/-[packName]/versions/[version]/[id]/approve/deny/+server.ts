@@ -186,6 +186,6 @@ export async function DELETE(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, -1);
+	await grantKarma(username, 1);
 	return json({}, { status: 200 });
 }
