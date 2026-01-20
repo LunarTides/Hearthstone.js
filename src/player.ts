@@ -719,6 +719,7 @@ export class Player {
 			if (this.hand.length >= game.config.general.maxHandLength) {
 				// NOTE: The card has already been removed from the deck due to `deck.pop`.
 				card.setLocation(Location.None);
+				await game.event.broadcast(Event.BurnCard, card, this);
 				continue;
 			}
 

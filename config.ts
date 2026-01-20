@@ -341,6 +341,7 @@ export const config: GameConfig = {
 			Event.ForgeCard,
 			Event.FreezeCard,
 			Event.RevealCard,
+			Event.BurnCard,
 			Event.Titan,
 			Event.AddCardToDeck,
 			Event.AddCardToHand,
@@ -360,6 +361,7 @@ export const config: GameConfig = {
 		hideValueHistoryKeys: [
 			Event.DrawCard,
 			Event.ForgeCard,
+			Event.BurnCard,
 			Event.AddCardToHand,
 			Event.AddCardToDeck,
 		],
