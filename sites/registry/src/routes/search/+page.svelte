@@ -19,9 +19,11 @@
 					<p>No results.</p>
 				{/if}
 
-				{#each packs.toSorted((a, b) => b.totalDownloadCount - a.totalDownloadCount) as p (p.id)}
-					<PackSmall pack={p} clientUser={data.user} />
-				{/each}
+				<div class="flex flex-wrap gap-1 mr-1">
+					{#each packs.toSorted((a, b) => b.totalDownloadCount - a.totalDownloadCount) as p (p.id)}
+						<PackSmall pack={p} clientUser={data.user} />
+					{/each}
+				</div>
 			{/await}
 		</div>
 	</div>
@@ -39,9 +41,11 @@
 					<p>No results.</p>
 				{/if}
 
-				{#each cards as c (c.card.id)}
-					<CardSmall card={c.card} pack={c.pack} />
-				{/each}
+				<div class="flex flex-wrap gap-1 ml-1">
+					{#each cards as c (c.card.id)}
+						<CardSmall card={c.card} pack={c.pack} />
+					{/each}
+				</div>
 			{/await}
 		</div>
 	</div>

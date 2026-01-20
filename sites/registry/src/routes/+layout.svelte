@@ -8,6 +8,7 @@
 	import { satisfiesRole } from "$lib/user.js";
 	import { ArrowLeft, Bell, BellDot, Search } from "lucide-svelte";
 	import { PUBLIC_DOMAIN } from "$env/static/public";
+	import { page } from "$app/state";
 
 	let { children, data } = $props();
 
@@ -92,16 +93,25 @@
 
 	{#if !smallSearchActive}
 		{#if data.user}
-			<a href={resolve("/upload")} class="hidden sm:block">Upload</a>
+			<a
+				href={resolve("/upload")}
+				class={`hidden sm:block ${page.route.id === "/upload" && "text-indigo-400"}`}>Upload</a
+			>
 
 			{#if satisfiesRole(data.user, "Moderator")}
-				<a href={resolve("/dashboard/packs")}>Dashboard</a>
+				<a
+					href={resolve("/dashboard/packs")}
+					class={`${page.route.id?.startsWith("/dashboard") && "text-indigo-400"}`}>Dashboard</a
+				>
 			{/if}
 		{/if}
 	{/if}
 
 	<span class="flex items-center gap-2 ml-auto">
-		<a href={resolve("/contact")} class="hidden sm:block">Contact</a>
+		<a
+			href={resolve("/contact")}
+			class={`hidden sm:block ${page.route.id === "/contact" && "text-indigo-400"}`}>Contact</a
+		>
 
 		{#if data.user}
 			<!-- TODO: Use superforms. -->
@@ -109,7 +119,10 @@
 				<button type="submit" class="hover:cursor-pointer">Logout</button>
 			</form>
 		{:else}
-			<a href={resolve("/login")}>Login</a>
+			<a
+				href={resolve("/login")}
+				class={`${page.route.id?.startsWith("/login") && "text-indigo-400"}`}>Login</a
+			>
 		{/if}
 
 		{#if data.user}

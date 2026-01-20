@@ -62,11 +62,13 @@
 								<div class="border-l-2 mx-2 h-auto"></div>
 
 								<!-- Other versions -->
-								{#each versions.relevantPacks
-									.toSorted(packSortingFunction)
-									.slice(1) as pack (pack.id)}
-									<PackSmall {pack} clientUser={data.user} navigateToVersion />
-								{/each}
+								<div class="flex flex-wrap gap-1">
+									{#each versions.relevantPacks
+										.toSorted(packSortingFunction)
+										.slice(1) as pack (pack.id)}
+										<PackSmall {pack} clientUser={data.user} navigateToVersion />
+									{/each}
+								</div>
 							</div>
 						</div>
 					{/if}
