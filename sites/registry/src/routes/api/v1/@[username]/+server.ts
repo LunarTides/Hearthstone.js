@@ -1,12 +1,12 @@
 import { resolve } from "$app/paths";
 import * as table from "$lib/db/schema";
 import { db } from "$lib/server/db";
-import { notify } from "$lib/server/helper.js";
 import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 
 export async function GET(event) {
+	const clientUser = event.locals.user;
 	const username = event.params.username;
 
 	const users = await db
@@ -23,7 +23,7 @@ export async function GET(event) {
 	return json(
 		{
 			profile: user.profile,
-			...censorUser(user.user),
+			...censorUser(user.user, clientUser),
 		},
 		{ status: 200 },
 	);
@@ -92,7 +92,7 @@ export async function PUT(event) {
 		.where(eq(table.profile.username, user.username))
 		.returning();
 
-	const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0])] : [];
+	const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0], clientUser)] : [];
 
 	return json({
 		...userInfo,

@@ -101,10 +101,14 @@ export const APIGetPack = async (user: ClientUser, username: string, packName: s
 export const getFullPacks = async <T extends PgSelect<"pack">>(
 	clientUser: ClientUser | null,
 	query: T,
+	getMessages = true,
 ) => {
+	const approvedBy = alias(table.user, "approvedBy");
+
 	const packsAndLikes = await query
+		.fullJoin(table.user, eq(table.pack.ownerName, table.user.username))
 		.fullJoin(table.packLike, and(eq(table.pack.ownerName, table.packLike.packOwnerName)))
-		.fullJoin(table.user, eq(table.pack.approvedBy, table.user.username));
+		.fullJoin(approvedBy, eq(table.pack.approvedBy, approvedBy.username));
 
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
@@ -133,23 +137,27 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 				const likes = new Set(likesPositive.map((p) => p.packLike?.username));
 				const dislikes = new Set(likesNegative.map((p) => p.packLike?.username));
 
-				let messagesQuery = db
-					.select()
-					.from(table.packMessage)
-					.where(eq(table.packMessage.packId, p.pack.id))
-					.orderBy(desc(table.packMessage.creationDate))
-					.fullJoin(table.user, eq(table.packMessage.username, table.user.username))
-					.$dynamic();
-				if (!satisfiesRole(clientUser, "Moderator")) {
-					messagesQuery = messagesQuery.where(
-						and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
-					);
-				}
+				let messages = null;
+				if (getMessages) {
+					let messagesQuery = db
+						.select()
+						.from(table.packMessage)
+						.where(eq(table.packMessage.packId, p.pack.id))
+						.orderBy(desc(table.packMessage.creationDate))
+						.fullJoin(table.user, eq(table.packMessage.username, table.user.username))
+						.$dynamic();
+					if (!satisfiesRole(clientUser, "Moderator")) {
+						messagesQuery = messagesQuery.where(
+							and(eq(table.packMessage.packId, p.pack.id), eq(table.packMessage.type, "public")),
+						);
+					}
 
-				const messages = await messagesQuery;
+					messages = await messagesQuery;
+				}
 
 				return {
 					...p.pack,
+					user: censorUser(p.user, clientUser),
 					totalDownloadCount: relevantPacks
 						.map((p) => p.pack!.downloadCount)
 						.reduce((p, v) => p + v, 0),
@@ -159,11 +167,10 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 						negative: dislikes.size,
 						hasDisliked: clientUser ? dislikes.has(clientUser.username) : false,
 					},
-					approvedByUser:
-						p.user && satisfiesRole(clientUser, "Moderator") ? censorUser(p.user) : null,
-					messages: messages.map((message) => ({
+					approvedByUser: p.approvedBy ? censorUser(p.approvedBy, clientUser) : null,
+					messages: messages?.map((message) => ({
 						...message.packMessage,
-						author: message.user ? censorUser(message.user) : null,
+						author: message.user ? censorUser(message.user, clientUser) : null,
 					})),
 				};
 			}),

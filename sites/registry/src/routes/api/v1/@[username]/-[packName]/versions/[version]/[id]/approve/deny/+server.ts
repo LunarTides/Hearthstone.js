@@ -7,8 +7,8 @@ import { resolve } from "$app/paths";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { approveSchema } from "$lib/api/schemas.js";
-import { notify } from "$lib/server/helper.js";
 import { setLatestVersion } from "$lib/server/db/pack.js";
+import { grantKarma } from "$lib/server/db/user";
 
 // TODO: Deduplicate from `approve`.
 export async function POST(event) {
@@ -59,6 +59,16 @@ export async function POST(event) {
 		);
 	}
 
+	if (pack.denied) {
+		return json({ message: "This pack has already been denied." }, { status: 403 });
+	}
+
+	let karma = -1;
+	if (pack.approved) {
+		// Since the pack is both being denied, AND un-approved, this should remove 2 karma points.
+		karma = -2;
+	}
+
 	await db
 		.update(table.pack)
 		.set({ approved: false, approvedBy: null, approvedAt: null, denied: true })
@@ -93,6 +103,7 @@ export async function POST(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
+	await grantKarma(username, karma);
 	return json({}, { status: 200 });
 }
 
@@ -145,6 +156,10 @@ export async function DELETE(event) {
 		);
 	}
 
+	if (!pack.denied) {
+		return json({ message: "This pack isn't denied." }, { status: 403 });
+	}
+
 	await db.update(table.pack).set({ denied: false }).where(eq(table.pack.id, pack.id));
 
 	const packMessage = await db
@@ -171,5 +186,6 @@ export async function DELETE(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
+	await grantKarma(username, -1);
 	return json({}, { status: 200 });
 }

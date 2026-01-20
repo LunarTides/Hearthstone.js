@@ -20,7 +20,7 @@
 				{/if}
 
 				{#each packs.toSorted((a, b) => b.totalDownloadCount - a.totalDownloadCount) as p (p.id)}
-					<PackSmall pack={p} />
+					<PackSmall pack={p} clientUser={data.user} />
 				{/each}
 			{/await}
 		</div>

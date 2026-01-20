@@ -34,6 +34,7 @@ export async function GET(event) {
 			.limit(pageSize)
 			.offset((page - 1) * pageSize)
 			.$dynamic(),
+		false,
 	);
 
 	return json(packs.filter((p) => p.isLatestVersion));

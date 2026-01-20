@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import type { PackWithExtras } from "$lib/db/schema";
-	import { Download, ThumbsDown, ThumbsUp } from "lucide-svelte";
+	import { Download, Medal, ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import Badge from "./badge.svelte";
+	import type { ClientUser } from "$lib/server/auth";
+	import { satisfiesRole } from "$lib/user";
 
 	let {
 		pack,
+		clientUser,
 		navigateToVersion = false,
 	}: {
 		pack: PackWithExtras;
+		clientUser: ClientUser;
 		navigateToVersion?: boolean;
 	} = $props();
 </script>
@@ -28,7 +32,17 @@
 			class="text-white p-4 rounded-xl w-fit bg-cover transition-all bg-header hover:scale-105 hover:drop-shadow-2xl"
 		>
 			<p class="font-bold">{pack.name} ({pack.packVersion})</p>
-			<p class="text-xs mb-2">{pack.author}</p>
+			<div class="flex mb-2 text-xs gap-1">
+				<p>{pack.author}</p>
+
+				<!-- Karma -->
+				<div class="flex bg-background p-1 rounded-sm">
+					{#if satisfiesRole(clientUser, "Moderator")}
+						<Medal size="16" class={pack.user.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
+						<p>{pack.user.karma * 100}</p>
+					{/if}
+				</div>
+			</div>
 			<p>{pack.description}</p>
 			<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
 

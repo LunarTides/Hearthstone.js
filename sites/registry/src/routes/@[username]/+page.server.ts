@@ -17,6 +17,7 @@ export const load = async (event) => {
 	const packs = await getFullPacks(
 		user,
 		db.select().from(table.pack).where(eq(table.pack.ownerName, username)).$dynamic(),
+		false,
 	);
 	if (packs.length <= 0) {
 		return {

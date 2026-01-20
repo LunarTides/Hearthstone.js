@@ -55,6 +55,7 @@
 								<!-- Latest version -->
 								<PackSmall
 									pack={versions.relevantPacks.toSorted(packSortingFunction)[0]}
+									clientUser={data.user}
 									navigateToVersion
 								/>
 
@@ -64,7 +65,7 @@
 								{#each versions.relevantPacks
 									.toSorted(packSortingFunction)
 									.slice(1) as pack (pack.id)}
-									<PackSmall {pack} navigateToVersion />
+									<PackSmall {pack} clientUser={data.user} navigateToVersion />
 								{/each}
 							</div>
 						</div>

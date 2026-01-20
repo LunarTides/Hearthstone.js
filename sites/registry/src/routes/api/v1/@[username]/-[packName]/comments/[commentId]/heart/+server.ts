@@ -6,7 +6,6 @@ import { satisfiesRole } from "$lib/user.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
-import { notify } from "$lib/server/helper.js";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const username = event.params.username;

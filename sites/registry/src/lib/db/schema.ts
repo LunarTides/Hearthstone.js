@@ -10,6 +10,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
+import { numeric } from "drizzle-orm/pg-core";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
@@ -19,6 +20,7 @@ export const user = pgTable("user", {
 	passwordHash: text("password_hash").notNull(),
 	role: rolesEnum("role").notNull().default("User"),
 	creationDate: timestamp("creation_date").notNull().defaultNow(),
+	karma: numeric("karma", { mode: "number" }).notNull().default(0),
 });
 
 export const session = pgTable("session", {
@@ -202,6 +204,7 @@ export type Notification = typeof notification.$inferSelect;
 export type Setting = typeof setting.$inferSelect;
 
 export type PackWithExtras = Pack & {
+	user: CensoredUser;
 	totalDownloadCount: number;
 	likes: {
 		positive: number;
