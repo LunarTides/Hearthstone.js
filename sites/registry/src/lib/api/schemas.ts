@@ -1,5 +1,7 @@
 import z from "zod";
 
+export const dummySchema = z.object();
+
 export const loginSchema = z.object({
 	username: z
 		.string()
@@ -12,4 +14,8 @@ export const loginSchema = z.object({
 export const approveSchema = z.object({
 	message: z.string().default(""),
 	messageType: z.enum(["public", "internal"]),
+});
+
+export const uploadSchema = z.object({
+	file: z.file().mime("application/gzip"),
 });

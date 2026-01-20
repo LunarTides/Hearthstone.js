@@ -24,24 +24,7 @@
 	const pack = $derived(packs.current ?? packs.latest);
 </script>
 
-<div class="bg-black text-white p-4 rounded-t-none rounded-xl">
-	<div
-		class="flex float-right m-2 mt-4 w-fit h-fit text-black bg-blue-300 drop-shadow-2xl rounded-full outline-1 outline-black"
-	>
-		{#if page.route.id === "/card/[uuid]/versions"}
-			<p class="px-5 py-3 rounded-full bg-gray-300 text-gray-700 hover:cursor-default">
-				Versions ({cards.all.length})
-			</p>
-		{:else}
-			<a
-				href={resolve("/card/[uuid]/versions", { uuid: page.params.uuid! })}
-				class="px-5 py-3 rounded-full hover:bg-cyan-200 active:bg-blue-400"
-			>
-				Versions ({cards.all.length})
-			</a>
-		{/if}
-	</div>
-
+<div class="bg-black text-white p-4 rounded-xl m-1">
 	<div class="flex flex-col">
 		<p class="">
 			<span class="text-cyan-500 font-bold">{`{${card.cost}}`}</span>

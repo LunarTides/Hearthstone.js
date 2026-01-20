@@ -13,9 +13,9 @@
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 
 	// Some real typescript magic right here. Wow...
-	let packs = $state<Promise<{ current: PackWithExtras; all: PackWithExtras[] }>>(
-		Promise.resolve() as any,
-	);
+	let packs = $state<
+		Promise<{ current: PackWithExtras; latest: PackWithExtras; all: PackWithExtras[] }>
+	>(Promise.resolve() as any);
 
 	let canEditPack = $state(false);
 	const canModeratePack = $derived(satisfiesRole(data.user, "Moderator"));
@@ -23,10 +23,15 @@
 	let approveConfirm = $state(0);
 	let approveType = $state(true);
 
-	let deleteConfirm = $state(0);
+	let deleteVersionConfirm = $state(0);
+	let deletePackConfirm = $state(0);
 
 	let editOpen = $state(page.url.hash.startsWith("#edit"));
+	let editPackOpen = $state(page.url.hash.startsWith("#edit-pack"));
+	let editVersionOpen = $state(page.url.hash.startsWith("#edit-version"));
+	let versionsOpen = $state(page.url.hash.startsWith("#version"));
 	let moderateOpen = $state(page.url.hash.startsWith("#moderate"));
+	let detailsOpen = $state(true);
 	let cardsOpen = $state(page.url.hash.startsWith("#card"));
 	let messagesOpen = $state(page.url.hash.startsWith("#message"));
 
@@ -39,7 +44,7 @@
 				return;
 			}
 
-			packs = Promise.resolve({ current: found, all: ps.all });
+			packs = Promise.resolve({ current: found, latest: ps.latest, all: ps.all });
 			canEditPack = found.ownerName === data.user?.username;
 		})();
 	});
@@ -53,11 +58,9 @@
 			...versions,
 			latest: versions.all.find((v) => v.isLatestVersion)!,
 		}}
-		cards={{ all: data.cards! }}
 		user={data.user}
 		{form}
 		{rawForm}
-		showDownloadButton
 		individual
 		class="rounded-b-none"
 	/>
@@ -74,53 +77,100 @@
 		<div class="m-1 p-2 bg-header rounded-md">
 			<details bind:open={editOpen}>
 				<summary class="text-red-500">Edit</summary>
-				<div class="flex m-2 gap-1">
-					<a
-						id="edit"
-						href={resolve("/@[username]/-[packName]/edit", {
-							username: versions.current.ownerName,
-							packName: versions.current.name,
-						})}
-						class="px-5 py-3 w-full text-center bg-red-400 hover:bg-red-300 active:bg-red-500 target:outline"
-					>
-						Edit
-					</a>
-					{#if deleteConfirm < 2}
-						<button
-							id="edit-delete"
-							class="px-5 py-3 w-full hover:cursor-pointer bg-red-400 hover:bg-red-300 active:bg-red-500 target:outline"
-							onclick={() => {
-								deleteConfirm++;
-							}}
-						>
-							{#if deleteConfirm === 0}
-								Delete Version
-							{:else if deleteConfirm === 1}
-								Really delete?
+				<div class="m-1 p-2 bg-background rounded-md">
+					<details bind:open={editPackOpen}>
+						<summary>Pack</summary>
+						<div class="flex m-2 gap-1">
+							{#if deletePackConfirm < 2}
+								<button
+									id="edit-pack-delete"
+									class="px-5 py-3 w-full text-center bg-red-400 hover:bg-red-300 active:bg-red-500 target:outline"
+									onclick={() => {
+										deletePackConfirm++;
+
+										if (deletePackConfirm > 1) {
+											deleteVersionConfirm = 0;
+										}
+									}}
+								>
+									{#if deletePackConfirm === 0}
+										Delete Pack
+									{:else if deletePackConfirm === 1}
+										Really delete?
+									{/if}
+								</button>
+							{:else}
+								<!-- TODO: Use superforms. -->
+								<form
+									id="edit-pack-delete"
+									action={resolve("/@[username]/-[packName]", {
+										username: page.params.username!,
+										packName: page.params.packName!,
+									}) + "?/delete"}
+									method="post"
+									class="w-full target:outline"
+									use:enhance
+								>
+									<button
+										type="submit"
+										class="p-5 w-full text-xl right-0 bottom-0 absolute bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
+									>
+										<p>
+											Really <em>REALLY</em> delete this <strong>PACK</strong>? You cannot undo this
+											action.
+										</p>
+									</button>
+								</form>
 							{/if}
-						</button>
-					{:else}
-						<!-- TODO: Use superforms. -->
-						<form
-							id="edit-delete"
-							action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
-								username: versions.current.ownerName,
-								packName: versions.current.name,
-								version: versions.current.packVersion,
-								id: versions.current.id,
-							}) + "?/delete"}
-							method="post"
-							class="w-full target:outline"
-							use:enhance
-						>
-							<button
-								type="submit"
-								class="px-5 py-3 w-full bg-red-500 hover:cursor-pointer hover:bg-red-400 active:bg-red-600"
-							>
-								<p>Really <em>REALLY</em> delete? You cannot undo this action.</p>
-							</button>
-						</form>
-					{/if}
+						</div>
+					</details>
+				</div>
+				<div class="m-1 p-2 bg-background rounded-md">
+					<details bind:open={editVersionOpen}>
+						<summary>Version</summary>
+						<div class="flex m-2 gap-1">
+							{#if deleteVersionConfirm < 2}
+								<button
+									id="edit-version-delete"
+									class="px-5 py-3 w-full text-center bg-red-400 hover:bg-red-300 active:bg-red-500 target:outline"
+									onclick={() => {
+										deleteVersionConfirm++;
+
+										if (deleteVersionConfirm > 1) {
+											deletePackConfirm = 0;
+										}
+									}}
+								>
+									{#if deleteVersionConfirm === 0}
+										Delete Version
+									{:else if deleteVersionConfirm === 1}
+										Really delete?
+									{/if}
+								</button>
+							{:else}
+								<!-- TODO: Use superforms. -->
+								<form
+									id="edit-version-delete"
+									action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+										username: page.params.username!,
+										packName: page.params.packName!,
+										version: page.params.version!,
+										id: page.params.id!,
+									}) + "?/delete"}
+									method="post"
+									class="w-full target:outline"
+									use:enhance
+								>
+									<button
+										type="submit"
+										class="p-5 w-full text-xl right-0 bottom-0 absolute bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
+									>
+										<p>Really <em>REALLY</em> delete this version? You cannot undo this action.</p>
+									</button>
+								</form>
+							{/if}
+						</div>
+					</details>
 				</div>
 			</details>
 		</div>
@@ -166,10 +216,10 @@
 					{:else}
 						<form
 							action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
-								username: versions.current.ownerName,
-								packName: versions.current.name,
-								version: versions.current.packVersion,
-								id: versions.current.id,
+								username: page.params.username!,
+								packName: page.params.packName!,
+								version: page.params.version!,
+								id: page.params.id!,
 							}) +
 								(approveType
 									? versions.current.approved
@@ -234,6 +284,82 @@
 			</details>
 		</div>
 	{/if}
+
+	<!-- Versions -->
+	<div class="m-1 p-2 bg-header rounded-md">
+		<details bind:open={versionsOpen}>
+			<summary>Versions ({versions.all.length})</summary>
+			<div class="m-1 flex flex-col gap-2">
+				<a
+					id="version-latest"
+					class="bg-background p-2 text-center rounded-full text-xl text-white target:outline-1"
+					href={resolve("/@[username]/-[packName]", {
+						username: versions.latest.ownerName,
+						packName: versions.latest.name,
+					})}
+				>
+					Latest
+					<span class="text-gray-700">({versions.latest.id.split("-").at(-1)!.slice(0, 6)})</span>
+				</a>
+
+				<hr class="border" style="border-color: var(--color-background);" />
+
+				{#each versions.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as pack (pack.id)}
+					<a
+						id={`version-${pack.id}`}
+						href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							username: pack.ownerName,
+							packName: pack.name,
+							version: pack.packVersion,
+							id: pack.id,
+						})}
+						class="bg-background p-2 rounded-full text-xl text-center text-white target:outline-1"
+					>
+						{pack.packVersion}
+						<span class="text-gray-700">({pack.id.split("-").at(-1)!.slice(0, 6)})</span>
+					</a>
+				{/each}
+			</div>
+		</details>
+	</div>
+
+	<!-- Actions -->
+	<div class="m-1 p-2 bg-header rounded-md">
+		<details bind:open={detailsOpen}>
+			<summary>Actions</summary>
+			<div class="flex m-2 gap-1">
+				<form
+					id="action-download"
+					action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+						username: page.params.username!,
+						packName: page.params.packName!,
+						version: page.params.version!,
+						id: page.params.id!,
+					}) + "?/download"}
+					method="post"
+					class="w-full target:outline"
+					use:enhance
+				>
+					{#if versions.current.approved}
+						<button
+							type="submit"
+							class="px-5 py-3 w-full bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
+						>
+							Download
+						</button>
+					{:else}
+						<button
+							class="px-5 py-3 w-full bg-indigo-700 hover:cursor-not-allowed"
+							title="This pack has not been approved."
+							disabled
+						>
+							Download
+						</button>
+					{/if}
+				</form>
+			</div>
+		</details>
+	</div>
 
 	<!-- Cards -->
 	{#await data.cards}

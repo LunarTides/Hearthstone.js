@@ -1,6 +1,6 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { approveSchema } from "$lib/api/schemas.js";
+import { approveSchema, dummySchema } from "$lib/api/schemas.js";
 import type { File } from "$lib/api/types.js";
 import type { PackCommentWithExtras } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack";
@@ -69,15 +69,20 @@ export const actions = {
 	download: async (event) => {
 		const { username, packName, version, id } = event.params;
 
+		const form = await superValidate(event.request, zod4(dummySchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+
 		// TODO: Get single pack instead of all packs.
 		const packs = await APIGetPack(event.locals.user, username, packName);
 		if (packs.error) {
-			return fail(packs.error.status, { message: packs.error.message });
+			return message(form, packs.error.message, { status: packs.error.status as any });
 		}
 
 		const pack = packs.all.find((v) => v.id === event.params.id);
 		if (!pack) {
-			return fail(404, { message: "Pack not found." });
+			return message(form, "Pack not found.", { status: 404 });
 		}
 
 		const response = await requestAPI(
@@ -93,7 +98,7 @@ export const actions = {
 			},
 		);
 		if (response.error) {
-			return fail(response.error.status, { message: response.error.message });
+			return message(form, response.error.message, { status: response.error.status as any });
 		}
 
 		const filename = response.raw.headers
@@ -101,11 +106,11 @@ export const actions = {
 			?.split('filename="')[1]
 			.split('"')[0];
 		if (!filename) {
-			return fail(400, { message: "Invalid filename found." });
+			return message(form, "Invalid filename found.", { status: 400 });
 		}
 
 		const blob = await response.raw.blob();
-		return { file: await blob.bytes(), filename };
+		return { form, file: await blob.bytes(), filename };
 	},
 	// TODO: Deduplicate.
 	delete: async (event) => {

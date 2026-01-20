@@ -6,14 +6,11 @@
 	import { satisfiesRole } from "$lib/user";
 	import type { ClientUser } from "$lib/server/auth";
 	import Badge from "./badge.svelte";
-	import { page } from "$app/state";
 
 	let {
 		packs,
-		cards,
 		user,
 		hideButtons = false,
-		showDownloadButton = false,
 		individual = false,
 		form = undefined,
 		rawForm = undefined,
@@ -24,12 +21,8 @@
 			current?: PackWithExtras;
 			all: PackWithExtras[];
 		};
-		cards: {
-			all: Card[];
-		};
 		user: ClientUser;
 		hideButtons?: boolean;
-		showDownloadButton?: boolean;
 		individual?: boolean;
 		form?: any;
 		rawForm?: any;
@@ -68,91 +61,6 @@
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
 <div class={`rounded-xl rounded-t-none p-7 bg-cover text-white ${className ?? ""}`}>
-	{#if !hideButtons}
-		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
-			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
-				{#if showDownloadButton && pack.approved}
-					<!-- TODO: Use superforms. -->
-					<form
-						action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
-							username: pack.ownerName,
-							packName: pack.name,
-							version: pack.packVersion,
-							id: pack.id,
-						}) + "?/download"}
-						method="post"
-						use:enhance
-					>
-						{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
-						<button
-							type="submit"
-							class="px-5 py-3 w-full rounded-l-full hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
-						>
-							Download
-						</button>
-					</form>
-					<div class="border-l ml-auto h-auto"></div>
-				{:else}
-					<p class="px-5 py-3 w-full bg-gray-300 text-gray-700 rounded-l-full hover:cursor-default">
-						Download
-					</p>
-					<div class="border-l ml-auto h-auto"></div>
-				{/if}
-				{#if page.route.id === "/@[username]/-[packName]/versions"}
-					<p class="px-5 py-3 bg-gray-300 text-gray-700 hover:cursor-default">
-						Versions ({packs.all.length})
-					</p>
-				{:else}
-					<a
-						href={resolve("/@[username]/-[packName]/versions", {
-							username: pack.ownerName,
-							packName: pack.name,
-						})}
-						class="px-5 py-3 hover:bg-cyan-200 active:bg-blue-400"
-					>
-						Versions ({packs.all.length})
-					</a>
-				{/if}
-				<div class="border-l ml-auto h-auto"></div>
-				{#if page.route.id === "/@[username]/-[packName]"}
-					<p class="px-5 py-3 w-full rounded-r-full bg-gray-300 text-gray-700 hover:cursor-default">
-						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
-						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
-					</p>
-				{:else}
-					<a
-						href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
-							username: pack.ownerName,
-							packName: pack.name,
-							version: packs.latest.packVersion,
-							id: packs.latest.id,
-						}) + "/#card"}
-						class="px-5 py-3 w-full rounded-r-full hover:bg-cyan-200 active:bg-blue-400"
-					>
-						<!-- TODO: This is 0 if viewing an unapproved pack and there aren't any other versions. -->
-						Cards ({cards.all.filter((c) => c.isLatestVersion).length})
-					</a>
-				{/if}
-			</div>
-
-			{#if canModeratePack}
-				<div class="flex bg-black text-white drop-shadow-2xl rounded-full outline-1 outline-white">
-					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
-						(Reserved)
-					</p>
-					<div class="border-l ml-auto h-auto"></div>
-					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
-						(Reserved)
-					</p>
-					<div class="border-l ml-auto h-auto"></div>
-					<p class="px-5 py-3 w-full rounded-l-full text-gray-500 hover:cursor-default">
-						(Reserved)
-					</p>
-				</div>
-			{/if}
-		</div>
-	{/if}
-
 	<div class="flex flex-col">
 		<div class="flex gap-1">
 			<h1 class="text-xl font-bold">{pack.name}</h1>

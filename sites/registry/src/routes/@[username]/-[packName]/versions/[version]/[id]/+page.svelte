@@ -73,7 +73,12 @@
 						placeholder="Comment..."
 						class="rounded-xl resize h-24 bg-background target:outline"
 					></textarea>
-					<button type="submit" id="comment-post" class="custom-button p-2"> Post </button>
+					<button
+						type="submit"
+						id="comment-post"
+						class="p-2 w-full rounded-md bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
+						>Post</button
+					>
 				</form>
 
 				<!-- TODO: The comments constantely reorder each other. -->

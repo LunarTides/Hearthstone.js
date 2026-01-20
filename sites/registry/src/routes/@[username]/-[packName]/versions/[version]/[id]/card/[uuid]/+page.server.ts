@@ -67,6 +67,6 @@ export const load = (event) => {
 	};
 
 	return {
-		cards: getCards(),
+		relevantCards: getCards(),
 	};
 };
