@@ -211,7 +211,11 @@ export type GameConfig = {
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
 		readableHistory: {
-			[E in Event]: (plr: Player, value: EventValue<E>) => Promise<string>;
+			[E in Event]: (
+				plr: Player,
+				value: EventValue<E>,
+				handle: (value: unknown, hide?: boolean) => Promise<string>,
+			) => Promise<string>;
 		};
 	};
 

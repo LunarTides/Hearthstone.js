@@ -374,13 +374,9 @@ export const commands: CommandList = {
 		 *
 		 * @param hide If it should hide the card
 		 */
-		const doValue = async (
-			value: unknown,
-			player: Player,
-			hide: boolean,
-		): Promise<unknown> => {
+		const handle = async (value: unknown, hide: boolean): Promise<string> => {
 			if (value instanceof Player) {
-				return `Player ${value.id + 1}`;
+				return value.getName();
 			}
 
 			if (typeof value === "string") {
@@ -393,7 +389,7 @@ export const commands: CommandList = {
 			}
 
 			// If the card is not hidden, or the card belongs to the current player, show it
-			if (!hide || value.owner === player) {
+			if (!hide || value.owner === game.player) {
 				return await value.readable();
 			}
 
@@ -516,24 +512,25 @@ export const commands: CommandList = {
 				if (Array.isArray(value)) {
 					newValue.push(
 						...(await Promise.all(
-							value.map(
-								async (element) => await doValue(element, player, shouldHide),
-							),
+							value.map(async (element) => await handle(element, shouldHide)),
 						)),
 					);
 				} else {
-					newValue.push(await doValue(value, player, shouldHide));
+					newValue.push(await handle(value, shouldHide));
 				}
 
 				let entry = await game.config.advanced.readableHistory[key]?.(
 					player,
-					value,
+					// TODO: Use of never.
+					value as never,
+					(value: unknown, hide?: boolean) => handle(value, hide ?? shouldHide),
 				);
 				if (!entry) {
 					entry = `${key}: ${newValue?.join(", ")}`;
 				}
 
-				finished += `${entry}\n`;
+				// Add a dash for readability.
+				finished += `- ${entry}\n`;
 			}
 		}
 
