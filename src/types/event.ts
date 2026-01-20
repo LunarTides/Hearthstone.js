@@ -142,6 +142,7 @@ export type EventValue<Key extends Event> =
 				: /**
 					 * The amount of health after restore
 					 */
+					// TODO: Change the value to be the amount of health restored, not the resulting health.
 					Key extends Event.HealthRestored
 					? number
 					: /**

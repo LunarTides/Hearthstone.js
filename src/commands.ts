@@ -521,7 +521,8 @@ export const commands: CommandList = {
 
 				let entry = await game.config.advanced.readableHistory[key]?.(
 					player,
-					// TODO: Use of never.
+					// Can't narrow the type of `value` here to `EventValue<E>`,
+					// so I'm casting to `never` to suppress the error.
 					value as never,
 					(value: unknown, hide?: boolean) => handle(value, hide ?? shouldHide),
 				);

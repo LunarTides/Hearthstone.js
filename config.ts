@@ -388,7 +388,7 @@ export const config: GameConfig = {
 				`${await handle(plr)} started their turn`,
 
 			[Event.HealthRestored]: async (plr, value, handle) =>
-				`${await handle(plr)} restored <b>${await handle(value)}</b> health`,
+				`${await handle(plr)} restored to <b>${await handle(value)}</b> health`,
 
 			[Event.UnspentMana]: async (plr, value, handle) =>
 				`${await handle(plr)} ended their turn with <b>${await handle(value)}</b> unspent mana`,
@@ -463,7 +463,7 @@ export const config: GameConfig = {
 				`${await handle(plr)}'s hero has become ${await handle(newHero)}`,
 
 			[Event.SpellDealsDamage]: async (plr, [target, amount], handle) =>
-				`${await handle(target)} dealt <b>${amount}<b> damage`,
+				`${await handle(target)} dealt <b>${amount}</b> damage`,
 
 			[Event.Attack]: async (plr, [attacker, target, flags], handle) =>
 				`${await handle(attacker)} attacked ${await handle(target)}`,
