@@ -1,757 +1,895 @@
 {
-	"id": "a5989461-0607-4413-81e1-5f8179c25f53",
-	"prevId": "00000000-0000-0000-0000-000000000000",
-	"version": "7",
-	"dialect": "postgresql",
-	"tables": {
-		"public.card": {
-			"name": "card",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"uuid": {
-					"name": "uuid",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"abilities": {
-					"name": "abilities",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"pack_id": {
-					"name": "pack_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"name": {
-					"name": "name",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"text": {
-					"name": "text",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"cost": {
-					"name": "cost",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"type": {
-					"name": "type",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"classes": {
-					"name": "classes",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"rarity": {
-					"name": "rarity",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"collectible": {
-					"name": "collectible",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"tags": {
-					"name": "tags",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"attack": {
-					"name": "attack",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"health": {
-					"name": "health",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"tribes": {
-					"name": "tribes",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"spellSchools": {
-					"name": "spellSchools",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"durability": {
-					"name": "durability",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"cooldown": {
-					"name": "cooldown",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"armor": {
-					"name": "armor",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"heropower_id": {
-					"name": "heropower_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"enchantment_priority": {
-					"name": "enchantment_priority",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"approved": {
-					"name": "approved",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"is_latest_version": {
-					"name": "is_latest_version",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"card_pack_id_pack_id_fk": {
-					"name": "card_pack_id_pack_id_fk",
-					"tableFrom": "card",
-					"tableTo": "pack",
-					"columnsFrom": ["pack_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.notification": {
-			"name": "notification",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"date": {
-					"name": "date",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"text": {
-					"name": "text",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"route": {
-					"name": "route",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"notification_user_id_user_id_fk": {
-					"name": "notification_user_id_user_id_fk",
-					"tableFrom": "notification",
-					"tableTo": "user",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.pack": {
-			"name": "pack",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"uuid": {
-					"name": "uuid",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"user_ids": {
-					"name": "user_ids",
-					"type": "uuid[]",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"metadata_version": {
-					"name": "metadata_version",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"game_version": {
-					"name": "game_version",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"pack_version": {
-					"name": "pack_version",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"name": {
-					"name": "name",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"description": {
-					"name": "description",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"license": {
-					"name": "license",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"authors": {
-					"name": "authors",
-					"type": "text[]",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"download_count": {
-					"name": "download_count",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true,
-					"default": 0
-				},
-				"unpacked_size": {
-					"name": "unpacked_size",
-					"type": "integer",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"is_latest_version": {
-					"name": "is_latest_version",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": true
-				},
-				"approved": {
-					"name": "approved",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"approved_by": {
-					"name": "approved_by",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"approved_at": {
-					"name": "approved_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"created_at": {
-					"name": "created_at",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"pack_approved_by_user_id_fk": {
-					"name": "pack_approved_by_user_id_fk",
-					"tableFrom": "pack",
-					"tableTo": "user",
-					"columnsFrom": ["approved_by"],
-					"columnsTo": ["id"],
-					"onDelete": "set null",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.packComment": {
-			"name": "packComment",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"author_id": {
-					"name": "author_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"pack_id": {
-					"name": "pack_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"creationDate": {
-					"name": "creationDate",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				},
-				"text": {
-					"name": "text",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"hearted_by_id": {
-					"name": "hearted_by_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": false
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"packComment_author_id_user_id_fk": {
-					"name": "packComment_author_id_user_id_fk",
-					"tableFrom": "packComment",
-					"tableTo": "user",
-					"columnsFrom": ["author_id"],
-					"columnsTo": ["id"],
-					"onDelete": "set null",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.packCommentLike": {
-			"name": "packCommentLike",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"comment_id": {
-					"name": "comment_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"dislike": {
-					"name": "dislike",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"packCommentLike_comment_id_packComment_id_fk": {
-					"name": "packCommentLike_comment_id_packComment_id_fk",
-					"tableFrom": "packCommentLike",
-					"tableTo": "packComment",
-					"columnsFrom": ["comment_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				},
-				"packCommentLike_user_id_user_id_fk": {
-					"name": "packCommentLike_user_id_user_id_fk",
-					"tableFrom": "packCommentLike",
-					"tableTo": "user",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "no action",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.packLike": {
-			"name": "packLike",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"pack_id": {
-					"name": "pack_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"dislike": {
-					"name": "dislike",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"packLike_user_id_user_id_fk": {
-					"name": "packLike_user_id_user_id_fk",
-					"tableFrom": "packLike",
-					"tableTo": "user",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.packLink": {
-			"name": "packLink",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"pack_id": {
-					"name": "pack_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"key": {
-					"name": "key",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"value": {
-					"name": "value",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"packLink_pack_id_pack_id_fk": {
-					"name": "packLink_pack_id_pack_id_fk",
-					"tableFrom": "packLink",
-					"tableTo": "pack",
-					"columnsFrom": ["pack_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.profile": {
-			"name": "profile",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true,
-					"default": "gen_random_uuid()"
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"about_me": {
-					"name": "about_me",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"pronouns": {
-					"name": "pronouns",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"profile_user_id_user_id_fk": {
-					"name": "profile_user_id_user_id_fk",
-					"tableFrom": "profile",
-					"tableTo": "user",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.session": {
-			"name": "session",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "text",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"user_id": {
-					"name": "user_id",
-					"type": "uuid",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"expires_at": {
-					"name": "expires_at",
-					"type": "timestamp with time zone",
-					"primaryKey": false,
-					"notNull": true
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {
-				"session_user_id_user_id_fk": {
-					"name": "session_user_id_user_id_fk",
-					"tableFrom": "session",
-					"tableTo": "user",
-					"columnsFrom": ["user_id"],
-					"columnsTo": ["id"],
-					"onDelete": "cascade",
-					"onUpdate": "no action"
-				}
-			},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.setting": {
-			"name": "setting",
-			"schema": "",
-			"columns": {
-				"key": {
-					"name": "key",
-					"type": "text",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"value": {
-					"name": "value",
-					"type": "json",
-					"primaryKey": false,
-					"notNull": false
-				},
-				"description": {
-					"name": "description",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": false
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		},
-		"public.user": {
-			"name": "user",
-			"schema": "",
-			"columns": {
-				"id": {
-					"name": "id",
-					"type": "uuid",
-					"primaryKey": true,
-					"notNull": true
-				},
-				"username": {
-					"name": "username",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"password_hash": {
-					"name": "password_hash",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"role": {
-					"name": "role",
-					"type": "roles",
-					"typeSchema": "public",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "'User'"
-				},
-				"creation_date": {
-					"name": "creation_date",
-					"type": "timestamp",
-					"primaryKey": false,
-					"notNull": true,
-					"default": "now()"
-				}
-			},
-			"indexes": {},
-			"foreignKeys": {},
-			"compositePrimaryKeys": {},
-			"uniqueConstraints": {
-				"user_username_unique": {
-					"name": "user_username_unique",
-					"nullsNotDistinct": false,
-					"columns": ["username"]
-				}
-			},
-			"policies": {},
-			"checkConstraints": {},
-			"isRLSEnabled": false
-		}
-	},
-	"enums": {
-		"public.roles": {
-			"name": "roles",
-			"schema": "public",
-			"values": ["User", "Moderator", "Admin"]
-		}
-	},
-	"schemas": {},
-	"sequences": {},
-	"roles": {},
-	"policies": {},
-	"views": {},
-	"_meta": {
-		"columns": {},
-		"schemas": {},
-		"tables": {}
-	}
+  "id": "c7756eba-a142-4cf9-a9cd-57624bd606c6",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.card": {
+      "name": "card",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "abilities": {
+          "name": "abilities",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pack_id": {
+          "name": "pack_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cost": {
+          "name": "cost",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "classes": {
+          "name": "classes",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rarity": {
+          "name": "rarity",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "collectible": {
+          "name": "collectible",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tags": {
+          "name": "tags",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attack": {
+          "name": "attack",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health": {
+          "name": "health",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tribes": {
+          "name": "tribes",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "spellSchools": {
+          "name": "spellSchools",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "durability": {
+          "name": "durability",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cooldown": {
+          "name": "cooldown",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "armor": {
+          "name": "armor",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "heropower_id": {
+          "name": "heropower_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enchantment_priority": {
+          "name": "enchantment_priority",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approved": {
+          "name": "approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_latest_version": {
+          "name": "is_latest_version",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "filePath": {
+          "name": "filePath",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "card_pack_id_pack_id_fk": {
+          "name": "card_pack_id_pack_id_fk",
+          "tableFrom": "card",
+          "tableTo": "pack",
+          "columnsFrom": [
+            "pack_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.notification": {
+      "name": "notification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "route": {
+          "name": "route",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "notification_user_id_user_username_fk": {
+          "name": "notification_user_id_user_username_fk",
+          "tableFrom": "notification",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.pack": {
+      "name": "pack",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "owner_name": {
+          "name": "owner_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "metadata_version": {
+          "name": "metadata_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "game_version": {
+          "name": "game_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pack_version": {
+          "name": "pack_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "license": {
+          "name": "license",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "author": {
+          "name": "author",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "permissions": {
+          "name": "permissions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "download_count": {
+          "name": "download_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "unpacked_size": {
+          "name": "unpacked_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_latest_version": {
+          "name": "is_latest_version",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "approved": {
+          "name": "approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "approved_by": {
+          "name": "approved_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approved_at": {
+          "name": "approved_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "denied": {
+          "name": "denied",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "pack_approved_by_user_username_fk": {
+          "name": "pack_approved_by_user_username_fk",
+          "tableFrom": "pack",
+          "tableTo": "user",
+          "columnsFrom": [
+            "approved_by"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.packComment": {
+      "name": "packComment",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pack_owner_name": {
+          "name": "pack_owner_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pack_name": {
+          "name": "pack_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creationDate": {
+          "name": "creationDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hearted_by_id": {
+          "name": "hearted_by_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "packComment_username_user_username_fk": {
+          "name": "packComment_username_user_username_fk",
+          "tableFrom": "packComment",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "packComment_hearted_by_id_user_username_fk": {
+          "name": "packComment_hearted_by_id_user_username_fk",
+          "tableFrom": "packComment",
+          "tableTo": "user",
+          "columnsFrom": [
+            "hearted_by_id"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.packCommentLike": {
+      "name": "packCommentLike",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "comment_id": {
+          "name": "comment_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dislike": {
+          "name": "dislike",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "packCommentLike_comment_id_packComment_id_fk": {
+          "name": "packCommentLike_comment_id_packComment_id_fk",
+          "tableFrom": "packCommentLike",
+          "tableTo": "packComment",
+          "columnsFrom": [
+            "comment_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "packCommentLike_username_user_username_fk": {
+          "name": "packCommentLike_username_user_username_fk",
+          "tableFrom": "packCommentLike",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.packLike": {
+      "name": "packLike",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "pack_owner_name": {
+          "name": "pack_owner_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pack_name": {
+          "name": "pack_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dislike": {
+          "name": "dislike",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "packLike_username_user_username_fk": {
+          "name": "packLike_username_user_username_fk",
+          "tableFrom": "packLike",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.packLink": {
+      "name": "packLink",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "pack_id": {
+          "name": "pack_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "packLink_pack_id_pack_id_fk": {
+          "name": "packLink_pack_id_pack_id_fk",
+          "tableFrom": "packLink",
+          "tableTo": "pack",
+          "columnsFrom": [
+            "pack_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.packMessage": {
+      "name": "packMessage",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "uuidv7()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pack_id": {
+          "name": "pack_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creationDate": {
+          "name": "creationDate",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "type": {
+          "name": "type",
+          "type": "messageType",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "packMessage_username_user_username_fk": {
+          "name": "packMessage_username_user_username_fk",
+          "tableFrom": "packMessage",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profile": {
+      "name": "profile",
+      "schema": "",
+      "columns": {
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "about_me": {
+          "name": "about_me",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pronouns": {
+          "name": "pronouns",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profile_username_user_username_fk": {
+          "name": "profile_username_user_username_fk",
+          "tableFrom": "profile",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_username_user_username_fk": {
+          "name": "session_username_user_username_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "username"
+          ],
+          "columnsTo": [
+            "username"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.setting": {
+      "name": "setting",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "roles",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'User'"
+        },
+        "creation_date": {
+          "name": "creation_date",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.messageType": {
+      "name": "messageType",
+      "schema": "public",
+      "values": [
+        "public",
+        "internal"
+      ]
+    },
+    "public.roles": {
+      "name": "roles",
+      "schema": "public",
+      "values": [
+        "User",
+        "Moderator",
+        "Admin"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
 }

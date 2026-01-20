@@ -24,10 +24,14 @@ services:
       - NODE_ENV=production
       - PORT=80
       - ORIGIN=${PUBLIC_DOMAIN}
+    volumes:
+      - static:/app/static
     depends_on:
       - registry-db
     networks:
       - hsjs
+volumes:
+  static:
 networks:
   hsjs:
     external: true

@@ -22,6 +22,7 @@
 </script>
 
 <svelte:head>
+	<title>Registry | Hearthstone.js</title>
 	<link rel="icon" href={favicon} />
 
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
