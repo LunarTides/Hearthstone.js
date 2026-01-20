@@ -27,7 +27,7 @@
 {:then packs}
 	<PackBig
 		{packs}
-		cards={{ all: data.cards! }}
+		cards={{ all: data.latestCards! }}
 		user={data.user}
 		{form}
 		class={deleteConfirm < 2 ? "rounded-b-none" : ""}

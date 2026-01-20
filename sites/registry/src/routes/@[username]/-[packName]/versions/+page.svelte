@@ -9,7 +9,13 @@
 	<p>Loading...</p>
 {:then packs}
 	{#if packs}
-		<PackBig {packs} cards={{ all: data.cards! }} user={data.user} {form} class="rounded-b-none" />
+		<PackBig
+			{packs}
+			cards={{ all: data.latestCards! }}
+			user={data.user}
+			{form}
+			class="rounded-b-none"
+		/>
 
 		<div class="p-2 flex flex-col gap-2">
 			<a

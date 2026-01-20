@@ -30,10 +30,10 @@ export const load = async (event) => {
 	const packs = await loadGetPack(user, username, packName);
 	const latest = packs.latest;
 
-	const cards = await getCards(event, latest);
+	const latestCards = await getCards(event, latest);
 
 	return {
 		packs,
-		cards,
+		latestCards,
 	};
 };

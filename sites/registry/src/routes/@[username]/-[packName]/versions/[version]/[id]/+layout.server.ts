@@ -1,11 +1,35 @@
 import { resolve } from "$app/paths";
+import type { LayoutParams } from "$app/types";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "$lib/api/schemas.js";
 import type { FileTree } from "$lib/api/types";
+import type { Card } from "$lib/db/schema";
 import { APIGetPack } from "$lib/server/db/pack";
-import { error } from "@sveltejs/kit";
+import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import type { LayoutRouteId, LayoutServerParentData, RouteId } from "./$types.js";
+
+const getCards = async (
+	event: ServerLoadEvent<LayoutParams<RouteId>, LayoutServerParentData, LayoutRouteId>,
+) => {
+	const { username, packName, version, id } = event.params;
+
+	const response = await requestAPI<Card[]>(
+		event,
+		resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/cards", {
+			username,
+			packName,
+			version,
+			id,
+		}),
+	);
+	if (response.error) {
+		return error(response.error.status, { message: response.error.message });
+	}
+
+	return response.json;
+};
 
 export const load = async (event) => {
 	const { username, packName, version, id } = event.params;
@@ -35,7 +59,8 @@ export const load = async (event) => {
 		return error(response.error.status, { message: response.error.message });
 	}
 
+	const cards = await getCards(event);
 	const form = await superValidate(zod4(approveSchema));
 
-	return { form, files: response.json };
+	return { form, files: response.json, cards };
 };
