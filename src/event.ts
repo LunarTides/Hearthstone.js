@@ -327,7 +327,7 @@ export const eventManager = {
 		player: Player,
 	): void {
 		if (!this.history[game.turn]) {
-			this.history[game.turn] = [[Event.GameLoop, `Init ${key}`, player]];
+			this.history[game.turn] = [];
 		}
 
 		this.history[game.turn].push([key, value, player]);

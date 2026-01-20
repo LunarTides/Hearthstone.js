@@ -118,7 +118,6 @@ export enum Event {
 	Dummy = "Dummy",
 	Eval = "Eval",
 	Input = "Input",
-	GameLoop = "GameLoop",
 }
 
 /**
@@ -322,11 +321,6 @@ export type EventValue<Key extends Event> =
 																																							),
 																																							Target,
 																																						]
-																																					: /**
-																																						 * The turn that the gameloop happened on.
-																																						 */
-																																						Key extends Event.GameLoop
-																																						? number
-																																						: Key extends Event.Dummy
-																																							? undefined
-																																							: never;
+																																					: Key extends Event.Dummy
+																																						? undefined
+																																						: never;
