@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
+	import { getColorFromRarity } from "$lib";
 	import type { Card, PackWithExtras } from "$lib/db/schema";
 
 	let {
@@ -44,8 +45,7 @@
 	<div class="flex flex-col">
 		<p class="">
 			<span class="text-cyan-500 font-bold">{`{${card.cost}}`}</span>
-			<!-- TODO: Color by rarity. -->
-			<span class="text-white">{card.name}</span>
+			<span style={`color: ${getColorFromRarity("Legendary")}`}>{card.name}</span>
 			<span class="text-yellow-200 font-bold">({card.type})</span>
 			{#if !pack.isLatestVersion}
 				<span class="text-gray-600">(v{pack.packVersion})</span>
@@ -54,7 +54,6 @@
 		<p class="font-mono">{card.text}</p>
 
 		<p class="text-amber-700">Classes: {card.classes.join(", ")}</p>
-		<!-- TODO: Color by rarity. -->
 		<p class="text-amber-600">Rarity: {card.rarity}</p>
 
 		{#if card.attack && card.health}

@@ -13,3 +13,20 @@ export function exclude<T extends object, K extends keyof T>(obj: T, keys: K[]):
 
 	return returnValue;
 }
+
+export function getColorFromRarity(rarity: string) {
+	switch (rarity) {
+		case "Free":
+			return "#ffffff";
+		case "Common":
+			return "#4d4d4d";
+		case "Rare":
+			return "#80bfff";
+		case "Epic":
+			return "#9933ff";
+		case "Legendary":
+			return "#ffc34d";
+		default:
+			return "#ffffff";
+	}
+}
