@@ -17,11 +17,7 @@ export async function POST(event) {
 		return json({ message: "Please log in." });
 	}
 
-	const username = event.params.username;
-	const packName = event.params.packName;
-	const packVersion = event.params.version;
-	const id = event.params.id;
-
+	const { username, packName, version: packVersion, id } = event.params;
 	const j = await event.request.json();
 
 	const form = await superValidate(j, zod4(approveSchema));
@@ -32,8 +28,7 @@ export async function POST(event) {
 		);
 	}
 
-	const message = form.data.message;
-	const messageType = form.data.messageType;
+	const { message, messageType, karma } = form.data;
 
 	const pack = (
 		await db
@@ -61,12 +56,6 @@ export async function POST(event) {
 
 	if (pack.denied) {
 		return json({ message: "This pack has already been denied." }, { status: 403 });
-	}
-
-	let karma = -100;
-	if (pack.approved) {
-		// Since the pack is both being denied, AND un-approved, this should remove 2 karma points.
-		karma = -200;
 	}
 
 	await db
@@ -103,7 +92,7 @@ export async function POST(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, karma);
+	await grantKarma(username, -karma);
 	return json({}, { status: 200 });
 }
 
@@ -114,11 +103,7 @@ export async function DELETE(event) {
 		return json({ message: "Please log in." });
 	}
 
-	const username = event.params.username;
-	const packName = event.params.packName;
-	const packVersion = event.params.version;
-	const id = event.params.id;
-
+	const { username, packName, version: packVersion, id } = event.params;
 	const j = await event.request.json();
 
 	const form = await superValidate(j, zod4(approveSchema));
@@ -129,8 +114,7 @@ export async function DELETE(event) {
 		);
 	}
 
-	const message = form.data.message;
-	const messageType = form.data.messageType;
+	const { message, messageType, karma } = form.data;
 
 	const pack = (
 		await db
@@ -186,6 +170,6 @@ export async function DELETE(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, 100);
+	await grantKarma(username, karma);
 	return json({}, { status: 200 });
 }

@@ -232,25 +232,45 @@
 							use:enhance
 						>
 							<div class="flex flex-col gap-1">
-								<textarea
-									name="message"
-									class="bg-background min-h-24 invalid:border-red-500"
-									placeholder="Comment..."
-									aria-invalid={$errors.message ? "true" : undefined}
-									bind:value={$form.message}
-									{...$constraints.message}
-								></textarea>
+								<label class="flex flex-col">
+									Message
+									<textarea
+										name="message"
+										class="bg-background min-h-24 invalid:border-red-500"
+										placeholder="Comment..."
+										aria-invalid={$errors.message ? "true" : undefined}
+										bind:value={$form.message}
+										{...$constraints.message}
+									></textarea>
+									<p class="text-red-500">{$errors.message}</p>
+								</label>
 
-								<select
-									name="messageType"
-									class="bg-background invalid:border-red-500"
-									aria-invalid={$errors.messageType ? "true" : undefined}
-									bind:value={$form.messageType}
-									{...$constraints.messageType}
-								>
-									<option value="public">Public</option>
-									<option value="internal">Internal</option>
-								</select>
+								<label class="flex flex-col">
+									Message Type
+									<select
+										name="messageType"
+										class="bg-background invalid:border-red-500"
+										aria-invalid={$errors.messageType ? "true" : undefined}
+										bind:value={$form.messageType}
+										{...$constraints.messageType}
+									>
+										<option value="public">Public</option>
+										<option value="internal">Internal</option>
+									</select>
+									<p class="text-red-500">{$errors.messageType}</p>
+								</label>
+
+								<label class="flex flex-col">
+									Karma
+									<input
+										name="karma"
+										class="bg-background invalid:border-red-500"
+										aria-invalid={$errors.karma ? "true" : undefined}
+										bind:value={$form.karma}
+										{...$constraints.karma}
+									/>
+									<p class="text-red-500">{$errors.karma}</p>
+								</label>
 
 								<div class="flex gap-1">
 									<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
