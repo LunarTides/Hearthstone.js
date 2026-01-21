@@ -452,7 +452,10 @@ ${mainContent}
 		// Use Promise.all to read all the files in parallel
 		await Promise.all(
 			files.map(async (file, i) => {
-				const fullPath = `/${resolve(actualPath, file.parentPath, file.name)}`;
+				// On Linux, there isn't a starting slash for some reason.
+				const root = process.platform === "win32" ? "" : "/";
+
+				const fullPath = `${root}${resolve(actualPath, file.parentPath, file.name)}`;
 				let fileContent: string | undefined;
 
 				if (readFiles && file.isFile()) {

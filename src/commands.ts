@@ -437,10 +437,10 @@ export const commands: CommandList = {
 			}
 
 			if (revealed) {
-				return `Hidden > Revealed as: ${await value.readable()}`;
+				return `<b>Hidden > Revealed as:</b> ${await value.readable()}`;
 			}
 
-			return "Hidden";
+			return "<b>Hidden</b>";
 		};
 
 		for (const [historyListIndex, historyList] of Object.values(
