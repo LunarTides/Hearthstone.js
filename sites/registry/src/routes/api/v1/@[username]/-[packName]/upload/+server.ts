@@ -237,7 +237,7 @@ export async function POST(event) {
 		}
 
 		const abilityRegex = /\tasync (\w+).*? {/g;
-		const content = await fs.readFile(resolve(tmpPath, file.name), "utf8");
+		const content = await fs.readFile(resolve(tmpPath, file.name.replace("/", "")), "utf8");
 
 		const abilities = [];
 		for (const match of content.matchAll(abilityRegex)) {

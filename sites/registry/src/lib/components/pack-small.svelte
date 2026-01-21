@@ -38,12 +38,12 @@
 				<p>{pack.author}</p>
 
 				<!-- Karma -->
-				<div class="flex bg-background p-1 rounded-sm">
-					{#if satisfiesRole(clientUser, "Moderator")}
+				{#if satisfiesRole(clientUser, "Moderator")}
+					<div class="flex bg-background p-1 rounded-sm">
 						<Medal size="16" class={pack.user.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
 						<p>{pack.user.karma * 100}</p>
-					{/if}
-				</div>
+					</div>
+				{/if}
 			</div>
 			<p>{pack.description}</p>
 			<p class="font-mono">({pack.license} | {pack.gameVersion})</p>
