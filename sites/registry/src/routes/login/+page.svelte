@@ -49,8 +49,8 @@
 		</p>
 
 		<div class="flex gap-1 text-lg">
-			<button class="custom-button w-full px-4 py-2"> Login </button>
-			<button formaction="?/register" class="custom-button w-full px-4 py-2"> Register </button>
+			<button class="custom-button w-full px-4 py-2">Login</button>
+			<button formaction="?/register" class="custom-button w-full px-4 py-2">Register</button>
 		</div>
 	</form>
 </div>

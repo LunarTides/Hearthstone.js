@@ -1,19 +1,25 @@
-import { fail, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import { resolve } from "$app/paths";
 import type { Pack } from "$lib/db/schema.js";
 import { requestAPI } from "$lib/api/helper.js";
+import { uploadSchema } from "$lib/api/schemas";
+import { superValidate, fail, message } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+
+export const load = async (event) => {
+	const form = await superValidate(zod4(uploadSchema));
+
+	return { form };
+};
 
 export const actions = {
 	default: async (event) => {
-		const formData = await event.request.formData();
-		const file = formData.get("file");
-		if (!file) {
-			return fail(422, { message: "Please supply a file." });
+		const form = await superValidate(event.request, zod4(uploadSchema));
+		if (!form.valid) {
+			return fail(400, { form });
 		}
 
-		if (!(file instanceof File)) {
-			return fail(422, { message: "Invalid file." });
-		}
+		const file = form.data.file;
 
 		const buffer = await file.arrayBuffer();
 		const [username, packName] = file.name.split(".").slice(0, -2).join(".").split("+");
@@ -28,7 +34,7 @@ export const actions = {
 			},
 		);
 		if (response.error) {
-			return fail(response.error.status, { message: response.error.message });
+			return message(form, response.error.message, { status: response.error.status as any });
 		}
 
 		const pack = response.json.pack;

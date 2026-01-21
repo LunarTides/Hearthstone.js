@@ -1,6 +1,6 @@
-import { fail, redirect, type RequestEvent } from "@sveltejs/kit";
+import { redirect, type RequestEvent } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
-import { superValidate, message } from "sveltekit-superforms";
+import { superValidate, message, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { loginSchema } from "$lib/api/schemas";
 import { resolve } from "$app/paths";
