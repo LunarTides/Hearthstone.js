@@ -95,17 +95,28 @@
 		{#if data.user}
 			<a
 				href={resolve("/upload")}
-				class={`hidden sm:block ${page.route.id === "/upload" && "text-indigo-400"}`}>Upload</a
+				class={`hidden sm:block ${page.route.id === "/upload" && "text-indigo-400"}`}
 			>
+				Upload
+			</a>
 
 			{#if satisfiesRole(data.user, "Moderator")}
 				<a
 					href={resolve("/dashboard/packs")}
-					class={`${page.route.id?.startsWith("/dashboard") && "text-indigo-400"}`}>Dashboard</a
+					class={`${page.route.id?.startsWith("/dashboard") && "text-indigo-400"}`}
 				>
+					Dashboard
+				</a>
 			{/if}
 		{/if}
 	{/if}
+
+	<a
+		href={resolve("/leaderboard")}
+		class={`hidden sm:block ${page.route.id?.startsWith("/leaderboard") && "text-indigo-400"}`}
+	>
+		Leaderboard
+	</a>
 
 	<span class="flex items-center gap-2 ml-auto">
 		<a

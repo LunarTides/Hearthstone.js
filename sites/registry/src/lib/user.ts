@@ -17,11 +17,13 @@ export function satisfiesRole(user: ClientUser, role: Role) {
 }
 
 export type CensoredUser = ReturnType<typeof censorUser>;
-export function censorUser(user: User, clientUser: ClientUser) {
+export function censorUser(user: User, clientUser: ClientUser, censor = { karma: true }) {
 	const censoredUser = exclude(user, ["passwordHash", "creationDate"]);
 	if (!satisfiesRole(clientUser, "Moderator")) {
 		// Hide the karma amount when the requester is a regular user.
-		censoredUser.karma = 0;
+		if (censor.karma) {
+			censoredUser.karma = 0;
+		}
 	}
 
 	return censoredUser;

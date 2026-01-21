@@ -63,10 +63,10 @@ export async function POST(event) {
 		return json({ message: "This pack has already been denied." }, { status: 403 });
 	}
 
-	let karma = -1;
+	let karma = -100;
 	if (pack.approved) {
 		// Since the pack is both being denied, AND un-approved, this should remove 2 karma points.
-		karma = -2;
+		karma = -200;
 	}
 
 	await db
@@ -186,6 +186,6 @@ export async function DELETE(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, 1);
+	await grantKarma(username, 100);
 	return json({}, { status: 200 });
 }

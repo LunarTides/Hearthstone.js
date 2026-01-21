@@ -41,7 +41,7 @@
 				{#if satisfiesRole(clientUser, "Moderator")}
 					<div class="flex bg-background p-1 rounded-sm">
 						<Medal size="16" class={pack.user.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
-						<p>{pack.user.karma * 100}</p>
+						<p>{pack.user.karma}</p>
 					</div>
 				{/if}
 			</div>
