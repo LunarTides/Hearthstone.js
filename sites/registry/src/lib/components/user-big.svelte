@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import { satisfiesRole, type UserAndProfile } from "$lib/user";
+	import { satisfiesRole, type UserOrGroup } from "$lib/user";
 	import { SquarePen } from "lucide-svelte";
 	import Badge from "./badge.svelte";
 	import { fly } from "svelte/transition";
@@ -12,7 +12,7 @@
 		user,
 		loggedInUser,
 	}: {
-		user: UserAndProfile;
+		user: UserOrGroup;
 		loggedInUser: ClientUser;
 	} = $props();
 
@@ -20,8 +20,8 @@
 
 	let edit = $state(false);
 
-	let aboutMe = $derived(user.profile.aboutMe);
-	let pronouns = $derived(user.profile.pronouns);
+	let aboutMe = $derived(user.ownerType === "User" ? user.profile.aboutMe : "");
+	let pronouns = $derived(user.ownerType === "User" ? user.profile.pronouns : "");
 </script>
 
 <div class="flex gap-1">
@@ -87,29 +87,35 @@
 							name="username"
 						/>
 
-						<input
-							class="bg-background text-white rounded-md self-center"
-							placeholder="Pronouns"
-							bind:value={pronouns}
-							name="pronouns"
-						/>
+						{#if user.ownerType === "User"}
+							<input
+								class="bg-background text-white rounded-md self-center"
+								placeholder="Pronouns"
+								bind:value={pronouns}
+								name="pronouns"
+							/>
+						{/if}
 					</div>
 
-					<textarea
-						class="min-h-24 rounded-md bg-background text-white"
-						name="aboutMe"
-						placeholder="About me..."
-						bind:value={aboutMe}
-					>
-						{user.profile.aboutMe}
-					</textarea>
+					{#if user.ownerType === "User"}
+						<textarea
+							class="min-h-24 rounded-md bg-background text-white"
+							name="aboutMe"
+							placeholder="About me..."
+							bind:value={aboutMe}
+						>
+							{user.profile.aboutMe}
+						</textarea>
+					{/if}
 
 					{#if satisfiesRole(loggedInUser, "Admin")}
-						<select name="role" class="rounded-md bg-background text-white">
-							{#each rolesEnum.enumValues as role (role)}
-								<option value={role} selected={user.role === role}>{role}</option>
-							{/each}
-						</select>
+						{#if user.ownerType === "User"}
+							<select name="role" class="rounded-md bg-background text-white">
+								{#each rolesEnum.enumValues as role (role)}
+									<option value={role} selected={user.role === role}>{role}</option>
+								{/each}
+							</select>
+						{/if}
 					{/if}
 
 					<div class="flex gap-1 text-center">

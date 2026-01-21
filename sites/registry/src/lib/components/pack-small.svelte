@@ -35,13 +35,13 @@
 		>
 			<p class="font-bold">{pack.name} ({pack.packVersion})</p>
 			<div class="flex mb-2 text-xs gap-1">
-				<p>{pack.author}</p>
+				<p>{pack.ownerName}</p>
 
 				<!-- Karma -->
-				{#if satisfiesRole(clientUser, "Moderator")}
+				{#if pack.owner && satisfiesRole(clientUser, "Moderator")}
 					<div class="flex bg-background p-1 rounded-sm">
-						<Medal size="16" class={pack.user.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
-						<p>{pack.user.karma}</p>
+						<Medal size="16" class={pack.owner.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
+						<p>{pack.owner.karma}</p>
 					</div>
 				{/if}
 			</div>

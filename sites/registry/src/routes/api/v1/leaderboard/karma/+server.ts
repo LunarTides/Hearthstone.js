@@ -20,6 +20,7 @@ export async function GET(event) {
 		return json({ message: "The page number is too high." }, { status: 400 });
 	}
 
+	// TODO: Make this work with groups.
 	const users = await db
 		.select()
 		.from(table.user)

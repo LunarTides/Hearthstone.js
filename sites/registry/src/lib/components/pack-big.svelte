@@ -69,10 +69,10 @@
 			{/if}
 		</div>
 		<a
-			href={resolve("/@[username]", { username: pack.author })}
+			href={resolve("/@[username]", { username: pack.ownerName })}
 			class="font-semibold underline text-sm"
 		>
-			@{pack.author}
+			@{pack.ownerName}
 		</a>
 		{#if canEditPack}
 			<!-- TODO: Localize. -->

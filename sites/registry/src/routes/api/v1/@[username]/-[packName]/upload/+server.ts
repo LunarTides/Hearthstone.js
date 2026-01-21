@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 import { db } from "$lib/server/db/index.js";
 import type { Pack } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
-import type { InferInsertModel } from "drizzle-orm";
+import { eq, and, type InferInsertModel } from "drizzle-orm";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
@@ -87,10 +87,34 @@ export async function POST(event) {
 
 	// TODO: Account for groups.
 	if (username !== user.username) {
-		return json(
-			{ message: "You do not have permission to upload a pack for this user." },
-			{ status: 403 },
-		);
+		const result = await db
+			.select()
+			.from(table.group)
+			.innerJoin(
+				table.groupMember,
+				and(
+					eq(table.groupMember.groupName, table.group.username),
+					eq(table.groupMember.username, user.username),
+				),
+			)
+			.where(eq(table.group.username, username))
+			.limit(1);
+		if (!result) {
+			return json(
+				{ message: "You do not have permission to upload a pack for this user." },
+				{ status: 403 },
+			);
+		}
+
+		const { groupMember } = result[0];
+		if (groupMember.permissions.includes("upload")) {
+			// The user can upload on behalf of that group.
+		} else {
+			return json(
+				{ message: "You do not have permission to upload a pack for this user." },
+				{ status: 403 },
+			);
+		}
 	}
 
 	const fileBytes = await event.request.arrayBuffer();

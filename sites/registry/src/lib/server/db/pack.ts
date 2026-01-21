@@ -107,6 +107,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 	const packsAndLikes = await query
 		.fullJoin(table.user, eq(table.pack.ownerName, table.user.username))
+		.fullJoin(table.group, eq(table.pack.ownerName, table.group.username))
 		.fullJoin(table.packLike, and(eq(table.pack.ownerName, table.packLike.packOwnerName)))
 		.fullJoin(approvedBy, eq(table.pack.approvedBy, approvedBy.username));
 
@@ -157,7 +158,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 
 				return {
 					...p.pack,
-					user: censorUser(p.user, clientUser),
+					owner: p.user ? censorUser(p.user, clientUser) : p.group,
 					totalDownloadCount: relevantPacks
 						.map((p) => p.pack!.downloadCount)
 						.reduce((p, v) => p + v, 0),

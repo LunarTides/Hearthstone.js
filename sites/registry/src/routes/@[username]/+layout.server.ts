@@ -1,5 +1,6 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
+import type { Group } from "$lib/db/schema.js";
 import type { UserAndProfile } from "$lib/user.js";
 import { error } from "@sveltejs/kit";
 
@@ -8,10 +9,9 @@ export const load = (event) => {
 	const username = event.params.username;
 
 	const getUser = async () => {
-		const response = await requestAPI<UserAndProfile>(
-			event,
-			resolve(`/api/v1/@[username]`, { username }),
-		);
+		const response = await requestAPI<
+			(UserAndProfile & { ownerType: "User" }) | (Group & { ownerType: "Group" })
+		>(event, resolve(`/api/v1/@[username]`, { username }));
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });
 		}

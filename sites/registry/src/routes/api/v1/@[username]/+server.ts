@@ -15,13 +15,27 @@ export async function GET(event) {
 		.where(eq(table.user.username, username))
 		.innerJoin(table.profile, eq(table.profile.username, table.user.username));
 	if (users.length <= 0) {
-		return json({ message: "User not found." }, { status: 404 });
+		const groups = await db.select().from(table.group).where(eq(table.group.username, username));
+		if (groups.length <= 0) {
+			return json({ message: "User not found." }, { status: 404 });
+		}
+
+		const group = groups[0];
+
+		return json(
+			{
+				ownerType: "Group",
+				...group,
+			},
+			{ status: 200 },
+		);
 	}
 
 	const user = users[0];
 
 	return json(
 		{
+			ownerType: "User",
 			profile: user.profile,
 			...censorUser(user.user, clientUser),
 		},
@@ -29,6 +43,7 @@ export async function GET(event) {
 	);
 }
 
+// TODO: Make this work for groups.
 export async function PUT(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {

@@ -15,7 +15,22 @@ export async function grantKarma(username: string, amount: number) {
 			.where(eq(table.user.username, username))
 	).at(0);
 	if (!user) {
-		return null;
+		const group = (
+			await db
+				.select({ karma: table.group.karma })
+				.from(table.group)
+				.where(eq(table.group.username, username))
+		).at(0);
+		if (!group) {
+			return null;
+		}
+
+		const updatedGroups = await db
+			.update(table.group)
+			.set({ karma: group.karma + amount })
+			.where(eq(table.group.username, username))
+			.returning();
+		return updatedGroups[0].karma;
 	}
 
 	const updatedUsers = await db

@@ -19,8 +19,8 @@ export const user = pgTable("user", {
 	username: text("username").primaryKey(),
 	passwordHash: text("password_hash").notNull(),
 	role: rolesEnum("role").notNull().default("User"),
-	creationDate: timestamp("creation_date").notNull().defaultNow(),
 	karma: numeric("karma", { mode: "number" }).notNull().default(0),
+	creationDate: timestamp("creation_date").notNull().defaultNow(),
 });
 
 export const session = pgTable("session", {
@@ -40,6 +40,23 @@ export const profile = pgTable("profile", {
 		.references(() => user.username, { onDelete: "cascade" }),
 	aboutMe: text("about_me").notNull(),
 	pronouns: text("pronouns"),
+});
+
+export const group = pgTable("group", {
+	username: text("username").primaryKey(),
+	karma: numeric("karma", { mode: "number" }).notNull().default(0),
+	creationDate: timestamp("creation_date").notNull().defaultNow(),
+});
+
+export const groupMember = pgTable("groupMember", {
+	id: uuid("id")
+		.primaryKey()
+		.default(sql`uuidv7()`),
+	groupName: text("groupName")
+		.notNull()
+		.references(() => group.username),
+	username: text("username").notNull(),
+	permissions: text("permissions").array().notNull(),
 });
 
 export const pack = pgTable("pack", {
@@ -193,6 +210,7 @@ export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
 export type Profile = typeof profile.$inferSelect;
+export type Group = typeof group.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
@@ -204,7 +222,7 @@ export type Notification = typeof notification.$inferSelect;
 export type Setting = typeof setting.$inferSelect;
 
 export type PackWithExtras = Pack & {
-	user: CensoredUser;
+	owner: CensoredUser | Group | null;
 	totalDownloadCount: number;
 	likes: {
 		positive: number;
