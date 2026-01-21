@@ -30,6 +30,14 @@ export async function POST(event) {
 		return json({ message: "This username is taken." }, { status: 403 });
 	}
 
+	const existingGroup = await db
+		.select({ count: count() })
+		.from(table.group)
+		.where(ilike(table.group.username, username));
+	if (existingGroup[0].count > 0) {
+		return json({ message: "This username is taken." }, { status: 403 });
+	}
+
 	const passwordHash = await hash(password, {
 		// recommended minimum parameters
 		memoryCost: 19456,
