@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { page } from "$app/state";
 	import { getColorFromRarity } from "$lib";
 	import type { Card, PackWithExtras } from "$lib/db/schema";
 

@@ -418,7 +418,8 @@ async function configureMetadata(metadata: Metadata) {
 				{
 					name: "Name",
 					value: "name",
-					description: "The name of the pack. This must be unique for the author.",
+					description:
+						"The name of the pack. This must be unique for the author.",
 				},
 				{
 					name: "Description",
