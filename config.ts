@@ -533,14 +533,15 @@ export const config: GameConfig = {
 		"The early versions of 2.0 were a <i>mess</i>. I don't know how I managed to pull through. I do remember having a lot of fun though, since I was stuck in restructure hell prior to that point.",
 
 		// 3.0
-		"Version 3.0 began development on January 4th, 2024, and is currently still in development 23 months later.",
-		"Like 2.0, 3.0 completely changes the entire codebase. I don't mean for these updates to be so big. It just happens...",
+		"Version 3.0 began development on January 4th, 2024, and was released on December 5th, 23 months later.",
+		"Like 2.0, 3.0 completely changed the entire codebase. I don't mean for these updates to be so big. It just happens...",
 		"Unlike 2.0, I didn't have a specific goal in mind when making 3.0. I just wanted to improve upon existing features, and add new ones. All based on what I wanted to do in the moment.",
 
 		// 4.0
 		"Version 4.0 began when I got the ideas for packages. I just kept coming up with new ideas, and the scope got bigger and bigger. Now we're here!",
 		"Version 4.0 added a new user interaction interface. Prievously, you had to type stuff manually, but now you can navigate using the arrow keys!",
 		"A little tip for you. Did you know you can press the first letter of an option to navigate to it? Try pressing 'e' when it asks you to select a target, and it will take you to the enemy secion!",
+		"Version 4.0 added the registry. I wanted to have an official way to host packs, so I made a custom website inspired by npm.",
 
 		// Cards
 		"If you want to make your own cards, you can totally do so! Just enable developer mode in the HUB, and follow the instructions! A little coding knowledge is required though.",
