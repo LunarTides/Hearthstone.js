@@ -10,10 +10,10 @@
 
 	let {
 		user,
-		loggedInUser,
+		clientUser,
 	}: {
 		user: UserOrGroup;
-		loggedInUser: ClientUser;
+		clientUser: ClientUser;
 	} = $props();
 
 	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
@@ -27,7 +27,7 @@
 <div class="flex gap-1">
 	<div class="p-3 bg-header text-white w-full rounded-lg">
 		<div class="flex float-right gap-1">
-			{#if user.username === loggedInUser?.username || satisfiesRole(loggedInUser, "Admin")}
+			{#if user.username === clientUser?.username || satisfiesRole(clientUser, "Admin")}
 				<button onclick={() => (edit = true)} class="self-center hover:cursor-pointer">
 					<SquarePen />
 				</button>
@@ -37,10 +37,11 @@
 		<div class="flex flex-col gap-1">
 			<div class="flex gap-2">
 				{#await avatarPromise}
-					<div class="p-6 bg-white rounded-full"></div>
+					<div class="p-6 bg-white rounded-full size-12"></div>
 				{:then avatar}
 					<img alt="Avatar" class="size-12" src={avatar.default.split("/static")[1]} />
 				{/await}
+
 				<p class="text-xl self-center">{user.username}</p>
 
 				{#if pronouns}
@@ -108,7 +109,7 @@
 						</textarea>
 					{/if}
 
-					{#if satisfiesRole(loggedInUser, "Admin")}
+					{#if satisfiesRole(clientUser, "Admin")}
 						{#if user.ownerType === "User"}
 							<select name="role" class="rounded-md bg-background text-white">
 								{#each rolesEnum.enumValues as role (role)}

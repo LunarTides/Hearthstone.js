@@ -45,8 +45,8 @@
 				required={false}
 			>
 				<option selected={ownerName === data.user?.username}>{data.user?.username}</option>
-				{#each data.validGroups as group}
-					<option selected={ownerName === group}>{group}</option>
+				{#each data.validGroups as group (group.username)}
+					<option selected={ownerName === group.username}>{group.username}</option>
 				{/each}
 			</select>
 			<p class="text-2xl">/</p>

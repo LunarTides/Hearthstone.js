@@ -5,18 +5,21 @@ import { requestAPI } from "$lib/api/helper.js";
 import { uploadSchema } from "$lib/api/schemas";
 import { superValidate, fail, message } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
+import type { CensoredGroup } from "$lib/group.js";
 
 export const load = async (event) => {
-	if (!event.locals.user) {
+	// TODO: Do this more places that require logging in.
+	const clientUser = event.locals.user;
+	if (!clientUser) {
 		redirect(303, resolve("/"));
 	}
 
 	const form = await superValidate(zod4(uploadSchema));
 
 	// TODO: Stream.
-	const response = await requestAPI<{ groups: string[] }>(
+	const response = await requestAPI<{ groups: CensoredGroup[] }>(
 		event,
-		resolve("/api/v1/user/valid-upload-groups"),
+		resolve("/api/v1/groups/user/@[username]/can-upload-to", { username: clientUser.username }),
 	);
 	if (response.error) {
 		return message(form, response.error.message, { status: response.error.status as any });

@@ -11,6 +11,7 @@ import {
 import { sql } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
 import { numeric } from "drizzle-orm/pg-core";
+import type { CensoredGroup } from "$lib/group";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
@@ -211,6 +212,7 @@ export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
 export type Profile = typeof profile.$inferSelect;
 export type Group = typeof group.$inferSelect;
+export type GroupMember = typeof groupMember.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
@@ -243,4 +245,12 @@ export type PackCommentWithExtras = PackComment & {
 		hasDisliked: boolean;
 	};
 	heartedBy: CensoredUser | null;
+};
+
+export type GroupWithExtras = CensoredGroup & {
+	members: GroupMember[];
+};
+
+export type GroupMemberWithExtras = GroupMember & {
+	user: CensoredUser | null;
 };

@@ -8,12 +8,14 @@ export const RoleTable: Record<Role, number> = {
 	Admin: 2,
 };
 
-export function satisfiesRole(user: ClientUser | Group, role: Role): user is ClientUser {
+export function satisfiesRole<T extends { role: keyof typeof RoleTable }>(
+	user: T | null,
+	role: Role,
+): user is T {
 	if (!user || !Object.hasOwn(user, "role")) {
 		return false;
 	}
 
-	// @ts-expect-error `user.role` is confirmed to exist by the if-statement above
 	return RoleTable[user.role] >= RoleTable[role];
 }
 

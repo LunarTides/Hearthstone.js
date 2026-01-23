@@ -39,7 +39,7 @@
 
 				<!-- Karma -->
 				{#if pack.owner && satisfiesRole(clientUser, "Moderator")}
-					<div class="flex bg-background p-1 rounded-sm">
+					<div class="flex w-fit bg-background p-1 rounded-sm gap-0.5 *:self-center">
 						<Medal size="16" class={pack.owner.karma >= 0 ? "text-yellow-300" : "text-red-400"} />
 						<p>{pack.owner.karma}</p>
 					</div>
