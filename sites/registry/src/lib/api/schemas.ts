@@ -19,4 +19,6 @@ export const approveSchema = z.object({
 
 export const uploadSchema = z.object({
 	file: z.file().mime("application/gzip"),
+	ownerName: z.string(),
+	packName: z.string().nonempty("The pack's name cannot be empty."),
 });

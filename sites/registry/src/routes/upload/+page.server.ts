@@ -7,9 +7,24 @@ import { superValidate, fail, message } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
 export const load = async (event) => {
+	if (!event.locals.user) {
+		redirect(303, resolve("/"));
+	}
+
 	const form = await superValidate(zod4(uploadSchema));
 
-	return { form };
+	// TODO: Stream.
+	const response = await requestAPI<{ groups: string[] }>(
+		event,
+		resolve("/api/v1/user/valid-upload-groups"),
+	);
+	if (response.error) {
+		return message(form, response.error.message, { status: response.error.status as any });
+	}
+
+	const validGroups = response.json.groups;
+
+	return { form, validGroups };
 };
 
 export const actions = {
@@ -22,11 +37,11 @@ export const actions = {
 		const file = form.data.file;
 
 		const buffer = await file.arrayBuffer();
-		const [username, packName] = file.name.split(".").slice(0, -2).join(".").split("+");
+		const { ownerName, packName } = form.data;
 
 		const response = await requestAPI<{ pack: Pack }>(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/upload", { username, packName }),
+			resolve("/api/v1/@[username]/-[packName]/upload", { username: ownerName, packName }),
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/octet-stream" },
@@ -47,5 +62,8 @@ export const actions = {
 				id: pack.id,
 			}),
 		);
+
+		// NOTE: This is needed for some reason? Without this, it doesn't redirect properly...
+		return { form };
 	},
 };

@@ -5,6 +5,10 @@
 	let { data } = $props();
 
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
+
+	const fileName = $derived($form.file ? ($form.file as File).name : "");
+	const ownerName = $derived(fileName.split("+")[0]);
+	const packName = $derived(fileName.split("+")[1]?.split(".").slice(0, -2) ?? "");
 </script>
 
 <p>Upload</p>
@@ -27,6 +31,37 @@
 	/>
 	{#if $errors.file}<span class="text-red-500">{$errors.file}</span>{/if}
 
+	<div>
+		{#if $errors.ownerName}<span class="text-red-500">{$errors.ownerName}</span>{/if}
+		{#if $errors.packName}<span class="text-red-500">{$errors.packName}</span>{/if}
+
+		<div class="flex bg-header p-2 w-fit gap-1 *:self-center">
+			<p class="text-2xl">@</p>
+			<select
+				name="ownerName"
+				class="bg-background"
+				aria-invalid={$errors.ownerName ? "true" : undefined}
+				{...$constraints.ownerName}
+				required={false}
+			>
+				<option selected={ownerName === data.user?.username}>{data.user?.username}</option>
+				{#each data.validGroups as group}
+					<option selected={ownerName === group}>{group}</option>
+				{/each}
+			</select>
+			<p class="text-2xl">/</p>
+			<input
+				name="packName"
+				type="text"
+				placeholder="Name"
+				defaultValue={packName}
+				class="bg-background"
+				aria-invalid={$errors.packName ? "true" : undefined}
+				{...$constraints.packName}
+			/>
+		</div>
+	</div>
+
 	<div class="p-2 mx-1 bg-header w-fit rounded-md">
 		<div class="flex gap-1">
 			<p>Want to upload a pack?</p>
@@ -36,5 +71,5 @@
 		<p>Dont worry, they are easily understandable :)</p>
 	</div>
 
-	<button type="submit" class="custom-button w-fit p-2">Submit</button>
+	<button type="submit" class="custom-button w-fit p-2">Upload</button>
 </form>

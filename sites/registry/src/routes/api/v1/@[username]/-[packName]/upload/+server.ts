@@ -85,7 +85,6 @@ export async function POST(event) {
 	const username = event.params.username;
 	const packName = event.params.packName;
 
-	// TODO: Account for groups.
 	if (username !== user.username) {
 		const result = await db
 			.select()
