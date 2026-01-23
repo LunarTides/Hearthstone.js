@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
+	import GroupBig from "$lib/components/group-big.svelte";
 	import UserBig from "$lib/components/user-big.svelte";
 	import { slide } from "svelte/transition";
 
@@ -10,6 +11,7 @@
 </script>
 
 {#if isOnUserPage}
+	<!-- TODO: Make this work on mobile. -->
 	<nav
 		class="fixed flex flex-col h-screen right-0 min-w-32 lg:min-w-64 w-fit p-5 bg-header text-white gap-2 text-nowrap"
 		transition:slide={{ axis: "x" }}
@@ -71,7 +73,11 @@
 			<p>Loading...</p>
 		{:then user}
 			<div class="m-2">
-				<UserBig {user} clientUser={data.user} />
+				{#if user.ownerType === "User"}
+					<UserBig {user} clientUser={data.user} />
+				{:else}
+					<GroupBig group={user} clientUser={data.user} />
+				{/if}
 			</div>
 		{/await}
 	{/if}
