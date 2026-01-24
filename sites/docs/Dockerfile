@@ -1,4 +1,4 @@
-FROM oven/bun AS builder
+FROM oven/bun:1 AS builder
 WORKDIR /app
 
 COPY package.json ./
@@ -7,5 +7,5 @@ RUN bun install
 COPY . .
 RUN bun run build
 
-FROM oven/bun
+FROM oven/bun:1
 COPY --from=builder /app/dist /var/www/docs

@@ -1,6 +1,6 @@
 services:
   reverse-proxy:
-    image: nginx
+    image: nginx:1.29.4
     restart: unless-stopped
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf

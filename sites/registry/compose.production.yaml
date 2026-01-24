@@ -1,7 +1,7 @@
 services:
   # TODO: Change this to `db`.
   registry-db:
-    image: postgres
+    image: postgres:14.20
     restart: unless-stopped
     env_file:
       - .env
