@@ -47,6 +47,12 @@
 					>
 						Members
 					</a>
+					<a
+						href={resolve("/@[username]/members/new", { username: page.params.username! })}
+						class={`ml-6 ${page.route.id === "/@[username]/members/new" && "text-indigo-400"}`}
+					>
+						New
+					</a>
 				{/if}
 			{/await}
 			<hr class="text-gray-700" />

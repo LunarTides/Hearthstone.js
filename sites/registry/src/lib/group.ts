@@ -21,6 +21,6 @@ export function memberHasPermission(permissions: string[], permission: string) {
 		return true;
 	}
 
-  // TODO: Handle categories
+	// TODO: Handle categories
 	return permissions.includes(permission);
 }

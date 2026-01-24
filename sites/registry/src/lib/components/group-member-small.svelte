@@ -9,16 +9,25 @@
 	let {
 		member,
 		clientUser,
+		navigateToUser = false,
 	}: {
 		member: GroupMemberWithExtras;
 		clientUser: ClientUser;
+		navigateToUser?: boolean;
 	} = $props();
 
 	const avatarPromise = import(`$lib/../../static/avatars/${member.username}.avif`).catch(() => {});
 </script>
 
 <div class="w-fit min-w-77.5">
-	<a href={resolve("/@[username]", { username: member.username })}>
+	<a
+		href={navigateToUser
+			? resolve("/@[username]", { username: member.username })
+			: resolve("/@[username]/members/@[member]", {
+					username: member.groupName,
+					member: member.username,
+				})}
+	>
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-2">

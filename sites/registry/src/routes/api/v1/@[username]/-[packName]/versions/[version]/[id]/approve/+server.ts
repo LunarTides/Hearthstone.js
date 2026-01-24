@@ -178,6 +178,7 @@ export async function DELETE(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
+	// FIXME: This breaks when approving a pack owned by a group.
 	await db.insert(table.notification).values({
 		username,
 		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)})'s approval has been withdrawn!`,
