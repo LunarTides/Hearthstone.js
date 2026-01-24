@@ -1,8 +1,8 @@
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
-import { and, arrayContains, eq } from "drizzle-orm";
-import { censorGroup } from "$lib/group.js";
+import { and, eq } from "drizzle-orm";
+import { censorGroup, memberHasPermission } from "$lib/group.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -21,9 +21,10 @@ export async function GET(event) {
 				eq(table.groupMember.groupName, table.group.username),
 				eq(table.groupMember.username, username),
 			),
-		)
-		.where(arrayContains(table.groupMember.permissions, ["upload"]));
+		);
 
-	const groups = result.map((r) => censorGroup(r.group, clientUser));
+	const groups = result
+		.filter((r) => memberHasPermission(r.groupMember.permissions, "upload"))
+		.map((r) => censorGroup(r.group, clientUser));
 	return json({ groups });
 }

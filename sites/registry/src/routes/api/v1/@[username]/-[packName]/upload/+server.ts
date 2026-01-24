@@ -10,6 +10,7 @@ import { eq, and, type InferInsertModel } from "drizzle-orm";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
+import { memberHasPermission } from "$lib/group.js";
 import { setLatestVersion } from "$lib/server/db/pack.js";
 import { resolve } from "node:path";
 
@@ -106,7 +107,7 @@ export async function POST(event) {
 		}
 
 		const { groupMember } = result[0];
-		if (groupMember.permissions.includes("upload")) {
+		if (memberHasPermission(groupMember.permissions, "upload")) {
 			// The user can upload on behalf of that group.
 		} else {
 			return json(

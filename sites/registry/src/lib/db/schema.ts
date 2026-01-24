@@ -55,7 +55,7 @@ export const groupMember = pgTable("groupMember", {
 		.default(sql`uuidv7()`),
 	groupName: text("groupName")
 		.notNull()
-		.references(() => group.username),
+		.references(() => group.username, { onDelete: "cascade", onUpdate: "cascade" }),
 	username: text("username").notNull(),
 	permissions: text("permissions").array().notNull(),
 });

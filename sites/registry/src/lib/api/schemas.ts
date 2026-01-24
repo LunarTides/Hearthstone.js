@@ -1,3 +1,4 @@
+// TODO: Seperate into multiple files. See `groups/new/schema.ts`.
 import z from "zod";
 
 export const dummySchema = z.object();
