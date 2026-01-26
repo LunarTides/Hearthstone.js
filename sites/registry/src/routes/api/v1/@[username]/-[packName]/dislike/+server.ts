@@ -2,10 +2,12 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 // TODO: Deduplicate code between this and like.
 export async function POST(event) {
-	if (!event.locals.user) {
+	const clientUser = event.locals.user;
+	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
@@ -25,7 +27,7 @@ export async function POST(event) {
 			)
 			.limit(1)
 	).at(0);
-	if (!pack) {
+	if (!pack || !isUserMemberOfPack(clientUser, username, pack)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
@@ -41,7 +43,7 @@ export async function POST(event) {
 				and(
 					eq(table.packLike.packOwnerName, pack.ownerName),
 					eq(table.packLike.packName, pack.name),
-					eq(table.packLike.username, event.locals.user.username),
+					eq(table.packLike.username, clientUser.username),
 				),
 			)
 			.limit(1)
@@ -59,7 +61,7 @@ export async function POST(event) {
 	await db.insert(table.packLike).values({
 		packOwnerName: pack.ownerName,
 		packName: pack.name,
-		username: event.locals.user.username,
+		username: clientUser.username,
 		dislike: true,
 	});
 

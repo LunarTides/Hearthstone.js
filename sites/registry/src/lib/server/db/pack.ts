@@ -1,8 +1,9 @@
 import { db } from "$lib/server/db/index.js";
 import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
+import type { Pack, User } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, count } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
@@ -98,6 +99,37 @@ export const APIGetPack = async (user: ClientUser, username: string, packName: s
 	};
 };
 
+export const isUserMemberOfPack = async (
+	clientUser: ClientUser,
+	username: string,
+	pack: Pack | undefined,
+) => {
+	if (!pack || !clientUser) {
+		return false;
+	}
+
+	let isInGroup = false;
+	const result = (
+		await db
+			.select({ value: count() })
+			.from(table.groupMember)
+			.where(
+				and(
+					eq(table.groupMember.groupName, pack.ownerName),
+					eq(table.groupMember.username, username),
+				),
+			)
+			.limit(1)
+	)[0];
+	isInGroup = result.value > 0;
+
+	if (isInGroup || pack.ownerName === username || satisfiesRole(clientUser, "Moderator")) {
+		return true;
+	}
+
+	return false;
+};
+
 export const getFullPacks = async <T extends PgSelect<"pack">>(
 	clientUser: ClientUser | null,
 	query: T,
@@ -114,20 +146,13 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 	// Show all downloads from all versions.
 	let packs: PackWithExtras[] = await Promise.all(
 		packsAndLikes
-			.filter((p) => {
+			.filter(async (p) => {
 				// Hide unapproved packs from unauthorized users.
 				if (p.pack.approved) {
 					return true;
 				}
 
-				if (
-					(clientUser && p.pack.ownerName === clientUser.username) ||
-					satisfiesRole(clientUser, "Moderator")
-				) {
-					return true;
-				}
-
-				return false;
+				return isUserMemberOfPack(clientUser, clientUser?.username ?? "", p.pack);
 			})
 			.map(async (p) => {
 				const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);

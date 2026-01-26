@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
@@ -28,12 +28,8 @@ async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved) {
-		// eslint-disable-next-line no-empty
-		if (pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator")) {
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const commentId = event.params.commentId;

@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 // TODO: Deduplicate.
 // TODO: Split into POST and DELETE for likes and unlikes.
@@ -32,12 +32,8 @@ export async function POST(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved) {
-		// eslint-disable-next-line no-empty
-		if (pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator")) {
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const commentId = event.params.commentId;

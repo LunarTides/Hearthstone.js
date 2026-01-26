@@ -2,10 +2,10 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and, count } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import { CommentRequest } from "$lib/api/types";
 import { getSetting } from "$lib/server/db/setting";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 export async function GET(event) {
 	// TODO: Extract page logic.
@@ -28,15 +28,8 @@ export async function GET(event) {
 	}
 
 	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!pack.approved) {
-		if (
-			clientUser &&
-			(pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator"))
-		) {
-			// eslint-disable no-empty
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const pageSize = (await getSetting("api.pageSize")) as number;
@@ -92,15 +85,8 @@ export async function POST(event) {
 	}
 
 	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!pack.approved) {
-		if (
-			clientUser &&
-			(pack.ownerName === clientUser.username || satisfiesRole(clientUser, "Moderator"))
-		) {
-			// eslint-disable no-empty
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const result = CommentRequest.safeParse(await event.request.json());

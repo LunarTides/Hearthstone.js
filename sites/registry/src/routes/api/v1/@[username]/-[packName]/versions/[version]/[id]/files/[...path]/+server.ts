@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import fs from "node:fs/promises";
 import { resolve } from "path";
-import { satisfiesRole } from "$lib/user";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 // TODO: Prevent this api from being spammed by the client.
 export async function GET(event) {
@@ -32,12 +32,8 @@ export async function GET(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved) {
-		// eslint-disable-next-line no-empty
-		if (user && (pack.ownerName === user.username || satisfiesRole(user, "Moderator"))) {
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(user, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	// TODO: Validate. Make sure the path isn't too long, etc...

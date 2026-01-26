@@ -2,9 +2,9 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
 import fs from "node:fs/promises";
 import { setLatestVersion } from "$lib/server/db/pack.js";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 export async function DELETE(event) {
 	const user = event.locals.user;
@@ -34,7 +34,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (pack.ownerName !== user.username && !satisfiesRole(user, "Moderator")) {
+	if (!isUserMemberOfPack(user, username, pack)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

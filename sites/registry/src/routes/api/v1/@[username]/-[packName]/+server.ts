@@ -4,6 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import fs from "node:fs/promises";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 // TODO: Deduplicate.
 export async function DELETE(event) {
@@ -20,12 +21,13 @@ export async function DELETE(event) {
 			.select()
 			.from(table.pack)
 			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.limit(1)
 	).at(0);
 	if (!pack) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (pack.ownerName !== user.username && !satisfiesRole(user, "Moderator")) {
+	if (!isUserMemberOfPack(user, username, pack)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

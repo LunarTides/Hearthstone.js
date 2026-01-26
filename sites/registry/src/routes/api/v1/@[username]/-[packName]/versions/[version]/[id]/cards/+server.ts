@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
+import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 
 export async function GET(event) {
 	const user = event.locals.user;
@@ -29,12 +29,8 @@ export async function GET(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved) {
-		// eslint-disable-next-line no-empty
-		if (user && (pack.ownerName === user.username || satisfiesRole(user, "Moderator"))) {
-		} else {
-			return json({ message: "Version not found." }, { status: 404 });
-		}
+	if (!pack.approved && !isUserMemberOfPack(user, username, pack)) {
+		return json({ message: "Version not found." }, { status: 404 });
 	}
 
 	const cards = await db.select().from(table.card).where(eq(table.card.packId, pack.id));
