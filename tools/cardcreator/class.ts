@@ -13,6 +13,7 @@ async function configure(
 	while (true) {
 		hub.watermark(false);
 
+		// TODO: Use `game.prompt.customSelect`
 		const answer = await select({
 			message: "Configure Class",
 			choices: [

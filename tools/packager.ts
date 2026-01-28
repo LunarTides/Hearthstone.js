@@ -407,6 +407,7 @@ async function configureMetadata(metadata: Metadata) {
 		console.log(JSON.stringify(metadata, null, 4));
 		console.log();
 
+		// TODO: Use `game.prompt.customSelect`
 		const answer = await select({
 			message: "Configure Metadata",
 			choices: [
@@ -501,6 +502,7 @@ async function configureMetadata(metadata: Metadata) {
 
 			dirty = true;
 		} else if (answer === "license") {
+			// TODO: Use `game.prompt.customSelect`
 			const license = await select({
 				message: "Set the license of the pack.",
 				choices: [
@@ -635,6 +637,7 @@ export async function main() {
 	while (true) {
 		hub.watermark();
 
+		// TODO: Use `game.prompt.customSelect`
 		const answer = await select({
 			message: "Packager Options",
 			choices: [

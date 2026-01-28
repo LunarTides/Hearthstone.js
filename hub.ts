@@ -2,7 +2,7 @@
  * The entry point of the program. Acts like a hub between the tools / scripts and the game.
  */
 import { Card } from "@Game/card.ts";
-import { confirm, Separator, select } from "@inquirer/prompts";
+import { confirm, Separator } from "@inquirer/prompts";
 import * as cardTest from "./scripts/test/cards.ts"; // Card Test
 import * as crashTest from "./scripts/test/crash.ts"; // Crash Test
 import * as generateVanilla from "./scripts/vanilla/generate.ts";
@@ -73,40 +73,23 @@ export const watermark = (showCards = true) => {
 export async function cardCreator() {
 	while (true) {
 		watermark();
+		const answer = await game.prompt.customSelect("Create a Card", [
+			"Create a Custom Card",
+			"Import a Vanilla Card",
+		]);
 
-		const answer = await select({
-			message: "Create a Card",
-			choices: [
-				{
-					name: "Create a Custom Card",
-					value: "custom",
-				},
-				{
-					name: "Import a Vanilla Card",
-					value: "vanilla",
-				},
-				new Separator(),
-				{
-					name: "Back",
-					value: "back",
-				},
-			],
-			loop: false,
-			pageSize: 15,
-		});
-
-		if (answer === "custom") {
+		if (answer === "0") {
 			game.interest("Starting Custom Card Creator...");
 			await ccc.main({});
 			game.interest("Starting Custom Card Creator...OK");
-		} else if (answer === "vanilla") {
+		} else if (answer === "1") {
 			// This is to throw an error if it can't find the vanilla cards
 			await game.functions.card.vanilla.getAll();
 
 			game.interest("Starting Vanilla Card Creator...");
 			await vcc.main();
 			game.interest("Starting Vanilla Card Creator...OK");
-		} else if (answer === "back") {
+		} else if (answer === "Back") {
 			break;
 		}
 	}
@@ -119,62 +102,46 @@ export async function devmode() {
 	while (true) {
 		watermark();
 
-		const answer = await select({
-			message: "Developer Options",
-			choices: [
-				{
-					name: "Create a Card",
-					value: "card",
-				},
-				{
-					name: "Create a Class",
-					value: "class",
-				},
-				new Separator(),
-				{
-					name: "Start Packager",
-					value: "pkgr",
-				},
-				new Separator(),
-				{
-					name: "Test Cards",
-					value: "cardTest",
-				},
-				{
-					name: "Crash Test",
-					value: "crashTest",
-				},
-				{
-					name: "Generate Vanilla Cards",
-					value: "generateVanilla",
-				},
-				new Separator(),
-				{
-					name: "Back",
-					value: "back",
-				},
-			],
-			loop: false,
-			pageSize: 15,
-		});
+		const answer = await game.prompt.customSelect(
+			"Developer Options",
+			[],
+			{
+				hideBack: true,
+				arrayTransform: undefined,
+			},
+			"Create a Card",
+			"Create a Class",
+			new Separator(),
+			"Start Packager",
+			new Separator(),
+			"Test Cards",
+			"Crash Test",
+			"Generate Vanilla Cards",
+			new Separator(),
+			"Back",
+		);
 
-		if (answer === "card") {
+		if (answer === "create a card") {
 			game.interest("Loading Card Creator options...");
 			await cardCreator();
 			game.interest("Loading Card Creator options...OK");
-		} else if (answer === "class") {
+		} else if (answer === "create a class") {
 			game.interest("Starting Class Creator...");
 			await clc.main();
 			game.interest("Starting Class Creator...OK");
-		} else if (answer === "cardTest") {
+		} else if (answer === "start packager") {
+			game.interest("Starting Packager...");
+			await pkgr.main();
+			game.interest("Starting Packager...OK");
+		} else if (answer === "test cards") {
 			game.interest("Starting Card Test...");
 			await cardTest.main();
 			game.interest("Starting Card Test...OK");
-		} else if (answer === "crashTest") {
+		} else if (answer === "crash test") {
 			game.interest("Starting Crash Test...");
 			await crashTest.main();
 			game.interest("Starting Crash Test...OK");
-		} else if (answer === "generateVanilla") {
+		} else if (answer === "generate vanilla cards") {
 			if (!game.config.networking.allow.game) {
 				console.error(
 					"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
@@ -196,10 +163,6 @@ export async function devmode() {
 			game.interest("Generating vanilla cards...");
 			await generateVanilla.main();
 			game.interest("Generating vanilla cards...OK");
-		} else if (answer === "pkgr") {
-			game.interest("Starting Packager...");
-			await pkgr.main();
-			game.interest("Starting Packager...OK");
 		} else if (answer === "back") {
 			break;
 		}
@@ -210,30 +173,19 @@ export async function main() {
 	while (true) {
 		watermark();
 
-		const answer = await select({
-			message: "Options",
-			choices: [
-				{
-					name: "Play",
-					value: "play",
-				},
-				{
-					name: "Create a Deck",
-					value: "deck",
-				},
-				{
-					name: "Developer Options",
-					value: "developer",
-				},
-				new Separator(),
-				{
-					name: "Exit",
-					value: "exit",
-				},
-			],
-			loop: false,
-			pageSize: 15,
-		});
+		const answer = await game.prompt.customSelect(
+			"Options",
+			[],
+			{
+				hideBack: true,
+				arrayTransform: undefined,
+			},
+			"Play",
+			"Create a Deck",
+			"Developer Options",
+			new Separator(),
+			"Exit",
+		);
 
 		if (answer === "play") {
 			game.interest("Starting Game...");
@@ -244,11 +196,11 @@ export async function main() {
 			 * All the other similar lines are fine, since only the game generates log files for now.
 			 */
 			game.interest("Starting Game...OK");
-		} else if (answer === "deck") {
+		} else if (answer === "create a deck") {
 			game.interest("Starting Deck Creator...");
 			await dc.main();
 			game.interest("Starting Deck Creator...OK");
-		} else if (answer === "developer") {
+		} else if (answer === "developer options") {
 			game.interest("Loading Developer Mode options...");
 			await devmode();
 			game.interest("Loading Developer Mode options...OK");

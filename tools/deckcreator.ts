@@ -29,6 +29,9 @@ let deck: Card[] = [];
 let deckcodeFormat: DeckcodeFormat = DeckcodeFormat.JS;
 const undoableCommandHistory: string[] = [];
 
+let searchPrompt: string | undefined;
+let lastPickedOption: string | undefined;
+
 /**
  * Asks the user which class to choose, and returns it.
  */
@@ -225,6 +228,7 @@ export async function main(): Promise<void> {
 
 		const id = await search({
 			message: "",
+			default: lastPickedOption,
 			source: async (value) => [
 				{
 					value: "Deck",
@@ -237,11 +241,18 @@ export async function main(): Promise<void> {
 					cardsToShow
 						.filter(
 							// TODO: Add runes.
-							(c) =>
-								(!value ||
-									c.name.toLowerCase().includes(value.toLowerCase()) ||
-									c.id.includes(value)) &&
-								filterCards(c),
+							(c) => {
+								// Store the search prompt.
+								value = value ?? searchPrompt;
+								searchPrompt = value;
+
+								return (
+									(!value ||
+										c.name.toLowerCase().includes(value.toLowerCase()) ||
+										c.id.includes(value)) &&
+									filterCards(c)
+								);
+							},
 						)
 						.sort((a, b) => a.name.localeCompare(b.name))
 						.map(async (c) => ({
@@ -255,12 +266,17 @@ export async function main(): Promise<void> {
 			pageSize: 15,
 		});
 
+		lastPickedOption = id;
+
 		if (id === "Deck") {
 			showingDeck = !showingDeck;
 			cardsToShow = showingDeck ? deck : cards;
+
+			searchPrompt = undefined;
 			continue;
 		} else if (id === "Commands") {
-			// TODO: Do.
+			searchPrompt = undefined;
+
 			let commands = [
 				"Neutral - Switch between showing Neutral cards.",
 				"Undo - Undo the last action.",
