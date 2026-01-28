@@ -502,14 +502,7 @@ async function configureMetadata(metadata: Metadata) {
 
 			dirty = true;
 		} else if (answer === "license") {
-			const license = await game.prompt.customSelect(
-				"Set the license of the pack.",
-				[],
-				{
-					hideBack: true,
-					default: metadata.license,
-					arrayTransform: undefined,
-				},
+			const licenses = [
 				{
 					value: "Proprietary",
 					description:
@@ -542,6 +535,22 @@ async function configureMetadata(metadata: Metadata) {
 					value: "other",
 					description: "Specify another license.",
 				},
+			];
+
+			const license = await game.prompt.customSelect(
+				"Set the license of the pack.",
+				[],
+				{
+					hideBack: true,
+					// If the license exists, choose it by default. Otherwise choose "Other".
+					default: licenses
+						.map((l) => (l instanceof Separator ? undefined : l.value))
+						.includes(metadata.license)
+						? metadata.license
+						: "other",
+					arrayTransform: undefined,
+				},
+				...licenses,
 			);
 
 			if (license === "other") {

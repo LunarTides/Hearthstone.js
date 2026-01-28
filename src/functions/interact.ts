@@ -176,7 +176,8 @@ const prompt = {
 
 		if (["back", "done", "cancel"].includes(answer.toLowerCase())) {
 			// Go back to the first option. The next time.
-			selectValues[message] = choices[0] ?? otherChoices[0];
+			selectValues[message] =
+				typeof choices?.[0] === "string" ? choices[0] : otherChoices[0];
 		} else {
 			// Remember the cursor position.
 			selectValues[message] = answer;
