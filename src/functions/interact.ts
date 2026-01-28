@@ -100,6 +100,7 @@ const prompt = {
 				| undefined;
 			hideBack: boolean;
 			resetCursor?: boolean;
+			default?: unknown;
 		},
 		...otherChoices: (
 			| Separator
@@ -166,16 +167,18 @@ const prompt = {
 		const answer = await select({
 			message,
 			choices,
-			default: options?.resetCursor ? undefined : selectValues[message],
+			default:
+				options?.default ??
+				(options?.resetCursor ? undefined : selectValues[message]),
 			loop: false,
 			pageSize: 15,
 		});
 
-		// Remember the cursor position.
-		if (answer === "Back" || answer === "back") {
-			// Go back to the first option.
+		if (["back", "done", "cancel"].includes(answer.toLowerCase())) {
+			// Go back to the first option. The next time.
 			selectValues[message] = choices[0] ?? otherChoices[0];
 		} else {
+			// Remember the cursor position.
 			selectValues[message] = answer;
 		}
 

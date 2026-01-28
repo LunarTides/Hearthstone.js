@@ -5,7 +5,7 @@
 import { createGame } from "@Game/game.ts";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
-import { confirm, input, Separator, select } from "@inquirer/prompts";
+import { confirm, input, Separator } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
@@ -166,7 +166,7 @@ async function importPack() {
 
 		const packs = await getPacks();
 		const answer = await game.prompt.customSelect(
-			"Choose a Pack",
+			"Import a Pack",
 			packs.map((p) => `@${p.ownerName}/${p.name}`),
 			{
 				arrayTransform: undefined,
@@ -255,7 +255,7 @@ async function exportPack() {
 
 		const packs = await getPacks();
 		const answer = await game.prompt.customSelect(
-			"Choose a Pack",
+			"Export a Pack",
 			packs.map((p) => `@${p.ownerName}/${p.name}`),
 			{ arrayTransform: undefined, hideBack: true },
 			"New",
@@ -407,70 +407,70 @@ async function configureMetadata(metadata: Metadata) {
 		console.log(JSON.stringify(metadata, null, 4));
 		console.log();
 
-		// TODO: Use `game.prompt.customSelect`
-		const answer = await select({
-			message: "Configure Metadata",
-			choices: [
-				{
-					name: "Version",
-					value: "version",
-					description: "The version of the pack. Uses semver.",
-				},
-				{
-					name: "Name",
-					value: "name",
-					description:
-						"The name of the pack. This must be unique for the author.",
-				},
-				{
-					name: "Description",
-					value: "description",
-					description: "The description of the pack.",
-				},
-				{
-					name: "Author",
-					value: "author",
-					description:
-						"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
-				},
-				{
-					name: "License",
-					value: "license",
-					description:
-						"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
-				},
-				{
-					name: "Links",
-					value: "links",
-					description:
-						"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
-				},
-				{
-					name: "Permissions",
-					value: "permissions",
-					description:
-						"Resources that the pack needs to function. Check this out before exporting.",
-				},
-				{
-					name: "Requires",
-					value: "requires",
-					description: "Pack dependencies.",
-				},
-				new Separator(),
-				{
-					name: "Cancel",
-					value: "cancel",
-					description: "Cancel changes to the metadata.",
-				},
-				{
-					name: "Done",
-					value: "done",
-					description: "Done configuring metadata.",
-				},
-			],
-			loop: false,
-			pageSize: 15,
-		});
+		const answer = await game.prompt.customSelect(
+			"Configure Metadata",
+			[],
+			{
+				hideBack: true,
+				arrayTransform: undefined,
+			},
+			{
+				name: "Version",
+				value: "version",
+				description: "The version of the pack. Uses semver.",
+			},
+			{
+				name: "Name",
+				value: "name",
+				description:
+					"The name of the pack. This must be unique for the author.",
+			},
+			{
+				name: "Description",
+				value: "description",
+				description: "The description of the pack.",
+			},
+			{
+				name: "Author",
+				value: "author",
+				description:
+					"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
+			},
+			{
+				name: "License",
+				value: "license",
+				description:
+					"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
+			},
+			{
+				name: "Links",
+				value: "links",
+				description:
+					"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
+			},
+			{
+				name: "Permissions",
+				value: "permissions",
+				description:
+					"Resources that the pack needs to function. Check this out before exporting.",
+			},
+			{
+				name: "Requires",
+				value: "requires",
+				description: "Pack dependencies.",
+			},
+			new Separator(),
+			{
+				name: "Cancel",
+				value: "cancel",
+				description: "Cancel changes to the metadata.",
+			},
+			{
+				name: "Done",
+				value: "done",
+				description: "Done configuring metadata.",
+			},
+		);
 
 		if (answer === "version") {
 			metadata.versions.pack = await input({
@@ -502,47 +502,47 @@ async function configureMetadata(metadata: Metadata) {
 
 			dirty = true;
 		} else if (answer === "license") {
-			// TODO: Use `game.prompt.customSelect`
-			const license = await select({
-				message: "Set the license of the pack.",
-				choices: [
-					{
-						value: "Proprietary",
-						description:
-							"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
-					},
-					new Separator(),
-					{
-						value: "GPL-2.0",
-						description: "GNU General Public License Version 2.0",
-					},
-					{
-						value: "GPL-3.0",
-						description: "GNU General Public License Version 3.0",
-					},
-					{
-						value: "AGPL-3.0",
-						description: "GNU Affero General Public License Version 3.0",
-					},
-					{
-						value: "MIT",
-						description: "MIT License",
-					},
-					{
-						value: "Apache-2.0",
-						description: "Apache License Version 2.0",
-					},
-					new Separator(),
-					{
-						name: "Other",
-						value: "other",
-						description: "Specify another license.",
-					},
-				],
-				default: metadata.license,
-				loop: false,
-				pageSize: 15,
-			});
+			const license = await game.prompt.customSelect(
+				"Set the license of the pack.",
+				[],
+				{
+					hideBack: true,
+					default: metadata.license,
+					arrayTransform: undefined,
+				},
+				{
+					value: "Proprietary",
+					description:
+						"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
+				},
+				new Separator(),
+				{
+					value: "GPL-2.0",
+					description: "GNU General Public License Version 2.0",
+				},
+				{
+					value: "GPL-3.0",
+					description: "GNU General Public License Version 3.0",
+				},
+				{
+					value: "AGPL-3.0",
+					description: "GNU Affero General Public License Version 3.0",
+				},
+				{
+					value: "MIT",
+					description: "MIT License",
+				},
+				{
+					value: "Apache-2.0",
+					description: "Apache License Version 2.0",
+				},
+				new Separator(),
+				{
+					name: "Other",
+					value: "other",
+					description: "Specify another license.",
+				},
+			);
 
 			if (license === "other") {
 				metadata.license = await input({ message: "License." });
@@ -637,25 +637,27 @@ export async function main() {
 	while (true) {
 		hub.watermark();
 
-		// TODO: Use `game.prompt.customSelect`
-		const answer = await select({
-			message: "Packager Options",
-			choices: [
-				{
-					name: "Export a Pack",
-					value: "export",
-				},
-				{
-					name: "Import a Pack",
-					value: "import",
-				},
-				new Separator(),
-				{
-					name: "Back",
-					value: "back",
-				},
-			],
-		});
+		const answer = await game.prompt.customSelect(
+			"Packager Options",
+			[],
+			{
+				arrayTransform: undefined,
+				hideBack: true,
+			},
+			{
+				name: "Export a Pack",
+				value: "export",
+			},
+			{
+				name: "Import a Pack",
+				value: "import",
+			},
+			new Separator(),
+			{
+				name: "Back",
+				value: "back",
+			},
+		);
 
 		if (answer === "export") {
 			await exportPack();
