@@ -19,7 +19,7 @@
 	"license": "GPL-3.0-or-later",
 	"dependencies": {
 		"@inquirer/core": "^11.0.2",
-		"@inquirer/prompts": "^8.0.2",
+		"@inquirer/prompts": "^8.2.0",
 		"bun": "^1.3.6",
 		"chalk-tags": "^1.1.3",
 		"date-and-time": "^4.1.0",

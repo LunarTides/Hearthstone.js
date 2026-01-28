@@ -69,6 +69,7 @@ process.on("uncaughtException", (error) => {
 });
 
 let seenFunFacts: string[] = [];
+const selectValues: Record<string, any> = {};
 
 const prompt = {
 	/**
@@ -80,6 +81,7 @@ const prompt = {
 	 * @param otherChoices Add choices other than the ones supplied from the array.
 	 * @returns The answer that the user chose.
 	 */
+	// TODO: Rewrite this function. Holy crap...
 	async customSelect(
 		message: string,
 		array: string[],
@@ -97,6 +99,8 @@ const prompt = {
 				  }>)
 				| undefined;
 			hideBack: boolean;
+			resetCursor?: boolean;
+			default?: unknown;
 		},
 		...otherChoices: (
 			| Separator
@@ -163,9 +167,21 @@ const prompt = {
 		const answer = await select({
 			message,
 			choices,
+			default:
+				options?.default ??
+				(options?.resetCursor ? undefined : selectValues[message]),
 			loop: false,
 			pageSize: 15,
 		});
+
+		if (["back", "done", "cancel"].includes(answer.toLowerCase())) {
+			// Go back to the first option. The next time.
+			selectValues[message] =
+				typeof choices?.[0] === "string" ? choices[0] : otherChoices[0];
+		} else {
+			// Remember the cursor position.
+			selectValues[message] = answer;
+		}
 
 		return answer;
 	},
@@ -873,12 +889,17 @@ const prompt = {
 			} else {
 				console.log();
 
-				target = await select({
-					message: newPrompt,
-					choices,
-					loop: false,
-					pageSize: 15,
-				});
+				target = await game.prompt.customSelect(
+					newPrompt,
+					[],
+					{
+						hideBack: true,
+						arrayTransform: undefined,
+						// TODO: Consider resetting the cursor here.
+						//resetCursor: true,
+					},
+					...choices,
+				);
 			}
 
 			// Player chose to go back

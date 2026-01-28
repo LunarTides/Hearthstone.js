@@ -1,5 +1,5 @@
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
-import { confirm, input, number, Separator, select } from "@inquirer/prompts";
+import { confirm, input, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
@@ -13,54 +13,55 @@ async function configure(
 	while (true) {
 		hub.watermark(false);
 
-		const answer = await select({
-			message: "Configure Class",
-			choices: [
-				{
-					name: `Class Name (${heroBlueprint.classes[0]})`,
-					value: "className",
-					description: "The name of the class. Example: GnomeHunter",
-				},
-				new Separator(),
-				{
-					name: `Hero Name (${heroBlueprint.name})`,
-					value: "heroName",
-					description:
-						"The name of the default hero. Example: Hunter Gnomingstein",
-				},
-				new Separator(),
-				{
-					name: `Heropower Name (${heropowerBlueprint.name})`,
-					value: "heropowerName",
-					description:
-						"The name of the default hero's heropower. Example: Hunt Gnome",
-				},
-				{
-					name: `Heropower Description (${heropowerBlueprint.text})`,
-					value: "heropowerText",
-					description:
-						"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
-				},
-				{
-					name: `Heropower Cost (${heropowerBlueprint.cost})`,
-					value: "heropowerCost",
-					description: "The cost of the default hero's heropower. Default: 2",
-				},
-				new Separator(),
-				{
-					name: "Cancel",
-					value: "cancel",
-					description: "Cancel changes to the class.",
-				},
-				{
-					name: "Done",
-					value: "done",
-					description: "Done configuring class.",
-				},
-			],
-			loop: false,
-			pageSize: 15,
-		});
+		const answer = await game.prompt.customSelect(
+			"Configure Class",
+			[],
+			{
+				hideBack: true,
+				arrayTransform: undefined,
+			},
+			{
+				name: `Class Name (${heroBlueprint.classes[0]})`,
+				value: "className",
+				description: "The name of the class. Example: GnomeHunter",
+			},
+			new Separator(),
+			{
+				name: `Hero Name (${heroBlueprint.name})`,
+				value: "heroName",
+				description:
+					"The name of the default hero. Example: Hunter Gnomingstein",
+			},
+			new Separator(),
+			{
+				name: `Heropower Name (${heropowerBlueprint.name})`,
+				value: "heropowerName",
+				description:
+					"The name of the default hero's heropower. Example: Hunt Gnome",
+			},
+			{
+				name: `Heropower Description (${heropowerBlueprint.text})`,
+				value: "heropowerText",
+				description:
+					"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
+			},
+			{
+				name: `Heropower Cost (${heropowerBlueprint.cost})`,
+				value: "heropowerCost",
+				description: "The cost of the default hero's heropower. Default: 2",
+			},
+			new Separator(),
+			{
+				name: "Cancel",
+				value: "cancel",
+				description: "Cancel changes to the class.",
+			},
+			{
+				name: "Done",
+				value: "done",
+				description: "Done configuring class.",
+			},
+		);
 
 		if (answer === "className") {
 			const className = (await input({
