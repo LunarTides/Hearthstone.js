@@ -130,7 +130,7 @@
 					{/await}
 				</a>
 			{:else}
-				<p
+				<div
 					title="You're already on this page."
 					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
 					aria-disabled="true"
@@ -141,7 +141,7 @@
 					{:then cards}
 						<p>Cards ({cards.length})</p>
 					{/await}
-				</p>
+				</div>
 			{/if}
 
 			<!-- Comments -->

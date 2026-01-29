@@ -141,9 +141,11 @@
 								{#if commentDeleteConfirm === comment.id}
 									<!-- TODO: Use superforms. -->
 									<form
-										action={resolve("/@[username]/-[packName]/comments/[commentId]", {
+										action={resolve("/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]", {
 											username: page.params.username!,
 											packName: page.params.packName!,
+											version: page.params.version!,
+											id: page.params.id!,
 											commentId: comment.id,
 										}) + "?/delete"}
 										method="post"
