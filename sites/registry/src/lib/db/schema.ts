@@ -12,6 +12,7 @@ import { sql } from "drizzle-orm";
 import type { CensoredUser } from "$lib/user";
 import { numeric } from "drizzle-orm/pg-core";
 import type { CensoredGroup } from "$lib/group";
+import type { CensoredPack } from "$lib/pack";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
@@ -155,8 +156,9 @@ export const packComment = pgTable("packComment", {
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	username: text("username").references(() => user.username, { onDelete: "set null" }),
-	packOwnerName: text("pack_owner_name").notNull(),
-	packName: text("pack_name").notNull(),
+	packId: uuid("pack_id")
+		.notNull()
+		.references(() => pack.id),
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),
@@ -238,6 +240,7 @@ export type PackWithExtras = Pack & {
 
 export type PackCommentWithExtras = PackComment & {
 	author: CensoredUser | null;
+	pack: CensoredPack;
 	likes: {
 		positive: number;
 		negative: number;

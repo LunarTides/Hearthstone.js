@@ -4,6 +4,7 @@ import { censorUser } from "$lib/user";
 import { asc, eq } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
+import { censorPack } from "$lib/pack";
 
 export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 	clientUser: ClientUser | null,
@@ -15,6 +16,7 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 		.orderBy(asc(table.packComment.creationDate))
 		.fullJoin(table.packCommentLike, eq(table.packComment.id, table.packCommentLike.commentId))
 		.fullJoin(table.user, eq(table.packComment.username, table.user.username))
+		.fullJoin(table.pack, eq(table.packComment.packId, table.pack.id))
 		.fullJoin(heartedBy, eq(table.packComment.heartedByUsername, heartedBy.username));
 
 	// Show all comments.
@@ -37,6 +39,7 @@ export const getFullPackComment = async <T extends PgSelect<"packComment">>(
 		comments.push({
 			...p.packComment,
 			author: p.user && censorUser(p.user, clientUser),
+			pack: censorPack(p.pack!, clientUser),
 			likes: {
 				positive: likes.size,
 				hasLiked: clientUser ? likes.has(clientUser.username) : false,

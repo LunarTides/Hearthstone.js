@@ -31,8 +31,6 @@ const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const { username, packName, version, id } = event.params;
-
 	const parent = await event.parent();
 	const latest = parent.packs.latest;
 
@@ -45,14 +43,7 @@ export const load = async (event) => {
 
 export const actions = {
 	post: async (event) => {
-		const { username, packName } = event.params;
-
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return fail(packs.error.status, { message: packs.error.message });
-		}
-
-		const pack = packs.latest;
+		const { username, packName, version, id } = event.params;
 
 		const formData = await event.request.formData();
 		const text = formData.get("text");
@@ -65,9 +56,11 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/comments", {
-				username: pack.ownerName,
-				packName: pack.name,
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/comments", {
+				username,
+				packName,
+				version,
+				id,
 			}),
 			{
 				method: "POST",

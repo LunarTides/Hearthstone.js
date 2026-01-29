@@ -141,13 +141,16 @@
 								{#if commentDeleteConfirm === comment.id}
 									<!-- TODO: Use superforms. -->
 									<form
-										action={resolve("/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]", {
-											username: page.params.username!,
-											packName: page.params.packName!,
-											version: page.params.version!,
-											id: page.params.id!,
-											commentId: comment.id,
-										}) + "?/delete"}
+										action={resolve(
+											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+											{
+												username: page.params.username!,
+												packName: page.params.packName!,
+												version: comment.pack.packVersion,
+												id: comment.pack.id,
+												commentId: comment.id,
+											},
+										) + "?/delete"}
 										method="post"
 										use:enhance
 									>
@@ -196,6 +199,8 @@
 									</div>
 									<Badge class="bg-red-400 h-fit self-center text-black">Deleted User</Badge>
 								{/if}
+
+								<p class="self-center text-gray-500">({comment.pack.packVersion})</p>
 							</div>
 						</div>
 
@@ -211,10 +216,10 @@
 								action={resolve(
 									"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
 									{
-										username: versions.latest.ownerName,
-										packName: versions.latest.name,
-										version: versions.latest.packVersion,
-										id: versions.latest.id,
+										username: page.params.username!,
+										packName: page.params.packName!,
+										version: comment.pack.packVersion,
+										id: comment.pack.id,
 										commentId: comment.id,
 									},
 								) + "?/like"}
@@ -233,10 +238,10 @@
 								action={resolve(
 									"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
 									{
-										username: versions.latest.ownerName,
-										packName: versions.latest.name,
-										version: versions.latest.packVersion,
-										id: versions.latest.id,
+										username: page.params.username!,
+										packName: page.params.packName!,
+										version: comment.pack.packVersion,
+										id: comment.pack.id,
 										commentId: comment.id,
 									},
 								) + "?/dislike"}
@@ -257,10 +262,10 @@
 										action={resolve(
 											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
 											{
-												username: versions.latest.ownerName,
-												packName: versions.latest.name,
-												version: versions.latest.packVersion,
-												id: versions.latest.id,
+												username: page.params.username!,
+												packName: page.params.packName!,
+												version: comment.pack.packVersion,
+												id: comment.pack.id,
 												commentId: comment.id,
 											},
 										) + "?/unheart"}
@@ -284,10 +289,10 @@
 										action={resolve(
 											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
 											{
-												username: versions.latest.ownerName,
-												packName: versions.latest.name,
-												version: versions.latest.packVersion,
-												id: versions.latest.id,
+												username: page.params.username!,
+												packName: page.params.packName!,
+												version: comment.pack.packVersion,
+												id: comment.pack.id,
 												commentId: comment.id,
 											},
 										) + "?/heart"}
