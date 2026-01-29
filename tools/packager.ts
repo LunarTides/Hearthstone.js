@@ -67,7 +67,7 @@ async function getPacks() {
 					(file.isDirectory() &&
 						(await game.functions.util.fs(
 							"exists",
-							resolve(path, "meta.jsonc"),
+							resolve(path, "pack.jsonc"),
 						)))
 				)
 			) {
@@ -104,9 +104,9 @@ async function getPacks() {
 }
 
 async function parseMetadataFile(pack: string) {
-	if (!(await game.functions.util.fs("exists", `/packs/${pack}/meta.jsonc`))) {
+	if (!(await game.functions.util.fs("exists", `/packs/${pack}/pack.jsonc`))) {
 		await game.pause(
-			"<red>Invalid pack. This pack doesn't include a 'meta.jsonc' file.</red>\n",
+			"<red>Invalid pack. This pack doesn't include a 'pack.jsonc' file.</red>\n",
 		);
 		return null;
 	}
@@ -114,7 +114,7 @@ async function parseMetadataFile(pack: string) {
 	const metadata: Metadata = JSON.parse(
 		(await game.functions.util.fs(
 			"readFile",
-			`/packs/${pack}/meta.jsonc`,
+			`/packs/${pack}/pack.jsonc`,
 			"utf8",
 			{ invalidateCache: true },
 		)) as string,
@@ -291,11 +291,11 @@ async function exportPack() {
 			if (
 				!(await game.functions.util.fs(
 					"exists",
-					resolve(pack.path, "meta.jsonc"),
+					resolve(pack.path, "pack.jsonc"),
 				))
 			) {
 				await game.pause(
-					"<yellow>That pack doesn't have a 'meta.jsonc' file.</yellow>",
+					"<yellow>That pack doesn't have a 'pack.jsonc' file.</yellow>",
 				);
 				continue;
 			}
@@ -303,7 +303,7 @@ async function exportPack() {
 			metadata = Bun.JSONC.parse(
 				(await game.functions.util.fs(
 					"readFile",
-					`${pack.path}/meta.jsonc`,
+					`${pack.path}/pack.jsonc`,
 					"utf8",
 					{ invalidateCache: true },
 				)) as string,
@@ -360,7 +360,7 @@ async function exportPack() {
 
 		await game.functions.util.fs(
 			"writeFile",
-			`/packs/${author}+${name}/meta.jsonc`,
+			`/packs/${author}+${name}/pack.jsonc`,
 			JSON.stringify(metadata, null, 4),
 		);
 

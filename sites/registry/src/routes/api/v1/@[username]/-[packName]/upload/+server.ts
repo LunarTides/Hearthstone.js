@@ -174,13 +174,13 @@ export async function POST(event) {
 			return json({ message: "Archive contains illegal file types." }, { status: 400 });
 		}
 
-		if (file.name.endsWith("meta.jsonc")) {
+		if (file.name.endsWith("pack.jsonc")) {
 			hasMeta = true;
 		}
 	}
 
 	if (!hasMeta) {
-		return json({ message: "'meta.jsonc' not found." }, { status: 400 });
+		return json({ message: "'pack.jsonc' not found." }, { status: 400 });
 	}
 
 	// TODO: Only allow alphanumeric characters and - in pack names.
@@ -200,7 +200,7 @@ export async function POST(event) {
 		}
 	}
 
-	const metadataContent = await fs.readFile(`${tmpPath}/meta.jsonc`, "utf8");
+	const metadataContent = await fs.readFile(`${tmpPath}/pack.jsonc`, "utf8");
 
 	// TODO: Parse via zod.
 	// TODO: Reject proprietary packs.
