@@ -36,9 +36,9 @@ const request = async (event: RequestEvent, url: string) => {
 
 export const actions: Actions = {
 	login: async (event) => {
-		return request(event, resolve("/api/v1/user/login"));
+		return request(event, resolve("/api/next/user/login"));
 	},
 	register: async (event) => {
-		return request(event, resolve("/api/v1/user/register"));
+		return request(event, resolve("/api/next/user/register"));
 	},
 };

@@ -26,7 +26,7 @@ export const actions = {
 
 		const response = await requestAPI<{ group: GroupWithExtras }>(
 			event,
-			resolve("/api/v1/groups"),
+			resolve("/api/next/groups"),
 			{
 				method: "POST",
 				body: JSON.stringify(form.data),

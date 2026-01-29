@@ -13,7 +13,7 @@ const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
 	// return error(400, { message: "hi" });
 	const response = await requestAPI<PackCommentWithExtras[]>(
 		event,
-		resolve("/api/v1/@[username]/-[packName]/comments", {
+		resolve("/api/next/@[username]/-[packName]/comments", {
 			username: pack.ownerName,
 			packName: pack.name,
 		}),
@@ -44,7 +44,7 @@ export const load = async (event) => {
 	if (readme) {
 		const response = await requestAPI<File>(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
 				username,
 				packName,
 				version,
@@ -87,7 +87,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/download", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/download", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -129,7 +129,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -168,7 +168,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/approve", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -216,7 +216,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/approve", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -264,7 +264,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -312,7 +312,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
+			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,

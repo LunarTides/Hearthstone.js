@@ -19,7 +19,7 @@ export const load = async (event) => {
 	// TODO: Stream.
 	const response = await requestAPI<{ groups: CensoredGroup[] }>(
 		event,
-		resolve("/api/v1/groups/user/@[username]/can-upload-to", { username: clientUser.username }),
+		resolve("/api/next/groups/user/@[username]/can-upload-to", { username: clientUser.username }),
 	);
 	if (response.error) {
 		return message(form, response.error.message, { status: response.error.status as any });
@@ -44,7 +44,7 @@ export const actions = {
 
 		const response = await requestAPI<{ pack: Pack }>(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/upload", { username: ownerName, packName }),
+			resolve("/api/next/@[username]/-[packName]/upload", { username: ownerName, packName }),
 			{
 				method: "POST",
 				headers: { "Content-Type": "application/octet-stream" },

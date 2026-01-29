@@ -11,7 +11,7 @@ export const load = (event) => {
 	const getUser = async () => {
 		const response = await requestAPI<
 			(UserAndProfile & { ownerType: "User" }) | (Group & { ownerType: "Group" })
-		>(event, resolve(`/api/v1/@[username]`, { username }));
+		>(event, resolve(`/api/next/@[username]`, { username }));
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });
 		}

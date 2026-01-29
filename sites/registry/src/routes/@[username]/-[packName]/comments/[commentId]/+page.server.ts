@@ -8,7 +8,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments/[commentId]/like", {
+			resolve("/api/next/@[username]/-[packName]/comments/[commentId]/like", {
 				username,
 				packName,
 				commentId,
@@ -26,7 +26,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments/[commentId]/dislike", {
+			resolve("/api/next/@[username]/-[packName]/comments/[commentId]/dislike", {
 				username,
 				packName,
 				commentId,
@@ -44,7 +44,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments/[commentId]/heart", {
+			resolve("/api/next/@[username]/-[packName]/comments/[commentId]/heart", {
 				username,
 				packName,
 				commentId,
@@ -62,7 +62,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments/[commentId]/heart", {
+			resolve("/api/next/@[username]/-[packName]/comments/[commentId]/heart", {
 				username,
 				packName,
 				commentId,
@@ -81,7 +81,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments/[commentId]", {
+			resolve("/api/next/@[username]/-[packName]/comments/[commentId]", {
 				username,
 				packName,
 				commentId,

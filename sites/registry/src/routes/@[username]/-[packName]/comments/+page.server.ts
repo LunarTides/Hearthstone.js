@@ -26,7 +26,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/comments", {
+			resolve("/api/next/@[username]/-[packName]/comments", {
 				username: pack.ownerName,
 				packName: pack.name,
 			}),

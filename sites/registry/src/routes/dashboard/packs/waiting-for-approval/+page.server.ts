@@ -10,7 +10,7 @@ export const load = (event) => {
 	const getResult = async () => {
 		const response = await requestAPI<PackWithExtras[]>(
 			event,
-			resolve("/api/v1/moderation/packs/list/waiting-for-approval") + `?page=${page}`,
+			resolve("/api/next/moderation/packs/list/waiting-for-approval") + `?page=${page}`,
 		);
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });

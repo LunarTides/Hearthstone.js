@@ -17,7 +17,7 @@ const getCards = async (
 
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/cards", {
+		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/cards", {
 			username,
 			packName,
 			version,
@@ -48,7 +48,7 @@ export const load = async (event) => {
 
 	const response = await requestAPI<FileTree[]>(
 		event,
-		resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/files", {
+		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,

@@ -40,7 +40,7 @@ export const load = async (event) => {
 
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/cards", {
+		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/cards", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,
@@ -73,7 +73,7 @@ export const actions = {
 		const formData = await event.request.formData();
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]", {
+			resolve("/api/next/@[username]", {
 				username,
 			}),
 			{

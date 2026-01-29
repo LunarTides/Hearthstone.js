@@ -7,7 +7,7 @@ export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
 	const response = await requestAPI<{ notifications: Notification[] }>(
 		event,
-		resolve("/api/v1/notifications"),
+		resolve("/api/next/notifications"),
 	);
 	if (response.error) {
 		return fail(response.error.status, { message: response.error.message });
@@ -19,7 +19,7 @@ export const load = async (event) => {
 export const actions = {
 	// TODO: Deduplicate.
 	clear: async (event) => {
-		const response = await requestAPI(event, resolve("/api/v1/notifications/clear"), {
+		const response = await requestAPI(event, resolve("/api/next/notifications/clear"), {
 			method: "POST",
 		});
 		if (response.error) {

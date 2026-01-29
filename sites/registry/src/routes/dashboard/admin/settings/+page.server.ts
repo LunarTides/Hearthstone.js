@@ -4,7 +4,7 @@ import type { Setting } from "$lib/db/schema.js";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {
-	const settings = requestAPI<{ settings: Setting[] }>(event, resolve("/api/v1/settings")).then(
+	const settings = requestAPI<{ settings: Setting[] }>(event, resolve("/api/next/settings")).then(
 		async (response) => {
 			if (response.error) {
 				return [];
@@ -31,7 +31,7 @@ export const actions = {
 			return fail(400, { message: "Invalid settings object." });
 		}
 
-		const response = await requestAPI(event, resolve("/api/v1/settings"), {
+		const response = await requestAPI(event, resolve("/api/next/settings"), {
 			method: "POST",
 			body: JSON.stringify({ settings }),
 		});

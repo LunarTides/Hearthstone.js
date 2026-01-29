@@ -9,7 +9,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/notifications/[uuid]", {
+			resolve("/api/next/notifications/[uuid]", {
 				uuid,
 			}),
 			{

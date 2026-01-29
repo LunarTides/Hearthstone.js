@@ -7,7 +7,7 @@ export const load = async (event) => {
 
 	const notifications = requestAPI<{ notifications: Notification[] }>(
 		event,
-		resolve("/api/v1/notifications"),
+		resolve("/api/next/notifications"),
 	).then(async (response) => {
 		if (response.error) {
 			return [];

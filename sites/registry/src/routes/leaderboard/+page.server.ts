@@ -8,7 +8,7 @@ export const load = (event) => {
 	const getResult = async () => {
 		const response = await requestAPI<CensoredUser[]>(
 			event,
-			resolve("/api/v1/leaderboard/karma") + `?page=1`,
+			resolve("/api/next/leaderboard/karma") + `?page=1`,
 		);
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });

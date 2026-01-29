@@ -38,7 +38,7 @@ export const load = (event) => {
 
 				const response = await requestAPI<File>(
 					event,
-					resolve("/api/v1/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+					resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
 						username: pack.ownerName,
 						packName: pack.name,
 						version: pack.packVersion,

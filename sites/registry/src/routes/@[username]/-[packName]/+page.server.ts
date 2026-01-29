@@ -24,7 +24,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/like", { username, packName }),
+			resolve("/api/next/@[username]/-[packName]/like", { username, packName }),
 			{
 				method: "POST",
 			},
@@ -39,7 +39,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]/dislike", { username, packName }),
+			resolve("/api/next/@[username]/-[packName]/dislike", { username, packName }),
 			{
 				method: "POST",
 			},
@@ -54,7 +54,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/v1/@[username]/-[packName]", {
+			resolve("/api/next/@[username]/-[packName]", {
 				username,
 				packName,
 			}),
