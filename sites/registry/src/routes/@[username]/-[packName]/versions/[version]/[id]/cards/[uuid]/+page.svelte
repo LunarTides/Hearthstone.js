@@ -56,7 +56,7 @@
 					<a
 						id="version-latest"
 						class="bg-background p-2 text-center rounded-full text-xl text-white target:outline-1"
-						href={resolve("/@[username]/-[packName]/versions/[version]/[id]/card/[uuid]", {
+						href={resolve("/@[username]/-[packName]/versions/[version]/[id]/cards/[uuid]", {
 							username: page.params.username!,
 							packName: page.params.packName!,
 							version: cards.packs.latest.packVersion,
@@ -73,7 +73,7 @@
 					{#each cards.all.toSorted( (a, b) => getPack(cards, b).packVersion.localeCompare(getPack(cards, a).packVersion), ) as card (card.id)}
 						<a
 							id={`version-${card.id}`}
-							href={resolve("/@[username]/-[packName]/versions/[version]/[id]/card/[uuid]", {
+							href={resolve("/@[username]/-[packName]/versions/[version]/[id]/cards/[uuid]", {
 								username: page.params.username!,
 								packName: page.params.packName!,
 								version: getPack(cards, card).packVersion,

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import type { Card, PackWithExtras } from "$lib/db/schema";
+	import type { PackWithExtras } from "$lib/db/schema";
 	import { ThumbsDown, ThumbsUp } from "lucide-svelte";
 	import { enhance } from "$app/forms";
 	import { satisfiesRole } from "$lib/user";
@@ -12,6 +12,7 @@
 		user,
 		hideButtons = false,
 		individual = false,
+		showDownloadButton = false,
 		form = undefined,
 		rawForm = undefined,
 		class: className,
@@ -24,6 +25,7 @@
 		user: ClientUser;
 		hideButtons?: boolean;
 		individual?: boolean;
+		showDownloadButton?: boolean;
 		form?: any;
 		rawForm?: any;
 		class?: string;
@@ -61,6 +63,43 @@
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
 <div class={`rounded-xl rounded-t-none p-7 bg-cover text-white ${className ?? ""}`}>
+	{#if showDownloadButton}
+		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
+			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
+				{#if pack.approved}
+					<!-- TODO: Use superforms. -->
+					<form
+						action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							username: pack.ownerName,
+							packName: pack.name,
+							version: pack.packVersion,
+							id: pack.id,
+						}) + "?/download"}
+						method="post"
+						use:enhance
+					>
+						{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
+						<button
+							type="submit"
+							class="px-5 py-3 w-full rounded-full hover:cursor-pointer hover:bg-cyan-200 active:bg-blue-400"
+						>
+							Download
+						</button>
+					</form>
+					<div class="border-l ml-auto h-auto"></div>
+				{:else}
+					<p
+						title="This pack needs to be approved by a moderator before you can download it."
+						class="px-5 py-3 w-full bg-gray-300 text-gray-700 rounded-full hover:cursor-default"
+					>
+						Download
+					</p>
+					<div class="border-l ml-auto h-auto"></div>
+				{/if}
+			</div>
+		</div>
+	{/if}
+
 	<div class="flex flex-col">
 		<div class="flex gap-1">
 			<h1 class="text-xl font-bold">{pack.name}</h1>

@@ -11,10 +11,8 @@
 	<p>Loading...</p>
 {:then fileInfo}
 	<div class="m-1 p-2 bg-header rounded-md">
-		<details bind:open={fileTreeOpen}>
-			<summary>File Tree ({fileInfo.tree?.children?.length ?? 0})</summary>
-			<FileTree files={fileInfo.tree?.children} />
-		</details>
+		<p class="mb-2">Files ({fileInfo.tree?.children?.length ?? 0})</p>
+		<FileTree files={fileInfo.tree?.children} />
 	</div>
 
 	{#if fileInfo.file.type === "file"}

@@ -2,40 +2,16 @@ import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema, dummySchema } from "$lib/api/schemas.js";
 import type { File } from "$lib/api/types.js";
-import type { PackCommentWithExtras } from "$lib/db/schema.js";
-import type { CensoredPack } from "$lib/pack";
 import { APIGetPack } from "$lib/server/db/pack.js";
 import { error, fail, redirect, type ServerLoadEvent } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-
-const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
-	// return error(400, { message: "hi" });
-	const response = await requestAPI<PackCommentWithExtras[]>(
-		event,
-		resolve("/api/next/@[username]/-[packName]/comments", {
-			username: pack.ownerName,
-			packName: pack.name,
-		}),
-	);
-
-	if (response.error) {
-		return error(response.error.status, { message: response.error.message });
-	}
-
-	const amount = parseInt(response.raw.headers.get("X-Comment-Amount")!, 10);
-
-	return { comments: response.json, amount };
-};
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
 	const { username, packName, version, id } = event.params;
 
 	const parent = await event.parent();
-	const latest = parent.packs.latest;
-
-	const commentsObject = await getComments(event, latest);
 
 	let readmeFile = undefined;
 	const readme = parent.files.find((file) =>
@@ -60,7 +36,6 @@ export const load = async (event) => {
 	}
 
 	return {
-		commentsObject,
 		readme: readmeFile,
 	};
 };
