@@ -117,6 +117,7 @@ export const isUserMemberOfPack = async (
 				and(
 					eq(table.groupMember.groupName, pack.ownerName),
 					eq(table.groupMember.username, username),
+					eq(table.groupMember.accepted, true),
 				),
 			)
 			.limit(1)

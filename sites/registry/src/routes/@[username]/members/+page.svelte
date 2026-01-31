@@ -7,6 +7,7 @@
 	const { data } = $props();
 </script>
 
+<!-- TODO: Hide from non-members. -->
 <a
 	href={resolve("/@[username]/members/new", { username: page.params.username! })}
 	class="flex min-w-77.5 m-2 p-2 bg-header gap-1 w-fit rounded-md transition-all hover:scale-105 hover:drop-shadow-2xl"

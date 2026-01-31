@@ -24,7 +24,7 @@ export async function GET(event) {
 		);
 
 	const groups = result
-		.filter((r) => memberHasPermission(r.groupMember.permissions, "upload"))
+		.filter((r) => memberHasPermission(r.groupMember.permissions, "pack.upload"))
 		.map((r) => censorGroup(r.group, clientUser));
 	return json({ groups });
 }

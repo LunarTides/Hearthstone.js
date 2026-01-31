@@ -59,6 +59,7 @@ export const groupMember = pgTable("groupMember", {
 		.references(() => group.username, { onDelete: "cascade", onUpdate: "cascade" }),
 	username: text("username").notNull(),
 	permissions: text("permissions").array().notNull(),
+	accepted: boolean("accepted").notNull().default(false),
 });
 
 export const pack = pgTable("pack", {

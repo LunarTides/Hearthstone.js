@@ -52,9 +52,12 @@
 					{/if}
 				</div>
 
-				<div class="mt-auto">
+				<div class="flex gap-1 mt-auto">
 					{#if satisfiesRole(member.user, "Moderator")}
 						<Badge class="bg-blue-200 text-black">{member.user.role}</Badge>
+					{/if}
+					{#if !member.accepted}
+						<Badge class="bg-yellow-400 text-black">Invited</Badge>
 					{/if}
 				</div>
 			</div>

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import type { PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorGroup } from "$lib/group";
-import { censorUser } from "$lib/user";
+import { censorUser, satisfiesRole } from "$lib/user";
 
 export const getFullGroups = async <T extends PgSelect<"group">>(
 	clientUser: ClientUser | null,

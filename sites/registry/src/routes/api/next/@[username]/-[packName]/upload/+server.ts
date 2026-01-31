@@ -107,7 +107,7 @@ export async function POST(event) {
 		}
 
 		const { groupMember } = result[0];
-		if (memberHasPermission(groupMember.permissions, "upload")) {
+		if (memberHasPermission(groupMember.permissions, "pack.upload")) {
 			// The user can upload on behalf of that group.
 		} else {
 			return json(
