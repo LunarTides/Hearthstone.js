@@ -1,5 +1,6 @@
 import { resolve } from "$app/paths";
 import * as table from "$lib/db/schema";
+import { censorGroup } from "$lib/group.js";
 import { db } from "$lib/server/db";
 import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
@@ -25,7 +26,7 @@ export async function GET(event) {
 		return json(
 			{
 				ownerType: "Group",
-				...group,
+				...censorGroup(group),
 			},
 			{ status: 200 },
 		);
