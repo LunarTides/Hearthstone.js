@@ -6,10 +6,6 @@ import { censorGroup } from "$lib/group.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
-	if (!clientUser) {
-		return json({ message: "Please log in." }, { status: 401 });
-	}
-
 	const { username } = event.params;
 
 	const result = await db
