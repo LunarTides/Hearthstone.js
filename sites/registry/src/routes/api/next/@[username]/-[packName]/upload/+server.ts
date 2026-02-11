@@ -12,7 +12,6 @@ import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
 import { memberHasPermission } from "$lib/group.js";
 import { setLatestVersion } from "$lib/server/db/pack.js";
-import { resolve } from "node:path";
 
 interface Metadata {
 	versions: {
@@ -146,8 +145,6 @@ export async function POST(event) {
 
 	// Isolate temporarily.
 	const tmpPath = await fs.mkdtemp(join(tmpdir(), "pack-"));
-	const compressedPath = `${tmpPath}/pack.tar.gz`;
-	await fs.writeFile(compressedPath, bytes);
 
 	// Get the
 	const archive = new Bun.Archive(bytes);
@@ -163,7 +160,7 @@ export async function POST(event) {
 	}
 
 	// Prevent path traversal.
-	let hasMeta = false;
+	let metadataFile = undefined;
 
 	for (const file of files) {
 		if (
@@ -175,11 +172,11 @@ export async function POST(event) {
 		}
 
 		if (file.name.endsWith("pack.jsonc")) {
-			hasMeta = true;
+			metadataFile = file;
 		}
 	}
 
-	if (!hasMeta) {
+	if (!metadataFile) {
 		return json({ message: "'pack.jsonc' not found." }, { status: 400 });
 	}
 
@@ -200,7 +197,7 @@ export async function POST(event) {
 		}
 	}
 
-	const metadataContent = await fs.readFile(`${tmpPath}/pack.jsonc`, "utf8");
+	const metadataContent = await metadataFile.text();
 
 	// TODO: Parse via zod.
 	// TODO: Reject proprietary packs.
@@ -210,49 +207,28 @@ export async function POST(event) {
 		error(400, "Invalid pack version.");
 	}
 
-	// let isLatestVersion = true;
-	// let update = false;
-	const updateDB = async (values: InferInsertModel<typeof table.pack>) =>
-		db.insert(table.pack).values(values).returning();
-
-	// const otherVersions = await db
-	// 	.select()
-	// 	.from(table.pack)
-	// 	.where(or(eq(table.pack.uuid, uuid), eq(table.pack.name, metadata.name)));
-	// for (const version of otherVersions) {
-	// if (semver.eq(metadata.versions.pack, version.packVersion)) {
-	// 	// TODO: Add ability for the uploader to limit who can edit the pack.
-	// 	if (version.ownerName === user.username) {
-	// 		// Override.
-	// 		updateDB = async (values: InferInsertModel<typeof pack>) =>
-	// 			db.update(pack).set(values).where(eq(pack.id, version.id)).returning();
-	// 		// // update = true;
-	// 	} else {
-	// 		// No permission.
-	// 		error(403, "You do not have permission to edit this pack.");
-	// 	}
-	// }
-	// }
-
 	// TODO: Delete pack from db if adding cards goes wrong.
-	const pack: Pack[] = await updateDB({
-		ownerName: username,
-		name: packName,
-		metadataVersion: metadata.versions.metadata,
-		gameVersion: metadata.versions.game,
-		packVersion: metadata.versions.pack,
-		description: metadata.description,
-		author: metadata.author,
-		license: metadata.license,
-		permissions: Object.entries(metadata.permissions)
-			.filter(([_, value]) => Boolean(value))
-			.map(([key]) => key),
+	const pack: Pack[] = await db
+		.insert(table.pack)
+		.values({
+			ownerName: username,
+			name: packName,
+			metadataVersion: metadata.versions.metadata,
+			gameVersion: metadata.versions.game,
+			packVersion: metadata.versions.pack,
+			description: metadata.description,
+			author: metadata.author,
+			license: metadata.license,
+			permissions: Object.entries(metadata.permissions)
+				.filter(([_, value]) => Boolean(value))
+				.map(([key]) => key),
 
-		unpackedSize: uncompressedSize,
+			unpackedSize: uncompressedSize,
 
-		isLatestVersion: false,
-		approved: !settings.upload.requireApproval,
-	});
+			isLatestVersion: false,
+			approved: !settings.upload.requireApproval,
+		})
+		.returning();
 
 	// Parse cards.
 	for (const file of files) {
@@ -261,7 +237,7 @@ export async function POST(event) {
 		}
 
 		const abilityRegex = /\tasync (\w+).*? {/g;
-		const content = await fs.readFile(resolve(tmpPath, file.name.replace("/", "")), "utf8");
+		const content = await file.text();
 
 		const abilities = [];
 		for (const match of content.matchAll(abilityRegex)) {
@@ -323,7 +299,6 @@ export async function POST(event) {
 	const finalPath = `./static/assets/packs/${username}/${packName}/${metadata.versions.pack}/${id}`;
 	await fs.mkdir(finalPath, { recursive: true });
 
-	await fs.rm(compressedPath);
 	await fs.cp(tmpPath, finalPath, { recursive: true });
 	await fs.rm(tmpPath, { recursive: true, force: true });
 
