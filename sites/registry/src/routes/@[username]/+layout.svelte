@@ -73,7 +73,7 @@
 	</nav>
 {/if}
 
-<div class={isOnUserPage ? "mr-49.5 lg:mr-65" : ""}>
+<div class={isOnUserPage ? "mr-49.5 lg:mr-64" : ""}>
 	{#if isOnUserPage}
 		{#await data.currentUser}
 			<p>Loading...</p>

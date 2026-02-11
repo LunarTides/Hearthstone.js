@@ -15,7 +15,7 @@
 		<p>Permissions: <strong>{member.permissions.join(", ")}</strong></p>
 
 		{#if data.isInvited}
-      <!-- TODO: Add denying invites. -->
+			<!-- TODO: Add denying invites. -->
 			<form
 				action="?/acceptInvite"
 				method="post"
