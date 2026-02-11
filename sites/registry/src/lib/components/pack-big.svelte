@@ -139,7 +139,7 @@
 				<div>
 					<p class="text-lg font-semibold">Unpacked Size</p>
 					<hr />
-					<p>{formatBytes(pack.unpackedSize)}</p>
+					<p title={`${pack.unpackedSize} Bytes`}>{formatBytes(pack.unpackedSize)}</p>
 				</div>
 
 				<div>
