@@ -3,7 +3,7 @@ import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema, dummySchema } from "$lib/api/schemas.js";
 import type { File } from "$lib/api/types.js";
 import { APIGetPack } from "$lib/server/db/pack.js";
-import { error, fail, redirect, type ServerLoadEvent } from "@sveltejs/kit";
+import { error, fail, redirect } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 
@@ -35,8 +35,17 @@ export const load = async (event) => {
 		readmeFile = response.json;
 	}
 
+	// TODO: Check if replacing the url works.
+	const readmeHTML =
+		readmeFile &&
+		Bun.markdown
+			.html(readmeFile.content, { headingIds: true })
+			// Make `/files/` actually take you to the correct file.
+			.replace('<a href="files/', `<a href="${event.params.id}/files/`);
+
 	return {
 		readme: readmeFile,
+		readmeHTML,
 	};
 };
 
