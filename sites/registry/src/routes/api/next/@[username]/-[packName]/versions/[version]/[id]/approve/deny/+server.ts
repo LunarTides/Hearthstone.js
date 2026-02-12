@@ -84,7 +84,7 @@ export async function POST(event) {
 		username,
 		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been denied.`,
 		route:
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -162,7 +162,7 @@ export async function DELETE(event) {
 		username,
 		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) is being reconsidered for approval!`,
 		route:
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,

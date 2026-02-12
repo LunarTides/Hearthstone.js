@@ -71,9 +71,9 @@ export async function POST(event) {
 			username: comment.username,
 			text: "Your comment has been hearted!",
 			route:
-				resolve("/@[username]/-[packName]", {
-					username: comment.packOwnerName,
-					packName: comment.packName,
+				resolve("/@[username]/-[packName]/comments", {
+					username: comment.pack.ownerName,
+					packName: comment.pack.name,
 				}) + `#comment-${comment.id}`,
 		});
 	}
