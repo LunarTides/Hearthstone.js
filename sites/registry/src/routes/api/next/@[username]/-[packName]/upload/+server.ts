@@ -171,13 +171,13 @@ export async function POST(event) {
 			return json({ message: "Archive contains illegal file types." }, { status: 400 });
 		}
 
-		if (file.name.endsWith("pack.jsonc")) {
+		if (file.name.endsWith("pack.json5")) {
 			metadataFile = file;
 		}
 	}
 
 	if (!metadataFile) {
-		return json({ message: "'pack.jsonc' not found." }, { status: 400 });
+		return json({ message: "'pack.json5' not found." }, { status: 400 });
 	}
 
 	// TODO: Only allow alphanumeric characters and - in pack names.
@@ -201,7 +201,7 @@ export async function POST(event) {
 
 	// TODO: Parse via zod.
 	// TODO: Reject proprietary packs.
-	const metadata = Bun.JSONC.parse(metadataContent) as Metadata;
+	const metadata = Bun.JSON5.parse(metadataContent) as Metadata;
 
 	if (!semver.valid(metadata.versions.pack)) {
 		error(400, "Invalid pack version.");

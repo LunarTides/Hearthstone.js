@@ -60,7 +60,7 @@ export async function generateDefaultSettings() {
 		},
 		{
 			key: "upload.allowedExtensions",
-			value: [".ts", ".jsonc", ".txt", ".md"],
+			value: [".ts", ".json5", ".txt", ".md"],
 			description:
 				"The file extensions allowed in packs. If a pack contains a file with with a disallowed extension, the upload will be rejected.",
 		},

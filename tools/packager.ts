@@ -67,7 +67,7 @@ async function getPacks() {
 					(file.isDirectory() &&
 						(await game.functions.util.fs(
 							"exists",
-							resolve(path, "pack.jsonc"),
+							resolve(path, "pack.json5"),
 						)))
 				)
 			) {
@@ -104,21 +104,21 @@ async function getPacks() {
 }
 
 async function parseMetadataFile(pack: string) {
-	if (!(await game.functions.util.fs("exists", `/packs/${pack}/pack.jsonc`))) {
+	if (!(await game.functions.util.fs("exists", `/packs/${pack}/pack.json5`))) {
 		await game.pause(
-			"<red>Invalid pack. This pack doesn't include a 'pack.jsonc' file.</red>\n",
+			"<red>Invalid pack. This pack doesn't include a 'pack.json5' file.</red>\n",
 		);
 		return null;
 	}
 
-	const metadata: Metadata = JSON.parse(
+	const metadata: Metadata = Bun.JSON5.parse(
 		(await game.functions.util.fs(
 			"readFile",
-			`/packs/${pack}/pack.jsonc`,
+			`/packs/${pack}/pack.json5`,
 			"utf8",
 			{ invalidateCache: true },
 		)) as string,
-	);
+	) as Metadata;
 
 	// Metadata version
 	if (metadata.versions.metadata !== metadataVersion) {
@@ -291,19 +291,19 @@ async function exportPack() {
 			if (
 				!(await game.functions.util.fs(
 					"exists",
-					resolve(pack.path, "pack.jsonc"),
+					resolve(pack.path, "pack.json5"),
 				))
 			) {
 				await game.pause(
-					"<yellow>That pack doesn't have a 'pack.jsonc' file.</yellow>",
+					"<yellow>That pack doesn't have a 'pack.json5' file.</yellow>",
 				);
 				continue;
 			}
 
-			metadata = Bun.JSONC.parse(
+			metadata = Bun.JSON5.parse(
 				(await game.functions.util.fs(
 					"readFile",
-					`${pack.path}/pack.jsonc`,
+					`${pack.path}/pack.json5`,
 					"utf8",
 					{ invalidateCache: true },
 				)) as string,
@@ -360,8 +360,8 @@ async function exportPack() {
 
 		await game.functions.util.fs(
 			"writeFile",
-			`/packs/${author}+${name}/pack.jsonc`,
-			JSON.stringify(metadata, null, 4),
+			`/packs/${author}+${name}/pack.json5`,
+			Bun.JSON5.stringify(metadata, null, 4)!,
 		);
 
 		await game.pause(
@@ -404,7 +404,7 @@ async function exportPack() {
 async function configureMetadata(metadata: Metadata) {
 	while (true) {
 		hub.watermark(false);
-		console.log(JSON.stringify(metadata, null, 4));
+		console.log(Bun.JSON5.stringify(metadata, null, 4));
 		console.log();
 
 		const answer = await game.prompt.customSelect(
