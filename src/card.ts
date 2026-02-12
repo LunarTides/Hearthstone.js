@@ -437,9 +437,13 @@ export class Card {
 	/**
 	 * Returns all cards added to Hearthstone.js from the "cards" folder.
 	 *
-	 * @param include_uncollectible If it should include all uncollectible cards
+	 * @param includeUncollectible If it should include all uncollectible cards
+	 * @param generateIds If it should generate the 'ids.ts' file. It only does this if this is the first time this function has been called this game.
 	 */
-	static async all(include_uncollectible = false): Promise<Card[]> {
+	static async all(
+		includeUncollectible = false,
+		generateIds = true,
+	): Promise<Card[]> {
 		// Don't broadcast CreateCard event here since it would spam the history and log files
 		if (game.cards.length <= 0) {
 			game.cards = await Promise.all(
@@ -448,10 +452,12 @@ export class Card {
 				),
 			);
 
-			await game.functions.card.generateIdsFile();
+			if (generateIds) {
+				await game.functions.card.generateIdsFile();
+			}
 		}
 
-		return game.cards.filter((c) => c.collectible || include_uncollectible);
+		return game.cards.filter((c) => c.collectible || includeUncollectible);
 	}
 
 	/**

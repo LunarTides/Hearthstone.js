@@ -9,7 +9,7 @@ if (import.meta.main) {
 
 const blueprints = game.blueprints;
 
-const cards = await Card.all(true);
+const cards = await Card.all(true, false);
 
 const gamesEnv = process.env.GAMES ?? "";
 let games = parseInt(gamesEnv, 10);
@@ -49,6 +49,10 @@ export async function main(): Promise<void> {
 
 		game.noInput = true;
 		game.noOutput = true;
+
+		// NOTE: This generates `game.cards` without generating an `ids.ts` file. (Very expensive operation.)
+		// This decreases execution time quite a bit. (More noticeable in the cards test.)
+		await Card.all(false, false);
 
 		// Choose random decks for the players
 		for (let i = 0; i < 2; i++) {

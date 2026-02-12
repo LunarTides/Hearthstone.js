@@ -13,7 +13,7 @@ if (import.meta.main) {
 }
 
 const blueprints = game.blueprints;
-const cards = await Card.all(true);
+const cards = await Card.all(true, false);
 
 function calculatePercentage(x: number, subtract = 0) {
 	return Math.round((x / (cards.length - subtract)) * 100);
@@ -54,6 +54,10 @@ export async function main(): Promise<void> {
 		// This makes no sense, but whatever...
 		game.player = player1;
 		game.opponent = player2;
+
+		// NOTE: This generates `game.cards` without generating an `ids.ts` file. (Very expensive operation.)
+		// This decreases the execution time of this script from ~7.4s -> ~1.2 on my system.
+		await Card.all(false, false);
 
 		for (let i = 0; i < 30; i++) {
 			const sheep1 = await Card.create(

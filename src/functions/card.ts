@@ -1,4 +1,5 @@
 import { Card } from "@Game/card.ts";
+import { type Metadata, PackValidationResult } from "@Game/types/pack";
 import {
 	Ability,
 	type Blueprint,
@@ -9,9 +10,8 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
-import { type Metadata, PackValidationResult } from "@Game/types/pack";
-import { parseTags } from "chalk-tags";
 import { resolve } from "node:path";
+import { parseTags } from "chalk-tags";
 
 const vanilla = {
 	/**
@@ -334,12 +334,15 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Check if the pack associated with a card is valid.
+	 * Gets the pack metadata associated with a card.
 	 *
-	 * @param filePath The file path of the card.
-	 * @returns The validation result.
+	 * @param filePath The path to the card. Should end in ".ts"
+	 * @returns The metadata, or null if no metadata was found. In this case, the card should be treated as not belonging to any pack.
 	 */
-	async validatePackFromPath(filePath: string): Promise<PackValidationResult> {
+	async getPackMetadataFromCardPath(
+		filePath: string,
+	): Promise<Metadata | null> {
+		// TODO: If this doesn't actually give the base path, fallback to checking every parent directory within the Hearthstone.js folder.
 		const basePath = filePath.replace(
 			/^(.*?)@(.*?)[/\\](.*?)[/\\].*$/,
 			"$1@$2/$3",
@@ -347,8 +350,8 @@ export const cardFunctions = {
 		const packPath = resolve(basePath, "pack.json5");
 
 		if (!(await game.functions.util.fs("exists", packPath))) {
-			// The non-existant pack is a valid pack!
-			return PackValidationResult.NoPack;
+			// No metadata file found.
+			return null;
 		}
 
 		const packContent = (await game.functions.util.fs(
@@ -356,6 +359,23 @@ export const cardFunctions = {
 			packPath,
 		)) as string;
 		const metadata = Bun.JSON5.parse(packContent) as Metadata;
+
+		return metadata;
+	},
+
+	/**
+	 * Check if the pack associated with a card is valid.
+	 *
+	 * @param filePath The file path of the card.
+	 * @returns The validation result.
+	 */
+	async validatePackFromPath(filePath: string): Promise<PackValidationResult> {
+		const metadata =
+			await game.functions.card.getPackMetadataFromCardPath(filePath);
+		if (!metadata) {
+			// A non-existant pack is a valid pack!
+			return PackValidationResult.NoPack;
+		}
 
 		// Check if the game version is correct.
 		if (
@@ -371,24 +391,116 @@ export const cardFunctions = {
 	},
 
 	/**
-	 * Generates an ids file in `cards/ids.ts`. This is used in `game.cardIds`.
+	 * Generates an ids file in `cards/ids.ts`. This is used in `game.ids`.
 	 *
 	 * Don't use this function manually unless you know what you're doing.
 	 */
 	async generateIdsFile(): Promise<void> {
 		let idsContent =
 			"// This file has been automatically generated. Do not change this file.\n\n";
-		idsContent += "export const cardIds = {\n";
+		idsContent += "export default {\n";
 		idsContent += '\tnull: "00000000-0000-0000-0000-000000000000",';
 
-		for (const blueprint of game.blueprints.sort((a, b) =>
-			a.id.localeCompare(b.id),
-		)) {
-			const numberIdentifier = /^\d/.test(blueprint.name) ? "n" : "";
-			idsContent += `\n\t${numberIdentifier}${game.lodash.camelCase(blueprint.name)}_${blueprint.id.replaceAll("-", "_")}: "${blueprint.id}",`;
+		const cards: { name: string; id: string; packMetadata: Metadata | null }[] =
+			[];
+
+		let ids: Record<string, Record<string, Record<string, string[]>>> = {};
+
+		const sortObject = (object: any) => {
+			// Sort the cards alphabetically.
+			const sortedEntries = Object.entries(object).sort((a, b) =>
+				a[0].localeCompare(b[0]),
+			);
+
+			object = sortedEntries.reduce((acc, [key, value]) => {
+				acc[key] = value;
+				return acc;
+			}, {} as any);
+
+			return object;
+		};
+
+		// Collect the cards.
+		await game.functions.util.searchCardsFolder(async (path, content, file) => {
+			const nameRegex = /name: "(.+)"/;
+			const nameMatch = nameRegex.exec(content);
+			if (!nameMatch) {
+				throw new Error(`No name found in '${path}'.`);
+			}
+
+			const idRegex = /id: "([0-9a-f-]+)"/;
+			const idMatch = idRegex.exec(content);
+			if (!idMatch) {
+				throw new Error(`No id found in '${path}'.`);
+			}
+
+			const name = nameMatch[1];
+			const id = idMatch[1];
+
+			const packMetadata =
+				await game.functions.card.getPackMetadataFromCardPath(path);
+
+			cards.push({
+				name,
+				id,
+				packMetadata,
+			});
+
+			const numberIdentifier = /^\d/.test(name) ? "_" : "";
+			const formattedName = `${numberIdentifier}${game.lodash.snakeCase(name)}`;
+
+			if (packMetadata) {
+				if (!ids[packMetadata.author]) {
+					ids[packMetadata.author] = { [packMetadata.name]: {} };
+				}
+				if (!ids[packMetadata.author][packMetadata.name]) {
+					ids[packMetadata.author][packMetadata.name] = {};
+				}
+				if (!ids[packMetadata.author][packMetadata.name][formattedName]) {
+					ids[packMetadata.author][packMetadata.name][formattedName] = [];
+				}
+
+				ids[packMetadata.author][packMetadata.name][formattedName].push(id);
+
+				// Sort the ids alphabetically.
+				ids[packMetadata.author][packMetadata.name][formattedName].sort();
+
+				// Sort the cards alphabetically.
+				ids[packMetadata.author][packMetadata.name] = sortObject(
+					ids[packMetadata.author][packMetadata.name],
+				);
+
+				// Sort the packs alphabetically.
+				ids[packMetadata.author] = sortObject(ids[packMetadata.author]);
+			}
+		});
+
+		// Sort the authors alphabetically.
+		ids = sortObject(ids);
+
+		idsContent += "\n";
+
+		for (const [author, packs] of Object.entries(ids)) {
+			idsContent += `\t${author}: {\n`;
+			for (const [pack, cards] of Object.entries(packs)) {
+				idsContent += `\t\t${pack}: {\n`;
+				for (const [card, cardIds] of Object.entries(cards)) {
+					idsContent += `\t\t\t${card}: ["${cardIds.join('", "')}"],\n`;
+				}
+				idsContent += "\t\t},\n";
+			}
+			idsContent += "\t},\n";
 		}
 
-		idsContent += "\n};\n";
+		// Add the "all" section.
+		idsContent += "\tall: {";
+
+		for (const card of cards.sort((a, b) => a.id.localeCompare(b.id))) {
+			const numberIdentifier = /^\d/.test(card.name) ? "n" : "";
+			idsContent += `\n\t\t${numberIdentifier}${game.lodash.snakeCase(card.name)}_${card.id.replaceAll("-", "_")}: "${card.id}",`;
+		}
+
+		idsContent += "\n\t},\n};\n";
 
 		game.functions.util.fs("writeFile", "/cards/ids.ts", idsContent);
 	},
