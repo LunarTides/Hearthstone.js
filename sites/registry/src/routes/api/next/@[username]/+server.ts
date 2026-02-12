@@ -26,7 +26,7 @@ export async function GET(event) {
 		return json(
 			{
 				ownerType: "Group",
-				...censorGroup(group),
+				...censorGroup(group, clientUser),
 			},
 			{ status: 200 },
 		);

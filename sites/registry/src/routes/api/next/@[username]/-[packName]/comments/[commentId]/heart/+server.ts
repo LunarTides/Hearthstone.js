@@ -3,6 +3,7 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { getFullPackComment } from "$lib/server/db/comment.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
@@ -34,7 +35,15 @@ async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 
 	const commentId = event.params.commentId;
 	const comment = (
-		await db.select().from(table.packComment).where(eq(table.packComment.id, commentId)).limit(1)
+		await getFullPackComment(
+			clientUser,
+			db
+				.select()
+				.from(table.packComment)
+				.where(eq(table.packComment.id, commentId))
+				.limit(1)
+				.$dynamic(),
+		)
 	).at(0);
 	if (!comment) {
 		return json({ message: "No comment found with that id." }, { status: 404 });
