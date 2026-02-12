@@ -23,15 +23,19 @@ export const blueprint: Blueprint = {
 	/*
 	 * The id of the hero power card. Here we use the `2-heropower.ts` card.
 	 *
-	 * The `game.cardIds` object contains the ids of every card in the game.
+	 * The `game.ids` object contains the ids of every card in the game.
 	 * It exists because doing `heropowerId: "019bc665_4f80_7026_b3ab_aa5a664f5024"` is not very readable.
-	 * The `game.cardIds` representation of the card is its name, followed by its id.
+	 * Autocomplete is very helpful here.
 	 *
-	 * The `cardIds` object will be refreshed when you run the game.
+	 * This is an array incase there are multiple cards with the same name.
+	 *
+	 * If you don't know which pack a card belongs to, you can use `game.ids.all`.
+	 * The `game.ids.all` representation of the card is its name, followed by its id.
+	 *
+	 * The `ids` object will be refreshed when you run the game.
 	 * So if you get an error here, try relaunching the game and see if it fixes it.
 	 */
-	heropowerId:
-		game.cardIds.heropowerExample_019bc665_4f80_7026_b3ab_aa5a664f5024,
+	heropowerId: game.ids.Official.examples.heropower_example[0],
 
 	async battlecry(self, owner) {
 		// Restore your hero to full health.

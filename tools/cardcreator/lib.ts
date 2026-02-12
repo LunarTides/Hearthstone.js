@@ -480,7 +480,7 @@ export const blueprint: Blueprint = {
 		console.log(`File created at: "${filePath}"`);
 	}
 
-	// Update the ids so that `game.cardIds` is updated immediately.
+	// Update the ids so that `game.ids` is updated immediately.
 	game.blueprints.push(blueprint);
 	await game.functions.card.generateIdsFile();
 

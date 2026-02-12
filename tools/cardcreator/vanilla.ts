@@ -100,7 +100,7 @@ export async function create(
 		rarity,
 		collectible,
 		tags: [],
-		id: game.cardIds.null,
+		id: game.ids.null,
 	};
 
 	switch (type) {
@@ -135,7 +135,7 @@ export async function create(
 			blueprint = Object.assign(blueprint, {
 				armor: card.armor,
 				// TODO: Get heropower id.
-				heropowerId: game.cardIds.null,
+				heropowerId: game.ids.null,
 			});
 
 			break;

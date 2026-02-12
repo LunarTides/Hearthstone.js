@@ -497,7 +497,7 @@ export class Player {
 	 *
 	 * # Examples
 	 * ```
-	 * const weapon = game.createCard(game.cardIds.notRealExampleWeapon_0, player);
+	 * const weapon = game.createCard(game.ids.all.not_real_example_weapon_0, player);
 	 * await player.setWeapon(weapon);
 	 * ```
 	 *
@@ -668,7 +668,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.deck.length, 30);
 	 *
-	 * const card = game.createCard(game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6, player);
+	 * const card = game.createCard(game.ids.Official.builtin.sheep[0], player);
 	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
@@ -1116,7 +1116,7 @@ export class Player {
 			// The Coin card shouldn't be mulligan'd
 			if (
 				!this.hand.includes(card) ||
-				card.id === game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e
+				card.id === game.ids.Official.builtin.the_coin[0]
 			) {
 				continue;
 			}
@@ -1151,7 +1151,7 @@ export class Player {
 		const cost = count < 10 ? count : 10;
 
 		const jade = await Card.create(
-			game.cardIds.jadeGolem_019bc665_4f7f_7001_b06d_2944338e60c8,
+			game.ids.Official.builtin.jade_golem[0],
 			this,
 		);
 		await jade.setStats(count, count);

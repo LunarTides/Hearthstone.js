@@ -68,12 +68,7 @@ export const blueprint: Blueprint = {
 		assert.equal(owner.hand.length, 0);
 
 		// The player should fulfill the condition
-		owner.deck = [
-			await Card.create(
-				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-				owner,
-			),
-		];
+		owner.deck = [await Card.create(game.ids.Official.builtin.sheep[0], owner)];
 		assert(owner.highlander());
 		assert.equal(owner.deck.length, 1);
 

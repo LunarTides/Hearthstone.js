@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 		for (let i = 0; i < 2; i++) {
 			// Create the sheep
 			const sheep = await Card.create(
-				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
+				game.ids.Official.builtin.sheep[0],
 				owner,
 			);
 

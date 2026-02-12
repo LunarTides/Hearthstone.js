@@ -22,7 +22,7 @@ import {
 } from "@Game/types.ts";
 import { format } from "node:util";
 import _ from "lodash";
-import { cardIds } from "../cards/ids.ts";
+import cardIds from "../cards/ids.ts";
 
 const attack = {
 	/**
@@ -1204,7 +1204,7 @@ export class Game {
 	};
 
 	lodash = _;
-	cardIds = cardIds;
+	ids = cardIds;
 
 	/**
 	 * Sets up the game by assigning players and initializing game state.
@@ -1432,7 +1432,7 @@ export class Game {
 
 		// Give the coin to the second player
 		const coin = await Card.create(
-			this.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e,
+			this.ids.Official.builtin.the_coin[0],
 			this.player2,
 		);
 
@@ -1635,14 +1635,14 @@ export class Game {
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
-			 * example: [game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210, game.cardIds.null, game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5]
-			 * the null0 / 0 gets replaced with the main minion
+			 * example: [game.ids.Official.examples.left_arm[0], game.ids.null, game.ids.Official.examples.right_arm[0]]
+			 * the `null` gets replaced with the main minion
 			 */
 
 			const unsuppress = game.event.suppress(Event.SummonCard);
 
 			for (const cardId of colossalMinionIds) {
-				if (cardId === this.cardIds.null) {
+				if (cardId === this.ids.null) {
 					// Summon this minion without triggering colossal again
 					await player.summon(card, false);
 					continue;

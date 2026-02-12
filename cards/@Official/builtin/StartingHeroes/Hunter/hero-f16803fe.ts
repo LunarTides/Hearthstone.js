@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-7027-b26a-f16803fe8f22",
 
 	armor: 0,
-	heropowerId: game.cardIds.steadyShot_019bc665_4f81_7028_a3a3_8e79692d8c16,
+	heropowerId: game.ids.Official.builtin.steady_shot[0],
 };

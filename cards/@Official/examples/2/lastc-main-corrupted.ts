@@ -27,9 +27,9 @@ export const blueprint: Blueprint = {
 
 	async create(self, owner) {
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
-			game.cardIds.null,
-			game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
+			game.ids.Official.examples.left_arm[0],
+			game.ids.null,
+			game.ids.Official.examples.right_arm[0],
 		]);
 
 		self.addKeyword(Keyword.Dormant, 2);

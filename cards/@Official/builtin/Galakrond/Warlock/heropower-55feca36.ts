@@ -19,7 +19,7 @@ export const blueprint: Blueprint = {
 		// Summon two 1/1 Imps.
 		for (let i = 0; i < 2; i++) {
 			const card = await Card.create(
-				game.cardIds.draconicImp_019bc665_4f80_7017_9193_0c66ec8bce41,
+				game.ids.Official.builtin.draconic_imp[0],
 				owner,
 			);
 			if (!card) {
@@ -33,9 +33,7 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		const countImps = () =>
 			owner.board.filter(
-				(card) =>
-					card.id ===
-					game.cardIds.draconicImp_019bc665_4f80_7017_9193_0c66ec8bce41,
+				(card) => card.id === game.ids.Official.builtin.draconic_imp[0],
 			).length;
 
 		// There should be 0 imps by default

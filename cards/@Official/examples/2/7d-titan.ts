@@ -28,9 +28,9 @@ export const blueprint: Blueprint = {
 	async create(self, owner) {
 		// Put the ids of the titan ability cards, like in corrupt, but a list.
 		self.addKeyword(Keyword.Titan, [
-			game.cardIds.ability1_019bc665_4f80_702e_803a_28c25a963fff,
-			game.cardIds.ability2_019bc665_4f80_702f_aa1a_88585939e5af,
-			game.cardIds.ability3_019bc665_4f80_7030_81b2_752f0b48159f,
+			game.ids.Official.examples.ability_1[0],
+			game.ids.Official.examples.ability_2[0],
+			game.ids.Official.examples.ability_3[0],
 		]);
 	},
 

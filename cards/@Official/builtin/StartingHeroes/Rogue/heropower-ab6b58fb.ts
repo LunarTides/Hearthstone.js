@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
 		// Create the weapon card
 		const weapon = await Card.create(
-			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
+			game.ids.Official.builtin.wicked_knife[0],
 			owner,
 		);
 
@@ -35,9 +35,6 @@ export const blueprint: Blueprint = {
 
 		// The player should now have the wicked knife weapon
 		assert.ok(owner.weapon);
-		assert.equal(
-			owner.weapon.id,
-			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
-		);
+		assert.equal(owner.weapon.id, game.ids.Official.builtin.wicked_knife[0]);
 	},
 };

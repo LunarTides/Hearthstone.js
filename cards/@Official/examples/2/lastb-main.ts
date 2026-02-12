@@ -30,15 +30,14 @@ export const blueprint: Blueprint = {
 		self.runes = [Rune.Blood, Rune.Blood, Rune.Blood];
 
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_019bc665_4f81_7005_b675_5fa77378254f,
-			game.cardIds.null,
-			game.cardIds.rightArm_019bc665_4f81_7008_a1d2_e9cb03cb8a67,
+			game.ids.Official.examples.left_arm[1],
+			game.ids.null,
+			game.ids.Official.examples.right_arm[1],
 		]);
 
 		self.addKeyword(
 			Keyword.Corrupt,
-			game.cardIds
-				.combinedExample2Corrupted_019bc665_4f81_7007_a2cb_2144aff06a6e,
+			game.ids.Official.examples.combined_example_2_corrupted[0],
 		);
 
 		// The summoned minions get Dormant automatically if the main minion has dormant.

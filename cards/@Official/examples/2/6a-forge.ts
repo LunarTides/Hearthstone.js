@@ -29,7 +29,7 @@ export const blueprint: Blueprint = {
 		// Put the id of the forged counterpart, like in corrupt.
 		self.addKeyword(
 			Keyword.Forge,
-			game.cardIds.forgedExample_019bc665_4f80_702d_8e24_acd80e92ea08,
+			game.ids.Official.examples.forged_example[0],
 		);
 	},
 

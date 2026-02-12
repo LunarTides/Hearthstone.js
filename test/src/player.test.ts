@@ -148,7 +148,7 @@ describe("src/player", () => {
 		expect(player.weapon).toBeUndefined();
 
 		const weapon = await Card.create(
-			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
+			game.ids.Official.builtin.wicked_knife[0],
 			player,
 		);
 		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
@@ -182,7 +182,7 @@ describe("src/player", () => {
 		expect(await player.destroyWeapon()).toBe(false);
 
 		const weapon = await Card.create(
-			game.cardIds.wickedKnife_019bc665_4f81_700c_9393_55d79a04e156,
+			game.ids.Official.builtin.wicked_knife[0],
 			player,
 		);
 		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
@@ -304,10 +304,7 @@ describe("src/player", () => {
 		const player = new Player();
 		expect(player.deck.length).toBe(0);
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		await player.addToDeck(sheep);
 
 		expect(player.deck.length).toBe(1);
@@ -333,10 +330,7 @@ describe("src/player", () => {
 		expect(player.deck.length).toBe(0);
 
 		// Add 10 Sheep to the deck.
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		for (let i = 0; i < 10; i++) {
 			const sheepCopy = await sheep.imperfectCopy();
 			sheepCopy.name = i.toString();
@@ -357,10 +351,7 @@ describe("src/player", () => {
 		expect(player.deck.length).toBe(0);
 
 		// Add 10 Sheep to the deck.
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		for (let i = 0; i < 10; i++) {
 			const sheepCopy = await sheep.imperfectCopy();
 			sheepCopy.name = i.toString();
@@ -394,10 +385,7 @@ describe("src/player", () => {
 	test("addToBottomOfDeck", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		await player.addToDeck(sheep);
 
 		const sheep2 = await sheep.imperfectCopy();
@@ -410,10 +398,7 @@ describe("src/player", () => {
 
 	test("drawCards", async () => {
 		const player = new Player();
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 
 		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
@@ -454,10 +439,7 @@ describe("src/player", () => {
 
 	test("drawSpecific", async () => {
 		const player = new Player();
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 
 		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
@@ -482,10 +464,7 @@ describe("src/player", () => {
 	test("addToHand", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		expect(await player.addToHand(sheep)).toBe(true);
 		expect(player.hand.length).toBe(1);
 		expect(player.hand[0]).toBe(sheep);
@@ -501,10 +480,7 @@ describe("src/player", () => {
 	test("popFromHand", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		expect(await player.addToHand(sheep)).toBe(true);
 
 		expect(await player.popFromHand()).toBe(sheep);
@@ -523,7 +499,7 @@ describe("src/player", () => {
 		const player = new Player();
 
 		const hero = await Card.create(
-			game.cardIds.jainaProudmoore_019bc665_4f81_7022_8fb3_03df1993cdb1,
+			game.ids.Official.builtin.jaina_proudmoore[0],
 			player,
 		);
 		hero.armor = 5;
@@ -541,22 +517,20 @@ describe("src/player", () => {
 		const player = new Player();
 
 		const hero = await Card.create(
-			game.cardIds.jainaProudmoore_019bc665_4f81_7022_8fb3_03df1993cdb1,
+			game.ids.Official.builtin.jaina_proudmoore[0],
 			player,
 		);
-		hero.id = game.cardIds.null;
+		hero.id = game.ids.null;
 
 		await player.setHero(hero);
 
 		expect(player.hero).toBe(hero);
-		expect(player.hero.id).toBe(game.cardIds.null);
+		expect(player.hero.id).toBe(game.ids.null);
 
 		expect(await player.setToStartingHero()).toBe(true);
 
 		expect(player.hero).not.toBe(hero);
-		expect(player.hero.id).toBe(
-			game.cardIds.jainaProudmoore_019bc665_4f81_7022_8fb3_03df1993cdb1,
-		);
+		expect(player.hero.id).toBe(game.ids.Official.builtin.jaina_proudmoore[0]);
 	});
 
 	test("heroPower", async () => {
@@ -569,7 +543,7 @@ describe("src/player", () => {
 
 		await player.setToStartingHero();
 		expect(player.hero.heropower?.id).toBe(
-			game.cardIds.fireblast_019bc665_4f81_7021_a0e4_15625f88ce10,
+			game.ids.Official.builtin.fireblast[0],
 		);
 		expect(opponent.health).toBe(opponent.maxHealth);
 
@@ -665,7 +639,7 @@ describe("src/player", () => {
 	test("canUseHeroPower", async () => {
 		const player = new Player();
 		player.hero = await Card.create(
-			game.cardIds.jainaProudmoore_019bc665_4f81_7022_8fb3_03df1993cdb1,
+			game.ids.Official.builtin.jaina_proudmoore[0],
 			player,
 		);
 
@@ -699,10 +673,7 @@ describe("src/player", () => {
 
 		for (let i = 0; i < 5; i++) {
 			player.summon(
-				await Card.create(
-					game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-					player,
-				),
+				await Card.create(game.ids.Official.builtin.sheep[0], player),
 			);
 			expect(player.getRemainingBoardSpace()).toBe(
 				game.config.general.maxBoardSpace - player.board.length,
@@ -719,10 +690,7 @@ describe("src/player", () => {
 
 		for (let i = 0; i < 5; i++) {
 			player.addToHand(
-				await Card.create(
-					game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-					player,
-				),
+				await Card.create(game.ids.Official.builtin.sheep[0], player),
 			);
 			expect(player.getRemainingHandSpace()).toBe(
 				game.config.general.maxHandLength - player.hand.length,
@@ -732,7 +700,7 @@ describe("src/player", () => {
 
 	test("getPlayedCards", async () => {
 		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
+			game.ids.Official.builtin.sheep[0],
 			game.player,
 		);
 
@@ -808,10 +776,7 @@ describe("src/player", () => {
 	test("discard", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		await player.addToHand(sheep);
 
 		expect(player.hand.length).toBe(1);
@@ -828,10 +793,7 @@ describe("src/player", () => {
 
 		for (let i = 0; i < 5; i++) {
 			player.summon(
-				await Card.create(
-					game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-					player,
-				),
+				await Card.create(game.ids.Official.builtin.sheep[0], player),
 			);
 		}
 
@@ -850,10 +812,7 @@ describe("src/player", () => {
 	test("highlander", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(
-			game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-			player,
-		);
+		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
 		await player.addToDeck(sheep);
 		expect(player.highlander()).toBe(true);
 
@@ -874,7 +833,7 @@ describe("src/player", () => {
 			rarity: Rarity.Free,
 			collectible: false,
 			tags: [Tag.Quest],
-			id: game.cardIds.null,
+			id: game.ids.null,
 
 			spellSchools: [SpellSchool.None],
 
@@ -895,7 +854,7 @@ describe("src/player", () => {
 			},
 		});
 
-		const card = await Card.create(game.cardIds.null, player);
+		const card = await Card.create(game.ids.null, player);
 		await game.play(card, player);
 
 		expect(player.quests.length).toBe(1);

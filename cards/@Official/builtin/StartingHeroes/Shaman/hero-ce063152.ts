@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f80-7023-9a53-ce063152e9a5",
 
 	armor: 0,
-	heropowerId: game.cardIds.totemicCall_019bc665_4f80_7024_ba8b_78e125a21f37,
+	heropowerId: game.ids.Official.builtin.totemic_call[0],
 };

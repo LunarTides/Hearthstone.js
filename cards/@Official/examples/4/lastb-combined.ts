@@ -52,8 +52,7 @@ export const blueprint: Blueprint = {
 						if (
 							game.event.is(key, value, Event.CreateCard) &&
 							value.id ===
-								game.cardIds
-									.combinedExample4Enchantment_019bc665_4f80_7015_8f6c_4f249bfadbb1
+								game.ids.Official.examples.combined_example_4_enchantment[0]
 						) {
 							return;
 						}
@@ -64,8 +63,7 @@ export const blueprint: Blueprint = {
 						)) {
 							if (
 								minion.enchantmentExists(
-									game.cardIds
-										.combinedExample4Enchantment_019bc665_4f80_7015_8f6c_4f249bfadbb1,
+									game.ids.Official.examples.combined_example_4_enchantment[0],
 									self,
 								)
 							) {
@@ -73,8 +71,7 @@ export const blueprint: Blueprint = {
 							}
 
 							await minion.addEnchantment(
-								game.cardIds
-									.combinedExample4Enchantment_019bc665_4f80_7015_8f6c_4f249bfadbb1,
+								game.ids.Official.examples.combined_example_4_enchantment[0],
 								self,
 							);
 						}
@@ -111,8 +108,7 @@ export const blueprint: Blueprint = {
 						 */
 						for (const minion of owner.hand) {
 							await minion.removeEnchantment(
-								game.cardIds
-									.combinedExample4Enchantment_019bc665_4f80_7015_8f6c_4f249bfadbb1,
+								game.ids.Official.examples.combined_example_4_enchantment[0],
 								self,
 							);
 						}

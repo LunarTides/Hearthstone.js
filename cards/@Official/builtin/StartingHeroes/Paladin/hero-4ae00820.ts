@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-701d-9a1a-4ae00820be89",
 
 	armor: 0,
-	heropowerId: game.cardIds.reinforce_019bc665_4f81_701e_9b97_cfefb8e48128,
+	heropowerId: game.ids.Official.builtin.reinforce[0],
 };

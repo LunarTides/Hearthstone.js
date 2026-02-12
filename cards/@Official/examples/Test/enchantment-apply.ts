@@ -41,7 +41,7 @@ export const blueprint: Blueprint = {
 
 		// Give the enchantment.
 		await target.addEnchantment(
-			game.cardIds.enchantmentTest_019bc665_4f7f_7012_a8c3_818e01ca1c52,
+			game.ids.Official.examples.enchantment_test[0],
 			self,
 		);
 		return true;
@@ -49,10 +49,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		await game.summon(
-			await Card.create(
-				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-				owner,
-			),
+			await Card.create(game.ids.Official.builtin.sheep[0], owner),
 			owner,
 		);
 

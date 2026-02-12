@@ -55,9 +55,7 @@ export const blueprint: Blueprint = {
 		// There should be a jade golem
 		assert.ok(
 			owner.board.some(
-				(card) =>
-					card.id ===
-					game.cardIds.jadeGolem_019bc665_4f7f_7001_b06d_2944338e60c8,
+				(card) => card.id === game.ids.Official.builtin.jade_golem[0],
 			),
 		);
 

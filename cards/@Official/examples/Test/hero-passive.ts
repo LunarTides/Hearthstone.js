@@ -15,8 +15,7 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f80-7001-b159-bd307f97d633",
 
 	armor: 0,
-	heropowerId:
-		game.cardIds.heropowerExample_019bc665_4f80_7026_b3ab_aa5a664f5024,
+	heropowerId: game.ids.Official.examples.heropower_example[0],
 
 	async passive(self, owner, key, value, eventPlayer) {
 		// Your opponent can't use their hero power.

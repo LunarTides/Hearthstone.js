@@ -30,10 +30,7 @@ export const blueprint: Blueprint = {
 		self.setStorage(
 			self.uuid,
 			"theCoin",
-			await Card.create(
-				game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e,
-				owner,
-			),
+			await Card.create(game.ids.Official.builtin.the_coin[0], owner),
 		);
 	},
 

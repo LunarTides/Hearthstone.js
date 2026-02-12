@@ -21,8 +21,7 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-701a-9902-0405c89e6a43",
 
 	armor: 5,
-	heropowerId:
-		game.cardIds.galakrondsGuile_019bc665_4f81_701b_9fdb_9e9392321c64,
+	heropowerId: game.ids.Official.builtin.galakronds_guile[0],
 
 	async battlecry(self, owner) {
 		// Draw {amount} cards. They cost (0).
@@ -37,7 +36,7 @@ export const blueprint: Blueprint = {
 		for (const card of cards) {
 			// Set the cost to 0
 			await card.addEnchantment(
-				game.cardIds.galakrondsBlessing_019bc665_4f81_7019_9257_4db1245fb572,
+				game.ids.Official.builtin.galakronds_blessing[0],
 				self,
 			);
 		}

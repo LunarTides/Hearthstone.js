@@ -46,20 +46,14 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		// Summon 5 Sheep with 2 max health.
 		for (let i = 0; i < 5; i++) {
-			const card = await Card.create(
-				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-				owner,
-			);
+			const card = await Card.create(game.ids.Official.builtin.sheep[0], owner);
 			card.maxHealth = 2;
 			await owner.summon(card);
 		}
 
 		const checkSheepHealth = (expected: number) =>
 			owner.board
-				.filter(
-					(card) =>
-						card.id === game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-				)
+				.filter((card) => card.id === game.ids.Official.builtin.sheep[0])
 				.every((card) => card.health === expected && card.attack === 1);
 
 		// Summon this minion. All sheep should have 1 health.

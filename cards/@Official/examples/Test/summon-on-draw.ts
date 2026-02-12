@@ -31,19 +31,16 @@ export const blueprint: Blueprint = {
 
 		// Use the preexisting colossal example minions
 		self.addKeyword(Keyword.Colossal, [
-			game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
-			game.cardIds.null,
-			game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
+			game.ids.Official.examples.left_arm[0],
+			game.ids.null,
+			game.ids.Official.examples.right_arm[0],
 		]);
 	},
 
 	async test(self, owner) {
 		// Set the player's deck and hand
 		owner.deck = [
-			await Card.create(
-				game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6,
-				owner,
-			),
+			await Card.create(game.ids.Official.builtin.sheep[0], owner),
 			self,
 		];
 		owner.hand = [];
@@ -55,18 +52,11 @@ export const blueprint: Blueprint = {
 
 		// Check if this minion and the two arms are on the board
 		assert.ok(
-			board.some(
-				(card) =>
-					card.id === game.cardIds.leftArm_019bc665_4f81_7002_90e0_0fb2951fa210,
-			),
+			board.some((card) => card.id === game.ids.Official.examples.left_arm[0]),
 		);
 		assert.ok(board.some((card) => card.id === self.id));
 		assert.ok(
-			board.some(
-				(card) =>
-					card.id ===
-					game.cardIds.rightArm_019bc665_4f81_7004_97b1_2971ddb6a2f5,
-			),
+			board.some((card) => card.id === game.ids.Official.examples.right_arm[0]),
 		);
 
 		// Check that the player's deck is empty and the player's hand has one card (the sheep)

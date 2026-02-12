@@ -80,10 +80,10 @@ export class Card {
 	 * This differentiates cards from each other, but not cards with the same blueprint, use {@link uuid} for that.
 	 *
 	 * @example
-	 * const sheep = game.createCard(game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6, player);
-	 * const anotherSheep = game.createCard(game.cardIds.sheep_019bc665_4f7f_7002_8cd4_7c81ad4e65c6, player);
+	 * const sheep = game.createCard(game.ids.Official.builtin.sheep[0], player);
+	 * const anotherSheep = game.createCard(game.ids.Official.builtin.sheep[0], player);
 	 *
-	 * const theCoin = game.createCard(game.cardIds.theCoin_019bc665_4f7f_7003_9fbe_be72400ab84e, player);
+	 * const theCoin = game.createCard(game.ids.Official.builtin.the_coin[0], player);
 	 *
 	 * assert.equal(sheep.id, anotherSheep.id);
 	 * assert.notEqual(sheep.id, theCoin.id);
@@ -1887,16 +1887,10 @@ export class Card {
 			case "Living Spores": {
 				this.addAbility(Ability.Deathrattle, async (_, owner) => {
 					owner.summon(
-						await Card.create(
-							game.cardIds.plant_019bc665_4f7f_7000_87d1_7bcf9ffd1fdc,
-							owner,
-						),
+						await Card.create(game.ids.Official.builtin.plant[0], owner),
 					);
 					owner.summon(
-						await Card.create(
-							game.cardIds.plant_019bc665_4f7f_7000_87d1_7bcf9ffd1fdc,
-							owner,
-						),
+						await Card.create(game.ids.Official.builtin.plant[0], owner),
 					);
 				});
 				break;

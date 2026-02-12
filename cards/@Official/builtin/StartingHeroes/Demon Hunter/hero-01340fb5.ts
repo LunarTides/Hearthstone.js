@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-702b-b8e2-01340fb5a520",
 
 	armor: 0,
-	heropowerId: game.cardIds.demonClaws_019bc665_4f81_702c_bbba_187394fa2e11,
+	heropowerId: game.ids.Official.builtin.demon_claws[0],
 };

@@ -154,11 +154,11 @@ export async function main(debug = false): Promise<void> {
 		collectible: false,
 		tags: [Tag.StartingHero],
 		// This will be overwritten by the library
-		id: game.cardIds.null,
+		id: game.ids.null,
 
 		armor: 0,
 		// TODO: Get heropower id.
-		heropowerId: game.cardIds.null,
+		heropowerId: game.ids.null,
 	};
 
 	const heropowerBlueprint: Blueprint = {
@@ -171,7 +171,7 @@ export async function main(debug = false): Promise<void> {
 		collectible: false,
 		tags: [],
 		// This will be overwritten by the library
-		id: game.cardIds.null,
+		id: game.ids.null,
 	};
 
 	const done = await configure(heroBlueprint, heropowerBlueprint);

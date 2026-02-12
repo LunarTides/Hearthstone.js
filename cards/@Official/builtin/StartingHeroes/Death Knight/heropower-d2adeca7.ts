@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
 		// Create the Ghoul
 		const minion = await Card.create(
-			game.cardIds.frailGhoul_019bc665_4f82_7003_b1c0_7f2dc33c14bc,
+			game.ids.Official.builtin.frail_ghoul[0],
 			owner,
 		);
 
@@ -33,9 +33,7 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		const lookForMinion = () =>
 			owner.board.some(
-				(card) =>
-					card.id ===
-					game.cardIds.frailGhoul_019bc665_4f82_7003_b1c0_7f2dc33c14bc,
+				(card) => card.id === game.ids.Official.builtin.frail_ghoul[0],
 			);
 
 		// The minion shouldn't be on the board at first.

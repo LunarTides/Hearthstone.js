@@ -30,7 +30,7 @@ export const blueprint: Blueprint = {
 
 		for (let index = 0; index < remainingBoardSpace; index++) {
 			const whelp = await Card.create(
-				game.cardIds.onyxianWhelp_019bc665_4f82_701a_a865_b6b98e79c765,
+				game.ids.Official.card_pack_1.onyxian_whelp[0],
 				owner,
 			);
 			await owner.summon(whelp);
@@ -47,9 +47,7 @@ export const blueprint: Blueprint = {
 		// Check if every card on the board is a whelp
 		assert.ok(
 			owner.board.every(
-				(card) =>
-					card.id ===
-					game.cardIds.onyxianWhelp_019bc665_4f82_701a_a865_b6b98e79c765,
+				(card) => card.id === game.ids.Official.card_pack_1.onyxian_whelp[0],
 			),
 		);
 	},

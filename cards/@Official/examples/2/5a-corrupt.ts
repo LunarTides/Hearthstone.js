@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 		 */
 		self.addKeyword(
 			Keyword.Corrupt,
-			game.cardIds.corruptedExample_019bc665_4f80_702b_9638_5a8b8e46ef3a,
+			game.ids.Official.examples.corrupted_example[0],
 		);
 	},
 
