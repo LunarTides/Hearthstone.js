@@ -2,55 +2,22 @@
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import PackBig from "$lib/components/pack-big.svelte";
-	import type { PackWithExtras } from "$lib/db/schema.js";
 	import { satisfiesRole } from "$lib/user";
-	import {
-		CardSim,
-		Cog,
-		FolderCode,
-		History,
-		Info,
-		MessageSquare,
-		Parentheses,
-	} from "lucide-svelte";
+	import { Cog, FolderCode, History, Info, MessageSquare, Parentheses } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data, form: rawForm, children } = $props();
 	const { form } = $derived(superForm(data.form));
 
-	// Some real typescript magic rig/ht here. Wow...
-	let packs = $state<
-		Promise<{ current: PackWithExtras; latest: PackWithExtras; all: PackWithExtras[] }>
-	>(Promise.resolve() as any);
-
-	let canEditPack = $state(false);
+	let canEditPack = $derived(data.canEditPack);
 	const canModeratePack = $derived(satisfiesRole(data.user, "Moderator"));
-
-	// TODO: Do this server-side.
-	$effect(() => {
-		(async () => {
-			const ps = await data.packs;
-			const found = ps.all.find((v) => v.id === page.params.id);
-			if (!found) {
-				// TODO: Error handling.
-				return;
-			}
-
-			packs = Promise.resolve({ current: found, latest: ps.latest, all: ps.all });
-			// TODO: Account for groups.
-			canEditPack = found.ownerName === data.user?.username;
-		})();
-	});
 </script>
 
-{#await packs}
+{#await data.formattedPacks}
 	<p>Loading...</p>
-{:then versions}
+{:then packs}
 	<PackBig
-		packs={{
-			...versions,
-			latest: versions.all.find((v) => v.isLatestVersion)!,
-		}}
+		pack={packs.current}
 		user={data.user}
 		{form}
 		{rawForm}
@@ -183,7 +150,7 @@
 					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
 				>
 					<History />
-					<p>Versions ({versions.all.length})</p>
+					<p>Versions ({packs.all.length})</p>
 				</a>
 			{:else}
 				<div
@@ -192,7 +159,7 @@
 					aria-disabled="true"
 				>
 					<History />
-					<p>Versions ({versions.all.length})</p>
+					<p>Versions ({packs.all.length})</p>
 				</div>
 			{/if}
 

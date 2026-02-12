@@ -8,7 +8,7 @@
 	import Badge from "./badge.svelte";
 
 	let {
-		packs,
+		pack,
 		user,
 		hideButtons = false,
 		individual = false,
@@ -17,11 +17,7 @@
 		rawForm = undefined,
 		class: className,
 	}: {
-		packs: {
-			latest: PackWithExtras;
-			current?: PackWithExtras;
-			all: PackWithExtras[];
-		};
+		pack: PackWithExtras;
 		user: ClientUser;
 		hideButtons?: boolean;
 		individual?: boolean;
@@ -31,8 +27,7 @@
 		class?: string;
 	} = $props();
 
-	const pack = $derived(packs.current ?? packs.latest);
-
+	// TODO: Pass this as a prop.
 	const canEditPack = $derived(user?.username === pack.ownerName);
 	const canModeratePack = $derived(satisfiesRole(user, "Moderator"));
 

@@ -1,12 +1,23 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import type { Card } from "$lib/db/schema.js";
+import type { Card, PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import { db } from "$lib/server/db/index.js";
 import { getFullPacks } from "$lib/server/db/pack";
 import { satisfiesRole } from "$lib/user.js";
 import { error, fail } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
+import semver from "semver";
+
+const packSortingFunction = (a: PackWithExtras, b: PackWithExtras) => {
+	if (!a.approved && b.approved) {
+		return 1;
+	} else if (a.approved && !b.approved) {
+		return -1;
+	}
+
+	return semver.compare(b.packVersion, a.packVersion);
+};
 
 // TODO: Deduplicate from `pack/[uuid]/+layout.server.ts`
 export const load = async (event) => {
@@ -34,9 +45,23 @@ export const load = async (event) => {
 		const relevantPacks = packs.filter((p) => p.name === uniquePackName);
 		packsToReturn.push({
 			uuid: uniquePackName,
-			relevantPacks,
+			relevantPacks: relevantPacks.toSorted(packSortingFunction),
 		});
 	}
+
+	packsToReturn.sort((a, b) => {
+		const ap = a.relevantPacks.at(0);
+		if (!ap) {
+			return 1;
+		}
+
+		const bp = b.relevantPacks.at(0);
+		if (!bp) {
+			return -1;
+		}
+
+		return ap.name.localeCompare(bp.name);
+	});
 
 	const response = await requestAPI<Card[]>(
 		event,

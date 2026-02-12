@@ -46,6 +46,10 @@ export const load = async (event) => {
 		return error(404, { message: "Pack not found." });
 	}
 
+	const formattedPacks = Promise.resolve({ current: pack, latest: packs.latest, all: packs.all });
+	// TODO: Account for groups.
+	const canEditPack = pack.ownerName === event.locals.user?.username;
+
 	const response = await requestAPI<FileTree[]>(
 		event,
 		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files", {
@@ -62,5 +66,5 @@ export const load = async (event) => {
 	const cards = await getCards(event);
 	const form = await superValidate(zod4(approveSchema));
 
-	return { form, files: response.json, cards };
+	return { form, files: response.json, formattedPacks, cards, canEditPack };
 };

@@ -1,19 +1,13 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
-	import type { PackWithExtras } from "$lib/db/schema.js";
 	import { satisfiesRole } from "$lib/user";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data } = $props();
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 
-	// Some real typescript magic rig/ht here. Wow...
-	let packs = $state<
-		Promise<{ current: PackWithExtras; latest: PackWithExtras; all: PackWithExtras[] }>
-	>(Promise.resolve() as any);
-
-	let canEditPack = $state(false);
+	let canEditPack = $derived(data.canEditPack);
 	const canModeratePack = $derived(satisfiesRole(data.user, "Moderator"));
 
 	let approveConfirm = $state(0);
@@ -26,25 +20,11 @@
 	let editPackOpen = $state(page.url.hash.startsWith("#edit-pack"));
 	let editVersionOpen = $state(page.url.hash.startsWith("#edit-version"));
 	let moderateOpen = $state(page.url.hash.startsWith("#moderate"));
-
-	$effect(() => {
-		(async () => {
-			const ps = await data.packs;
-			const found = ps.all.find((v) => v.id === page.params.id);
-			if (!found) {
-				// TODO: Error handling.
-				return;
-			}
-
-			packs = Promise.resolve({ current: found, latest: ps.latest, all: ps.all });
-			canEditPack = found.ownerName === data.user?.username;
-		})();
-	});
 </script>
 
-{#await packs}
+{#await data.formattedPacks}
 	<p>Loading...</p>
-{:then versions}
+{:then packs}
 	{#if $message}<h3 class="text-red-500">{$message}</h3>{/if}
 	{#if $errors._errors}
 		{#each $errors._errors as error (error)}
@@ -177,10 +157,10 @@
 										approveType = true;
 									}}
 								>
-									{versions.current.approved ? "Unapprove" : "Approve"}
+									{packs.current.approved ? "Unapprove" : "Approve"}
 								</button>
 							</div>
-							{#if !versions.current.approved}
+							{#if !packs.current.approved}
 								<div class="flex bg-black text-white outline-1 -outline-offset-1 w-full">
 									<button
 										id="moderate-deny"
@@ -190,7 +170,7 @@
 											approveType = false;
 										}}
 									>
-										{versions.current.denied ? "Remove denial" : "Deny"}
+										{packs.current.denied ? "Remove denial" : "Deny"}
 									</button>
 								</div>
 							{/if}
@@ -204,10 +184,10 @@
 								id: page.params.id!,
 							}) +
 								(approveType
-									? versions.current.approved
+									? packs.current.approved
 										? "?/unapprove"
 										: "?/approve"
-									: versions.current.denied
+									: packs.current.denied
 										? "?/approve-deny-remove"
 										: "?/approve-deny")}
 							method="post"
@@ -272,9 +252,9 @@
 											class="px-5 py-3 w-full text-center hover:cursor-pointer hover:bg-indigo-600 active:bg-black"
 										>
 											{#if approveType}
-												{versions.current.approved ? "Unapprove!" : "Approve!"}
+												{packs.current.approved ? "Unapprove!" : "Approve!"}
 											{:else}
-												{versions.current.denied ? "Remove denial!" : "Deny!"}
+												{packs.current.denied ? "Remove denial!" : "Deny!"}
 											{/if}
 										</button>
 									</div>

@@ -10,7 +10,7 @@ export const load = async (event) => {
 				return [];
 			}
 
-			return response.json.settings;
+			return response.json.settings.toSorted((a, b) => a.key.localeCompare(b.key));
 		},
 	);
 

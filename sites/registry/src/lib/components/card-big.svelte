@@ -3,23 +3,12 @@
 	import type { Card, PackWithExtras } from "$lib/db/schema";
 
 	let {
-		cards,
-		packs,
+		card,
+		pack,
 	}: {
-		cards: {
-			latest: Card;
-			current?: Card;
-			all: Card[];
-		};
-		packs: {
-			latest: PackWithExtras;
-			current?: PackWithExtras;
-			// all: PackWithExtras[];
-		};
+		card: Card;
+		pack: PackWithExtras;
 	} = $props();
-
-	const card = $derived(cards.current ?? cards.latest);
-	const pack = $derived(packs.current ?? packs.latest);
 </script>
 
 <div class="bg-black text-white p-4 rounded-xl m-1">

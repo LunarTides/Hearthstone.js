@@ -8,7 +8,7 @@ import { requestAPI } from "$lib/api/helper";
 import { resolve } from "$app/paths";
 import type { File } from "$lib/api/types";
 
-export const load = (event) => {
+export const load = async (event) => {
 	const user = event.locals.user;
 	const uuid = event.params.uuid;
 
@@ -27,6 +27,11 @@ export const load = (event) => {
 
 		if (!user || (packs.latest.ownerName !== user.username && !satisfiesRole(user, "Moderator"))) {
 			cards = cards.filter((c) => c.approved);
+		}
+
+		const currentPack = packs.all.find((v) => v.id === event.params.id);
+		if (!currentPack) {
+			return error(404, { message: "The requested pack does not exist." });
 		}
 
 		const files = await Promise.all(
@@ -58,15 +63,22 @@ export const load = (event) => {
 			}),
 		);
 
+		const currentCard = cards.find((c) => c.packId === currentPack.id)!;
+
 		return {
 			packs,
-			latest: latest,
+			latest,
 			all: cards,
 			files,
+			current: currentCard,
+			currentPack,
 		};
 	};
 
+	// TODO: Make this proper async.
+	const relevantCards = await getCards();
+
 	return {
-		relevantCards: getCards(),
+		relevantCards,
 	};
 };

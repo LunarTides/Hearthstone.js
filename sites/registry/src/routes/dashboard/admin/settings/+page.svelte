@@ -1,19 +1,14 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
-	import type { Setting } from "$lib/db/schema.js";
 	import { Cog } from "lucide-svelte";
-	import { onMount } from "svelte";
 
 	const { data } = $props();
-
-	let settings: Setting[] = $state([]);
-	onMount(async () => {
-		const raw = await data.settings;
-		settings = raw.toSorted((a, b) => a.key.localeCompare(b.key));
-	});
 </script>
 
-{#if settings.length > 0}
+<!-- FIXME: This page doesn't work. Settings don't update. -->
+{#await data.settings}
+	<p>Loading...</p>
+{:then settings}
 	<table>
 		<thead class="text-left">
 			<tr>
@@ -93,14 +88,11 @@
 			<tr
 				class="cursor-copy"
 				onclick={() => {
-					settings = [
-						...settings,
-						{
-							key: "change.me",
-							description: "",
-							value: "",
-						},
-					];
+					settings.push({
+						key: "change.me",
+						description: "",
+						value: "",
+					});
 				}}
 			>
 				<td><p class="p-1 text-gray-600">Key...</p></td>
@@ -122,6 +114,4 @@
 		<p class="font-bold text-2xl">Raw</p>
 		<pre>{JSON.stringify(settings, null, 4)}</pre>
 	</div>
-{:else}
-	<p>Loading…</p>
-{/if}
+{/await}

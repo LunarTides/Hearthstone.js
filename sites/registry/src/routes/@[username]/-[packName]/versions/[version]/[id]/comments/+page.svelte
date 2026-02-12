@@ -3,7 +3,6 @@
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import Badge from "$lib/components/badge.svelte";
-	import type { PackWithExtras } from "$lib/db/schema.js";
 	import { satisfiesRole } from "$lib/user";
 	import { Cog, Heart, HeartPlus, ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
 
@@ -11,30 +10,21 @@
 
 	let commentDeleteConfirm = $state("");
 
-	// Some real typescript magic rig/ht here. Wow...
-	let packs = $state<
-		Promise<{ current: PackWithExtras; latest: PackWithExtras; all: PackWithExtras[] }>
-	>(Promise.resolve() as any);
-
 	let messagesOpen = $state(page.url.hash.startsWith("#message"));
 
-	// TODO: Do this server-side.
-	$effect(() => {
-		(async () => {
-			const ps = await data.packs;
-			const found = ps.all.find((v) => v.id === page.params.id);
-			if (!found) {
-				// TODO: Error handling.
-				return;
-			}
-
-			packs = Promise.resolve({ current: found, latest: ps.latest, all: ps.all });
-		})();
+	const dateFormat = new Intl.DateTimeFormat("en-US", {
+		day: "2-digit",
+		month: "long",
+		year: "numeric",
+		hour12: false,
+		hour: "2-digit",
+		minute: "2-digit",
+		second: "2-digit",
 	});
 </script>
 
 <!-- Comments -->
-{#await packs}
+{#await data.formattedPacks}
 	<p>Loading...</p>
 {:then versions}
 	<!-- Messages -->
@@ -87,7 +77,7 @@
 						</div>
 
 						<pre class="font-sans">{message.text}</pre>
-						<p class="text-gray-600">{message.creationDate.toLocaleString()}</p>
+						<p class="text-gray-600">{dateFormat.format(message.creationDate)}</p>
 					</div>
 				{/each}
 			</div>
@@ -206,7 +196,7 @@
 
 						<pre class="font-sans">{comment.text}</pre>
 						<!-- TODO: `comment.creationDate` is a string for some reason? -->
-						<p class="text-gray-600">{new Date(comment.creationDate).toLocaleString()}</p>
+						<p class="text-gray-600">{dateFormat.format(new Date(comment.creationDate))}</p>
 
 						<!-- TODO: Get the form message here. -->
 						<!-- {#if form?.message}<p class="text-red-500">{form.message}</p>{/if} -->
