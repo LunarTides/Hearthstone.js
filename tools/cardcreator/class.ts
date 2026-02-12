@@ -185,7 +185,7 @@ export async function main(debug = false): Promise<void> {
 	await lib.create(
 		cctype,
 		heroBlueprint,
-		`/cards/StartingHeroes/${game.lodash.startCase(className)}/`,
+		`/cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/`,
 		"hero.ts",
 		debug,
 	);
@@ -193,10 +193,12 @@ export async function main(debug = false): Promise<void> {
 	await lib.create(
 		cctype,
 		heropowerBlueprint,
-		`/cards/StartingHeroes/${game.lodash.startCase(className)}/`,
+		`/cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/`,
 		"heropower.ts",
 		debug,
 	);
+
+	// TODO: Automate actually adding the class. See #466
 
 	console.log("\nClass Created!");
 	console.log("Next steps:");
@@ -207,7 +209,7 @@ export async function main(debug = false): Promise<void> {
 
 	console.log(
 		// TODO: Use heropower id.
-		"2. Open 'cards/StartingHeroes/%s/?-heropower.ts' and add logic to the 'cast' function.",
+		"2. Open 'cards/Custom/StartingHeroes/%s/?-heropower.ts' and add logic to the 'cast' function.",
 		game.lodash.startCase(className),
 	);
 

@@ -453,6 +453,7 @@ ${mainContent}
 		await Promise.all(
 			files.map(async (file, i) => {
 				// On Linux, there isn't a starting slash for some reason.
+				// TODO: Only in some cases? I can't recreate the above issue anymore...
 				const root = process.platform === "win32" ? "" : "/";
 
 				const fullPath = `${root}${resolve(actualPath, file.parentPath, file.name)}`;

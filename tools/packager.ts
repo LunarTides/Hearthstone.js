@@ -10,6 +10,7 @@ import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
 import { validate } from "scripts/id/lib.ts";
+import type { Metadata } from "@Game/types/pack";
 
 const { game } = await createGame();
 
@@ -17,29 +18,6 @@ const metadataVersion = 1;
 
 // This will be set to true after changing a metadata configuration value.
 let dirty = false;
-
-interface Metadata {
-	versions: {
-		metadata: number;
-		game: string;
-		pack: string;
-	};
-	name: string;
-	description: string;
-	author: string;
-	license: string;
-	links: Record<string, string>;
-	permissions: {
-		network: boolean;
-		fileSystem: boolean;
-	};
-	requires: {
-		packs: string[];
-		cards: string[];
-		classes: string[];
-		// TODO: Add tribes, etc...
-	};
-}
 
 function getPermissions(metadata: Metadata, filter = true) {
 	return Object.entries(metadata.permissions)
@@ -346,6 +324,8 @@ async function exportPack() {
 		await game.functions.util.fs("mkdir", `/packs/${author}+${name}`, {
 			recursive: true,
 		});
+
+		// Copy custom cards over to the pack.
 		await game.functions.util.searchCardsFolder(async (path, content, file) => {
 			if (path.includes("Custom")) {
 				await game.functions.util.fs(
@@ -358,6 +338,7 @@ async function exportPack() {
 			}
 		});
 
+		// Write metadata file.
 		await game.functions.util.fs(
 			"writeFile",
 			`/packs/${author}+${name}/pack.json5`,
@@ -368,6 +349,7 @@ async function exportPack() {
 			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${author}+${name}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
 		);
 
+		// Add files to archive.
 		const files: Record<string, string> = {};
 
 		await game.functions.util.searchFolder(

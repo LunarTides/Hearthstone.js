@@ -24,6 +24,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
+import { PackValidationResult } from "./types/pack";
 
 /**
  * Use this error type when throwing an error in a card
@@ -482,6 +483,20 @@ export class Card {
 	 */
 	static async registerAll(): Promise<boolean> {
 		await game.functions.util.searchCardsFolder(async (fullPath) => {
+			// Check if the associated pack is valid.
+			switch (await game.functions.card.validatePackFromPath(fullPath)) {
+				case PackValidationResult.InvalidGameVersion:
+					throw new Error(
+						`The pack associated with '${fullPath}' is made for a different version of the game.`,
+					);
+
+				// These are success-codes.
+				case PackValidationResult.NoPack:
+				case PackValidationResult.Success: {
+				}
+			}
+
+			// Import the card.
 			const blueprint = (await import(fullPath)).blueprint as Blueprint;
 			game.blueprints.push(blueprint);
 		});

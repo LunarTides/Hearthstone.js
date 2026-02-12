@@ -1,0 +1,23 @@
+{
+    versions: {
+        metadata: 1,
+        game: '4.0.0',
+        pack: '1.0.0',
+    },
+    name: 'card_pack_1',
+    description: 'An example card pack that just adds a few cards. This makes the game less empty.',
+    author: 'Official',
+    license: 'GPL-3.0',
+    links: {
+        Github: 'https://github.com/LunarTides/Hearthstone.js',
+    },
+    permissions: {
+        network: false,
+        fileSystem: false,
+    },
+    requires: {
+        packs: [],
+        cards: [],
+        classes: [],
+    },
+}

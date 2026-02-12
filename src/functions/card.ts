@@ -9,7 +9,9 @@ import {
 	Type,
 	type VanillaCard,
 } from "@Game/types.ts";
+import { type Metadata, PackValidationResult } from "@Game/types/pack";
 import { parseTags } from "chalk-tags";
+import { resolve } from "node:path";
 
 const vanilla = {
 	/**
@@ -329,6 +331,43 @@ export const cardFunctions = {
 		}
 
 		return result;
+	},
+
+	/**
+	 * Check if the pack associated with a card is valid.
+	 *
+	 * @param filePath The file path of the card.
+	 * @returns The validation result.
+	 */
+	async validatePackFromPath(filePath: string): Promise<PackValidationResult> {
+		const basePath = filePath.replace(
+			/^(.*?)@(.*?)[/\\](.*?)[/\\].*$/,
+			"$1@$2/$3",
+		);
+		const packPath = resolve(basePath, "pack.json5");
+
+		if (!(await game.functions.util.fs("exists", packPath))) {
+			// The non-existant pack is a valid pack!
+			return PackValidationResult.NoPack;
+		}
+
+		const packContent = (await game.functions.util.fs(
+			"readFile",
+			packPath,
+		)) as string;
+		const metadata = Bun.JSON5.parse(packContent) as Metadata;
+
+		// Check if the game version is correct.
+		if (
+			!Bun.semver.satisfies(
+				metadata.versions.game,
+				`^${game.functions.info.version().version[0]}.0.0`,
+			)
+		) {
+			return PackValidationResult.InvalidGameVersion;
+		}
+
+		return PackValidationResult.Success;
 	},
 
 	/**
