@@ -3,7 +3,6 @@ import { resolve } from "$app/paths";
 import { superValidate, message, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { requestAPI } from "$lib/api/helper";
-import type { GroupWithExtras } from "$lib/db/schema";
 import z from "zod";
 
 export async function load(event) {

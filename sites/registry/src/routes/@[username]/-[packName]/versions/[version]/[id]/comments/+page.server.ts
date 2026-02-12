@@ -1,14 +1,9 @@
 import { resolve } from "$app/paths";
-import { APIGetPack } from "$lib/server/db/pack";
 import { CommentRequest } from "$lib/api/types";
 import { requestAPI } from "$lib/api/helper.js";
-import { approveSchema, dummySchema } from "$lib/api/schemas.js";
-import type { File } from "$lib/api/types.js";
 import type { PackCommentWithExtras } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack";
-import { error, fail, redirect, type ServerLoadEvent } from "@sveltejs/kit";
-import { message, superValidate } from "sveltekit-superforms";
-import { zod4 } from "sveltekit-superforms/adapters";
+import { error, fail, type ServerLoadEvent } from "@sveltejs/kit";
 
 const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
 	// return error(400, { message: "hi" });

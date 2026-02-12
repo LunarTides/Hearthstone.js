@@ -4,7 +4,6 @@ import { zod4 } from "sveltekit-superforms/adapters";
 import schema from "./schema";
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper";
-import type { GroupWithExtras } from "$lib/db/schema";
 
 export const load = async (event) => {
 	const clientUser = event.locals.user;

@@ -2,7 +2,6 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { satisfiesRole } from "$lib/user.js";
 import fs from "node:fs/promises";
 import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 

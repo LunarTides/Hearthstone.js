@@ -4,7 +4,7 @@ import schema from "$lib/../routes/@[username]/members/new/schema";
 import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
-import { count, eq, and, ilike } from "drizzle-orm";
+import { count, eq, and } from "drizzle-orm";
 import { memberHasPermission } from "$lib/group.js";
 import { resolve } from "$app/paths";
 

@@ -1,7 +1,7 @@
 import { db } from "$lib/server/db/index.js";
 import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
-import type { Pack, User } from "$lib/db/schema.js";
+import type { Pack } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 import { eq, and, desc, count } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";

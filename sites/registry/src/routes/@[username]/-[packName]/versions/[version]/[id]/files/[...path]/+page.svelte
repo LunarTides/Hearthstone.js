@@ -3,8 +3,6 @@
 	import { HighlightAuto, LineNumbers } from "svelte-highlight";
 
 	let { data } = $props();
-
-	let fileTreeOpen = $state(true);
 </script>
 
 {#await data.relevantFile}
