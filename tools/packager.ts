@@ -202,7 +202,7 @@ async function importPack() {
 			"cp",
 			pack.path,
 			game.functions.util.restrictPath(
-				`/cards/Packs/@${pack.ownerName}/${pack.name}`,
+				`/cards/@${pack.ownerName}/${pack.name}`,
 			),
 			{ recursive: true },
 		);
@@ -211,7 +211,7 @@ async function importPack() {
 		await game.functions.card.generateIdsFile();
 
 		console.log(
-			`<green>The pack has been imported into '/cards/Packs/@${pack.ownerName}/${pack.name}'.</green>\n`,
+			`<green>The pack has been imported into '/cards/@${pack.ownerName}/${pack.name}'.</green>\n`,
 		);
 
 		const deleteConfirm = await confirm({
