@@ -48,7 +48,11 @@ export const watermark = (showCards = true) => {
     `.replace("\n", ""), // Remove the first newline in order to improve formatting in source code.
 	);
 
-	console.log("Version: %s", version);
+	console.log(
+		"Version: %s %s",
+		version,
+		game.isEventActive(game.time.events.anniversary) && "🎂",
+	);
 
 	if (showCards) {
 		console.log(

@@ -561,10 +561,16 @@ export const config: GameConfig = {
 
 		// History
 		"The first commit of Hearthstone.js was made on February 14th, 2022, but it had been in development for a while before that. Unfortunately, the versions before the first commit are lost to time.",
+		"The first commit of Hearthstone.js had <i>30</i> cards (0 Collectible), this increased to <i>326</i> pre 2.0 (~50% Collectible), and back down to <i>148</i> (28 Collectible) in 3.0",
 		"There existed 2 versions of Hearthstone.js before this one. These were later called 'Hearthstone.py V1' and 'Hearthstone.py V2'. They are still available under my 'Python' repository.",
 		"From August 22nd, 2022 to August 31st, 2023, I used an alt account (IsakSkole123) to work on Hearthstone.js when I didn't have access to my main computer.",
 		"The earliest versions of Hearthstone.js used the JSON format to store cards. This was changed to JS in a4805f9, commit number 10.",
 		"The Hearthstone.js code structure has been radically changed over the course of the project's lifetime.",
+		"Support for vanilla cards was added in version 1.2 (ec8ce35)",
+		"The HUB was originally called the <i>Runner</i>",
+		"Decks existed since the first commit, but deckcodes were added in commit 917c4dd, 6 months in.",
+		"Mulligan was added relatively late in development. It was added in commit c9db935, ~11 months in.",
+		"The code for the stats (↓) was rewritten 3 times in total.",
 		"When I began working on Hearthstone.js, I knew next to nothing about JavaScript, and even less about TypeScript. I feel the appropriate amount of shame looking back.",
 		"The very first version of Hearthstone.js was written in Python. I changed the language to JavaScript since I couldn't figure out how to dynamically import the cards in Python.",
 		"I originally didn't format my code using a formatter. When I realized that I should probably do that, I began using 'xo'. I switched to 'biome' after I saw people discussing it in other repos.",

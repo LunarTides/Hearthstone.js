@@ -1343,9 +1343,7 @@ const print = {
 		}
 
 		if (game.isEventActive(game.time.events.anniversary)) {
-			console.log(
-				`\n<b>[${game.time.year - 2022} YEAR ANNIVERSARY! Enjoy some fun-facts about Hearthstone.js!]</b>`,
-			);
+			console.log(`\n<b>[${game.time.year - 2022} year anniversary!]</b>`);
 		}
 
 		// Fun facts.
@@ -1571,12 +1569,6 @@ const print = {
 
 		// --- Finished ---
 		console.log(align(finished));
-
-		if (game.isEventActive(game.time.events.anniversary)) {
-			console.log(
-				"<i>[Anniversary: The code for the stats above was rewritten 3 times in total]</i>",
-			);
-		}
 	},
 
 	/**

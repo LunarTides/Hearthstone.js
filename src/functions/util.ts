@@ -99,16 +99,7 @@ export const utilFunctions = {
 	 */
 	async importConfig(): Promise<boolean> {
 		delete require.cache[require.resolve("../../config.ts")];
-
 		game.config = (await import("../../config.ts")).config as GameConfig;
-
-		if (
-			game.isEventActive(game.time.events.anniversary) &&
-			game.config.general.locale === "en_US"
-		) {
-			game.config.general.locale = "anniversary";
-		}
-
 		return true;
 	},
 
