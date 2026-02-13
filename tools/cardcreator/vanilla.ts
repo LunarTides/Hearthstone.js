@@ -1,3 +1,4 @@
+import { createGame } from "@Game/game.ts";
 import {
 	type Blueprint,
 	Class,
@@ -12,6 +13,10 @@ import { input, number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
+
+if (import.meta.main) {
+	await createGame();
+}
 
 /**
  * Create a card from a vanilla card.
@@ -272,4 +277,8 @@ export async function main(
 	}
 
 	return true;
+}
+
+if (import.meta.main) {
+	await main();
 }

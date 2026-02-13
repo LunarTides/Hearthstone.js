@@ -1,4 +1,5 @@
 import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
 import {
 	Class,
 	type CommandList,
@@ -10,6 +11,10 @@ import util from "node:util";
 import { input, Separator, search } from "@inquirer/prompts";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import * as hub from "../hub.ts";
+
+if (import.meta.main) {
+	await createGame();
+}
 
 enum DeckcodeFormat {
 	Vanilla = "Vanilla",
@@ -495,3 +500,7 @@ const commands: CommandList = {
 		return true;
 	},
 };
+
+if (import.meta.main) {
+	await main();
+}

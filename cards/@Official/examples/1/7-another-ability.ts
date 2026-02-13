@@ -14,7 +14,7 @@ import assert from "node:assert";
 /*
  * This is another way to write blueprints.
  * You might want to do this if you make a very complicated card.
- * however it is not *as* supported by scripts as the normal way.
+ * however it is not *as* supported by tools as the normal way.
  */
 const battlecry: AbilityCallback = async (self, owner) => {
 	await self.addStats(1, 1);

@@ -64,6 +64,7 @@ console.error = (...data) => {
 process.on("uncaughtException", (error) => {
 	if (error instanceof Error && error.name === "ExitPromptError") {
 	} else {
+		overrideConsole.error(error.stack);
 		throw error;
 	}
 });

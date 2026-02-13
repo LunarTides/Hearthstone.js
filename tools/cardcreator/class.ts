@@ -1,8 +1,13 @@
+import { createGame } from "@Game/game.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import { confirm, input, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
+
+if (import.meta.main) {
+	await createGame();
+}
 
 async function configure(
 	heroBlueprint: Blueprint,
@@ -225,4 +230,8 @@ export async function main(debug = false): Promise<void> {
 
 	console.log("Enjoy!");
 	await game.pause();
+}
+
+if (import.meta.main) {
+	await main();
 }

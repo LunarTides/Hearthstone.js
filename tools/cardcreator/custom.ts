@@ -1,4 +1,5 @@
 import { Card } from "@Game/card.ts";
+import { createGame } from "@Game/game.ts";
 import {
 	type BlueprintWithOptional,
 	Class,
@@ -15,6 +16,11 @@ import { confirm, input, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
+
+// FIXME: Some tools don't work when run directly.
+if (import.meta.main) {
+	await createGame();
+}
 
 // TODO: Support creating heropowers for heroes.
 async function configure(): Promise<BlueprintWithOptional | undefined> {
@@ -358,4 +364,8 @@ export async function main({
 
 	await game.pause();
 	return filePath;
+}
+
+if (import.meta.main) {
+	await main({});
 }

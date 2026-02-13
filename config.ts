@@ -549,10 +549,11 @@ export const config: GameConfig = {
 		"The cards uses the exact same API that the game uses, and the game has many hooks. This allows cards near complete control over the game. If there is anything you <i>can't</i> do with cards, open an issue on GitHub, and I'll see what I can do!",
 		"There are a lot of niche functions in the game API. Maybe there exists a function that allows you to do something easier?",
 
-		// Tools / Scripts
+		// Tools
 		"The card creator was originally created in Python, but was changed to JavaScript later on to improve readability, compatability, and maintainability. The holy trinity of coding...",
-		"The id script was originally made to change ids in the early stages of 2.0 development, but ended up being useful for discovering holes and duplicates in ids, so it stayed.",
-		"I have scripts to try to ensure that cards work correctly and that the game doesn't crash, but it can still happen. Please report any bugs you find.",
+		"The id tool was originally made to change ids in the early stages of 2.0 development, but ended up being useful for discovering holes and duplicates in ids, so it stayed.",
+		"I have tools to try to ensure that cards work correctly and that the game doesn't crash, but it can still happen. Please report any bugs you find.",
+		"Scripts were removed in favor of tools in update 4.0 since they were basically the same thing at that point.",
 
 		// Bugs
 		"There existed an ancient bug that terrorized me ever since Hearthstone.py V1. I called this dreaded bug 'The Linking Bug'. It was so dastardly, so tutungerdly, that it defies words. It is truly the most photosynthesis bug of them all.",

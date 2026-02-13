@@ -25,15 +25,15 @@ jobs:
       - run: bunx biome ci
       - run: bun test
       - run: bunx tsc
-      - run: bun ./scripts/test/cards.ts
+      - run: bun ./tools/test/cards.ts
 
         # TODO: Make this work.
         # - name: Crash Test
         #   run: |
-        #     bun ./scripts/test/crash.ts &&
-        #     bun ./scripts/test/crash.ts &&
-        #     bun ./scripts/test/crash.ts &&
-        #     bun ./scripts/test/crash.ts &&
-        #     bun ./scripts/test/crash.ts
+        #     bun ./tools/test/crash.ts &&
+        #     bun ./tools/test/crash.ts &&
+        #     bun ./tools/test/crash.ts &&
+        #     bun ./tools/test/crash.ts &&
+        #     bun ./tools/test/crash.ts
         # If it takes more than 10 minutes, it's probably stuck in an infinite loop.
         timeout-minutes: 10

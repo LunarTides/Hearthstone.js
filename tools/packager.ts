@@ -10,7 +10,7 @@ import { confirm, input, Separator } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
-import { validate } from "scripts/id/lib.ts";
+import { validate } from "tools/id/lib";
 
 const { game } = await createGame();
 
@@ -645,7 +645,7 @@ export async function main() {
 			},
 			new Separator(),
 			{
-				name: "Back",
+				name: import.meta.main ? "Exit" : "Back",
 				value: "back",
 			},
 		);
@@ -658,4 +658,8 @@ export async function main() {
 			break;
 		}
 	}
+}
+
+if (import.meta.main) {
+	await main();
 }

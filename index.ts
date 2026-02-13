@@ -1,8 +1,8 @@
 /**
- * The entry point of the program. Acts like a hub between the tools / scripts and the game.
+ * The entry point of the program. Acts like a hub between the tools and the game.
  */
 import { createGame } from "@Game/game.ts";
-import { validate as validateIds } from "./scripts/id/lib.ts";
+import { validate as validateIds } from "./tools/id/lib.ts";
 
 const { game } = await createGame();
 

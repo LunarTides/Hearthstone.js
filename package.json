@@ -7,9 +7,9 @@
 	"scripts": {
 		"start": "bunx tsc && bun .",
 		"format": "bunx biome check --fix",
-		"ci": "bunx biome ci && bun test && bunx tsc && bun ./scripts/test/cards.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts && bun ./scripts/test/crash.ts",
-		"script:vanilla:generate": "bun ./scripts/vanilla/generate.ts",
-		"script:vanilla:generate-no-filter": "bun ./scripts/vanilla/generate.ts --no-filter"
+		"ci": "bunx biome ci && bun test && bunx tsc && bun ./tools/test/cards.ts && bun ./tools/test/crash.ts && bun ./tools/test/crash.ts && bun ./tools/test/crash.ts && bun ./tools/test/crash.ts && bun ./tools/test/crash.ts",
+		"script:vanilla:generate": "bun ./tools/vanilla/generate.ts",
+		"script:vanilla:generate-no-filter": "bun ./tools/vanilla/generate.ts --no-filter"
 	},
 	"repository": {
 		"type": "git",
