@@ -22,7 +22,7 @@ export const interactFunctions = {
 handled by the player's AI, or will prompt the player to select an action.
 
 2. Either way, the resulting action will be turned into a string value, and passed to `_gameloopHandleInput`.
-This will either first send the string to `processCommand`, which will check if the action is a valid command.
+This will first send the string to `processCommand`, which will check if the action is a valid command.
 If it is, it will call the relevant function in:
     ```ts
     // src/commands.ts
@@ -37,7 +37,7 @@ If it is, it will call the relevant function in:
     and the `_gameloopHandleInput` will return early.
 
 3. If the action is not a command, it will try to parse it to a card in the players hand.
-If this is successfull, it will call the `play` function as defined here:
+If this is successful, it will call the `play` function as defined here:
     ```ts
     // src/game.ts
 
