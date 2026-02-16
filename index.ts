@@ -6,6 +6,13 @@ import { validate as validateIds } from "./tools/id/lib.ts";
 
 const { game } = await createGame();
 
+import { isCLICommand, main } from "./tools/cli.ts";
+
+// Handle CLI commands.
+if (isCLICommand()) {
+	await main();
+}
+
 import * as hub from "./hub.ts";
 
 hub.watermark();
