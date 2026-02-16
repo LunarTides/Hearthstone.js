@@ -51,7 +51,7 @@ export const watermark = (showCards = true) => {
 	console.log(
 		"Version: %s %s",
 		version,
-		game.isEventActive(game.time.events.anniversary) && "🎂",
+		game.isEventActive(game.time.events.anniversary) ? "🎂" : "",
 	);
 
 	if (showCards) {
