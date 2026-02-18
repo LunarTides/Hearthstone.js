@@ -203,16 +203,13 @@
 						<div class="flex gap-3">
 							<!-- TODO: Use superforms. -->
 							<form
-								action={resolve(
-									"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
-									{
-										username: page.params.username!,
-										packName: page.params.packName!,
-										version: comment.pack.packVersion,
-										id: comment.pack.id,
-										commentId: comment.id,
-									},
-								) + "?/like"}
+								action={resolve("/@[username]/-[packName]/v[version]/[id]/comments/[commentId]", {
+									username: page.params.username!,
+									packName: page.params.packName!,
+									version: comment.pack.packVersion,
+									id: comment.pack.id,
+									commentId: comment.id,
+								}) + "?/like"}
 								method="post"
 								use:enhance
 							>
@@ -225,16 +222,13 @@
 
 							<!-- TODO: Use superforms. -->
 							<form
-								action={resolve(
-									"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
-									{
-										username: page.params.username!,
-										packName: page.params.packName!,
-										version: comment.pack.packVersion,
-										id: comment.pack.id,
-										commentId: comment.id,
-									},
-								) + "?/dislike"}
+								action={resolve("/@[username]/-[packName]/v[version]/[id]/comments/[commentId]", {
+									username: page.params.username!,
+									packName: page.params.packName!,
+									version: comment.pack.packVersion,
+									id: comment.pack.id,
+									commentId: comment.id,
+								}) + "?/dislike"}
 								method="post"
 								use:enhance
 							>
