@@ -37,9 +37,9 @@ export const load = async (event) => {
 	const readmeHTML =
 		readmeFile &&
 		Bun.markdown
-			.html(readmeFile.content, { headingIds: true })
+			.html(readmeFile.content, { headings: { ids: true } })
 			// Make `/files/` actually take you to the correct file.
-			.replace('<a href="files/', `<a href="files/`);
+			.replace('<a href="files/', `<a href="v${version}/files/`);
 
 	return {
 		readme: readmeFile,
