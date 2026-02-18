@@ -1012,7 +1012,6 @@ const playCard = {
 			return false;
 		}
 
-		// I'm using while loops to prevent a million indents
 		const mech = await game.prompt.targetCard(
 			"Which minion do you want this card to Magnetize to:",
 			undefined,

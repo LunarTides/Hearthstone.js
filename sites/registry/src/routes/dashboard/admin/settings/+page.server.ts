@@ -4,15 +4,16 @@ import type { Setting } from "$lib/db/schema.js";
 import { fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {
-	const settings = requestAPI<{ settings: Setting[] }>(event, resolve("/api/next/settings")).then(
-		async (response) => {
-			if (response.error) {
-				return [];
-			}
+	const settings = requestAPI<{ settings: Setting[] }>(
+		event,
+		resolve("/api/next/moderation/settings"),
+	).then(async (response) => {
+		if (response.error) {
+			return [];
+		}
 
-			return response.json.settings.toSorted((a, b) => a.key.localeCompare(b.key));
-		},
-	);
+		return response.json.settings.toSorted((a, b) => a.key.localeCompare(b.key));
+	});
 
 	return { settings };
 };
@@ -31,7 +32,7 @@ export const actions = {
 			return fail(400, { message: "Invalid settings object." });
 		}
 
-		const response = await requestAPI(event, resolve("/api/next/settings"), {
+		const response = await requestAPI(event, resolve("/api/next/moderation/settings"), {
 			method: "POST",
 			body: JSON.stringify({ settings }),
 		});
