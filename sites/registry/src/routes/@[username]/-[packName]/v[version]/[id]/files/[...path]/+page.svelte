@@ -15,8 +15,12 @@
 
 	{#if fileInfo.file.type === "file"}
 		<div class="">
-			<HighlightAuto code={fileInfo.file.content} let:highlighted>
-				<LineNumbers {highlighted} class="m-1 rounded-md" />
+			<HighlightAuto
+				code={fileInfo.file.content}
+				languageNames={["typescript", "markdown", "json"]}
+				let:highlighted
+			>
+				<LineNumbers {highlighted} wrapLines class="m-1 rounded-md" />
 			</HighlightAuto>
 		</div>
 	{/if}
