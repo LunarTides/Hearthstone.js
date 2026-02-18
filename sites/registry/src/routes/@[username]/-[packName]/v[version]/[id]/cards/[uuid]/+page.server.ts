@@ -1,77 +1,66 @@
-import { db } from "$lib/server/db/index.js";
-import * as table from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
-import { eq, and } from "drizzle-orm";
-import { loadGetPack } from "$lib/server/db/pack.js";
-import { satisfiesRole } from "$lib/user.js";
 import { requestAPI } from "$lib/api/helper";
 import { resolve } from "$app/paths";
 import type { File } from "$lib/api/types";
+import type { Card } from "$lib/db/schema.js";
+import type { CensoredPack } from "$lib/pack.js";
 
 export const load = async (event) => {
-	const user = event.locals.user;
 	const uuid = event.params.uuid;
 
 	const getCards = async () => {
-		let cards = await db
-			.select()
-			.from(table.card)
-			.where(and(eq(table.card.uuid, uuid)));
-		if (cards.length <= 0) {
-			error(404, { message: "Card not found." });
-		}
-
-		const latest = cards.find((c) => c.isLatestVersion)!;
-		// NOTE: Using `packId` works.
-		const packs = await loadGetPack(user, cards[0].packId, "");
-
-		if (!user || (packs.latest.ownerName !== user.username && !satisfiesRole(user, "Moderator"))) {
-			cards = cards.filter((c) => c.approved);
-		}
-
-		const currentPack = packs.all.find((v) => v.id === event.params.id);
-		if (!currentPack) {
-			return error(404, { message: "The requested pack does not exist." });
-		}
-
-		const files = await Promise.all(
-			cards.map(async (card) => {
-				const pack = packs.all.find((pack) => pack.id === card.packId);
-				if (!pack) {
-					return error(404, { message: "Card doesn't belong to a pack." });
-				}
-
-				const response = await requestAPI<File>(
-					event,
-					resolve("/api/next/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
-						username: pack.ownerName,
-						packName: pack.name,
-						version: pack.packVersion,
-						id: pack.id,
-						// Remove leading slash.
-						path: card.filePath.replace(/^\//, ""),
-					}),
-				);
-				if (response.error) {
-					return error(response.error.status, { message: response.error.message });
-				}
-
-				return {
-					id: card.id,
-					file: response.json,
-				};
+		const cardResponse = await requestAPI<{
+			latest: {
+				card: Card;
+				pack: CensoredPack;
+			};
+			outdated: {
+				card: Card;
+				pack: CensoredPack;
+			}[];
+		}>(
+			event,
+			resolve("/api/next/cards/all/[uuid]", {
+				uuid,
 			}),
 		);
+		if (cardResponse.error) {
+			return error(cardResponse.error.status, { message: cardResponse.error.message });
+		}
 
-		const currentCard = cards.find((c) => c.packId === currentPack.id)!;
+		const cards = cardResponse.json;
+		const currentCard = [cards.latest, ...cards.outdated].find(
+			(c) => c.pack.id === event.params.id,
+		);
+		if (!currentCard) {
+			return error(404, { message: "This card doesn't exist." });
+		}
+
+		const fileResponse = await requestAPI<File>(
+			event,
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
+				username: currentCard.pack.ownerName,
+				packName: currentCard.pack.name,
+				version: currentCard.pack.packVersion,
+				id: currentCard.pack.id,
+				// Remove leading slash.
+				path: currentCard.card.filePath.replace(/^\//, ""),
+			}),
+		);
+		if (fileResponse.error) {
+			return error(fileResponse.error.status, { message: fileResponse.error.message });
+		}
 
 		return {
-			packs,
-			latest,
-			all: cards,
-			files,
-			current: currentCard,
-			currentPack,
+			packs: {
+				latest: cards.latest.pack,
+				all: [cards.latest, ...cards.outdated].map((c) => c.pack),
+			},
+			latest: cards.latest.card,
+			all: [cards.latest, ...cards.outdated].map((c) => c.card),
+			file: fileResponse.json,
+			current: currentCard.card,
+			currentPack: currentCard.pack,
 		};
 	};
 

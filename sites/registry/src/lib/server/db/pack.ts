@@ -7,7 +7,6 @@ import { eq, and, desc, count } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
-import semver from "semver";
 import { censorPack } from "$lib/pack";
 
 const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
@@ -59,7 +58,7 @@ export const loadGetPack = async (user: ClientUser, username: string, packName: 
 
 	let latest = censoredPacks.find((p) => p.isLatestVersion);
 	if (!latest) {
-		latest = censoredPacks.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
+		latest = censoredPacks.toSorted((a, b) => Bun.semver.order(b.packVersion, a.packVersion))[0];
 	}
 
 	return {
@@ -89,7 +88,7 @@ export const APIGetPack = async (user: ClientUser, username: string, packName: s
 
 	let latest = censoredPacks.find((p) => p.isLatestVersion);
 	if (!latest) {
-		latest = censoredPacks.toSorted((a, b) => semver.compare(b.packVersion, a.packVersion))[0];
+		latest = censoredPacks.toSorted((a, b) => Bun.semver.order(b.packVersion, a.packVersion))[0];
 	}
 
 	return {
@@ -101,10 +100,19 @@ export const APIGetPack = async (user: ClientUser, username: string, packName: s
 
 export const isUserMemberOfPack = async (
 	clientUser: ClientUser,
-	username: string,
+	username: string | undefined,
 	pack: Pack | undefined,
 ) => {
 	if (!pack || !clientUser) {
+		return false;
+	}
+
+	if (pack.ownerName === username || satisfiesRole(clientUser, "Moderator")) {
+		return true;
+	}
+
+	// No group specified.
+	if (!username) {
 		return false;
 	}
 
@@ -124,11 +132,7 @@ export const isUserMemberOfPack = async (
 	)[0];
 	isInGroup = result.value > 0;
 
-	if (isInGroup || pack.ownerName === username || satisfiesRole(clientUser, "Moderator")) {
-		return true;
-	}
-
-	return false;
+	return isInGroup;
 };
 
 export const getFullPacks = async <T extends PgSelect<"pack">>(

@@ -50,7 +50,7 @@ export const load = async (event) => {
 	// TODO: Account for groups.
 	const canEditPack = pack.ownerName === event.locals.user?.username;
 
-	const response = await requestAPI<FileTree[]>(
+	const fileResponse = await requestAPI<FileTree[]>(
 		event,
 		resolve("/api/next/@[username]/-[packName]/v[version]/[id]/files", {
 			username: pack.ownerName,
@@ -59,12 +59,18 @@ export const load = async (event) => {
 			id: pack.id,
 		}),
 	);
-	if (response.error) {
-		return error(response.error.status, { message: response.error.message });
+	if (fileResponse.error) {
+		return error(fileResponse.error.status, { message: fileResponse.error.message });
 	}
 
 	const cards = await getCards(event);
 	const form = await superValidate(zod4(approveSchema));
 
-	return { form, files: response.json, formattedPacks, cards, canEditPack };
+	return {
+		form,
+		files: fileResponse.json,
+		formattedPacks,
+		cards,
+		canEditPack,
+	};
 };

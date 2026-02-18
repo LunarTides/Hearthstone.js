@@ -27,6 +27,7 @@ export const load = async (event) => {
 	const user = event.locals.user;
 	const { username, packName } = event.params;
 
+	// TODO: Query API instead.
 	const packs = await loadGetPack(user, username, packName);
 	const latest = packs.latest;
 

@@ -9,11 +9,8 @@
 {:then packs}
 	{#if packs}
 		<div class="flex gap-1 px-2">
-			{#each packs as versions (versions.uuid)}
-				{#if versions.relevantPacks.length > 0}
-					<!-- Latest version -->
-					<PackSmall pack={versions.relevantPacks[0]} clientUser={data.user} navigateToVersion />
-				{/if}
+			{#each packs as pack (pack.name)}
+				<PackSmall pack={pack.versions.latest} clientUser={data.user} navigateToVersion />
 			{/each}
 		</div>
 	{/if}

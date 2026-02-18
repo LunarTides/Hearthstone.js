@@ -64,11 +64,7 @@
 	</div>
 
 	<div class="m-1">
-		<Highlight
-			language={typescript}
-			code={cards.files.find((f) => f.id === cards.current.id)!.file.content}
-			let:highlighted
-		>
+		<Highlight language={typescript} code={cards.file.content} let:highlighted>
 			<LineNumbers class="rounded-md" {highlighted} />
 		</Highlight>
 	</div>
