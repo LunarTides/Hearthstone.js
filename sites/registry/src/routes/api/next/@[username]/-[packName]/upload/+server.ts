@@ -180,7 +180,7 @@ export async function POST(event) {
 		return json({ message: "'pack.json5' not found." }, { status: 400 });
 	}
 
-	// TODO: Only allow alphanumeric characters and - in pack names.
+	// TODO: Only allow alphanumeric characters and _ in pack names.
 	// TODO: Check for username + packName conflicts.
 
 	await archive.extract(tmpPath);

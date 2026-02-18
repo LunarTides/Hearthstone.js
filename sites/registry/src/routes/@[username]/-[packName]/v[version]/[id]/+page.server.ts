@@ -35,7 +35,6 @@ export const load = async (event) => {
 		readmeFile = response.json;
 	}
 
-	// TODO: Check if replacing the url works.
 	const readmeHTML =
 		readmeFile &&
 		Bun.markdown

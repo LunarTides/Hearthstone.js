@@ -54,7 +54,6 @@
 			<p class="text-amber-400">Enchantment Priority: {card.enchantmentPriority}</p>
 		{/if}
 
-		<!-- TODO: Add translation to the entire file. -->
 		<p class="text-xs mt-2">
 			From: {pack.name} v{pack.packVersion}, for Version {pack.gameVersion}
 		</p>

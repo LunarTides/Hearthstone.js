@@ -109,7 +109,6 @@
 			@{pack.ownerName}
 		</a>
 		{#if canEditPack}
-			<!-- TODO: Localize. -->
 			<p class="text-green-300">You can administrate this pack.</p>
 		{/if}
 
@@ -176,7 +175,6 @@
 		</div>
 
 		{#if !hideButtons && pack.approved}
-			<!-- TODO: Get the form message here. -->
 			{#if form?.message}<p class="text-red-500">{form.message}</p>{/if}
 
 			<div class="flex gap-4">
@@ -189,7 +187,6 @@
 					method="post"
 					use:enhance
 				>
-					<!-- TODO: These are glitchy on the card page. -->
 					<button type="submit" class="flex gap-1 mt-4 hover:cursor-pointer">
 						<ThumbsUp class={pack.likes.hasLiked ? "fill-green-500" : ""} />
 						<p class="font-mono text-lg">{pack.likes.positive}</p>

@@ -119,7 +119,6 @@
 				>
 			</form>
 
-			<!-- TODO: The comments constantely reorder each other. -->
 			<div class="flex flex-col gap-1">
 				{#each commentsObject.comments as comment (comment.id)}
 					<div
@@ -213,7 +212,6 @@
 								method="post"
 								use:enhance
 							>
-								<!-- TODO: These are glitchy on the card page. -->
 								<button type="submit" class="flex gap-1 hover:cursor-pointer">
 									<ThumbsUp class={comment.likes.hasLiked ? "fill-green-500" : ""} />
 									<p class="font-mono text-lg">{comment.likes.positive}</p>

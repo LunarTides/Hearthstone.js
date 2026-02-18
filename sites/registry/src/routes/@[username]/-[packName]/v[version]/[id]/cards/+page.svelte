@@ -12,7 +12,6 @@
 	{:then cards}
 		<div class="m-1 p-2 bg-header rounded-md">
 			<div class="flex flex-wrap gap-1">
-				<!-- TODO: This doesn't show cards in not-approved versions. -->
 				{#each cards as card (card.id)}
 					<CardSmall {card} pack={versions.current} />
 				{/each}
