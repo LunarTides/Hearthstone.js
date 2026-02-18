@@ -29,7 +29,7 @@ export const session = pgTable("session", {
 	id: text("id").primaryKey(),
 	username: text("username")
 		.notNull()
-		.references(() => user.username, { onDelete: "cascade" }),
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	expiresAt: timestamp("expires_at", {
 		withTimezone: true,
 		mode: "date",
@@ -39,7 +39,7 @@ export const session = pgTable("session", {
 export const profile = pgTable("profile", {
 	username: text("username")
 		.primaryKey()
-		.references(() => user.username, { onDelete: "cascade" }),
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	aboutMe: text("about_me").notNull(),
 	pronouns: text("pronouns"),
 });
@@ -56,8 +56,10 @@ export const groupMember = pgTable("groupMember", {
 		.default(sql`uuidv7()`),
 	groupName: text("groupName")
 		.notNull()
-		.references(() => group.username, { onDelete: "cascade", onUpdate: "cascade" }),
-	username: text("username").notNull(),
+		.references(() => group.username, { onUpdate: "cascade", onDelete: "cascade" }),
+	username: text("username")
+		.notNull()
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	permissions: text("permissions").array().notNull(),
 	accepted: boolean("accepted").notNull().default(false),
 });
@@ -82,7 +84,10 @@ export const pack = pgTable("pack", {
 
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
 	approved: boolean("approved").notNull(),
-	approvedBy: text("approved_by").references(() => user.username, { onDelete: "set null" }),
+	approvedBy: text("approved_by").references(() => user.username, {
+		onUpdate: "cascade",
+		onDelete: "no action",
+	}),
 	approvedAt: timestamp("approved_at"),
 	denied: boolean("denied").notNull().default(false),
 
@@ -98,7 +103,7 @@ export const packLike = pgTable("packLike", {
 	packName: text("pack_name").notNull(),
 	username: text("username")
 		.notNull()
-		.references(() => user.username, { onDelete: "cascade" }),
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	dislike: boolean("dislike").notNull(),
 });
 
@@ -156,14 +161,20 @@ export const packComment = pgTable("packComment", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	username: text("username").references(() => user.username, { onDelete: "set null" }),
+	username: text("username").references(() => user.username, {
+		onUpdate: "cascade",
+		onDelete: "set null",
+	}),
 	packId: uuid("pack_id")
 		.notNull()
 		.references(() => pack.id),
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),
-	heartedByUsername: text("hearted_by_id").references(() => user.username),
+	heartedByUsername: text("hearted_by_id").references(() => user.username, {
+		onUpdate: "cascade",
+		onDelete: "no action",
+	}),
 });
 
 export const packCommentLike = pgTable("packCommentLike", {
@@ -175,7 +186,7 @@ export const packCommentLike = pgTable("packCommentLike", {
 		.references(() => packComment.id, { onDelete: "cascade" }),
 	username: text("username")
 		.notNull()
-		.references(() => user.username),
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	dislike: boolean("dislike").notNull(),
 });
 
@@ -183,7 +194,10 @@ export const packMessage = pgTable("packMessage", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
-	username: text("username").references(() => user.username, { onDelete: "set null" }),
+	username: text("username").references(() => user.username, {
+		onUpdate: "cascade",
+		onDelete: "set null",
+	}),
 	packId: uuid("pack_id").notNull(),
 	creationDate: timestamp().notNull().defaultNow(),
 
@@ -197,7 +211,7 @@ export const notification = pgTable("notification", {
 		.default(sql`uuidv7()`),
 	username: text("user_id")
 		.notNull()
-		.references(() => user.username, { onDelete: "cascade" }),
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
 	date: timestamp("date").notNull().defaultNow(),
 
 	text: text("text").notNull(),
