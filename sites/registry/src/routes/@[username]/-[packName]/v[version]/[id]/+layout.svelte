@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { resolve } from "$app/paths";
-	import { page } from "$app/state";
 	import PackBig from "$lib/components/pack-big.svelte";
+	import Tab from "$lib/components/tab.svelte";
+	import Tabs from "$lib/components/tabs.svelte";
 	import { satisfiesRole } from "$lib/user";
 	import { Cog, FolderCode, History, Info, MessageSquare, Parentheses } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
@@ -26,171 +26,39 @@
 		class="rounded-b-none"
 	/>
 
-	<nav>
-		<div class="flex gap-1 m-1">
-			<!-- README -->
-			{#if page.route.id !== `/@[username]/-[packName]/v[version]/[id]`}
-				<a
-					href={resolve("/@[username]/-[packName]/v[version]/[id]", {
-						username: page.params.username!,
-						packName: page.params.packName!,
-						version: page.params.version!,
-						id: page.params.id!,
-					})}
-					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-				>
-					<Info />
-					README
-				</a>
-			{:else}
-				<p
-					title="You're already on this page."
-					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-					aria-disabled="true"
-				>
-					<Info />
-					README
-				</p>
-			{/if}
-
-			<!-- Code -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/files`)}
-				<a
-					href={resolve("/@[username]/-[packName]/v[version]/[id]/files", {
-						username: page.params.username!,
-						packName: page.params.packName!,
-						version: page.params.version!,
-						id: page.params.id!,
-					})}
-					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-				>
-					<FolderCode />
-					Code
-				</a>
-			{:else}
-				<p
-					title="You're already on this page."
-					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-					aria-disabled="true"
-				>
-					<FolderCode />
-					Code
-				</p>
-			{/if}
-
-			<!-- Cards -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/cards`)}
-				<a
-					href={resolve("/@[username]/-[packName]/v[version]/[id]/cards", {
-						username: page.params.username!,
-						packName: page.params.packName!,
-						version: page.params.version!,
-						id: page.params.id!,
-					})}
-					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-				>
-					<Parentheses />
-					{#await data.cards}
-						<p>Cards (...)</p>
-					{:then cards}
-						<p>Cards ({cards.length})</p>
-					{/await}
-				</a>
-			{:else}
-				<div
-					title="You're already on this page."
-					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-					aria-disabled="true"
-				>
-					<Parentheses />
-					{#await data.cards}
-						<p>Cards (...)</p>
-					{:then cards}
-						<p>Cards ({cards.length})</p>
-					{/await}
-				</div>
-			{/if}
-
-			<!-- Comments -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/comments`)}
-				<a
-					href={resolve("/@[username]/-[packName]/v[version]/[id]/comments", {
-						username: page.params.username!,
-						packName: page.params.packName!,
-						version: page.params.version!,
-						id: page.params.id!,
-					})}
-					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-				>
-					<MessageSquare />
-					<!-- TODO: Show amount of comments. -->
-					Comments
-				</a>
-			{:else}
-				<p
-					title="You're already on this page."
-					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-					aria-disabled="true"
-				>
-					<MessageSquare />
-					<!-- TODO: Show amount of comments. -->
-					Comments
-				</p>
-			{/if}
-
-			<!-- Versions -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/versions`)}
-				<a
-					href={resolve("/@[username]/-[packName]/v[version]/[id]/versions", {
-						username: page.params.username!,
-						packName: page.params.packName!,
-						version: page.params.version!,
-						id: page.params.id!,
-					})}
-					class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-				>
-					<History />
-					<p>Versions ({packs.all.length})</p>
-				</a>
-			{:else}
-				<div
-					title="You're already on this page."
-					class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-					aria-disabled="true"
-				>
-					<History />
-					<p>Versions ({packs.all.length})</p>
-				</div>
-			{/if}
-
-			{#if canEditPack || canModeratePack}
-				<!-- Settings -->
-				{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/settings`)}
-					<a
-						href={resolve("/@[username]/-[packName]/v[version]/[id]/settings", {
-							username: page.params.username!,
-							packName: page.params.packName!,
-							version: page.params.version!,
-							id: page.params.id!,
-						})}
-						class="p-2 w-full text-center flex justify-center gap-1 bg-blue-400 hover:bg-blue-300 active:bg-blue-500"
-					>
-						<Cog />
-						Settings
-					</a>
-				{:else}
-					<p
-						title="You're already on this page."
-						class="p-2 w-full text-center flex justify-center gap-1 bg-gray-400 hover:cursor-default"
-						aria-disabled="true"
-					>
-						<Cog />
-						Settings
-					</p>
-				{/if}
-			{/if}
-		</div>
-	</nav>
+	<Tabs>
+		<Tab href="/@[username]/-[packName]/v[version]/[id]" strict>
+			<Info />
+			README
+		</Tab>
+		<Tab href="/@[username]/-[packName]/v[version]/[id]/files">
+			<FolderCode />
+			Code
+		</Tab>
+		<Tab href="/@[username]/-[packName]/v[version]/[id]/cards">
+			<Parentheses />
+			{#await data.cards}
+				Cards (...)
+			{:then cards}
+				Cards ({cards.length})
+			{/await}
+		</Tab>
+		<Tab href="/@[username]/-[packName]/v[version]/[id]/comments">
+			<MessageSquare />
+			<!-- TODO: Show amount of comments. -->
+			Comments
+		</Tab>
+		<Tab href="/@[username]/-[packName]/v[version]/[id]/versions">
+			<History />
+			Versions ({packs.all.length})
+		</Tab>
+		{#if canEditPack || canModeratePack}
+			<Tab href="/@[username]/-[packName]/v[version]/[id]/settings">
+				<Cog />
+				Settings
+			</Tab>
+		{/if}
+	</Tabs>
 {/await}
 
 {@render children()}
