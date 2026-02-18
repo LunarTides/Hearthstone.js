@@ -22,7 +22,7 @@
 <div class="w-fit min-w-77.5">
 	<a
 		href={navigateToVersion
-			? resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			? resolve("/@[username]/-[packName]/v[version]/[id]", {
 					username: pack.ownerName,
 					packName: pack.name,
 					version: pack.packVersion,

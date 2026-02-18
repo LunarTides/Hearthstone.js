@@ -65,7 +65,7 @@ export const load = async (event) => {
 
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/cards", {
+		resolve("/api/next/@[username]/-[packName]/v[version]/[id]/cards", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,

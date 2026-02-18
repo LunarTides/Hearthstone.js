@@ -64,7 +64,7 @@
 				{#if pack.approved}
 					<!-- TODO: Use superforms. -->
 					<form
-						action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+						action={resolve("/@[username]/-[packName]/v[version]/[id]", {
 							username: pack.ownerName,
 							packName: pack.name,
 							version: pack.packVersion,

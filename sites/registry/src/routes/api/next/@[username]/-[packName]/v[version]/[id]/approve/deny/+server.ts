@@ -7,8 +7,9 @@ import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { approveSchema } from "$lib/api/schemas.js";
 import { setLatestVersion, isUserMemberOfPack } from "$lib/server/db/pack.js";
-import { grantKarma } from "$lib/server/db/user.js";
+import { grantKarma } from "$lib/server/db/user";
 
+// TODO: Deduplicate from `approve`.
 export async function POST(event) {
 	const user = event.locals.user;
 	if (!user) {
@@ -52,29 +53,18 @@ export async function POST(event) {
 		);
 	}
 
-	const blocking = await db
-		.select({ id: table.pack.id })
-		.from(table.pack)
-		.where(and(eq(table.pack.approved, true), eq(table.pack.packVersion, pack.packVersion)));
-	if (blocking.length > 0) {
-		return json(
-			{ message: `A pack with this version (${pack.packVersion}) has already been approved.` },
-			{ status: 409 },
-		);
-	}
-
-	if (pack.approved) {
-		return json({ message: "This pack has already been approved." }, { status: 403 });
+	if (pack.denied) {
+		return json({ message: "This pack has already been denied." }, { status: 403 });
 	}
 
 	await db
 		.update(table.pack)
-		.set({ approved: true, approvedBy: user.username, approvedAt: new Date(), denied: false })
+		.set({ approved: false, approvedBy: null, approvedAt: null, denied: true })
 		.where(eq(table.pack.id, pack.id));
 
 	await db
 		.update(table.card)
-		.set({ approved: true, isLatestVersion: false })
+		.set({ approved: false, isLatestVersion: false })
 		.where(eq(table.card.packId, pack.id));
 
 	await setLatestVersion(username, packName);
@@ -85,15 +75,15 @@ export async function POST(event) {
 			packId: id,
 			username: user.username,
 			type: messageType,
-			text: message ? `> Approved this pack: ${message}` : `> Approved this pack.`,
+			text: message ? `> Denied this pack: ${message}` : `> Denied this pack.`,
 		})
 		.returning({ id: table.packMessage.id });
 
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been denied.`,
 		route:
-			resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
+			resolve("/@[username]/-[packName]/v[version]/[id]/comments", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -101,7 +91,7 @@ export async function POST(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, karma);
+	await grantKarma(username, -karma);
 	return json({}, { status: 200 });
 }
 
@@ -149,21 +139,11 @@ export async function DELETE(event) {
 		);
 	}
 
-	if (!pack.approved) {
-		return json({ message: "This pack isn't approved." }, { status: 403 });
+	if (!pack.denied) {
+		return json({ message: "This pack isn't denied." }, { status: 403 });
 	}
 
-	await db
-		.update(table.pack)
-		.set({ approved: false, approvedBy: null, approvedAt: null })
-		.where(eq(table.pack.id, pack.id));
-
-	await db
-		.update(table.card)
-		.set({ approved: false, isLatestVersion: false })
-		.where(eq(table.card.packId, pack.id));
-
-	await setLatestVersion(username, packName);
+	await db.update(table.pack).set({ denied: false }).where(eq(table.pack.id, pack.id));
 
 	const packMessage = await db
 		.insert(table.packMessage)
@@ -172,17 +152,16 @@ export async function DELETE(event) {
 			username: user.username,
 			type: messageType,
 			text: message
-				? `> Withdrew their approval from this pack: ${message}`
-				: `> Withdrew their approval from this pack.`,
+				? `> Removed deny tag from this pack: ${message}`
+				: `> Removed deny tag from this pack.`,
 		})
 		.returning({ id: table.packMessage.id });
 
-	// FIXME: This breaks when approving a pack owned by a group.
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)})'s approval has been withdrawn!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) is being reconsidered for approval!`,
 		route:
-			resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
+			resolve("/@[username]/-[packName]/v[version]/[id]/comments", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -190,6 +169,6 @@ export async function DELETE(event) {
 			}) + `#message-${packMessage[0].id}`,
 	});
 
-	await grantKarma(username, -karma);
+	await grantKarma(username, karma);
 	return json({}, { status: 200 });
 }

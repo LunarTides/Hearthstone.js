@@ -35,7 +35,7 @@ export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
 	const response = await requestAPI<File>(
 		event,
-		resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+		resolve("/api/next/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
 			username,
 			packName,
 			version,

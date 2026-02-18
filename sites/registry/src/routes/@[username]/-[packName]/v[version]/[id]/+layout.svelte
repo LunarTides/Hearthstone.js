@@ -29,9 +29,9 @@
 	<nav>
 		<div class="flex gap-1 m-1">
 			<!-- README -->
-			{#if page.route.id !== `/@[username]/-[packName]/versions/[version]/[id]`}
+			{#if page.route.id !== `/@[username]/-[packName]/v[version]/[id]`}
 				<a
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]", {
 						username: page.params.username!,
 						packName: page.params.packName!,
 						version: page.params.version!,
@@ -54,9 +54,9 @@
 			{/if}
 
 			<!-- Code -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/versions/[version]/[id]/files`)}
+			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/files`)}
 				<a
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]/files", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]/files", {
 						username: page.params.username!,
 						packName: page.params.packName!,
 						version: page.params.version!,
@@ -79,9 +79,9 @@
 			{/if}
 
 			<!-- Cards -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/versions/[version]/[id]/cards`)}
+			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/cards`)}
 				<a
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]/cards", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]/cards", {
 						username: page.params.username!,
 						packName: page.params.packName!,
 						version: page.params.version!,
@@ -112,9 +112,9 @@
 			{/if}
 
 			<!-- Comments -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/versions/[version]/[id]/comments`)}
+			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/comments`)}
 				<a
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]/comments", {
 						username: page.params.username!,
 						packName: page.params.packName!,
 						version: page.params.version!,
@@ -139,9 +139,9 @@
 			{/if}
 
 			<!-- Versions -->
-			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/versions/[version]/[id]/versions`)}
+			{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/versions`)}
 				<a
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]/versions", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]/versions", {
 						username: page.params.username!,
 						packName: page.params.packName!,
 						version: page.params.version!,
@@ -165,9 +165,9 @@
 
 			{#if canEditPack || canModeratePack}
 				<!-- Settings -->
-				{#if !page.route.id?.startsWith(`/@[username]/-[packName]/versions/[version]/[id]/settings`)}
+				{#if !page.route.id?.startsWith(`/@[username]/-[packName]/v[version]/[id]/settings`)}
 					<a
-						href={resolve("/@[username]/-[packName]/versions/[version]/[id]/settings", {
+						href={resolve("/@[username]/-[packName]/v[version]/[id]/settings", {
 							username: page.params.username!,
 							packName: page.params.packName!,
 							version: page.params.version!,

@@ -113,7 +113,7 @@
 								<!-- TODO: Use superforms. -->
 								<form
 									id="edit-version-delete"
-									action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+									action={resolve("/@[username]/-[packName]/v[version]/[id]", {
 										username: page.params.username!,
 										packName: page.params.packName!,
 										version: page.params.version!,
@@ -177,7 +177,7 @@
 						</div>
 					{:else}
 						<form
-							action={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+							action={resolve("/@[username]/-[packName]/v[version]/[id]", {
 								username: page.params.username!,
 								packName: page.params.packName!,
 								version: page.params.version!,

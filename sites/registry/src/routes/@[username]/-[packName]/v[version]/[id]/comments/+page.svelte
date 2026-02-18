@@ -95,7 +95,7 @@
 
 			<!-- TODO: Use superforms. -->
 			<form
-				action={resolve("/@[username]/-[packName]/versions/[version]/[id]/comments", {
+				action={resolve("/@[username]/-[packName]/v[version]/[id]/comments", {
 					username: page.params.username!,
 					packName: page.params.packName!,
 					version: page.params.version!,
@@ -132,7 +132,7 @@
 									<!-- TODO: Use superforms. -->
 									<form
 										action={resolve(
-											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+											"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
 											{
 												username: page.params.username!,
 												packName: page.params.packName!,
@@ -204,7 +204,7 @@
 							<!-- TODO: Use superforms. -->
 							<form
 								action={resolve(
-									"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+									"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
 									{
 										username: page.params.username!,
 										packName: page.params.packName!,
@@ -226,7 +226,7 @@
 							<!-- TODO: Use superforms. -->
 							<form
 								action={resolve(
-									"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+									"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
 									{
 										username: page.params.username!,
 										packName: page.params.packName!,
@@ -250,7 +250,7 @@
 									<!-- TODO: Use superforms. -->
 									<form
 										action={resolve(
-											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+											"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
 											{
 												username: page.params.username!,
 												packName: page.params.packName!,
@@ -277,7 +277,7 @@
 									<!-- TODO: Use superforms. -->
 									<form
 										action={resolve(
-											"/@[username]/-[packName]/versions/[version]/[id]/comments/[commentId]",
+											"/@[username]/-[packName]/v[version]/[id]/comments/[commentId]",
 											{
 												username: page.params.username!,
 												packName: page.params.packName!,

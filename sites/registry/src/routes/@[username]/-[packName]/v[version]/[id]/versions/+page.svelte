@@ -27,7 +27,7 @@
 			{#each packs.all.toSorted( (a, b) => b.packVersion.localeCompare(a.packVersion), ) as pack (pack.id)}
 				<a
 					id={`version-${pack.id}`}
-					href={resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+					href={resolve("/@[username]/-[packName]/v[version]/[id]", {
 						username: pack.ownerName,
 						packName: pack.name,
 						version: pack.packVersion,

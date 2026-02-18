@@ -20,7 +20,7 @@ export const load = async (event) => {
 	if (readme) {
 		const response = await requestAPI<File>(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/files/[...path]", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
 				username,
 				packName,
 				version,
@@ -71,7 +71,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/download", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/download", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -113,7 +113,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -152,7 +152,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/approve", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -170,7 +170,7 @@ export const actions = {
 		// TODO: If there are no more versions, navigate to the homepage.
 		redirect(
 			302,
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/v[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -200,7 +200,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/approve", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -218,7 +218,7 @@ export const actions = {
 		// TODO: If there are no more versions, navigate to the homepage.
 		redirect(
 			302,
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/v[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -248,7 +248,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/approve/deny", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -266,7 +266,7 @@ export const actions = {
 		// TODO: If there are no more versions, navigate to the homepage.
 		redirect(
 			302,
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/v[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -296,7 +296,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/approve/deny", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/approve/deny", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
@@ -314,7 +314,7 @@ export const actions = {
 		// TODO: If there are no more versions, navigate to the homepage.
 		redirect(
 			302,
-			resolve("/@[username]/-[packName]/versions/[version]/[id]", {
+			resolve("/@[username]/-[packName]/v[version]/[id]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,

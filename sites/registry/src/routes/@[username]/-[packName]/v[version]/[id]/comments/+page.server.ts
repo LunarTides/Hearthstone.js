@@ -51,7 +51,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/@[username]/-[packName]/versions/[version]/[id]/comments", {
+			resolve("/api/next/@[username]/-[packName]/v[version]/[id]/comments", {
 				username,
 				packName,
 				version,
