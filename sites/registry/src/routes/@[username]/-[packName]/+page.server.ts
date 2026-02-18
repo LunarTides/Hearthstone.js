@@ -9,11 +9,10 @@ export const load = async (event) => {
 
 	redirect(
 		302,
-		resolve("/@[username]/-[packName]/v[version]/[id]", {
+		resolve("/@[username]/-[packName]/v[version]", {
 			username: event.params.username,
 			packName: event.params.packName,
 			version: latest.packVersion,
-			id: latest.id,
 		}),
 	);
 };

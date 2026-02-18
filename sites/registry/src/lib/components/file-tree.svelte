@@ -27,11 +27,10 @@
 					</th>
 					<td>
 						<a
-							href={resolve("/@[username]/-[packName]/v[version]/[id]/files", {
+							href={resolve("/@[username]/-[packName]/v[version]/files", {
 								username: page.params.username!,
 								packName: page.params.packName!,
 								version: page.params.version!,
-								id: page.params.id!,
 							})}
 						>
 							/
@@ -46,11 +45,10 @@
 				</th>
 				<td>
 					<a
-						href={resolve("/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
+						href={resolve("/@[username]/-[packName]/v[version]/files/[...path]", {
 							username: page.params.username!,
 							packName: page.params.packName!,
 							version: page.params.version!,
-							id: page.params.id!,
 							path: page.params.path.split("/").slice(0, -1).join("/"),
 						})}
 					>
@@ -80,10 +78,9 @@
 				</th>
 				<td>
 					<a
-						href={resolve("/@[username]/-[packName]/v[version]/[id]/files/[...path]", {
+						href={resolve("/@[username]/-[packName]/v[version]/files/[...path]", {
 							username: page.params.username!,
 							packName: page.params.packName!,
-							id: page.params.id!,
 							version: page.params.version!,
 							path: file.path,
 						})}

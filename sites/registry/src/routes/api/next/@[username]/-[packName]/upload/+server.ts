@@ -207,6 +207,26 @@ export async function POST(event) {
 		error(400, "Invalid pack version.");
 	}
 
+	// Check if there is a conflicting pack.
+	const blocking = await db
+		.select({ id: table.pack.id })
+		.from(table.pack)
+		.where(
+			and(
+				eq(table.pack.ownerName, username),
+				eq(table.pack.name, packName),
+				eq(table.pack.packVersion, metadata.versions.pack),
+			),
+		);
+	if (blocking.length > 0) {
+		return json(
+			{
+				message: `A pack with this version (${metadata.versions.pack}) has already been uploaded.`,
+			},
+			{ status: 409 },
+		);
+	}
+
 	// TODO: Delete pack from db if adding cards goes wrong.
 	const pack: Pack[] = await db
 		.insert(table.pack)

@@ -58,11 +58,10 @@ export const actions = {
 		const pack = response.json.pack;
 		redirect(
 			303,
-			resolve("/@[username]/-[packName]/v[version]/[id]", {
+			resolve("/@[username]/-[packName]/v[version]", {
 				username: pack.ownerName,
 				packName: pack.name,
 				version: pack.packVersion,
-				id: pack.id,
 			}),
 		);
 

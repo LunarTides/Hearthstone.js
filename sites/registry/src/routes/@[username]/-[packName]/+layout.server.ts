@@ -8,11 +8,10 @@ import { error, type ServerLoadEvent } from "@sveltejs/kit";
 const getCards = async (event: ServerLoadEvent, pack: CensoredPack) => {
 	const response = await requestAPI<Card[]>(
 		event,
-		resolve("/api/next/@[username]/-[packName]/v[version]/[id]/cards", {
+		resolve("/api/next/@[username]/-[packName]/v[version]/cards", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,
-			id: pack.id,
 		}),
 	);
 	if (response.error) {

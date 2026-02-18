@@ -64,11 +64,10 @@
 				{#if pack.approved}
 					<!-- TODO: Use superforms. -->
 					<form
-						action={resolve("/@[username]/-[packName]/v[version]/[id]", {
+						action={resolve("/@[username]/-[packName]/v[version]", {
 							username: pack.ownerName,
 							packName: pack.name,
 							version: pack.packVersion,
-							id: pack.id,
 						}) + "?/download"}
 						method="post"
 						use:enhance

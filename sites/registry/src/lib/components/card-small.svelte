@@ -14,11 +14,10 @@
 
 <div class="w-fit">
 	<a
-		href={resolve("/@[username]/-[packName]/v[version]/[id]/cards/[uuid]", {
+		href={resolve("/@[username]/-[packName]/v[version]/cards/[uuid]", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,
-			id: pack.id,
 			uuid: card.uuid,
 		})}
 	>
