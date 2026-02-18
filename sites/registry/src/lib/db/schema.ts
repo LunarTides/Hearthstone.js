@@ -167,7 +167,7 @@ export const packComment = pgTable("packComment", {
 	}),
 	packId: uuid("pack_id")
 		.notNull()
-		.references(() => pack.id),
+		.references(() => pack.id, { onDelete: "cascade" }),
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),

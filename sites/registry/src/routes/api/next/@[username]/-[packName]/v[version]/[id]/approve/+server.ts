@@ -55,7 +55,14 @@ export async function POST(event) {
 	const blocking = await db
 		.select({ id: table.pack.id })
 		.from(table.pack)
-		.where(and(eq(table.pack.approved, true), eq(table.pack.packVersion, pack.packVersion)));
+		.where(
+			and(
+				eq(table.pack.ownerName, username),
+				eq(table.pack.name, packName),
+				eq(table.pack.approved, true),
+				eq(table.pack.packVersion, pack.packVersion),
+			),
+		);
 	if (blocking.length > 0) {
 		return json(
 			{ message: `A pack with this version (${pack.packVersion}) has already been approved.` },
