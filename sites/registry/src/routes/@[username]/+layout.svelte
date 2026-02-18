@@ -63,7 +63,7 @@
 				{#if user.username === data.user?.username}
 					<a
 						href={resolve("/@[username]/settings", { username: page.params.username! })}
-						class={`${page.route.id === "/@[username]/settings" && "text-indigo-400"}`}
+						class={`${page.route.id?.startsWith("/@[username]/settings") && "text-indigo-400"}`}
 					>
 						Settings
 					</a>
