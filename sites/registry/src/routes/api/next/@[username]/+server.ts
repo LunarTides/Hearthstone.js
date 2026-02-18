@@ -5,6 +5,9 @@ import { db } from "$lib/server/db";
 import { RoleTable, censorUser, satisfiesRole } from "$lib/user.js";
 import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
+import { superValidate } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+import schema from "../../../@[username]/settings/profile/schema.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -53,22 +56,33 @@ export async function PUT(event) {
 
 	const username = event.params.username;
 
+	// TODO: Check if in group instead of using satisfiesRole.
 	if (clientUser.username !== username && !satisfiesRole(clientUser, "Admin")) {
 		error(403, { message: "You do not have the the necessary privileges to do this." });
 	}
+
+	const j = await event.request.json();
+
+	const form = await superValidate(j, zod4(schema));
+	if (!form.valid) {
+		return json(
+			{ message: `Invalid request. (${form.errors._errors?.join(", ")})` },
+			{ status: 422 },
+		);
+	}
+
+	const { aboutMe, pronouns, role } = form.data;
 
 	const user = (await db.select().from(table.user).where(eq(table.user.username, username))).at(0);
 	if (!user) {
 		return json({ message: "User not found." }, { status: 404 });
 	}
 
-	const body = JSON.parse(await event.request.text());
-
-	let role = user.role;
+	let newRole = user.role;
 
 	// Only allow admins and up to change the role of users.
 	if (satisfiesRole(clientUser, "Admin")) {
-		role = body.role;
+		newRole = role;
 
 		if (role !== user.role) {
 			const a = RoleTable[role];
@@ -90,20 +104,18 @@ export async function PUT(event) {
 		}
 	}
 
-	// TODO: Check if the username is taken.
 	const updatedUsers = await db
 		.update(table.user)
 		.set({
-			username: body.username,
-			role,
+			role: newRole,
 		})
 		.where(eq(table.user.username, username))
 		.returning();
 	const updatedProfiles = await db
 		.update(table.profile)
 		.set({
-			pronouns: body.pronouns,
-			aboutMe: body.aboutMe.replaceAll("\r\n", "\n"),
+			pronouns,
+			aboutMe: aboutMe?.replaceAll("\r\n", "\n"),
 		})
 		.where(eq(table.profile.username, user.username))
 		.returning();
