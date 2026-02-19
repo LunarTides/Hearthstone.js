@@ -96,7 +96,7 @@
 		</div>
 	</div>
 
-	<pre class="font-sans">{comment.text}</pre>
+	<pre class="font-sans text-wrap">{comment.text}</pre>
 	<!-- TODO: `comment.creationDate` is a string for some reason? -->
 	<p class="text-gray-600">{dateFormat.format(new Date(comment.creationDate))}</p>
 

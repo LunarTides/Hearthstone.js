@@ -1,7 +1,7 @@
 <script lang="ts">
 	import "./layout.css";
 	import favicon from "$lib/assets/favicon.png";
-	import { goto } from "$app/navigation";
+	import { afterNavigate, beforeNavigate, goto } from "$app/navigation";
 	import { resolve } from "$app/paths";
 	import { githubDarkDimmed } from "svelte-highlight/styles";
 	import { enhance } from "$app/forms";
@@ -10,6 +10,7 @@
 	import { PUBLIC_DOMAIN } from "$env/static/public";
 	import { page } from "$app/state";
 	import { slide } from "svelte/transition";
+	import { scrollY } from "svelte/reactivity/window";
 
 	let { children, data } = $props();
 
@@ -23,6 +24,15 @@
 	const avatarPromise = import(`$lib/../../static/avatars/${data.user?.username}.avif`).catch(
 		() => {},
 	);
+
+	// Keep scroll state between navigations.
+	let scroll = $state(0);
+	beforeNavigate(() => {
+		scroll = scrollY.current ?? 0;
+	});
+	afterNavigate(() => {
+		scrollTo(0, scroll);
+	});
 </script>
 
 <svelte:head>
