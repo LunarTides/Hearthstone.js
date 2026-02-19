@@ -1,17 +1,18 @@
 import { resolve } from "$app/paths";
-import { CommentRequest } from "$lib/api/types";
 import { requestAPI } from "$lib/api/helper.js";
-import type { PackCommentWithExtras } from "$lib/db/schema.js";
-import type { CensoredPack } from "$lib/pack";
-import { error, fail, type ServerLoadEvent } from "@sveltejs/kit";
+import type { CommentWithExtras } from "$lib/db/schema.js";
+import { error, type ServerLoadEvent } from "@sveltejs/kit";
+import { superValidate, fail } from "sveltekit-superforms";
+import { zod4 } from "sveltekit-superforms/adapters";
+import { postSchema } from "./schema";
 
-const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
-	// return error(400, { message: "hi" });
-	const response = await requestAPI<PackCommentWithExtras[]>(
+const getComments = async (event: ServerLoadEvent) => {
+	// TODO: Support pagination.
+	const response = await requestAPI<CommentWithExtras[]>(
 		event,
 		resolve("/api/next/@[username]/-[packName]/comments", {
-			username: pack.ownerName,
-			packName: pack.name,
+			username: event.params.username!,
+			packName: event.params.packName!,
 		}),
 	);
 
@@ -26,12 +27,11 @@ const getComments = async (event: ServerLoadEvent, pack: CensoredPack) => {
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const parent = await event.parent();
-	const latest = parent.packs.latest;
-
-	const commentsObject = await getComments(event, latest);
+	const form = await superValidate(zod4(postSchema));
+	const commentsObject = await getComments(event);
 
 	return {
+		form,
 		commentsObject,
 	};
 };
@@ -40,14 +40,10 @@ export const actions = {
 	post: async (event) => {
 		const { username, packName, version } = event.params;
 
-		const formData = await event.request.formData();
-		const text = formData.get("text");
-
-		if (!text) {
-			return fail(422, { message: "Invalid form data." });
+		const form = await superValidate(event.request, zod4(postSchema));
+		if (!form.valid) {
+			return fail(400, { form });
 		}
-
-		const data: CommentRequest = { text: text.valueOf().toString() };
 
 		const response = await requestAPI(
 			event,
@@ -58,11 +54,13 @@ export const actions = {
 			}),
 			{
 				method: "POST",
-				body: JSON.stringify({ ...data }),
+				body: JSON.stringify(form.data),
 			},
 		);
 		if (response.error) {
 			return fail(response.error.status, { message: response.error.message });
 		}
+
+		return { form };
 	},
 };

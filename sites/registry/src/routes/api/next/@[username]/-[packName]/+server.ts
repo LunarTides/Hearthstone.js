@@ -34,7 +34,7 @@ export async function DELETE(event) {
 	}
 
 	// TODO: Delete *all* pack comments.
-	await db.delete(table.packComment).where(eq(table.packComment.packId, pack.id));
+	await db.delete(table.comment).where(eq(table.comment.packId, pack.id));
 	// TODO: Delete *all* pack messages.
 	await db.delete(table.packMessage).where(eq(table.packMessage.packId, pack.id));
 	await db

@@ -1,7 +1,7 @@
 import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
-import { eq, and, count, inArray } from "drizzle-orm";
+import { eq, and, count, inArray, isNull } from "drizzle-orm";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import { getSetting } from "$lib/server/db/setting";
 import { isUserMemberOfPack } from "$lib/server/db/pack.js";
@@ -12,6 +12,8 @@ export async function GET(event) {
 	if (Number.isNaN(page) || page <= 0) {
 		return json({ message: "Please specify a valid page." }, { status: 400 });
 	}
+
+	const cardUUID = event.url.searchParams.get("cardUUID");
 
 	const clientUser = event.locals.user;
 
@@ -37,11 +39,14 @@ export async function GET(event) {
 		clientUser,
 		db
 			.select()
-			.from(table.packComment)
+			.from(table.comment)
 			.where(
-				inArray(
-					table.packComment.packId,
-					packs.map((p) => p.id),
+				and(
+					cardUUID ? eq(table.comment.cardUUID, cardUUID) : isNull(table.comment.cardUUID),
+					inArray(
+						table.comment.packId,
+						packs.map((p) => p.id),
+					),
 				),
 			)
 			.limit(pageSize)
@@ -51,11 +56,14 @@ export async function GET(event) {
 
 	const amount = await db
 		.select({ count: count() })
-		.from(table.packComment)
+		.from(table.comment)
 		.where(
-			inArray(
-				table.packComment.packId,
-				packs.map((p) => p.id),
+			and(
+				cardUUID ? eq(table.comment.cardUUID, cardUUID) : isNull(table.comment.cardUUID),
+				inArray(
+					table.comment.packId,
+					packs.map((p) => p.id),
+				),
 			),
 		);
 

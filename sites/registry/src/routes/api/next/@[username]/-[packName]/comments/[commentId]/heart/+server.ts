@@ -37,12 +37,7 @@ async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const comment = (
 		await getFullPackComment(
 			clientUser,
-			db
-				.select()
-				.from(table.packComment)
-				.where(eq(table.packComment.id, commentId))
-				.limit(1)
-				.$dynamic(),
+			db.select().from(table.comment).where(eq(table.comment.id, commentId)).limit(1).$dynamic(),
 		)
 	).at(0);
 	if (!comment) {
@@ -69,11 +64,11 @@ export async function POST(event) {
 	}
 
 	await db
-		.update(table.packComment)
+		.update(table.comment)
 		.set({
 			heartedByUsername: clientUser.username,
 		})
-		.where(eq(table.packComment.id, comment.id));
+		.where(eq(table.comment.id, comment.id));
 
 	if (comment.username && comment.username !== clientUser.username) {
 		await db.insert(table.notification).values({
@@ -107,11 +102,11 @@ export async function DELETE(event) {
 	}
 
 	await db
-		.update(table.packComment)
+		.update(table.comment)
 		.set({
 			heartedByUsername: null,
 		})
-		.where(eq(table.packComment.id, comment.id));
+		.where(eq(table.comment.id, comment.id));
 
 	return json({}, { status: 200 });
 }

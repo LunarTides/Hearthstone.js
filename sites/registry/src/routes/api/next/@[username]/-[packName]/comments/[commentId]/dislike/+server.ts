@@ -41,29 +41,29 @@ export async function POST(event) {
 	const like = (
 		await db
 			.select()
-			.from(table.packCommentLike)
+			.from(table.commentLike)
 			.where(
 				and(
-					eq(table.packCommentLike.commentId, commentId),
-					eq(table.packCommentLike.username, clientUser.username),
+					eq(table.commentLike.commentId, commentId),
+					eq(table.commentLike.username, clientUser.username),
 				),
 			)
 			.limit(1)
 	).at(0);
 	if (like) {
 		if (like.dislike) {
-			await db.delete(table.packCommentLike).where(eq(table.packCommentLike.id, like.id));
+			await db.delete(table.commentLike).where(eq(table.commentLike.id, like.id));
 		} else {
 			await db
-				.update(table.packCommentLike)
+				.update(table.commentLike)
 				.set({ dislike: true })
-				.where(eq(table.packCommentLike.id, like.id));
+				.where(eq(table.commentLike.id, like.id));
 		}
 
 		return json({}, { status: 200 });
 	}
 
-	await db.insert(table.packCommentLike).values({
+	await db.insert(table.commentLike).values({
 		commentId,
 		username: clientUser.username,
 		dislike: true,

@@ -157,7 +157,7 @@ export const card = pgTable("card", {
 	filePath: text("filePath").notNull(),
 });
 
-export const packComment = pgTable("packComment", {
+export const comment = pgTable("comment", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
@@ -171,19 +171,21 @@ export const packComment = pgTable("packComment", {
 	creationDate: timestamp().notNull().defaultNow(),
 
 	text: text("text").notNull(),
-	heartedByUsername: text("hearted_by_id").references(() => user.username, {
+	heartedByUsername: text("hearted_by_username").references(() => user.username, {
 		onUpdate: "cascade",
 		onDelete: "no action",
 	}),
+
+	cardUUID: uuid("card_uuid"),
 });
 
-export const packCommentLike = pgTable("packCommentLike", {
+export const commentLike = pgTable("commentLike", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	commentId: uuid("comment_id")
 		.notNull()
-		.references(() => packComment.id, { onDelete: "cascade" }),
+		.references(() => comment.id, { onDelete: "cascade" }),
 	username: text("username")
 		.notNull()
 		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
@@ -234,7 +236,7 @@ export type GroupMember = typeof groupMember.$inferSelect;
 export type Pack = typeof pack.$inferSelect;
 export type Card = typeof card.$inferSelect;
 
-export type PackComment = typeof packComment.$inferSelect;
+export type Comment = typeof comment.$inferSelect;
 export type PackMessage = typeof packMessage.$inferSelect;
 
 export type Notification = typeof notification.$inferSelect;
@@ -253,7 +255,7 @@ export type PackWithExtras = Pack & {
 	messages: (PackMessage & { author: CensoredUser | null })[];
 };
 
-export type PackCommentWithExtras = PackComment & {
+export type CommentWithExtras = Comment & {
 	author: CensoredUser | null;
 	pack: CensoredPack;
 	likes: {

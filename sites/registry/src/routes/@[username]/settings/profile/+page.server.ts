@@ -38,8 +38,6 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		console.log(form.data);
-
 		const response = await requestAPI<{ group: GroupWithExtras }>(
 			event,
 			resolve("/api/next/@[username]", { username }),

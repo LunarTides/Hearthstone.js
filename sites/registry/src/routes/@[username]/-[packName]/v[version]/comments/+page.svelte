@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { enhance } from "$app/forms";
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
 	import Badge from "$lib/components/badge.svelte";
+	import Comment from "$lib/components/comment.svelte";
 	import { satisfiesRole } from "$lib/user";
-	import { Cog, Heart, HeartPlus, ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
+	import { Cog } from "lucide-svelte";
+	import { superForm } from "sveltekit-superforms";
 
 	let { data } = $props();
-
-	let commentDeleteConfirm = $state("");
+	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 
 	let messagesOpen = $state(page.url.hash.startsWith("#message"));
 
@@ -85,7 +85,7 @@
 	</div>
 
 	<!-- Comments -->
-	<div class="m-1 p-2 bg-header rounded-md">
+	<div class="flex flex-col gap-2 m-1 p-2 bg-header rounded-md">
 		{#await data.commentsObject}
 			<h3>Comments</h3>
 
@@ -93,202 +93,40 @@
 		{:then commentsObject}
 			<p>Comments ({commentsObject.amount})</p>
 
-			<!-- TODO: Use superforms. -->
-			<form
-				action={resolve("/@[username]/-[packName]/v[version]/comments", {
-					username: page.params.username!,
-					packName: page.params.packName!,
-					version: page.params.version!,
-				}) + "?/post"}
-				method="post"
-				class="flex flex-col gap-1 rounded-xl my-2"
-				use:enhance
-			>
-				<textarea
-					id="comment-content"
-					name="text"
-					placeholder="Comment..."
-					class="rounded-xl resize h-24 bg-background target:outline"
-				></textarea>
-				<button
-					type="submit"
-					id="comment-post"
-					class="p-2 w-full rounded-md bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
-					>Post</button
-				>
-			</form>
+			<!-- Post Comment -->
+			{#if data.user}
+				<form action="?/post" method="post" class="flex flex-col gap-1 rounded-xl" use:enhance>
+					{#if $message}<h3 class="text-red-500">{$message}</h3>{/if}
+					{#if $errors._errors}
+						{#each $errors._errors as error (error)}
+							<span class="text-red-500 text-xl">{error}</span>
+						{/each}
+					{/if}
+
+					<textarea
+						name="text"
+						placeholder="Comment..."
+						class="rounded-xl resize h-24 bg-background target:outline"
+						aria-invalid={$errors.text ? "true" : undefined}
+						bind:value={$form.text}
+						{...$constraints.text}
+					></textarea>
+					{#if $errors.text}<span class="text-red-500">{$errors.text}</span>{/if}
+
+					<button
+						type="submit"
+						class="p-2 w-full rounded-md bg-indigo-500 hover:cursor-pointer hover:bg-indigo-400 active:bg-indigo-600"
+					>
+						Post
+					</button>
+				</form>
+			{/if}
 
 			<div class="flex flex-col gap-1">
 				{#each commentsObject.comments as comment (comment.id)}
-					<div
-						id={`comment-${comment.id}`}
-						class="flex flex-col gap-2 p-2 bg-background rounded-xl text-white target:outline"
-					>
-						<div>
-							{#if comment.username === data.user?.username || satisfiesRole(data.user, "Moderator")}
-								{#if commentDeleteConfirm === comment.id}
-									<!-- TODO: Use superforms. -->
-									<form
-										action={resolve("/@[username]/-[packName]/v[version]/comments/[commentId]", {
-											username: page.params.username!,
-											packName: page.params.packName!,
-											version: comment.pack.packVersion,
-											commentId: comment.id,
-										}) + "?/delete"}
-										method="post"
-										use:enhance
-									>
-										<button
-											type="submit"
-											class="float-right m-1 animate-pulse text-red-400 hover:cursor-pointer"
-										>
-											<Trash2 />
-										</button>
-									</form>
-								{:else}
-									<button
-										class="float-right m-1 hover:cursor-pointer"
-										onclick={() => (commentDeleteConfirm = comment.id)}
-									>
-										<Trash2 />
-									</button>
-								{/if}
-							{/if}
-
-							<div class="flex gap-2">
-								{#if comment.author}
-									<a
-										href={resolve("/@[username]", { username: comment.author.username })}
-										class="flex gap-2"
-									>
-										<!-- TODO: Add avatar -->
-										<div class="p-4 bg-white rounded-full"></div>
-										<p class="text-lg self-center font-mono">{comment.author.username}</p>
-									</a>
-									<div class="flex gap-1">
-										{#if comment.username === data.user?.username}
-											<Badge class="bg-indigo-300 h-fit self-center text-black">You</Badge>
-										{/if}
-										{#if satisfiesRole(comment.author, "Moderator")}
-											<Badge class="bg-blue-200 h-fit self-center text-black">
-												{comment.author.role}
-											</Badge>
-										{/if}
-									</div>
-								{:else}
-									<div class="flex gap-2">
-										<!-- TODO: Add avatar -->
-										<div class="p-4 bg-red-400 rounded-full"></div>
-										<p class="text-lg self-center font-mono">(Deleted)</p>
-									</div>
-									<Badge class="bg-red-400 h-fit self-center text-black">Deleted User</Badge>
-								{/if}
-
-								<p class="self-center text-gray-500">({comment.pack.packVersion})</p>
-							</div>
-						</div>
-
-						<pre class="font-sans">{comment.text}</pre>
-						<!-- TODO: `comment.creationDate` is a string for some reason? -->
-						<p class="text-gray-600">{dateFormat.format(new Date(comment.creationDate))}</p>
-
-						<!-- TODO: Get the form message here. -->
-						<!-- {#if form?.message}<p class="text-red-500">{form.message}</p>{/if} -->
-						<div class="flex gap-3">
-							<!-- TODO: Use superforms. -->
-							<form
-								action={resolve("/@[username]/-[packName]/v[version]/comments/[commentId]", {
-									username: page.params.username!,
-									packName: page.params.packName!,
-									version: comment.pack.packVersion,
-									commentId: comment.id,
-								}) + "?/like"}
-								method="post"
-								use:enhance
-							>
-								<button type="submit" class="flex gap-1 hover:cursor-pointer">
-									<ThumbsUp class={comment.likes.hasLiked ? "fill-green-500" : ""} />
-									<p class="font-mono text-lg">{comment.likes.positive}</p>
-								</button>
-							</form>
-
-							<!-- TODO: Use superforms. -->
-							<form
-								action={resolve("/@[username]/-[packName]/v[version]/comments/[commentId]", {
-									username: page.params.username!,
-									packName: page.params.packName!,
-									version: comment.pack.packVersion,
-									commentId: comment.id,
-								}) + "?/dislike"}
-								method="post"
-								use:enhance
-							>
-								<!-- TODO: Get the form message here. -->
-								<button type="submit" class="flex gap-1 hover:cursor-pointer">
-									<ThumbsDown class={comment.likes.hasDisliked ? "fill-red-400" : ""} />
-									<p class="font-mono text-lg">{comment.likes.negative}</p>
-								</button>
-							</form>
-
-							{#if data.user && versions.latest.ownerName === data.user.username}
-								{#if comment.heartedBy}
-									<!-- TODO: Use superforms. -->
-									<form
-										action={resolve("/@[username]/-[packName]/v[version]/comments/[commentId]", {
-											username: page.params.username!,
-											packName: page.params.packName!,
-											version: comment.pack.packVersion,
-											commentId: comment.id,
-										}) + "?/unheart"}
-										method="post"
-										use:enhance
-									>
-										<!-- TODO: Get the form message here. -->
-										<button
-											type="submit"
-											class="flex hover:cursor-pointer"
-											title={`Hearted by ${comment.heartedBy.username} <3`}
-										>
-											<!-- TODO: Add avatar. -->
-											<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
-											<Heart class="-ml-4.5 mt-1 fill-rose-400" />
-										</button>
-									</form>
-								{:else}
-									<!-- TODO: Use superforms. -->
-									<form
-										action={resolve("/@[username]/-[packName]/v[version]/comments/[commentId]", {
-											username: page.params.username!,
-											packName: page.params.packName!,
-											version: comment.pack.packVersion,
-											commentId: comment.id,
-										}) + "?/heart"}
-										method="post"
-										use:enhance
-									>
-										<!-- TODO: Get the form message here. -->
-										<button
-											type="submit"
-											class="flex hover:cursor-pointer"
-											title="Heart this comment"
-										>
-											<HeartPlus />
-										</button>
-									</form>
-								{/if}
-							{:else if comment.heartedBy}
-								<div class="flex" title={`Hearted by ${comment.heartedBy.username} <3`}>
-									<!-- TODO: Add avatar. -->
-									<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
-									<Heart class="-ml-4.5 mt-1 fill-rose-400" />
-								</div>
-							{/if}
-						</div>
-					</div>
+					<Comment {comment} clientUser={data.user} packOwnerName={versions.latest.ownerName} />
 				{/each}
 			</div>
-
-			<!-- <pre>{JSON.stringify(comments, null, 4)}</pre> -->
 		{/await}
 	</div>
 {/await}

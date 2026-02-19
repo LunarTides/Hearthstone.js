@@ -29,7 +29,7 @@ export async function DELETE(event) {
 	}
 
 	const comment = (
-		await db.select().from(table.packComment).where(eq(table.packComment.id, commentId)).limit(1)
+		await db.select().from(table.comment).where(eq(table.comment.id, commentId)).limit(1)
 	).at(0);
 	if (!comment) {
 		return json({ message: "No comment found with that id." }, { status: 404 });
@@ -42,7 +42,7 @@ export async function DELETE(event) {
 		);
 	}
 
-	await db.delete(table.packComment).where(eq(table.packComment.id, commentId));
+	await db.delete(table.comment).where(eq(table.comment.id, commentId));
 
 	return json({}, { status: 200 });
 }
