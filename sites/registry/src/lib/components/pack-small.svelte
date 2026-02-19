@@ -19,7 +19,7 @@
 	} = $props();
 </script>
 
-<div class="w-fit min-w-77.5">
+<div class="max-w-100">
 	<a
 		href={navigateToVersion
 			? resolve("/@[username]/-[packName]/v[version]", {

@@ -58,6 +58,7 @@
 
 <!-- TODO: Deduplicate code between this and the small pack. -->
 <div class={`rounded-xl rounded-t-none p-7 bg-cover text-white ${className ?? ""}`}>
+	<!-- Download Button -->
 	{#if showDownloadButton}
 		<div class="flex flex-col float-right text-nowrap m-2 mt-4 gap-2">
 			<div class="flex bg-blue-300 drop-shadow-2xl rounded-full text-black outline-1 outline-black">
@@ -115,45 +116,39 @@
 
 		<!-- TODO: Add links. -->
 
-		<div>
-			<div class="flex mt-4 gap-2">
+		<div class="flex flex-col">
+			<div class="flex flex-wrap sm:flex-nowrap mt-4 gap-2">
 				<div>
-					<p class="text-lg font-semibold">Pack Version</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">Pack Version</p>
 					<p>{pack.packVersion}</p>
 				</div>
 
 				<div>
-					<p class="text-lg font-semibold">Game Version</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">Game Version</p>
 					<p>{pack.gameVersion}</p>
 				</div>
 
 				<div>
-					<p class="text-lg font-semibold">Unpacked Size</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">Unpacked Size</p>
 					<p title={`${pack.unpackedSize} Bytes`}>{formatBytes(pack.unpackedSize)}</p>
 				</div>
 
 				<div>
-					<p class="text-lg font-semibold">Downloads</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">Downloads</p>
 					<p>
 						{!individual ? pack.totalDownloadCount : pack.downloadCount}
 					</p>
 				</div>
 
 				<div>
-					<p class="text-lg font-semibold">License</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">License</p>
 					<p>{pack.license}</p>
 				</div>
 			</div>
 
 			<div>
 				<div class="w-fit">
-					<p class="text-lg font-semibold">Permissions</p>
-					<hr />
+					<p class="text-lg text-nowrap border-b text-gray-400">Permissions</p>
 					{#if pack.permissions.length > 0}
 						<p class="text-amber-300">{pack.permissions.join(", ")}</p>
 					{:else}
@@ -165,8 +160,7 @@
 			{#if pack.approved && satisfiesRole(user, "Moderator")}
 				<div class="flex mt-4 gap-2">
 					<div>
-						<p class="text-lg font-semibold">Approved By</p>
-						<hr />
+						<p class="text-lg text-nowrap border-b text-gray-400">Approved By</p>
 						<p>{pack.approvedByUser?.username}</p>
 					</div>
 				</div>

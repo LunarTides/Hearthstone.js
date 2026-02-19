@@ -75,7 +75,7 @@
 								>
 									<button
 										type="submit"
-										class="p-5 w-full text-xl right-0 bottom-0 absolute bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
+										class="p-5 w-full text-xl right-0 bottom-0 fixed bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
 									>
 										<p>
 											Really <em>REALLY</em> delete this <strong>PACK</strong>? You cannot undo this
@@ -124,7 +124,7 @@
 								>
 									<button
 										type="submit"
-										class="p-5 w-full text-xl right-0 bottom-0 absolute bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
+										class="p-5 w-full text-xl right-0 bottom-0 fixed bg-red-500 text-white hover:animate-pulse hover:cursor-pointer active:animate-none active:bg-red-600"
 									>
 										<p>Really <em>REALLY</em> delete this version? You cannot undo this action.</p>
 									</button>

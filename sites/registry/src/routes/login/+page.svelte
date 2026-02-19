@@ -8,7 +8,12 @@
 </script>
 
 <div class="fixed inset-0 w-fit h-fit m-auto flex gap-1">
-	<form method="post" action="?/login" class="flex flex-col gap-1 w-lg text-center" use:enhance>
+	<form
+		method="post"
+		action="?/login"
+		class="flex flex-col gap-1 max-w-lg text-center m-2"
+		use:enhance
+	>
 		{#if $message}<h3 class="text-red-500">{$message}</h3>{/if}
 		{#if $errors._errors}
 			{#each $errors._errors as error (error)}
@@ -41,7 +46,7 @@
 			{#if $errors.password}<span class="text-red-500">{$errors.password}</span>{/if}
 		</div>
 
-		<p class="text-nowrap self-center">
+		<p class="sm:text-nowrap self-center">
 			By creating an account, you agree to the
 			<a href={resolve("/terms")} class="underline">Terms of Service</a>
 			and the

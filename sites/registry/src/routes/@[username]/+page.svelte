@@ -8,7 +8,7 @@
 	<p>Loading...</p>
 {:then packs}
 	{#if packs}
-		<div class="flex gap-1 px-2">
+		<div class="flex gap-1 pl-2">
 			{#each packs as pack (pack.name)}
 				<PackSmall pack={pack.versions.latest} clientUser={data.user} navigateToVersion />
 			{/each}

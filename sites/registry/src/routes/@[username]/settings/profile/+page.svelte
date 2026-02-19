@@ -8,7 +8,7 @@
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
 </script>
 
-<form method="post" action="?/edit" class="flex flex-col gap-1 w-1/4" use:enhance>
+<form method="post" action="?/edit" class="flex flex-col gap-1 min-w-1/4" use:enhance>
 	{#if $message}<h3 class="text-red-500">{$message}</h3>{/if}
 	{#if $errors._errors}
 		{#each $errors._errors as error (error)}

@@ -79,7 +79,7 @@ export async function POST(event) {
 
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been approved!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} has been approved!`,
 		route:
 			resolve("/@[username]/-[packName]/v[version]/comments", {
 				username: pack.ownerName,
@@ -166,7 +166,7 @@ export async function DELETE(event) {
 	// FIXME: This breaks when approving a pack owned by a group.
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)})'s approval has been withdrawn!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} approval has been withdrawn!`,
 		route:
 			resolve("/@[username]/-[packName]/v[version]/comments", {
 				username: pack.ownerName,

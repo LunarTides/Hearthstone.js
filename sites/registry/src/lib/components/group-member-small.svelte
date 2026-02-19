@@ -19,7 +19,7 @@
 	const avatarPromise = import(`$lib/../../static/avatars/${member.username}.avif`).catch(() => {});
 </script>
 
-<div class="w-fit min-w-77.5">
+<div class="max-w-77.5">
 	<a
 		href={navigateToUser
 			? resolve("/@[username]", { username: member.username })
@@ -30,7 +30,7 @@
 	>
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">
-				<div class="flex gap-2">
+				<div class="flex flex-wrap sm:flex-nowrap gap-2">
 					{#await avatarPromise}
 						<div class="p-6 bg-white rounded-full size-12"></div>
 					{:then avatar}

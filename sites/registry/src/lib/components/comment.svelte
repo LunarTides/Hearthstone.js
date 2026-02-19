@@ -66,7 +66,7 @@
 			{/if}
 		{/if}
 
-		<div class="flex gap-2">
+		<div class="flex flex-wrap sm:flex-nowrap gap-2">
 			{#if comment.author}
 				<a href={resolve("/@[username]", { username: comment.author.username })} class="flex gap-2">
 					<!-- TODO: Add avatar -->

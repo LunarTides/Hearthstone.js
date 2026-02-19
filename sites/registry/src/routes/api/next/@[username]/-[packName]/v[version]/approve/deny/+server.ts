@@ -80,7 +80,7 @@ export async function POST(event) {
 
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) has been denied.`,
+		text: `Your pack (${pack.name} v${pack.packVersion} has been denied.`,
 		route:
 			resolve("/@[username]/-[packName]/v[version]/comments", {
 				username: pack.ownerName,
@@ -156,7 +156,7 @@ export async function DELETE(event) {
 
 	await db.insert(table.notification).values({
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} - #${pack.id.split("-").at(-1)!.slice(0, 6)}) is being reconsidered for approval!`,
+		text: `Your pack (${pack.name} v${pack.packVersion} is being reconsidered for approval!`,
 		route:
 			resolve("/@[username]/-[packName]/v[version]/comments", {
 				username: pack.ownerName,

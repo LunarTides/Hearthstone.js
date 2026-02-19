@@ -8,12 +8,12 @@
 
 {#if data.notifications && data.notifications.length > 0}
 	<form action="?/clear" method="post" class="flex" use:enhance>
-		<button type="submit" class="my-1 py-2 w-full custom-button"> Clear </button>
+		<button type="submit" class="m-1 py-2 w-full custom-button"> Clear </button>
 	</form>
 
 	<div class="flex flex-col gap-1">
 		{#each data.notifications as notification (notification.id)}
-			<div class="mx-1 flex p-3 bg-header rounded-md outline max-h-12">
+			<div class="mx-1 flex p-3 bg-header rounded-md outline md:max-h-12">
 				{#if notification.route}
 					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
 					<a href={notification.route}>{notification.text}</a>
@@ -22,7 +22,9 @@
 				{/if}
 
 				<div class="flex ml-auto gap-2">
-					<p>{new Date(notification.date).toUTCString()}</p>
+					<p class="text-gray-500 text-xs md:text-base">
+						{new Date(notification.date).toUTCString()}
+					</p>
 					<form
 						action={resolve("/notifications/[uuid]", { uuid: notification.id }) + "?/delete"}
 						method="post"
@@ -39,5 +41,3 @@
 {:else}
 	<p>No notifications.</p>
 {/if}
-
-<!-- <pre>{JSON.stringify(data.notifications, null, 4)}</pre> -->

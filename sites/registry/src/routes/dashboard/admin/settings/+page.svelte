@@ -6,6 +6,8 @@
 </script>
 
 <!-- FIXME: This page doesn't work. Settings don't update. -->
+<!-- FIXME: This doesn't work on mobile. -->
+<!-- TODO: Rewrite this whole thing. It's bad currently, and it looks terrible. -->
 {#await data.settings}
 	<p>Loading...</p>
 {:then settings}

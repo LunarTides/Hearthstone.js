@@ -61,7 +61,7 @@
 			type="text"
 			placeholder="Search..."
 			bind:value={searchQuery}
-			class="rounded-md bg-background hidden md:block"
+			class="rounded-md bg-background hidden lg:block"
 			onkeydown={(event) => {
 				if (searchForm && event.key === "Enter") {
 					searchForm.requestSubmit();
@@ -70,7 +70,7 @@
 		/>
 
 		<!-- Mobile -->
-		<div class="flex gap-2 md:hidden">
+		<div class="flex gap-2 lg:hidden">
 			<!-- Search button on mobile. -->
 			{#if !smallSearchActive}
 				<button
@@ -188,7 +188,7 @@
 			{#if menuOpen}
 				<aside>
 					<nav
-						class="absolute bg-header border-l right-0 top-0 h-full p-5 flex flex-col gap-1 sm:min-w-72 z-50"
+						class="absolute bg-header border-l right-0 top-0 h-full p-5 flex flex-col gap-1 sm:min-w-72 z-50 text-nowrap"
 						transition:slide={{ axis: "x", duration: 200 }}
 					>
 						<button

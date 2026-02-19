@@ -9,8 +9,7 @@
 
 <div class="flex">
 	<div class="ml-3">
-		<p class="text-xl m-2 ml-0 font-mono">Packs</p>
-		<hr />
+		<p class="text-xl m-2 ml-0 border-b text-center">Packs</p>
 		<div class="flex mt-2 gap-1">
 			{#await data.packs}
 				<p>Loading...</p>
@@ -28,11 +27,8 @@
 		</div>
 	</div>
 
-	<div class="border-l ml-auto h-screen"></div>
-
-	<div class="ml-auto mr-3">
-		<p class="text-xl m-2 ml-0 font-mono">Cards</p>
-		<hr />
+	<div class="mr-3">
+		<p class="text-xl m-2 ml-0 border-b text-center">Cards</p>
 		<div class="flex flex-col mt-2 gap-1">
 			{#await data.cards}
 				<p>Loading...</p>

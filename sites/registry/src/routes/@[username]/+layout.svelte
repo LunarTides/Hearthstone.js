@@ -13,7 +13,7 @@
 {#if isOnUserPage}
 	<!-- TODO: Make this work on mobile. -->
 	<nav
-		class="fixed flex flex-col h-screen right-0 min-w-32 lg:min-w-64 w-fit p-5 bg-header text-white gap-2 text-nowrap"
+		class="absolute flex flex-col h-screen right-0 min-w-32 lg:min-w-64 w-fit p-5 bg-header text-white gap-2 text-nowrap"
 		transition:slide={{ axis: "x" }}
 	>
 		{#await data.currentUser}
@@ -73,12 +73,13 @@
 	</nav>
 {/if}
 
-<div class={isOnUserPage ? "mr-49.5 lg:mr-64" : ""}>
+<!-- The margin-right is the equal to the nav's `min-w` plus 2. -->
+<div class={isOnUserPage ? "mr-34 lg:mr-66" : ""}>
 	{#if isOnUserPage}
 		{#await data.currentUser}
 			<p>Loading...</p>
 		{:then user}
-			<div class="m-2">
+			<div class="ml-2 my-2">
 				{#if user.ownerType === "User"}
 					<UserBig {user} clientUser={data.user} />
 				{:else}

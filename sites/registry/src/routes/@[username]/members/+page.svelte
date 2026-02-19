@@ -10,7 +10,7 @@
 <!-- TODO: Hide from non-members. -->
 <a
 	href={resolve("/@[username]/members/new", { username: page.params.username! })}
-	class="flex min-w-77.5 m-2 p-2 bg-header gap-1 w-fit rounded-md transition-all hover:scale-105 hover:drop-shadow-2xl"
+	class="flex m-2 mr-0 p-2 bg-header gap-1 rounded-md transition-all hover:scale-y-105 hover:drop-shadow-lg active:scale-y-95"
 >
 	<UserRoundPlus class="size-7.5" />
 	<p class="text-lg">Invite Member</p>
@@ -19,7 +19,7 @@
 {#await data.members}
 	<p>Loading...</p>
 {:then members}
-	<div class="flex flex-col gap-1 m-2">
+	<div class="flex flex-col gap-1 m-2 mr-0">
 		{#each members as member (member.username)}
 			<GroupMemberSmall {member} clientUser={data.user} />
 		{/each}

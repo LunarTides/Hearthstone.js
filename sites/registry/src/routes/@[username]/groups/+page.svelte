@@ -14,7 +14,7 @@
 	{#if data.user?.username === currentUser.username}
 		<a
 			href={resolve("/@[username]/groups/new", { username: page.params.username! })}
-			class="flex min-w-77.5 m-2 p-2 bg-header w-fit rounded-md transition-all hover:scale-105 hover:drop-shadow-2xl"
+			class="flex m-2 mr-0 p-2 bg-header rounded-md transition-all hover:scale-y-105 hover:drop-shadow-lg active:scale-y-95"
 		>
 			<Plus class="size-7.5" />
 			<p class="text-lg">New Group</p>
@@ -25,7 +25,7 @@
 {#await data.groups}
 	<p>Loading...</p>
 {:then groups}
-	<div class="flex flex-col gap-1 m-2">
+	<div class="flex flex-col gap-1 m-2 mr-0">
 		{#if groups.length > 0}
 			{#each groups as group (group.username)}
 				<GroupSmall {group} clientUser={data.user} />

@@ -21,7 +21,7 @@
 <div class="flex gap-1">
 	<div class="p-3 bg-header text-white w-full rounded-lg">
 		<div class="flex flex-col gap-1">
-			<div class="flex gap-2">
+			<div class="flex flex-wrap sm:flex-nowrap gap-2">
 				{#await avatarPromise}
 					<div class="p-6 bg-white rounded-full size-12"></div>
 				{:then avatar}
@@ -31,7 +31,7 @@
 				<p class="text-xl self-center">{user.username}</p>
 
 				{#if pronouns}
-					<p class="text-sm text-gray-500 self-center min-w-full mr-8">
+					<p class="text-sm text-gray-500 self-center min-w-full">
 						({pronouns})
 					</p>
 				{/if}

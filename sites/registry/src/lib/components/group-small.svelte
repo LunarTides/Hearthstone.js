@@ -16,7 +16,7 @@
 	const avatarPromise = import(`$lib/../../static/avatars/${group.username}.avif`).catch(() => {});
 </script>
 
-<div class="w-fit min-w-77.5">
+<div class="max-w-77.5">
 	<a href={resolve("/@[username]", { username: group.username })}>
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">

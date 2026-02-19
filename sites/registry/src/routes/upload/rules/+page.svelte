@@ -1,4 +1,4 @@
-<pre>
+<pre class="text-wrap">
 Uploading rules:
 
 --- TLDR ---

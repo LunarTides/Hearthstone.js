@@ -20,8 +20,9 @@
 			<a
 				href={resolve("/dashboard/admin/settings")}
 				class={`${page.route.id?.startsWith("/dashboard/admin/settings") && "text-indigo-400"}`}
-				>Settings</a
 			>
+				Settings
+			</a>
 		{/if}
 	</div>
 </nav>
