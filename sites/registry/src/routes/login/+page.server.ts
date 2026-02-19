@@ -2,7 +2,7 @@ import { redirect, type RequestEvent } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 import { superValidate, message, fail } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { loginSchema } from "$lib/api/schemas";
+import schema from "./schema";
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper";
 
@@ -12,13 +12,13 @@ export const load: PageServerLoad = async (event) => {
 		return redirect(302, resolve("/"));
 	}
 
-	const form = await superValidate(zod4(loginSchema));
+	const form = await superValidate(zod4(schema));
 
 	return { form };
 };
 
 const request = async (event: RequestEvent, url: string) => {
-	const form = await superValidate(event.request, zod4(loginSchema));
+	const form = await superValidate(event.request, zod4(schema));
 	if (!form.valid) {
 		return fail(400, { form });
 	}

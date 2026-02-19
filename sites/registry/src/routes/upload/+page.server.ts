@@ -2,7 +2,7 @@ import { redirect } from "@sveltejs/kit";
 import { resolve } from "$app/paths";
 import type { Pack } from "$lib/db/schema.js";
 import { requestAPI } from "$lib/api/helper.js";
-import { uploadSchema } from "$lib/api/schemas";
+import schema from "./schema";
 import { superValidate, fail, message } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { CensoredGroup } from "$lib/group.js";
@@ -14,7 +14,7 @@ export const load = async (event) => {
 		redirect(303, resolve("/"));
 	}
 
-	const form = await superValidate(zod4(uploadSchema));
+	const form = await superValidate(zod4(schema));
 
 	// TODO: Stream.
 	const response = await requestAPI<{ groups: CensoredGroup[] }>(
@@ -32,7 +32,7 @@ export const load = async (event) => {
 
 export const actions = {
 	default: async (event) => {
-		const form = await superValidate(event.request, zod4(uploadSchema));
+		const form = await superValidate(event.request, zod4(schema));
 		if (!form.valid) {
 			return fail(400, { form });
 		}

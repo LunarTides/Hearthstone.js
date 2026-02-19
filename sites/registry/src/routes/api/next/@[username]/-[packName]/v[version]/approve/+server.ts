@@ -5,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 import { resolve } from "$app/paths";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { approveSchema } from "$lib/api/schemas.js";
+import { approveSchema } from "../../../../../../@[username]/-[packName]/v[version]/schema";
 import { setLatestVersion, isUserMemberOfPack } from "$lib/server/db/pack.js";
 import { grantKarma } from "$lib/server/db/user.js";
 

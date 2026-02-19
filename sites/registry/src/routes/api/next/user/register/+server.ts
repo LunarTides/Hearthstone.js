@@ -1,6 +1,6 @@
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import { loginSchema } from "$lib/api/schemas";
+import schema from "../../../../login/schema";
 import { json } from "@sveltejs/kit";
 import { hash } from "@node-rs/argon2";
 import { db } from "$lib/server/db";
@@ -11,7 +11,7 @@ import { count, ilike } from "drizzle-orm";
 export async function POST(event) {
 	const j = await event.request.json();
 
-	const form = await superValidate(j, zod4(loginSchema));
+	const form = await superValidate(j, zod4(schema));
 	if (!form.valid) {
 		return json(
 			{ message: `Invalid request. (${form.errors._errors?.join(", ")})` },

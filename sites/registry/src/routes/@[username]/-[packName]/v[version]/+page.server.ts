@@ -1,6 +1,6 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { approveSchema, dummySchema } from "$lib/api/schemas.js";
+import { approveSchema, dummySchema } from "./schema";
 import type { File } from "$lib/api/types.js";
 import { APIGetPack } from "$lib/server/db/pack.js";
 import { error, fail, redirect } from "@sveltejs/kit";

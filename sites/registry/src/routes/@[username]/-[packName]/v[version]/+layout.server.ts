@@ -1,7 +1,7 @@
 import { resolve } from "$app/paths";
 import type { LayoutParams } from "$app/types";
 import { requestAPI } from "$lib/api/helper.js";
-import { approveSchema } from "$lib/api/schemas.js";
+import { approveSchema } from "./schema";
 import type { FileTree } from "$lib/api/types";
 import type { Card } from "$lib/db/schema";
 import { APIGetPack } from "$lib/server/db/pack";
