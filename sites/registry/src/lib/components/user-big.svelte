@@ -37,7 +37,7 @@
 				{/if}
 			</div>
 
-			<pre>{aboutMe}</pre>
+			<pre class="text-wrap wrap-break-word">{aboutMe}</pre>
 
 			<div class="mt-auto">
 				{#if satisfiesRole(user, "Moderator")}

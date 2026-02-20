@@ -5,18 +5,19 @@ import type { Pack } from "$lib/db/schema.js";
 import { eq, and, desc, count } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
-import { censorUser, satisfiesRole } from "$lib/user";
+import { censorUser, RoleTable, satisfiesRole } from "$lib/user";
 
-export const isUserMemberOfPack = async (
+export async function isUserMemberOfPack<T extends keyof typeof RoleTable>(
 	clientUser: ClientUser,
 	username: string | undefined,
 	pack: Pack | undefined,
-) => {
+	minimumBypassRole?: T | undefined,
+) {
 	if (!pack || !clientUser) {
 		return false;
 	}
 
-	if (pack.ownerName === username || satisfiesRole(clientUser, "Moderator")) {
+	if (pack.ownerName === username || satisfiesRole(clientUser, minimumBypassRole ?? "Moderator")) {
 		return true;
 	}
 
@@ -42,7 +43,7 @@ export const isUserMemberOfPack = async (
 	isInGroup = result.value > 0;
 
 	return isInGroup;
-};
+}
 
 export const getFullPacks = async <T extends PgSelect<"pack">>(
 	clientUser: ClientUser | null,

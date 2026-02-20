@@ -26,7 +26,7 @@ export async function GET(event) {
 				)
 				.limit(1)
 				.$dynamic(),
-    )
+		)
 	).at(0);
 	if (!pack) {
 		return json({ message: "No pack found matching those parameters." }, { status: 404 });

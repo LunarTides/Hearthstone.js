@@ -56,7 +56,6 @@ export async function PUT(event) {
 
 	const username = event.params.username;
 
-	// TODO: Check if in group instead of using satisfiesRole.
 	if (clientUser.username !== username && !satisfiesRole(clientUser, "Admin")) {
 		error(403, { message: "You do not have the the necessary privileges to do this." });
 	}
