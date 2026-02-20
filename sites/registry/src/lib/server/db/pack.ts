@@ -29,7 +29,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 					return true;
 				}
 
-				return isUserMemberOfGroup(clientUser, clientUser?.username ?? "", p.pack.ownerName);
+				return await isUserMemberOfGroup(clientUser, clientUser?.username ?? "", p.pack.ownerName);
 			})
 			.map(async (p) => {
 				const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);

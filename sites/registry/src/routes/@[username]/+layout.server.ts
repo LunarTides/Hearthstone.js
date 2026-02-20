@@ -12,7 +12,7 @@ export const load = (event) => {
 
 	const getUser = async () => {
 		const response = await requestAPI<
-			(UserAndProfile & { ownerType: "User" }) | (GroupAndProfile & { ownerType: "Group" })
+			(UserAndProfile & { type: "User" }) | (GroupAndProfile & { type: "Group" })
 		>(event, resolve(`/api/next/@[username]`, { username }));
 		if (response.error) {
 			error(response.error.status, { message: response.error.message });

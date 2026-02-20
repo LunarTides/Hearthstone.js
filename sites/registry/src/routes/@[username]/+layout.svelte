@@ -19,7 +19,7 @@
 		{#await data.currentUser}
 			<p class="font-bold uppercase text-xl">User</p>
 		{:then user}
-			<p class="font-bold uppercase text-xl">{user.ownerType}</p>
+			<p class="font-bold uppercase text-xl">{user.type}</p>
 		{/await}
 
 		<div class="flex flex-col gap-1">
@@ -33,7 +33,7 @@
 			{#await data.currentUser}
 				<p>Loading...</p>
 			{:then user}
-				{#if user.ownerType === "User"}
+				{#if user.type === "User"}
 					<a
 						href={resolve("/@[username]/groups", { username: page.params.username! })}
 						class={`${page.route.id === "/@[username]/groups" && "text-indigo-400"}`}
@@ -47,12 +47,18 @@
 					>
 						Members
 					</a>
-					<a
-						href={resolve("/@[username]/members/new", { username: page.params.username! })}
-						class={`ml-6 ${page.route.id === "/@[username]/members/new" && "text-indigo-400"}`}
-					>
-						New
-					</a>
+					{#await data.canEditUser}
+						<p>Loading...</p>
+					{:then canEditUser}
+						{#if canEditUser}
+							<a
+								href={resolve("/@[username]/members/new", { username: page.params.username! })}
+								class={`ml-6 ${page.route.id === "/@[username]/members/new" && "text-indigo-400"}`}
+							>
+								New
+							</a>
+						{/if}
+					{/await}
 				{/if}
 			{/await}
 			<hr class="text-gray-700" />
@@ -79,7 +85,7 @@
 			<p>Loading...</p>
 		{:then user}
 			<div class="ml-2 my-2">
-				{#if user.ownerType === "User"}
+				{#if user.type === "User"}
 					<UserBig {user} clientUser={data.user} />
 				{:else}
 					<GroupBig group={user} clientUser={data.user} />

@@ -29,7 +29,7 @@ export async function GET(event) {
 	}
 
 	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!pack.approved && !isUserMemberOfGroup(clientUser, clientUser?.username, username)) {
+	if (!pack.approved && !(await isUserMemberOfGroup(clientUser, clientUser?.username, username))) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

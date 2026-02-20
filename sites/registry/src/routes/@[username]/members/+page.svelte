@@ -7,14 +7,19 @@
 	const { data } = $props();
 </script>
 
-<!-- TODO: Hide from non-members. -->
-<a
-	href={resolve("/@[username]/members/new", { username: page.params.username! })}
-	class="flex m-2 mr-0 p-2 bg-header gap-1 rounded-md transition-all hover:scale-y-105 hover:drop-shadow-lg active:scale-y-95"
->
-	<UserRoundPlus class="size-7.5" />
-	<p class="text-lg">Invite Member</p>
-</a>
+{#await data.canEditUser}
+	<p>Loading...</p>
+{:then canEditUser}
+	{#if canEditUser}
+		<a
+			href={resolve("/@[username]/members/new", { username: page.params.username! })}
+			class="flex m-2 mr-0 p-2 bg-header gap-1 rounded-md transition-all hover:scale-y-105 hover:drop-shadow-lg active:scale-y-95"
+		>
+			<UserRoundPlus class="size-7.5" />
+			<p class="text-lg">Invite Member</p>
+		</a>
+	{/if}
+{/await}
 
 {#await data.members}
 	<p>Loading...</p>

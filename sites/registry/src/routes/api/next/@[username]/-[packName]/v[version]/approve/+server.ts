@@ -45,7 +45,7 @@ export async function POST(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfGroup(user, user.username, username)) {
+	if (!(await isUserMemberOfGroup(user, user.username, username))) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
@@ -129,7 +129,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfGroup(user, user.username, username)) {
+	if (!(await isUserMemberOfGroup(user, user.username, username))) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

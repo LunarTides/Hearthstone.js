@@ -34,7 +34,7 @@ export const actions = {
 
 		const response = await requestAPI(
 			event,
-			resolve("/api/next/groups/@[groupName]/members/invite/accept", { groupName: username }),
+			resolve("/api/next/@[username]/members/invite/accept", { username: username }),
 			{
 				method: "POST",
 				body: JSON.stringify(form.data),

@@ -23,7 +23,7 @@ export async function POST(event) {
 		);
 	}
 
-	const { groupName } = event.params;
+	const { username: groupName } = event.params;
 
 	const clientMember = (
 		await db

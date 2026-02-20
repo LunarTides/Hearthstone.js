@@ -13,11 +13,11 @@ export const load = async (event) => {
 	}
 
 	const currentUser = await (await event.parent()).currentUser;
-	if (!isUserMemberOfGroup(clientUser, clientUser.username, currentUser.username)) {
+	if (!(await isUserMemberOfGroup(clientUser, clientUser.username, currentUser.username))) {
 		return redirect(302, resolve("/"));
 	}
 
-	if (currentUser.ownerType === "User") {
+	if (currentUser.type === "User") {
 		const form = await superValidate(
 			{
 				...currentUser.profile,

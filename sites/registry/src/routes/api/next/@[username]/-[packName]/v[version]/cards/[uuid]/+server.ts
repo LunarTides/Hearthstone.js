@@ -32,7 +32,10 @@ export async function GET(event) {
 		return json({ message: "Card object is invalid for some reason." }, { status: 500 });
 	}
 
-	if (!card.pack.approved && !isUserMemberOfGroup(clientUser, clientUser?.username, username)) {
+	if (
+		!card.pack.approved &&
+		!(await isUserMemberOfGroup(clientUser, clientUser?.username, username))
+	) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

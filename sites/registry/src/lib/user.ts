@@ -36,6 +36,4 @@ export interface UserAndProfile extends CensoredUser {
 	profile: UserProfile;
 }
 
-export type UserOrGroup =
-	| (UserAndProfile & { ownerType: "User" })
-	| (Group & { ownerType: "Group" });
+export type UserOrGroup = (UserAndProfile & { type: "User" }) | (Group & { type: "Group" });

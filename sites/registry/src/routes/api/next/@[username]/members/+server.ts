@@ -6,11 +6,7 @@ import { getFullGroups } from "$lib/server/db/group.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
-	if (!clientUser) {
-		return json({ message: "Please log in." }, { status: 401 });
-	}
-
-	const { groupName } = event.params;
+	const { username: groupName } = event.params;
 
 	// TODO: Maybe censor the permissions?
 	const groups = await getFullGroups(

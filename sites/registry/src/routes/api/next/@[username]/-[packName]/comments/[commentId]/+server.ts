@@ -24,7 +24,7 @@ export async function DELETE(event) {
 	}
 
 	const pack = packs.find((pack) => pack.isLatestVersion) ?? packs[0];
-	if (!pack.approved && !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
+	if (!pack.approved && !(await isUserMemberOfGroup(clientUser, clientUser.username, username))) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

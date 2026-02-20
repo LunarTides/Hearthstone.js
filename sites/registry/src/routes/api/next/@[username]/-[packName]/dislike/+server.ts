@@ -27,7 +27,7 @@ export async function POST(event) {
 			)
 			.limit(1)
 	).at(0);
-	if (!pack || !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
+	if (!pack || !(await isUserMemberOfGroup(clientUser, clientUser.username, username))) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

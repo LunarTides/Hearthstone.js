@@ -23,7 +23,7 @@ export async function GET(event) {
 
 	if (
 		!clientUser ||
-		!isUserMemberOfGroup(clientUser, clientUser.username, packs.at(0)?.ownerName)
+		!(await isUserMemberOfGroup(clientUser, clientUser.username, packs.at(0)?.ownerName))
 	) {
 		packs = packs.filter((p) => p.approved);
 	}
@@ -31,6 +31,9 @@ export async function GET(event) {
 	return json({
 		latest: censorPack(packs[0], clientUser),
 		outdated: packs.slice(1).map((p) => censorPack(p, clientUser)),
+		a: clientUser,
+		s: await isUserMemberOfGroup(clientUser, clientUser?.username, packs.at(0)?.ownerName),
+		t: packs.at(0)?.ownerName,
 	});
 }
 
@@ -55,7 +58,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfGroup(user, username, pack.ownerName)) {
+	if (!(await isUserMemberOfGroup(user, username, pack.ownerName))) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

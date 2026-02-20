@@ -33,7 +33,7 @@ export async function GET(event) {
 	}
 
 	if (!pack.approved) {
-		if (!clientUser || !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
+		if (!clientUser || !(await isUserMemberOfGroup(clientUser, clientUser.username, username))) {
 			// Hide the pack.
 			return json({ message: "No pack found matching those parameters." }, { status: 404 });
 		}
@@ -70,7 +70,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfGroup(user, username, username)) {
+	if (!(await isUserMemberOfGroup(user, username, username))) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

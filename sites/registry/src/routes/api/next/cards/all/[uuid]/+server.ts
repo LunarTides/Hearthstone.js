@@ -27,7 +27,7 @@ export async function GET(event) {
 
 	if (
 		!latest.card.approved &&
-		!isUserMemberOfGroup(clientUser, clientUser?.username, latest.pack.ownerName)
+		!(await isUserMemberOfGroup(clientUser, clientUser?.username, latest.pack.ownerName))
 	) {
 		cards = cards.filter((c) => c.card?.approved);
 	}
