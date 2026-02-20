@@ -39,7 +39,7 @@ export async function GET(event) {
 
 	// Combine the users and groups.
 	const mix = [...users, ...groups]
-		.toSorted((a, b) => a.karma - b.karma)
+		.toSorted((a, b) => b.karma - a.karma)
 		.map((obj) => ({ ...obj, type: Object.hasOwn(obj, "role") ? "User" : "Group" }));
 
 	const leaderboard = mix.map((obj) =>
