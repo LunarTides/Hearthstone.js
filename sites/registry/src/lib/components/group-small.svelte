@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
-	import type { CensoredGroup } from "$lib/group";
+	import type { GroupAndProfile } from "$lib/group";
 	import type { ClientUser } from "$lib/server/auth";
 	import { satisfiesRole } from "$lib/user";
 	import { Medal } from "lucide-svelte";
@@ -9,7 +9,7 @@
 		group,
 		clientUser,
 	}: {
-		group: CensoredGroup;
+		group: GroupAndProfile;
 		clientUser: ClientUser;
 	} = $props();
 

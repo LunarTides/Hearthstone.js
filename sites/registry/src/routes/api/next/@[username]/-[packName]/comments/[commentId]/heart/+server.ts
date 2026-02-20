@@ -2,11 +2,11 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const username = event.params.username;
@@ -29,7 +29,7 @@ async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+	if (!pack.approved && !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

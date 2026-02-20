@@ -4,8 +4,8 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import fs from "node:fs/promises";
 import { getFullPacks, setLatestVersion } from "$lib/server/db/pack.js";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 import { censorPack } from "$lib/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -33,7 +33,7 @@ export async function GET(event) {
 	}
 
 	if (!pack.approved) {
-		if (!clientUser || !isUserMemberOfPack(clientUser, clientUser.username, pack)) {
+		if (!clientUser || !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
 			// Hide the pack.
 			return json({ message: "No pack found matching those parameters." }, { status: 404 });
 		}
@@ -70,7 +70,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfPack(user, username, pack)) {
+	if (!isUserMemberOfGroup(user, username, username)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

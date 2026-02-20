@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and, count, inArray, isNull } from "drizzle-orm";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import { getSetting } from "$lib/server/db/setting";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 export async function GET(event) {
 	// TODO: Extract page logic.
@@ -29,7 +29,7 @@ export async function GET(event) {
 	}
 
 	const pack = packs.find((p) => p.isLatestVersion) ?? packs[0];
-	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+	if (!pack.approved && !isUserMemberOfGroup(clientUser, clientUser?.username, username)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

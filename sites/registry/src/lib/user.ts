@@ -1,5 +1,5 @@
 import { exclude } from "$lib";
-import type { Group, Profile, Role, User } from "./db/schema";
+import type { Group, UserProfile, Role, User } from "./db/schema";
 import type { ClientUser } from "./server/auth";
 
 export const RoleTable: Record<Role, number> = {
@@ -33,7 +33,7 @@ export function censorUser(user: User, clientUser: ClientUser, censor = { karma:
 }
 
 export interface UserAndProfile extends CensoredUser {
-	profile: Profile;
+	profile: UserProfile;
 }
 
 export type UserOrGroup =

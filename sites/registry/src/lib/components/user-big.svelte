@@ -12,9 +12,6 @@
 	} = $props();
 
 	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
-
-	let aboutMe = $derived(user.profile.aboutMe);
-	let pronouns = $derived(user.profile.pronouns);
 </script>
 
 <!-- TODO: Add external links -->
@@ -30,14 +27,14 @@
 
 				<p class="text-xl self-center">{user.username}</p>
 
-				{#if pronouns}
+				{#if user.profile.pronouns}
 					<p class="text-sm text-gray-500 self-center min-w-full">
-						({pronouns})
+						({user.profile.pronouns})
 					</p>
 				{/if}
 			</div>
 
-			<pre class="text-wrap wrap-break-word">{aboutMe}</pre>
+			<pre class="text-wrap wrap-break-word">{user.profile.aboutMe}</pre>
 
 			<div class="mt-auto">
 				{#if satisfiesRole(user, "Moderator")}

@@ -3,7 +3,7 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { and, eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 export async function DELETE(event) {
 	const clientUser = event.locals.user;
@@ -24,7 +24,7 @@ export async function DELETE(event) {
 	}
 
 	const pack = packs.find((pack) => pack.isLatestVersion) ?? packs[0];
-	if (!pack.approved && !isUserMemberOfPack(clientUser, username, pack)) {
+	if (!pack.approved && !isUserMemberOfGroup(clientUser, clientUser.username, username)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

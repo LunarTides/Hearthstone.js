@@ -1,49 +1,11 @@
 import { db } from "$lib/server/db/index.js";
 import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
-import type { Pack } from "$lib/db/schema.js";
-import { eq, and, desc, count } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
-import { censorUser, RoleTable, satisfiesRole } from "$lib/user";
-
-export async function isUserMemberOfPack<T extends keyof typeof RoleTable>(
-	clientUser: ClientUser,
-	username: string | undefined,
-	pack: Pack | undefined,
-	minimumBypassRole?: T | undefined,
-) {
-	if (!pack || !clientUser) {
-		return false;
-	}
-
-	if (pack.ownerName === username || satisfiesRole(clientUser, minimumBypassRole ?? "Moderator")) {
-		return true;
-	}
-
-	// No group specified.
-	if (!username) {
-		return false;
-	}
-
-	let isInGroup = false;
-	const result = (
-		await db
-			.select({ value: count() })
-			.from(table.groupMember)
-			.where(
-				and(
-					eq(table.groupMember.groupName, pack.ownerName),
-					eq(table.groupMember.username, username),
-					eq(table.groupMember.accepted, true),
-				),
-			)
-			.limit(1)
-	)[0];
-	isInGroup = result.value > 0;
-
-	return isInGroup;
-}
+import { censorUser, satisfiesRole } from "$lib/user";
+import { isUserMemberOfGroup } from "./group";
 
 export const getFullPacks = async <T extends PgSelect<"pack">>(
 	clientUser: ClientUser | null,
@@ -67,7 +29,7 @@ export const getFullPacks = async <T extends PgSelect<"pack">>(
 					return true;
 				}
 
-				return isUserMemberOfPack(clientUser, clientUser?.username ?? "", p.pack);
+				return isUserMemberOfGroup(clientUser, clientUser?.username ?? "", p.pack.ownerName);
 			})
 			.map(async (p) => {
 				const relevantPacks = packsAndLikes.filter((v) => v.pack!.uuid === p.pack!.uuid);

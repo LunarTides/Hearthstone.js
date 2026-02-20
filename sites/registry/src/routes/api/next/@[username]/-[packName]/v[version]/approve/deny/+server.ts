@@ -6,8 +6,9 @@ import { resolve } from "$app/paths";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { approveSchema } from "../../../../../../../@[username]/-[packName]/v[version]/schema";
-import { setLatestVersion, isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { setLatestVersion } from "$lib/server/db/pack.js";
 import { grantKarma } from "$lib/server/db/user";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 // TODO: Deduplicate from `approve`.
 export async function POST(event) {
@@ -45,7 +46,7 @@ export async function POST(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfPack(user, username, pack)) {
+	if (!isUserMemberOfGroup(user, user.username, username)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
@@ -129,7 +130,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfPack(user, username, pack)) {
+	if (!isUserMemberOfGroup(user, user.username, username)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

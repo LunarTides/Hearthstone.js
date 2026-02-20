@@ -1,5 +1,5 @@
 import { exclude } from "$lib";
-import type { Group } from "./db/schema";
+import type { Group, GroupProfile } from "./db/schema";
 import type { ClientUser } from "./server/auth";
 import { satisfiesRole } from "./user";
 
@@ -23,4 +23,8 @@ export function memberHasPermission(permissions: string[], permission: string) {
 
 	// TODO: Handle categories
 	return permissions.includes(permission);
+}
+
+export interface GroupAndProfile extends CensoredGroup {
+	profile: GroupProfile;
 }

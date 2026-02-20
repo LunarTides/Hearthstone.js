@@ -36,7 +36,7 @@ export const session = pgTable("session", {
 	}).notNull(),
 });
 
-export const profile = pgTable("profile", {
+export const userProfile = pgTable("userProfile", {
 	username: text("username")
 		.primaryKey()
 		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
@@ -48,6 +48,13 @@ export const group = pgTable("group", {
 	username: text("username").primaryKey(),
 	karma: numeric("karma", { mode: "number" }).notNull().default(0),
 	creationDate: timestamp("creation_date").notNull().defaultNow(),
+});
+
+export const groupProfile = pgTable("groupProfile", {
+	username: text("username")
+		.primaryKey()
+		.references(() => group.username, { onUpdate: "cascade", onDelete: "cascade" }),
+	aboutMe: text("about_me").notNull(),
 });
 
 export const groupMember = pgTable("groupMember", {
@@ -229,8 +236,9 @@ export const setting = pgTable("setting", {
 export type Session = typeof session.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
-export type Profile = typeof profile.$inferSelect;
+export type UserProfile = typeof userProfile.$inferSelect;
 export type Group = typeof group.$inferSelect;
+export type GroupProfile = typeof groupProfile.$inferSelect;
 export type GroupMember = typeof groupMember.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;

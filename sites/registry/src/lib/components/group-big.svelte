@@ -1,12 +1,12 @@
 <script lang="ts">
 	import type { ClientUser } from "$lib/server/auth";
-	import type { CensoredGroup } from "$lib/group";
+	import type { GroupAndProfile } from "$lib/group";
 
 	let {
 		group,
 		clientUser,
 	}: {
-		group: CensoredGroup;
+		group: GroupAndProfile;
 		clientUser: ClientUser;
 	} = $props();
 
@@ -25,6 +25,8 @@
 
 				<p class="text-xl self-center">{group.username}</p>
 			</div>
+
+			<pre class="text-wrap wrap-break-word">{group.profile.aboutMe}</pre>
 		</div>
 	</div>
 </div>

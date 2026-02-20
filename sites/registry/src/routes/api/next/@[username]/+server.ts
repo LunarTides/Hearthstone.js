@@ -7,7 +7,7 @@ import { error, json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
-import schema from "../../../@[username]/settings/profile/schema.js";
+import { userSchema, groupSchema } from "../../../@[username]/settings/profile/schema.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -17,9 +17,13 @@ export async function GET(event) {
 		.select()
 		.from(table.user)
 		.where(eq(table.user.username, username))
-		.innerJoin(table.profile, eq(table.profile.username, table.user.username));
+		.innerJoin(table.userProfile, eq(table.userProfile.username, table.user.username));
 	if (users.length <= 0) {
-		const groups = await db.select().from(table.group).where(eq(table.group.username, username));
+		const groups = await db
+			.select()
+			.from(table.group)
+			.where(eq(table.group.username, username))
+			.innerJoin(table.groupProfile, eq(table.groupProfile.username, table.group.username));
 		if (groups.length <= 0) {
 			return json({ message: "User not found." }, { status: 404 });
 		}
@@ -29,7 +33,8 @@ export async function GET(event) {
 		return json(
 			{
 				ownerType: "Group",
-				...censorGroup(group, clientUser),
+				profile: group.groupProfile,
+				...censorGroup(group.group, clientUser),
 			},
 			{ status: 200 },
 		);
@@ -40,7 +45,7 @@ export async function GET(event) {
 	return json(
 		{
 			ownerType: "User",
-			profile: user.profile,
+			profile: user.userProfile,
 			...censorUser(user.user, clientUser),
 		},
 		{ status: 200 },
@@ -62,7 +67,18 @@ export async function PUT(event) {
 
 	const j = await event.request.json();
 
-	const form = await superValidate(j, zod4(schema));
+	let form = null;
+	const userForm = await superValidate(j, zod4(userSchema));
+	let groupForm;
+	if (userForm.valid) {
+		form = userForm;
+	} else {
+		groupForm = await superValidate(j, zod4(groupSchema));
+		if (!form) {
+			form = groupForm;
+		}
+	}
+
 	if (!form.valid) {
 		return json(
 			{ message: `Invalid request. (${form.errors._errors?.join(", ")})` },
@@ -70,59 +86,83 @@ export async function PUT(event) {
 		);
 	}
 
-	const { aboutMe, pronouns, role } = form.data;
+	const aboutMe = form.data.aboutMe;
 
+	let group = undefined;
 	const user = (await db.select().from(table.user).where(eq(table.user.username, username))).at(0);
 	if (!user) {
-		return json({ message: "User not found." }, { status: 404 });
-	}
-
-	let newRole = user.role;
-
-	// Only allow admins and up to change the role of users.
-	if (satisfiesRole(clientUser, "Admin")) {
-		newRole = role;
-
-		if (role !== user.role) {
-			const a = RoleTable[role];
-			const b = RoleTable[user.role];
-
-			let message;
-
-			if (a < b) {
-				message = `You have been demoted to ${role}!`;
-			} else {
-				message = `You have been promoted to ${role}!`;
-			}
-
-			await db.insert(table.notification).values({
-				username: user.username,
-				text: message,
-				route: resolve("/@[username]", { username: user.username }),
-			});
+		group = (await db.select().from(table.group).where(eq(table.group.username, username))).at(0);
+		if (!group) {
+			return json({ message: "User not found." }, { status: 404 });
 		}
 	}
 
-	const updatedUsers = await db
-		.update(table.user)
-		.set({
-			role: newRole,
-		})
-		.where(eq(table.user.username, username))
-		.returning();
-	const updatedProfiles = await db
-		.update(table.profile)
-		.set({
-			pronouns,
-			aboutMe: aboutMe?.replaceAll("\r\n", "\n"),
-		})
-		.where(eq(table.profile.username, user.username))
-		.returning();
+	if (user) {
+		// User
+		const pronouns = userForm.data.pronouns;
+		const role = userForm.data.role;
 
-	const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0], clientUser)] : [];
+		let newRole = userForm.role;
 
-	return json({
-		...userInfo,
-		profile: updatedProfiles.at(0),
-	});
+		// Only allow admins and up to change the role of users.
+		if (role && satisfiesRole(clientUser, "Admin")) {
+			newRole = role;
+
+			if (role !== user.role) {
+				const a = RoleTable[role];
+				const b = RoleTable[user.role];
+
+				let message;
+
+				if (a < b) {
+					message = `You have been demoted to ${role}!`;
+				} else {
+					message = `You have been promoted to ${role}!`;
+				}
+
+				await db.insert(table.notification).values({
+					username: user.username,
+					text: message,
+					route: resolve("/@[username]", { username: user.username }),
+				});
+			}
+		}
+
+		const updatedUsers = await db
+			.update(table.user)
+			.set({
+				role: newRole,
+			})
+			.where(eq(table.user.username, username))
+			.returning();
+		const updatedProfiles = await db
+			.update(table.userProfile)
+			.set({
+				pronouns,
+				aboutMe: aboutMe?.replaceAll("\r\n", "\n"),
+			})
+			.where(eq(table.userProfile.username, user.username))
+			.returning();
+
+		const userInfo = updatedUsers.length > 0 ? [censorUser(updatedUsers[0], clientUser)] : [];
+
+		return json({
+			...userInfo,
+			profile: updatedProfiles.at(0),
+		});
+	} else if (group) {
+		// Group
+		const updatedProfiles = await db
+			.update(table.groupProfile)
+			.set({
+				aboutMe: aboutMe?.replaceAll("\r\n", "\n"),
+			})
+			.where(eq(table.groupProfile.username, group.username))
+			.returning();
+
+		return json({
+			...censorGroup(group, clientUser),
+			profile: updatedProfiles.at(0),
+		});
+	}
 }

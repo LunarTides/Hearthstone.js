@@ -56,11 +56,10 @@
 				{/if}
 			{/await}
 			<hr class="text-gray-700" />
-			{#await data.currentUser}
+			{#await data.canEditUser}
 				<p>Loading...</p>
-			{:then user}
-				<!-- TODO: Handle groups. -->
-				{#if user.username === data.user?.username}
+			{:then canEditUser}
+				{#if canEditUser}
 					<a
 						href={resolve("/@[username]/settings", { username: page.params.username! })}
 						class={`${page.route.id?.startsWith("/@[username]/settings") && "text-indigo-400"}`}

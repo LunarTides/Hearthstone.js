@@ -2,7 +2,7 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 export async function GET(event) {
 	const user = event.locals.user;
@@ -27,7 +27,7 @@ export async function GET(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved && !isUserMemberOfPack(user, username, pack)) {
+	if (!pack.approved && !isUserMemberOfGroup(user, user?.username, username)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

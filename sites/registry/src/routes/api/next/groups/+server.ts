@@ -48,6 +48,8 @@ export async function POST(event) {
 			permissions: ["owner"],
 			accepted: true,
 		});
+
+		await db.insert(table.groupProfile).values({ username: group.name, aboutMe: "" });
 	} catch {
 		return json({ message: "An error has occurred" }, { status: 500 });
 	}

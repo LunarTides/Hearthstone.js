@@ -26,30 +26,36 @@
 	></textarea>
 	{#if $errors.aboutMe}<span class="text-red-500">{$errors.aboutMe}</span>{/if}
 
-	<label for="pronouns">Pronouns</label>
-	<input
-		name="pronouns"
-		class="bg-background"
-		aria-invalid={$errors.pronouns ? "true" : undefined}
-		bind:value={$form.pronouns}
-		{...$constraints.pronouns}
-	/>
-	{#if $errors.pronouns}<span class="text-red-500">{$errors.pronouns}</span>{/if}
-
-	{#if satisfiesRole(data.user, "Admin")}
-		<label for="role">Role</label>
-		<select
-			name="role"
+	{#if $form.type === "User"}
+		<label for="pronouns">Pronouns</label>
+		<input
+			name="pronouns"
 			class="bg-background"
-			aria-invalid={$errors.role ? "true" : undefined}
-			bind:value={$form.role}
-			{...$constraints.role}
-		>
-			{#each rolesEnum.enumValues as role (role)}
-				<option value={role} selected={data.user.role === role}>{role}</option>
-			{/each}
-		</select>
-		{#if $errors.role}<span class="text-red-500">{$errors.role}</span>{/if}
+			aria-invalid={$errors.pronouns ? "true" : undefined}
+			bind:value={$form.pronouns}
+			{...$constraints.pronouns}
+		/>
+		{#if $errors.pronouns}<span class="text-red-500">{$errors.pronouns}</span>{/if}
+
+		{#if satisfiesRole(data.user, "Admin")}
+			<label for="role">Role</label>
+			<select
+				name="role"
+				class="bg-background"
+				aria-invalid={$errors.role ? "true" : undefined}
+				bind:value={$form.role}
+				{...$constraints.role}
+			>
+				{#each rolesEnum.enumValues as role (role)}
+					<option value={role} selected={data.user.role === role}>{role}</option>
+				{/each}
+			</select>
+			{#if $errors.role}<span class="text-red-500">{$errors.role}</span>{/if}
+		{/if}
+
+		<input type="hidden" value="User" />
+	{:else}
+		<input type="hidden" value="Group" />
 	{/if}
 
 	<button class="custom-button p-2 rounded-none">Save</button>

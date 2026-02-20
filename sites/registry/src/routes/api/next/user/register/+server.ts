@@ -58,7 +58,7 @@ export async function POST(event) {
 		const session = await auth.createSession(sessionToken, user.username);
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
-		await db.insert(table.profile).values({ username: user.username, aboutMe: "" });
+		await db.insert(table.userProfile).values({ username: user.username, aboutMe: "" });
 	} catch {
 		return json({ message: "An error has occurred" }, { status: 500 });
 	}

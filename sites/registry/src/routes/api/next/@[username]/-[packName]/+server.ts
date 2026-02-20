@@ -3,8 +3,9 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and, desc } from "drizzle-orm";
 import fs from "node:fs/promises";
-import { getFullPacks, isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { getFullPacks } from "$lib/server/db/pack.js";
 import { censorPack } from "$lib/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -20,7 +21,10 @@ export async function GET(event) {
 			.$dynamic(),
 	);
 
-	if (!clientUser || !isUserMemberOfPack(clientUser, clientUser.username, packs.at(0))) {
+	if (
+		!clientUser ||
+		!isUserMemberOfGroup(clientUser, clientUser.username, packs.at(0)?.ownerName)
+	) {
 		packs = packs.filter((p) => p.approved);
 	}
 
@@ -51,7 +55,7 @@ export async function DELETE(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!isUserMemberOfPack(user, username, pack)) {
+	if (!isUserMemberOfGroup(user, username, pack.ownerName)) {
 		return json(
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },

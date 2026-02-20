@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import fs from "node:fs/promises";
 import { resolve } from "path";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 // TODO: Prevent this api from being spammed by the client.
 export async function GET(event) {
@@ -30,7 +30,7 @@ export async function GET(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	if (!pack.approved && !isUserMemberOfPack(user, username, pack)) {
+	if (!pack.approved && !isUserMemberOfGroup(user, user?.username, username)) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 

@@ -2,8 +2,8 @@ import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
 import { censorPack } from "$lib/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 // FIXME: This could also quickly explode in size.
 export async function GET(event) {
@@ -25,7 +25,10 @@ export async function GET(event) {
 		return json({ message: "Card object is invalid for some reason." }, { status: 500 });
 	}
 
-	if (!latest.card.approved && !isUserMemberOfPack(clientUser, clientUser?.username, latest.pack)) {
+	if (
+		!latest.card.approved &&
+		!isUserMemberOfGroup(clientUser, clientUser?.username, latest.pack.ownerName)
+	) {
 		cards = cards.filter((c) => c.card?.approved);
 	}
 
