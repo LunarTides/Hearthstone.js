@@ -4,6 +4,8 @@ import * as table from "$lib/db/schema";
 import { getSetting } from "$lib/server/db/setting.js";
 import { censorUser } from "$lib/user";
 import { desc } from "drizzle-orm";
+import { censorGroup } from "$lib/group.js";
+import type { User } from "$lib/db/schema";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -20,13 +22,31 @@ export async function GET(event) {
 		return json({ message: "The page number is too high." }, { status: 400 });
 	}
 
-	// TODO: Make this work with groups.
+	// TODO: Make the pagination less stupid.
 	const users = await db
 		.select()
 		.from(table.user)
 		.orderBy(desc(table.user.karma))
-		.limit(pageSize)
-		.offset((page - 1) * pageSize);
+		.limit(pageSize / 2)
+		.offset((page - 1) * (pageSize / 2));
 
-	return json(users.map((user) => censorUser(user, clientUser, { karma: false })));
+	const groups = await db
+		.select()
+		.from(table.group)
+		.orderBy(desc(table.group.karma))
+		.limit(pageSize / 2)
+		.offset((page - 1) * (pageSize / 2));
+
+	// Combine the users and groups.
+	const mix = [...users, ...groups]
+		.toSorted((a, b) => a.karma - b.karma)
+		.map((obj) => ({ ...obj, type: Object.hasOwn(obj, "role") ? "User" : "Group" }));
+
+	const leaderboard = mix.map((obj) =>
+		obj.type === "User"
+			? censorUser(obj as unknown as User, clientUser, { karma: false })
+			: censorGroup(obj, clientUser, { karma: false }),
+	);
+
+	return json(leaderboard);
 }
