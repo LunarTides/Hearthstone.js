@@ -2,7 +2,6 @@ import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import type { Card } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack.js";
-import { loadGetPack } from "$lib/server/db/pack";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 
 const getCards = async (event: ServerLoadEvent, pack: CensoredPack) => {
@@ -23,17 +22,22 @@ const getCards = async (event: ServerLoadEvent, pack: CensoredPack) => {
 
 export const load = async (event) => {
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const user = event.locals.user;
 	const { username, packName } = event.params;
 
 	// TODO: Query API instead.
-	const packs = await loadGetPack(user, username, packName);
-	const latest = packs.latest;
+	const packResponse = await requestAPI<{ latest: CensoredPack; outdated: CensoredPack[] }>(
+		event,
+		resolve("/api/next/@[username]/-[packName]", { username, packName }),
+	);
+	if (packResponse.error) {
+		return error(packResponse.error.status, { message: packResponse.error.message });
+	}
 
+	const { latest, outdated } = packResponse.json;
 	const latestCards = await getCards(event, latest);
 
 	return {
-		packs,
+		versions: [latest, ...outdated],
 		latestCards,
 	};
 };

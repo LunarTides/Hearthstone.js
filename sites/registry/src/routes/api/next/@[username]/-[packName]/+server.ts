@@ -1,9 +1,34 @@
 import { db } from "$lib/server/db/index.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import fs from "node:fs/promises";
-import { isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { getFullPacks, isUserMemberOfPack } from "$lib/server/db/pack.js";
+import { censorPack } from "$lib/pack.js";
+
+export async function GET(event) {
+	const clientUser = event.locals.user;
+	const { username, packName } = event.params;
+
+	let packs = await getFullPacks(
+		clientUser,
+		db
+			.select()
+			.from(table.pack)
+			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+			.orderBy(desc(table.pack.packVersion))
+			.$dynamic(),
+	);
+
+	if (!clientUser || !isUserMemberOfPack(clientUser, clientUser.username, packs.at(0))) {
+		packs = packs.filter((p) => p.approved);
+	}
+
+	return json({
+		latest: censorPack(packs[0], clientUser),
+		outdated: packs.slice(1).map((p) => censorPack(p, clientUser)),
+	});
+}
 
 // TODO: Deduplicate.
 export async function DELETE(event) {

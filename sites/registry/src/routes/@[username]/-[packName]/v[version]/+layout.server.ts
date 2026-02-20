@@ -4,11 +4,11 @@ import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "./schema";
 import type { FileTree } from "$lib/api/types";
 import type { Card } from "$lib/db/schema";
-import { APIGetPack } from "$lib/server/db/pack";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { LayoutRouteId, LayoutServerParentData, RouteId } from "./$types.js";
+import type { CensoredPack } from "$lib/pack.js";
 
 const getCards = async (
 	event: ServerLoadEvent<LayoutParams<RouteId>, LayoutServerParentData, LayoutRouteId>,
@@ -34,20 +34,25 @@ export const load = async (event) => {
 	const { username, packName, version } = event.params;
 
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	// TODO: Only get 1 pack.
-	const packs = await APIGetPack(event.locals.user, username, packName);
-	if (packs.error) {
-		return error(packs.error.status, { message: packs.error.message });
+	const packResponse = await requestAPI<{ latest: CensoredPack; outdated: CensoredPack[] }>(
+		event,
+		resolve("/api/next/@[username]/-[packName]", { username, packName }),
+	);
+	if (packResponse.error) {
+		return error(packResponse.error.status, { message: packResponse.error.message });
 	}
 
-	const pack = packs.all.find(
+	const { latest, outdated } = packResponse.json;
+	const all = [latest, ...outdated];
+
+	const pack = all.find(
 		(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
 	);
 	if (!pack) {
 		return error(404, { message: "Pack not found." });
 	}
 
-	const formattedPacks = Promise.resolve({ current: pack, latest: packs.latest, all: packs.all });
+	const formattedPacks = Promise.resolve({ current: pack, latest, all });
 	// TODO: Account for groups.
 	const canEditPack = pack.ownerName === event.locals.user?.username;
 
@@ -63,7 +68,7 @@ export const load = async (event) => {
 		return error(fileResponse.error.status, { message: fileResponse.error.message });
 	}
 
-	const cards = await getCards(event);
+	const cards = (await getCards(event)) as Card[];
 	const form = await superValidate(zod4(approveSchema));
 
 	return {

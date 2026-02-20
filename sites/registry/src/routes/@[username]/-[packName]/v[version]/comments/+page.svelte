@@ -77,7 +77,7 @@
 						</div>
 
 						<pre class="font-sans">{message.text}</pre>
-						<p class="text-gray-600">{dateFormat.format(message.creationDate)}</p>
+						<p class="text-gray-600">{dateFormat.format(new Date(message.creationDate))}</p>
 					</div>
 				{/each}
 			</div>

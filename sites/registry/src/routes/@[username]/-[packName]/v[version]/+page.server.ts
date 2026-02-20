@@ -2,7 +2,6 @@ import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema, dummySchema } from "./schema";
 import type { File } from "$lib/api/types.js";
-import { APIGetPack } from "$lib/server/db/pack.js";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { message, superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -56,25 +55,12 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Get single pack instead of all packs.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]/download", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "POST",
@@ -99,25 +85,12 @@ export const actions = {
 	delete: async (event) => {
 		const { username, packName, version } = event.params;
 
-		// TODO: Only get 1 pack.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return fail(packs.error.status, { message: packs.error.message });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return fail(404, { message: "Pack not found." });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "DELETE",
@@ -139,25 +112,12 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Only get 1 pack.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]/approve", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "POST",
@@ -172,9 +132,9 @@ export const actions = {
 		redirect(
 			302,
 			resolve("/@[username]/-[packName]/v[version]", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 		);
 	},
@@ -187,25 +147,12 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Only get 1 pack.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]/approve", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "DELETE",
@@ -220,9 +167,9 @@ export const actions = {
 		redirect(
 			302,
 			resolve("/@[username]/-[packName]/v[version]", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 		);
 	},
@@ -235,25 +182,12 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Only get 1 pack.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]/approve/deny", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "POST",
@@ -268,9 +202,9 @@ export const actions = {
 		redirect(
 			302,
 			resolve("/@[username]/-[packName]/v[version]", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 		);
 	},
@@ -283,25 +217,12 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		// TODO: Only get 1 pack.
-		const packs = await APIGetPack(event.locals.user, username, packName);
-		if (packs.error) {
-			return message(form, packs.error.message, { status: packs.error.status as any });
-		}
-
-		const pack = packs.all.find(
-			(v) => v.ownerName === username && v.name === packName && v.packVersion === version,
-		);
-		if (!pack) {
-			return message(form, "Pack not found.", { status: 404 });
-		}
-
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/-[packName]/v[version]/approve/deny", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 			{
 				method: "DELETE",
@@ -316,9 +237,9 @@ export const actions = {
 		redirect(
 			302,
 			resolve("/@[username]/-[packName]/v[version]", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
+				username,
+				packName,
+				version,
 			}),
 		);
 	},

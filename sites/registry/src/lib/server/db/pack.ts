@@ -2,101 +2,10 @@ import { db } from "$lib/server/db/index.js";
 import type { PackWithExtras } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import type { Pack } from "$lib/db/schema.js";
-import { error } from "@sveltejs/kit";
 import { eq, and, desc, count } from "drizzle-orm";
 import { alias, type PgSelect } from "drizzle-orm/pg-core";
 import type { ClientUser } from "../auth";
 import { censorUser, satisfiesRole } from "$lib/user";
-import { censorPack } from "$lib/pack";
-
-const filterApproved = (user: ClientUser, packs: PackWithExtras[]) => {
-	if ((!user || packs.at(0)?.ownerName !== user.username) && !satisfiesRole(user, "Moderator")) {
-		return packs.filter((p) => p.approved);
-	}
-
-	return packs;
-};
-
-export const loadGetPack = async (user: ClientUser, username: string, packName: string) => {
-	// TODO: Add API to get a single card / pack.
-	let packs = await getFullPacks(
-		user,
-		db
-			.select()
-			.from(table.pack)
-			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
-			.$dynamic(),
-	);
-
-	packs = filterApproved(user, packs);
-
-	if (packs.length <= 0) {
-		// To to parse uuid as a version id.
-		const id = (
-			await db
-				.select({ ownerName: table.pack.ownerName, name: table.pack.name })
-				.from(table.pack)
-				.where(and(eq(table.pack.id, username)))
-		).at(0);
-		if (!id) {
-			error(404, { message: "Pack not found." });
-		}
-
-		packs = await getFullPacks(
-			user,
-			db
-				.select()
-				.from(table.pack)
-				.where(and(eq(table.pack.ownerName, id.ownerName), eq(table.pack.name, id.name)))
-				.$dynamic(),
-		);
-
-		packs = filterApproved(user, packs);
-	}
-
-	const censoredPacks = packs.map((p) => censorPack(p, user));
-
-	let latest = censoredPacks.find((p) => p.isLatestVersion);
-	if (!latest) {
-		latest = censoredPacks.toSorted((a, b) => Bun.semver.order(b.packVersion, a.packVersion))[0];
-	}
-
-	return {
-		latest: latest,
-		all: censoredPacks,
-	};
-};
-
-export const APIGetPack = async (user: ClientUser, username: string, packName: string) => {
-	// TODO: Add API to get a single card / pack.
-	let packs = await getFullPacks(
-		user,
-		db
-			.select()
-			.from(table.pack)
-			.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
-			.$dynamic(),
-	);
-
-	packs = filterApproved(user, packs);
-
-	if (packs.length <= 0) {
-		return { error: { message: "Pack not found.", status: 404 } };
-	}
-
-	const censoredPacks = packs.map((p) => censorPack(p, user));
-
-	let latest = censoredPacks.find((p) => p.isLatestVersion);
-	if (!latest) {
-		latest = censoredPacks.toSorted((a, b) => Bun.semver.order(b.packVersion, a.packVersion))[0];
-	}
-
-	return {
-		error: undefined,
-		latest: latest,
-		all: censoredPacks,
-	};
-};
 
 export const isUserMemberOfPack = async (
 	clientUser: ClientUser,

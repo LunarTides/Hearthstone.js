@@ -1,17 +1,30 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import { loadGetPack } from "$lib/server/db/pack.js";
-import { fail, redirect } from "@sveltejs/kit";
+import type { CensoredPack } from "$lib/pack.js";
+import { error, fail, redirect } from "@sveltejs/kit";
 
 export const load = async (event) => {
-	const packs = await loadGetPack(event.locals.user, event.params.username, event.params.packName);
-	const latest = packs.latest;
+	const { username, packName } = event.params;
 
+	const packResponse = await requestAPI<{ latest: CensoredPack; outdated: CensoredPack[] }>(
+		event,
+		resolve("/api/next/@[username]/-[packName]", {
+			username,
+			packName,
+		}),
+	);
+	if (packResponse.error) {
+		error(packResponse.error.status, { message: packResponse.error.message });
+	}
+
+	const { latest } = packResponse.json;
+
+	// Navigate to the latest version of the pack.
 	redirect(
 		302,
 		resolve("/@[username]/-[packName]/v[version]", {
-			username: event.params.username,
-			packName: event.params.packName,
+			username,
+			packName,
 			version: latest.packVersion,
 		}),
 	);
