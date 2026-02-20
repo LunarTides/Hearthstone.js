@@ -7,6 +7,7 @@ import type { RequestEvent } from "./$types.js";
 import type { ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { notify } from "$lib/server/db/notification.js";
 
 async function setup(event: RequestEvent, clientUser: NonNullable<ClientUser>) {
 	const username = event.params.username;
@@ -71,16 +72,15 @@ export async function POST(event) {
 		.where(eq(table.comment.id, comment.id));
 
 	if (comment.username && comment.username !== clientUser.username) {
-		await db.insert(table.notification).values({
-			username: comment.username,
-			text: "Your comment has been hearted!",
-			route:
-				resolve("/@[username]/-[packName]/v[version]/comments", {
-					username: comment.pack.ownerName,
-					packName: comment.pack.name,
-					version: comment.pack.packVersion,
-				}) + `#comment-${comment.id}`,
-		});
+		await notify(
+			comment.username,
+			"Your comment has been hearted!",
+			resolve("/@[username]/-[packName]/v[version]/comments", {
+				username: comment.pack.ownerName,
+				packName: comment.pack.name,
+				version: comment.pack.packVersion,
+			}) + `#comment-${comment.id}`,
+		);
 	}
 
 	return json({}, { status: 200 });

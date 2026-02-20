@@ -7,6 +7,7 @@ import * as table from "$lib/db/schema";
 import { count, eq, and } from "drizzle-orm";
 import { memberHasPermission } from "$lib/group.js";
 import { resolve } from "$app/paths";
+import { notify } from "$lib/server/db/notification.js";
 
 export async function POST(event) {
 	const clientUser = event.locals.user;
@@ -72,11 +73,11 @@ export async function POST(event) {
 			accepted: false,
 		});
 
-		await db.insert(table.notification).values({
+		await notify(
 			username,
-			text: `You've been invited to the group '${groupName}'.`,
-			route: resolve("/@[username]/members/@[member]", { username: groupName, member: username }),
-		});
+			`You've been invited to the group '${groupName}'.`,
+			resolve("/@[username]/members/@[member]", { username: groupName, member: username }),
+		);
 	} catch {
 		return json({ message: "An error has occurred" }, { status: 500 });
 	}

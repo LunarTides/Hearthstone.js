@@ -9,6 +9,7 @@ import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { userSchema, groupSchema } from "../../../@[username]/settings/profile/schema.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { notify } from "$lib/server/db/notification.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -122,11 +123,7 @@ export async function PUT(event) {
 					message = `You have been promoted to ${role}!`;
 				}
 
-				await db.insert(table.notification).values({
-					username: user.username,
-					text: message,
-					route: resolve("/@[username]", { username: user.username }),
-				});
+				await notify(user.username, message, resolve("/@[username]", { username: user.username }));
 			}
 		}
 

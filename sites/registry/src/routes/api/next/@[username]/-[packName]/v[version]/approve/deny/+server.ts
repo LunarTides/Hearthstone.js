@@ -9,6 +9,7 @@ import { approveSchema } from "../../../../../../../@[username]/-[packName]/v[ve
 import { setLatestVersion } from "$lib/server/db/pack.js";
 import { grantKarma } from "$lib/server/db/user";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { notify } from "$lib/server/db/notification.js";
 
 // TODO: Deduplicate from `approve`.
 export async function POST(event) {
@@ -79,16 +80,15 @@ export async function POST(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	await db.insert(table.notification).values({
+	await notify(
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} has been denied.`,
-		route:
-			resolve("/@[username]/-[packName]/v[version]/comments", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
-			}) + `#message-${packMessage[0].id}`,
-	});
+		`Your pack (${pack.name} v${pack.packVersion}) has been denied.`,
+		resolve("/@[username]/-[packName]/v[version]/comments", {
+			username: pack.ownerName,
+			packName: pack.name,
+			version: pack.packVersion,
+		}) + `#message-${packMessage[0].id}`,
+	);
 
 	await grantKarma(username, -karma);
 	return json({}, { status: 200 });
@@ -155,16 +155,15 @@ export async function DELETE(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	await db.insert(table.notification).values({
+	await notify(
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} is being reconsidered for approval!`,
-		route:
-			resolve("/@[username]/-[packName]/v[version]/comments", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
-			}) + `#message-${packMessage[0].id}`,
-	});
+		`Your pack (${pack.name} v${pack.packVersion}) is being reconsidered for approval!`,
+		resolve("/@[username]/-[packName]/v[version]/comments", {
+			username: pack.ownerName,
+			packName: pack.name,
+			version: pack.packVersion,
+		}) + `#message-${packMessage[0].id}`,
+	);
 
 	await grantKarma(username, karma);
 	return json({}, { status: 200 });

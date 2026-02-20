@@ -9,6 +9,7 @@ import { approveSchema } from "../../../../../../@[username]/-[packName]/v[versi
 import { setLatestVersion } from "$lib/server/db/pack.js";
 import { grantKarma } from "$lib/server/db/user.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { notify } from "$lib/server/db/notification.js";
 
 export async function POST(event) {
 	const user = event.locals.user;
@@ -78,16 +79,15 @@ export async function POST(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	await db.insert(table.notification).values({
+	await notify(
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} has been approved!`,
-		route:
-			resolve("/@[username]/-[packName]/v[version]/comments", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
-			}) + `#message-${packMessage[0].id}`,
-	});
+		`Your pack (${pack.name} v${pack.packVersion}) has been approved!`,
+		resolve("/@[username]/-[packName]/v[version]/comments", {
+			username: pack.ownerName,
+			packName: pack.name,
+			version: pack.packVersion,
+		}) + `#message-${packMessage[0].id}`,
+	);
 
 	await grantKarma(username, karma);
 	return json({}, { status: 200 });
@@ -164,17 +164,15 @@ export async function DELETE(event) {
 		})
 		.returning({ id: table.packMessage.id });
 
-	// FIXME: This breaks when approving a pack owned by a group.
-	await db.insert(table.notification).values({
+	await notify(
 		username,
-		text: `Your pack (${pack.name} v${pack.packVersion} approval has been withdrawn!`,
-		route:
-			resolve("/@[username]/-[packName]/v[version]/comments", {
-				username: pack.ownerName,
-				packName: pack.name,
-				version: pack.packVersion,
-			}) + `#message-${packMessage[0].id}`,
-	});
+		`Your pack (${pack.name} v${pack.packVersion}) approval has been withdrawn!`,
+		resolve("/@[username]/-[packName]/v[version]/comments", {
+			username: pack.ownerName,
+			packName: pack.name,
+			version: pack.packVersion,
+		}) + `#message-${packMessage[0].id}`,
+	);
 
 	await grantKarma(username, -karma);
 	return json({}, { status: 200 });
