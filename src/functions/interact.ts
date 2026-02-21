@@ -23,6 +23,7 @@ import {
 import { format } from "node:util";
 import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
 import { checkbox, confirm, input, number, select } from "@inquirer/prompts";
+import boxen from "boxen";
 import { parseTags } from "chalk-tags";
 
 // Make a custom `input` implementation.
@@ -1315,6 +1316,7 @@ const print = {
 	 */
 	watermark() {
 		game.functions.interact.cls();
+		let result = "";
 
 		const versionDetail =
 			game.player.detailedView ||
@@ -1328,23 +1330,17 @@ const print = {
 			eventEmojisText += " ";
 		}
 
-		const watermark = `HEARTHSTONE.JS ${eventEmojisText}V${game.functions.info.versionString(versionDetail)}`;
-		const border = "-".repeat(watermark.length + 2);
-
-		console.log("|%s|", border);
-		console.log("| %s |", watermark);
-		console.log("|%s|", border);
+		result += `HEARTHSTONE.JS ${eventEmojisText}V${game.functions.info.versionString(versionDetail)}\n`;
 
 		const { branch } = game.functions.info.version();
 
 		if (branch === "topic" && game.config.general.topicBranchWarning) {
-			console.log(
-				"\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>",
-			);
+			result +=
+				"\n<yellow>WARNING: YOU ARE ON A TOPIC BRANCH. THIS VERSION IS NOT READY.</yellow>\n";
 		}
 
 		if (game.isEventActive(game.time.events.anniversary)) {
-			console.log(`\n<b>[${game.time.year - 2022} year anniversary!]</b>`);
+			result += `\n<b>[${game.time.year - 2022} year anniversary!]</b>\n`;
 		}
 
 		// Fun facts.
@@ -1372,12 +1368,14 @@ const print = {
 			if (funFact) {
 				seenFunFacts.push(funFact);
 
-				console.log(
+				result += format(
 					game.translate("<gray>(Fun Fact: %s)</gray>"),
 					game.translate(funFact),
 				);
 			}
 		}
+
+		console.log(boxen(parseTags(result), { padding: 0.5 }));
 	},
 
 	/**
@@ -1836,6 +1834,7 @@ export const interactFunctions = {
 			return GamePlayCardReturn.Invalid;
 		}
 
+		// FIXME: The outcast ability isn't triggered when calling `game.play` manually.
 		if (parsedInput === game.player.hand.length || parsedInput === 1) {
 			await card.trigger(Ability.Outcast);
 		}
