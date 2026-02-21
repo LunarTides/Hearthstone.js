@@ -3,7 +3,7 @@
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
-import type { Metadata, PackValidationResult } from "@Game/types/pack";
+import type { Metadata } from "@Game/types/pack";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
 import { confirm, input, Separator } from "@inquirer/prompts";
@@ -14,6 +14,8 @@ import { validate } from "tools/id/lib";
 import { RegBot } from "./regbot";
 
 const { game } = await createGame();
+
+type Pack = Awaited<ReturnType<typeof getPacks>>[0];
 
 const metadataVersion = 1;
 
@@ -136,7 +138,7 @@ async function parseMetadataFile(pack: string) {
 }
 
 async function importPack(
-	pack: Awaited<ReturnType<typeof getPacks>>[0],
+	pack: Pack,
 	options: { forceDelete: boolean } = { forceDelete: false },
 ) {
 	if (pack.compressed) {
@@ -207,195 +209,209 @@ async function importPack(
 }
 
 async function promptImportPack() {
-	while (true) {
-		hub.watermark(false);
+	let packs = await getPacks();
 
-		console.log(
-			"Download a pack, then drag the extracted folder into '/packs/'.\n",
-		);
+	await hub.createUILoop(
+		{
+			message: "Import a Pack",
+			backButtonText: "Done",
+			seperatorBeforeBackButton: false,
+			callbackBefore: async () => {
+				hub.watermark(false);
 
-		const packs = await getPacks();
-		const answer = await game.prompt.customSelect(
-			"Import a Pack",
-			packs.map((p) => `@${p.ownerName}/${p.name}`),
-			{
-				arrayTransform: undefined,
-				hideBack: true,
+				console.log(
+					"Download a pack, then drag the extracted folder into '/packs/'.\n",
+				);
+
+				packs = await getPacks();
 			},
-			new Separator(),
-			"Refresh",
-			"Done",
-		);
+		},
+		...packs.map((p) => ({
+			name: `@${p.ownerName}/${p.name}`,
+			callback: async (answer) => {
+				const pack = packs[answer];
+				await importPack(pack);
 
-		if (answer === "refresh") {
-			continue;
+				return true;
+			},
+		})),
+		new Separator(),
+		{
+			name: "Refresh",
+		},
+	);
+}
+
+async function exportPack(pack?: Pack) {
+	let metadata: Metadata;
+
+	if (pack) {
+		if (pack.compressed) {
+			const archive = new Bun.Archive(pack.bytes);
+			const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
+			await game.functions.util.fs("mkdir", folderPath);
+			await archive.extract(folderPath);
+			await game.functions.util.fs("rm", pack.path);
+
+			pack.path = folderPath;
+			pack.compressed = false;
 		}
-		if (answer === "done") {
-			break;
+
+		if (
+			!(await game.functions.util.fs(
+				"exists",
+				resolve(pack.path, "pack.json5"),
+			))
+		) {
+			await game.pause(
+				"<yellow>That pack doesn't have a 'pack.json5' file.</yellow>",
+			);
+			return false;
 		}
 
-		const index = parseInt(answer, 10);
-		const pack = packs[index];
-
-		await importPack(pack);
+		metadata = Bun.JSON5.parse(
+			(await game.functions.util.fs(
+				"readFile",
+				`${pack.path}/pack.json5`,
+				"utf8",
+				{ invalidateCache: true },
+			)) as string,
+		) as Metadata;
+	} else {
+		metadata = {
+			versions: {
+				metadata: metadataVersion,
+				game: game.functions.info.version().version,
+				pack: "1.0.0",
+			},
+			name: "",
+			description: "",
+			author: "",
+			// NOTE: Can't legally license this under an open-source license without express consent from the user.
+			// So it defaults to "Proprietary"
+			license: "Proprietary",
+			links: {},
+			permissions: {
+				network: false,
+				fileSystem: false,
+			},
+			requires: {
+				packs: [],
+				cards: [],
+				classes: [],
+				// Add tribes, etc...
+			},
+		};
 	}
+
+	// If the configuration was cancelled, don't export the pack.
+	if (!(await configureMetadata(metadata))) {
+		return false;
+	}
+
+	const author = metadata.author || "You";
+	const name = metadata.name || Bun.randomUUIDv7();
+
+	await game.functions.util.fs("mkdir", `/packs/${author}+${name}`, {
+		recursive: true,
+	});
+
+	// Copy custom cards over to the pack.
+	await game.functions.util.searchCardsFolder(async (path, content, file) => {
+		if (path.includes("Custom")) {
+			await game.functions.util.fs(
+				"cp",
+				path,
+				game.functions.util.restrictPath(
+					`/packs/${author}+${name}/${file.name}`,
+				),
+			);
+		}
+	});
+
+	// Write metadata file.
+	await game.functions.util.fs(
+		"writeFile",
+		`/packs/${author}+${name}/pack.json5`,
+		Bun.JSON5.stringify(metadata, null, 4)!,
+	);
+
+	await game.pause(
+		`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${author}+${name}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
+	);
+
+	// Add files to archive.
+	const files: Record<string, string> = {};
+
+	await game.functions.util.searchFolder(
+		`/packs/${author}+${name}`,
+		async (index, path, file, content) => {
+			if (!content) {
+				return;
+			}
+
+			const relativePath = path.split(`${author}+${name}`)[1];
+			files[relativePath] = content;
+		},
+	);
+
+	const archive = new Bun.Archive(files, { compress: "gzip" });
+	const bytes = await archive.bytes();
+	await game.functions.util.fs(
+		"writeFile",
+		`/packs/${author}+${name}.tar.gz`,
+		bytes,
+	);
+
+	await game.functions.util.fs("rm", `/packs/${author}+${name}`, {
+		recursive: true,
+		force: true,
+	});
+
+	await game.pause(
+		`<green>Done.</green> Send the compressed file to whoever you'd like.\n`,
+	);
+
+	return true;
 }
 
 async function promptExportPack() {
-	while (true) {
-		hub.watermark(false);
-		dirty = false;
+	let packs = await getPacks();
 
-		const packs = await getPacks();
-		const answer = await game.prompt.customSelect(
-			"Export a Pack",
-			packs.map((p) => `@${p.ownerName}/${p.name}`),
-			{ arrayTransform: undefined, hideBack: true },
-			"New",
-			new Separator(),
-			"Refresh",
-			"Done",
-		);
+	await hub.createUILoop(
+		{
+			message: "Export a Pack",
+			backButtonText: "Done",
+			seperatorBeforeBackButton: false,
+			callbackBefore: async () => {
+				hub.watermark(false);
+				dirty = false;
 
-		if (answer === "refresh") {
-			continue;
-		}
-		if (answer === "done") {
-			break;
-		}
-
-		const index = parseInt(answer, 10);
-		let metadata: Metadata;
-
-		if (!Number.isNaN(index)) {
-			const pack = packs[index];
-
-			if (pack.compressed) {
-				const archive = new Bun.Archive(pack.bytes);
-				const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
-				await game.functions.util.fs("mkdir", folderPath);
-				await archive.extract(folderPath);
-				await game.functions.util.fs("rm", pack.path);
-
-				pack.path = folderPath;
-				pack.compressed = false;
-			}
-
-			if (
-				!(await game.functions.util.fs(
-					"exists",
-					resolve(pack.path, "pack.json5"),
-				))
-			) {
-				await game.pause(
-					"<yellow>That pack doesn't have a 'pack.json5' file.</yellow>",
-				);
-				continue;
-			}
-
-			metadata = Bun.JSON5.parse(
-				(await game.functions.util.fs(
-					"readFile",
-					`${pack.path}/pack.json5`,
-					"utf8",
-					{ invalidateCache: true },
-				)) as string,
-			) as Metadata;
-		} else {
-			metadata = {
-				versions: {
-					metadata: metadataVersion,
-					game: game.functions.info.version().version,
-					pack: "1.0.0",
-				},
-				name: "",
-				description: "",
-				author: "",
-				// NOTE: Can't legally license this under an open-source license without express consent from the user.
-				// So it defaults to "Proprietary"
-				license: "Proprietary",
-				links: {},
-				permissions: {
-					network: false,
-					fileSystem: false,
-				},
-				requires: {
-					packs: [],
-					cards: [],
-					classes: [],
-					// Add tribes, etc...
-				},
-			};
-		}
-
-		// If the configuration was cancelled, don't export the pack.
-		if (!(await configureMetadata(metadata))) {
-			continue;
-		}
-
-		const author = metadata.author || "You";
-		const name = metadata.name || Bun.randomUUIDv7();
-
-		await game.functions.util.fs("mkdir", `/packs/${author}+${name}`, {
-			recursive: true,
-		});
-
-		// Copy custom cards over to the pack.
-		await game.functions.util.searchCardsFolder(async (path, content, file) => {
-			if (path.includes("Custom")) {
-				await game.functions.util.fs(
-					"cp",
-					path,
-					game.functions.util.restrictPath(
-						`/packs/${author}+${name}/${file.name}`,
-					),
-				);
-			}
-		});
-
-		// Write metadata file.
-		await game.functions.util.fs(
-			"writeFile",
-			`/packs/${author}+${name}/pack.json5`,
-			Bun.JSON5.stringify(metadata, null, 4)!,
-		);
-
-		await game.pause(
-			`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${author}+${name}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
-		);
-
-		// Add files to archive.
-		const files: Record<string, string> = {};
-
-		await game.functions.util.searchFolder(
-			`/packs/${author}+${name}`,
-			async (index, path, file, content) => {
-				if (!content) {
-					return;
-				}
-
-				const relativePath = path.split(`${author}+${name}`)[1];
-				files[relativePath] = content;
+				packs = await getPacks();
 			},
-		);
+		},
+		...packs.map((p) => ({
+			name: `@${p.ownerName}/${p.name}`,
+			callback: async (answer) => {
+				const pack = packs.at(answer);
+				await exportPack(pack);
 
-		const archive = new Bun.Archive(files, { compress: "gzip" });
-		const bytes = await archive.bytes();
-		await game.functions.util.fs(
-			"writeFile",
-			`/packs/${author}+${name}.tar.gz`,
-			bytes,
-		);
+				return true;
+			},
+		})),
+		{
+			name: "New",
+			callback: async () => {
+				await exportPack();
 
-		await game.functions.util.fs("rm", `/packs/${author}+${name}`, {
-			recursive: true,
-			force: true,
-		});
-
-		await game.pause(
-			`<green>Done.</green> Send the compressed file to whoever you'd like.\n`,
-		);
-	}
+				return true;
+			},
+		},
+		new Separator(),
+		{
+			name: "Refresh",
+		},
+	);
 }
 
 async function configureMetadata(metadata: Metadata) {
@@ -650,186 +666,140 @@ const registry = {
 			return;
 		}
 
-		while (true) {
-			hub.watermark(true);
-
-			const answer = await game.prompt.customSelect(
-				"Registry Options",
-				[],
-				{
-					arrayTransform: undefined,
-					hideBack: true,
+		await hub.createUILoop(
+			{
+				message: "Registry Options",
+			},
+			{
+				name: "Download",
+				callback: async () => {
+					await registry.download.prompt();
+					return true;
 				},
-				"Download",
-				{
-					name: "Upload (WIP)",
-					value: "upload",
-					disabled: true,
-				},
-				new Separator(),
-				"Back",
-			);
-
-			if (answer === "back") {
-				break;
-			}
-
-			if (answer === "download") {
-				await registry.download.prompt();
-			}
-		}
+			},
+			{
+				name: "Upload (WIP)",
+				disabled: true,
+			},
+		);
 	},
 
 	download: {
 		prompt: async () => {
-			while (true) {
-				hub.watermark(true);
-
-				const answer = await game.prompt.customSelect(
-					"Registry Options > Download",
-					[],
-					{
-						arrayTransform: undefined,
-						hideBack: true,
+			await hub.createUILoop(
+				{
+					message: "Registry Options > Download",
+				},
+				{
+					name: "Pack",
+					callback: async () => {
+						await registry.download.pack();
+						return true;
 					},
-					"Pack",
-					{
-						name: "Card (WIP)",
-						value: "card",
-						disabled: true,
-					},
-					new Separator(),
-					"Back",
-				);
-
-				if (answer === "back") {
-					break;
-				}
-
-				if (answer === "pack") {
-					await registry.download.pack();
-				}
-			}
+				},
+				{
+					name: "Card (WIP)",
+					disabled: true,
+				},
+			);
 		},
 
 		pack: async () => {
-			while (true) {
-				hub.watermark(true);
-				console.log("<cyan>?</cyan> <b>Registry Options > Download > Pack</b>");
+			hub.watermark(true);
+			console.log("<cyan>?</cyan> <b>Registry Options > Download > Pack</b>");
 
-				const regbot = new RegBot({
-					baseUrl: game.config.general.registryUrl,
-				});
+			const regbot = new RegBot({
+				baseUrl: game.config.general.registryUrl,
+			});
 
-				// Ask for search query
-				const query = await input({
-					message: "Search query:",
-				});
+			// Ask for search query
+			const query = await input({
+				message: "Search query:",
+			});
 
-				// Search & Display packs
-				const packs = await regbot.searchPacks(query);
-				for (const pack of packs) {
-					console.log(regbot.displayPack(pack));
-				}
-
-				console.log();
-
-				// Prompt the user to select a pack to download
-				const id = await game.prompt.customSelect(
-					"Download",
-					[],
-					{
-						arrayTransform: undefined,
-						hideBack: true,
-					},
-					...packs.map((pack) => ({
-						name: `@${pack.ownerName}/${pack.name}`,
-						value: pack.id,
-						description: regbot.displayPack(pack),
-					})),
-					new Separator(),
-					"Back",
-				);
-
-				if (id === "back") {
-					break;
-				}
-
-				const pack = packs.find((pack) => pack.id === id);
-				if (!pack) {
-					throw new Error("Invalid option.");
-				}
-
-				// Download the pack to the 'packs' folder
-				// TODO: Add progress bar.
-				console.log("Downloading...");
-				await regbot.downloadToPath(
-					pack,
-					game.functions.util.restrictPath("/packs"),
-				);
-
-				const packsInFolder = await getPacks();
-				const packInFolder = packsInFolder.find(
-					(p) => p.ownerName === pack.ownerName && p.name === pack.name,
-				);
-				if (!packInFolder) {
-					throw new Error("Pack not downloaded successfully.");
-				}
-
-				// Prompt the user to import a pack
-				const success = await importPack(packInFolder, { forceDelete: true });
-				if (success) {
-					console.log(
-						"<green>Pack downloaded & imported successfully!</green>",
-					);
-					await game.pause();
-				}
+			// Search & Display packs
+			const packs = await regbot.searchPacks(query);
+			for (const pack of packs) {
+				console.log(regbot.displayPack(pack));
 			}
+
+			console.log();
+
+			// Prompt the user to select a pack to download
+			await hub.createUILoop(
+				{
+					message: "Registry Options > Download > Pack",
+				},
+				...packs.map((pack) => ({
+					name: `@${pack.ownerName}/${pack.name}`,
+					description: regbot.displayPack(pack),
+					callback: async (answer) => {
+						const pack = packs[answer];
+
+						// Download the pack to the 'packs' folder
+						// TODO: Add progress bar.
+						console.log("Downloading...");
+						await regbot.downloadToPath(
+							pack,
+							game.functions.util.restrictPath("/packs"),
+						);
+
+						const packsInFolder = await getPacks();
+						const packInFolder = packsInFolder.find(
+							(p) => p.ownerName === pack.ownerName && p.name === pack.name,
+						);
+						if (!packInFolder) {
+							throw new Error("Pack not downloaded successfully.");
+						}
+
+						// Prompt the user to import a pack
+						const success = await importPack(packInFolder, {
+							forceDelete: true,
+						});
+						if (success) {
+							console.log(
+								"<green>Pack downloaded & imported successfully!</green>",
+							);
+							await game.pause();
+						}
+
+						return false;
+					},
+				})),
+			);
 		},
 	},
 };
 
 export async function main() {
-	while (true) {
-		hub.watermark();
-
-		const answer = await game.prompt.customSelect(
-			"Pack Options",
-			[],
-			{
-				arrayTransform: undefined,
-				hideBack: true,
+	await hub.createUILoop(
+		{
+			message: "Pack Options",
+			backButtonText: import.meta.main ? "Exit" : "Back",
+		},
+		{
+			name: "Export a Pack",
+			callback: async () => {
+				await promptExportPack();
+				return true;
 			},
-			{
-				name: "Export a Pack",
-				value: "export",
+		},
+		{
+			name: "Import a Pack",
+			callback: async () => {
+				await promptImportPack();
+				return true;
 			},
-			{
-				name: "Import a Pack",
-				value: "import",
+		},
+		new Separator(),
+		{
+			name: "Registry",
+			callback: async () => {
+				await registry.prompt();
+				return true;
 			},
-			new Separator(),
-			{
-				name: "Registry",
-				value: "registry",
-			},
-			new Separator(),
-			{
-				name: import.meta.main ? "Exit" : "Back",
-				value: "back",
-			},
-		);
-
-		if (answer === "export") {
-			await promptExportPack();
-		} else if (answer === "import") {
-			await promptImportPack();
-		} else if (answer === "registry") {
-			await registry.prompt();
-		} else if (answer === "back") {
-			break;
-		}
-	}
+		},
+	);
 }
 
 if (import.meta.main) {

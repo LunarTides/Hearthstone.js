@@ -71,145 +71,235 @@ export const watermark = (showCards = true) => {
 	console.log();
 };
 
+const UILoopDefaultOptions = {
+	callbackBefore: watermark as () => Promise<void>,
+	message: "Options" as string,
+	seperatorBeforeBackButton: true as boolean,
+	backButtonText: "Back" as string,
+};
+
+export async function createUILoop(
+	rawOptions: Partial<typeof UILoopDefaultOptions> = UILoopDefaultOptions,
+	...choices: (
+		| Separator
+		| {
+				name: string;
+				description?: string;
+				disabled?: boolean;
+				callback?: (value: number) => Promise<boolean>;
+		  }
+	)[]
+) {
+	const options = {
+		...UILoopDefaultOptions,
+		...rawOptions,
+	};
+
+	while (true) {
+		if (options.callbackBefore) {
+			await options.callbackBefore();
+		}
+
+		const answer = await game.prompt.customSelect(
+			options.message,
+			[],
+			{
+				hideBack: true,
+				arrayTransform: undefined,
+			},
+			...choices.map((choice, i) => ({
+				...choice,
+				value: i.toString(),
+			})),
+			options.seperatorBeforeBackButton && new Separator(),
+			{
+				name: options.backButtonText,
+				value: "back",
+			},
+		);
+
+		if (answer === "back") {
+			break;
+		}
+
+		const parsed = Number.parseInt(answer, 10);
+		const choice = choices[parsed];
+		if (choice instanceof Separator) {
+			throw new Error("Selected a seperator");
+		}
+
+		const result = await choice.callback?.(parsed);
+		if (result === false) {
+			break;
+		}
+	}
+}
+
 /**
  * Asks the user which card creator variant they want to use.
  */
 export async function cardCreator() {
-	while (true) {
-		watermark();
-		const answer = await game.prompt.customSelect("Create a Card", [
-			"Create a Custom Card",
-			"Import a Vanilla Card",
-		]);
+	await createUILoop(
+		{
+			message: "Create a Card",
+		},
+		{
+			name: "Create a Custom Card",
+			callback: async () => {
+				game.interest("Starting Custom Card Creator...");
+				await ccc.main({});
+				game.interest("Starting Custom Card Creator...OK");
 
-		if (answer === "0") {
-			game.interest("Starting Custom Card Creator...");
-			await ccc.main({});
-			game.interest("Starting Custom Card Creator...OK");
-		} else if (answer === "1") {
-			// This is to throw an error if it can't find the vanilla cards
-			await game.functions.card.vanilla.getAll();
+				return true;
+			},
+		},
+		{
+			name: "Create a Vanilla Card",
+			callback: async () => {
+				// This is to throw an error if it can't find the vanilla cards
+				await game.functions.card.vanilla.getAll();
 
-			game.interest("Starting Vanilla Card Creator...");
-			await vcc.main();
-			game.interest("Starting Vanilla Card Creator...OK");
-		} else if (answer === "Back") {
-			break;
-		}
-	}
+				game.interest("Starting Vanilla Card Creator...");
+				await vcc.main();
+				game.interest("Starting Vanilla Card Creator...OK");
+
+				return true;
+			},
+		},
+	);
 }
 
 /**
  * More developer friendly options.
  */
 export async function devmode() {
-	while (true) {
-		watermark();
+	await createUILoop(
+		{
+			message: "Developer Options",
+		},
+		{
+			name: "Create a Card",
+			callback: async () => {
+				game.interest("Loading Card Creator options...");
+				await cardCreator();
+				game.interest("Loading Card Creator options...OK");
 
-		const answer = await game.prompt.customSelect(
-			"Developer Options",
-			[],
-			{
-				hideBack: true,
-				arrayTransform: undefined,
+				return true;
 			},
-			"Create a Card",
-			"Create a Class",
-			new Separator(),
-			"Test Cards",
-			"Crash Test",
-			"Generate Vanilla Cards",
-			new Separator(),
-			"Back",
-		);
+		},
+		{
+			name: "Create a Class",
+			callback: async () => {
+				game.interest("Starting Class Creator...");
+				await clc.main();
+				game.interest("Starting Class Creator...OK");
 
-		if (answer === "create a card") {
-			game.interest("Loading Card Creator options...");
-			await cardCreator();
-			game.interest("Loading Card Creator options...OK");
-		} else if (answer === "create a class") {
-			game.interest("Starting Class Creator...");
-			await clc.main();
-			game.interest("Starting Class Creator...OK");
-		} else if (answer === "test cards") {
-			game.interest("Starting Card Test...");
-			await cardTest.main();
-			game.interest("Starting Card Test...OK");
-		} else if (answer === "crash test") {
-			game.interest("Starting Crash Test...");
-			await crashTest.main();
-			game.interest("Starting Crash Test...OK");
-		} else if (answer === "generate vanilla cards") {
-			if (!game.config.networking.allow.game) {
-				console.error(
-					"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
-				);
-				console.error();
-				await game.pause();
-				continue;
-			}
+				return true;
+			},
+		},
+		new Separator(),
+		{
+			name: "Test Cards",
+			callback: async () => {
+				game.interest("Starting Card Test...");
+				await cardTest.main();
+				game.interest("Starting Card Test...OK");
 
-			const sure = await confirm({
-				message:
-					"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
-				default: false,
-			});
-			if (!sure) {
-				continue;
-			}
+				return true;
+			},
+		},
+		{
+			name: "Test Crash",
+			callback: async () => {
+				game.interest("Starting Crash Test...");
+				await crashTest.main();
+				game.interest("Starting Crash Test...OK");
 
-			game.interest("Generating vanilla cards...");
-			await generateVanilla.main();
-			game.interest("Generating vanilla cards...OK");
-		} else if (answer === "back") {
-			break;
-		}
-	}
+				return true;
+			},
+		},
+		{
+			name: "Generate Vanilla Cards",
+			callback: async () => {
+				// TODO: Move this to the tool.
+				if (!game.config.networking.allow.game) {
+					console.error(
+						"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+					);
+					console.error();
+					await game.pause();
+					return true;
+				}
+
+				const sure = await confirm({
+					message:
+						"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
+					default: false,
+				});
+				if (!sure) {
+					return true;
+				}
+
+				game.interest("Generating vanilla cards...");
+				await generateVanilla.main();
+				game.interest("Generating vanilla cards...OK");
+
+				return true;
+			},
+		},
+	);
 }
 
 export async function main() {
-	while (true) {
-		watermark();
+	await createUILoop(
+		{
+			message: "Options",
+			backButtonText: "Exit",
+		},
+		{
+			name: "Play",
+			callback: async () => {
+				game.interest("Starting Game...");
+				await src.main();
 
-		const answer = await game.prompt.customSelect(
-			"Options",
-			[],
-			{
-				hideBack: true,
-				arrayTransform: undefined,
+				/*
+				 * This line will never be seen in the log file, since the log file gets generated before this line.
+				 * All the other similar lines are fine, since only the game generates log files for now.
+				 */
+				game.interest("Starting Game...OK");
+				return true;
 			},
-			"Play",
-			"Create a Deck",
-			new Separator(),
-			"Pack Options",
-			"Developer Options",
-			new Separator(),
-			"Exit",
-		);
+		},
+		{
+			name: "Create a Deck",
+			callback: async () => {
+				game.interest("Starting Deck Creator...");
+				await dc.main();
+				game.interest("Starting Deck Creator...OK");
 
-		if (answer === "play") {
-			game.interest("Starting Game...");
-			await src.main();
+				return true;
+			},
+		},
+		new Separator(),
+		{
+			name: "Pack Options",
+			callback: async () => {
+				game.interest("Starting Packager...");
+				await pkgr.main();
+				game.interest("Starting Packager...OK");
 
-			/*
-			 * This line will never be seen in the log file, since the log file gets generated before this line.
-			 * All the other similar lines are fine, since only the game generates log files for now.
-			 */
-			game.interest("Starting Game...OK");
-		} else if (answer === "create a deck") {
-			game.interest("Starting Deck Creator...");
-			await dc.main();
-			game.interest("Starting Deck Creator...OK");
-		} else if (answer === "pack options") {
-			game.interest("Starting Packager...");
-			await pkgr.main();
-			game.interest("Starting Packager...OK");
-		} else if (answer === "developer options") {
-			game.interest("Loading Developer Mode options...");
-			await devmode();
-			game.interest("Loading Developer Mode options...OK");
-		} else if (answer === "exit") {
-			break;
-		}
-	}
+				return true;
+			},
+		},
+		{
+			name: "Developer Options",
+			callback: async () => {
+				game.interest("Loading Developer Mode options...");
+				await devmode();
+				game.interest("Loading Developer Mode options...OK");
+
+				return true;
+			},
+		},
+	);
 }
