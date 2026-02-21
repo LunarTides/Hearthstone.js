@@ -8,7 +8,7 @@ import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
 import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
-import * as pkgr from "./tools/packager.ts"; // Packager
+import * as pkgr from "./tools/pack/packager.ts"; // Packager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
@@ -37,14 +37,14 @@ export const watermark = (showCards = true) => {
 
 	console.log(
 		`
- /$$   /$$  /$$$$$$        /$$$$$  /$$$$$$ 
+ /$$   /$$  /$$$$$$        /$$$$$  /$$$$$$
 | $$  | $$ /$$__  $$      |__  $$ /$$__  $$
 | $$  | $$| $$  \\__/         | $$| $$  \\__/
-| $$$$$$$$|  $$$$$$          | $$|  $$$$$$ 
+| $$$$$$$$|  $$$$$$          | $$|  $$$$$$
 | $$__  $$ \\____  $$    /$$  | $$ \\____  $$
 | $$  | $$ /$$  \\ $$   | $$  | $$ /$$  \\ $$
 | $$  | $$|  $$$$$$//$$|  $$$$$$/|  $$$$$$/
-|__/  |__/ \\______/|__/ \\______/  \\______/ 
+|__/  |__/ \\______/|__/ \\______/  \\______/
     `.replace("\n", ""), // Remove the first newline in order to improve formatting in source code.
 	);
 

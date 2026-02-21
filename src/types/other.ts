@@ -143,6 +143,7 @@ export type GameConfig = {
 		maxHandLength: number;
 		disableEvents: boolean;
 		disableFunFacts: boolean;
+		registryUrl: string;
 	};
 
 	decks: {

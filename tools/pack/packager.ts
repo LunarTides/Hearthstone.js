@@ -11,6 +11,7 @@ import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
 import { validate } from "tools/id/lib";
+import { RegBot } from "./regbot";
 
 const { game } = await createGame();
 
@@ -624,6 +625,69 @@ async function configureMetadata(metadata: Metadata) {
 	}
 }
 
+async function registryExperiment() {
+	// Ensure networking permissions
+	if (!game.config.networking.allow.game) {
+		console.error(
+			"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+		);
+		await game.pause();
+		return;
+	}
+
+	const regbot = new RegBot({
+		baseUrl: game.config.general.registryUrl,
+	});
+
+	// Ask for search query
+	const query = await input({
+		message: "Search query:",
+	});
+
+	// Search & Display packs
+	const packs = await regbot.searchPacks(query);
+	for (const pack of packs) {
+		console.log(regbot.displayPack(pack));
+	}
+
+	console.log();
+
+	// Prompt the user to select a pack to download
+	const id = await game.prompt.customSelect(
+		"Download",
+		[],
+		{
+			arrayTransform: undefined,
+			hideBack: true,
+		},
+		...packs.map((pack) => ({
+			name: `@${pack.ownerName}/${pack.name}`,
+			value: pack.id,
+			description: regbot.displayPack(pack),
+		})),
+		new Separator(),
+		{
+			name: "Back",
+			value: "back",
+		},
+	);
+
+	if (id === "back") {
+		return;
+	}
+
+	const pack = packs.find((pack) => pack.id === id);
+	if (!pack) {
+		throw new Error("Invalid option.");
+	}
+
+	// Download the pack to the 'packs' folder
+	await regbot.downloadToPath(pack, game.functions.util.restrictPath("/packs"));
+
+	// Prompt the user to import a pack
+	await importPack();
+}
+
 export async function main() {
 	while (true) {
 		hub.watermark();
@@ -645,6 +709,11 @@ export async function main() {
 			},
 			new Separator(),
 			{
+				name: "Registry (Experimental)",
+				value: "registry_experiment",
+			},
+			new Separator(),
+			{
 				name: import.meta.main ? "Exit" : "Back",
 				value: "back",
 			},
@@ -654,6 +723,8 @@ export async function main() {
 			await exportPack();
 		} else if (answer === "import") {
 			await importPack();
+		} else if (answer === "registry_experiment") {
+			await registryExperiment();
 		} else if (answer === "back") {
 			break;
 		}

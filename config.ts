@@ -33,6 +33,10 @@ export const config: GameConfig = {
 		// If you are the type of person to set `disableEvents` to `true` (see above) or if you have already seen all the fun facts,
 		// you can set this to `true` to disable fun facts. You monster...
 		disableFunFacts: false,
+
+		// The url to the registry. This is so that it can use the registry's API.
+		// Leave this as-is unless you have a reason to change it.
+		registryUrl: "https://hs.lunartides.dev/registry",
 	},
 
 	decks: {

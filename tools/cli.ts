@@ -6,7 +6,7 @@ import * as ccc from "./cardcreator/custom.ts"; // Custom Card Creator
 import * as vcc from "./cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./deckcreator.ts"; // Deck Creator
 
-//import * as pkgr from "./packager.ts"; // Packager
+//import * as pkgr from "./pack/packager.ts"; // Packager
 //import * as cardTest from "./test/cards.ts"; // Card Test
 //import * as crashTest from "./test/crash.ts"; // Crash Test
 //import * as generateVanilla from "./vanilla/generate.ts";

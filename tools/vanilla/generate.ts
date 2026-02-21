@@ -17,6 +17,7 @@ if (import.meta.main) {
 }
 
 // Function to fetch data from the API
+// TODO: Use Axios
 function fetchData(url: string): Promise<any> {
 	return new Promise((resolve, reject) => {
 		https
