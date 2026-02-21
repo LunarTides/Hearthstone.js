@@ -116,8 +116,6 @@ export async function devmode() {
 			"Create a Card",
 			"Create a Class",
 			new Separator(),
-			"Start Packager",
-			new Separator(),
 			"Test Cards",
 			"Crash Test",
 			"Generate Vanilla Cards",
@@ -133,10 +131,6 @@ export async function devmode() {
 			game.interest("Starting Class Creator...");
 			await clc.main();
 			game.interest("Starting Class Creator...OK");
-		} else if (answer === "start packager") {
-			game.interest("Starting Packager...");
-			await pkgr.main();
-			game.interest("Starting Packager...OK");
 		} else if (answer === "test cards") {
 			game.interest("Starting Card Test...");
 			await cardTest.main();
@@ -186,6 +180,8 @@ export async function main() {
 			},
 			"Play",
 			"Create a Deck",
+			new Separator(),
+			"Pack Options",
 			"Developer Options",
 			new Separator(),
 			"Exit",
@@ -204,6 +200,10 @@ export async function main() {
 			game.interest("Starting Deck Creator...");
 			await dc.main();
 			game.interest("Starting Deck Creator...OK");
+		} else if (answer === "pack options") {
+			game.interest("Starting Packager...");
+			await pkgr.main();
+			game.interest("Starting Packager...OK");
 		} else if (answer === "developer options") {
 			game.interest("Loading Developer Mode options...");
 			await devmode();

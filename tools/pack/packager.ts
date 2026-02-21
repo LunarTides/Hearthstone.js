@@ -3,7 +3,7 @@
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
-import type { Metadata } from "@Game/types/pack";
+import type { Metadata, PackValidationResult } from "@Game/types/pack";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
 import { confirm, input, Separator } from "@inquirer/prompts";
@@ -135,7 +135,78 @@ async function parseMetadataFile(pack: string) {
 	return metadata;
 }
 
-async function importPack() {
+async function importPack(
+	pack: Awaited<ReturnType<typeof getPacks>>[0],
+	options: { forceDelete: boolean } = { forceDelete: false },
+) {
+	if (pack.compressed) {
+		const archive = new Bun.Archive(pack.bytes);
+		const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
+		await game.functions.util.fs("mkdir", folderPath);
+		await archive.extract(folderPath);
+		await game.functions.util.fs("rm", pack.path);
+
+		pack.path = folderPath;
+		pack.compressed = false;
+	}
+
+	// Read and validate metadata.
+	const metadata = await parseMetadataFile(`${pack.ownerName}+${pack.name}`);
+	if (!metadata) {
+		return false;
+	}
+
+	if (Object.values(metadata.permissions).some(Boolean)) {
+		console.warn(
+			`<yellow>This pack requires the following permissions: ${getPermissions(metadata).join(", ")}`,
+		);
+
+		const permissionConfirm = await confirm({
+			message: parseTags(
+				`<yellow>Are you sure you want to import this pack? This will grant the pack access to those resources.</yellow>`,
+			),
+			default: false,
+		});
+		if (!permissionConfirm) {
+			return false;
+		}
+	}
+
+	await game.functions.util.fs(
+		"cp",
+		pack.path,
+		game.functions.util.restrictPath(`/cards/@${pack.ownerName}/${pack.name}`),
+		{ recursive: true },
+	);
+
+	await validate(false, false);
+	await game.functions.card.generateIdsFile();
+
+	console.log(
+		`<green>The pack has been imported into '/cards/@${pack.ownerName}/${pack.name}'.</green>\n`,
+	);
+
+	if (options.forceDelete) {
+		await game.functions.util.fs("rm", pack.path, {
+			recursive: true,
+			force: true,
+		});
+	} else {
+		const deleteConfirm = await confirm({
+			message: `Do you want to delete '/packs/${pack.ownerName}+${pack.name}'?`,
+		});
+		if (deleteConfirm) {
+			await game.functions.util.fs("rm", pack.path, {
+				recursive: true,
+				force: true,
+			});
+		}
+	}
+
+	return true;
+}
+
+async function promptImportPack() {
 	while (true) {
 		hub.watermark(false);
 
@@ -166,68 +237,11 @@ async function importPack() {
 		const index = parseInt(answer, 10);
 		const pack = packs[index];
 
-		if (pack.compressed) {
-			const archive = new Bun.Archive(pack.bytes);
-			const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
-			await game.functions.util.fs("mkdir", folderPath);
-			await archive.extract(folderPath);
-			await game.functions.util.fs("rm", pack.path);
-
-			pack.path = folderPath;
-			pack.compressed = false;
-		}
-
-		// Read and validate metadata.
-		const metadata = await parseMetadataFile(`${pack.ownerName}+${pack.name}`);
-		if (!metadata) {
-			continue;
-		}
-
-		if (Object.values(metadata.permissions).some(Boolean)) {
-			console.warn(
-				`<yellow>This pack requires the following permissions: ${getPermissions(metadata).join(", ")}`,
-			);
-
-			const permissionConfirm = await confirm({
-				message: parseTags(
-					`<yellow>Are you sure you want to import this pack? This will grant the pack access to those resources.</yellow>`,
-				),
-				default: false,
-			});
-			if (!permissionConfirm) {
-				continue;
-			}
-		}
-
-		await game.functions.util.fs(
-			"cp",
-			pack.path,
-			game.functions.util.restrictPath(
-				`/cards/@${pack.ownerName}/${pack.name}`,
-			),
-			{ recursive: true },
-		);
-
-		await validate(false, false);
-		await game.functions.card.generateIdsFile();
-
-		console.log(
-			`<green>The pack has been imported into '/cards/@${pack.ownerName}/${pack.name}'.</green>\n`,
-		);
-
-		const deleteConfirm = await confirm({
-			message: `Do you want to delete '/packs/${pack.ownerName}+${pack.name}'?`,
-		});
-		if (deleteConfirm) {
-			await game.functions.util.fs("rm", pack.path, {
-				recursive: true,
-				force: true,
-			});
-		}
+		await importPack(pack);
 	}
 }
 
-async function exportPack() {
+async function promptExportPack() {
 	while (true) {
 		hub.watermark(false);
 		dirty = false;
@@ -625,75 +639,162 @@ async function configureMetadata(metadata: Metadata) {
 	}
 }
 
-async function registryExperiment() {
-	// Ensure networking permissions
-	if (!game.config.networking.allow.game) {
-		console.error(
-			"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
-		);
-		await game.pause();
-		return;
-	}
+const registry = {
+	prompt: async () => {
+		// Ensure networking permissions
+		if (!game.config.networking.allow.game) {
+			console.error(
+				"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+			);
+			await game.pause();
+			return;
+		}
 
-	const regbot = new RegBot({
-		baseUrl: game.config.general.registryUrl,
-	});
+		while (true) {
+			hub.watermark(true);
 
-	// Ask for search query
-	const query = await input({
-		message: "Search query:",
-	});
+			const answer = await game.prompt.customSelect(
+				"Registry Options",
+				[],
+				{
+					arrayTransform: undefined,
+					hideBack: true,
+				},
+				"Download",
+				{
+					name: "Upload (WIP)",
+					value: "upload",
+					disabled: true,
+				},
+				new Separator(),
+				"Back",
+			);
 
-	// Search & Display packs
-	const packs = await regbot.searchPacks(query);
-	for (const pack of packs) {
-		console.log(regbot.displayPack(pack));
-	}
+			if (answer === "back") {
+				break;
+			}
 
-	console.log();
+			if (answer === "download") {
+				await registry.download.prompt();
+			}
+		}
+	},
 
-	// Prompt the user to select a pack to download
-	const id = await game.prompt.customSelect(
-		"Download",
-		[],
-		{
-			arrayTransform: undefined,
-			hideBack: true,
+	download: {
+		prompt: async () => {
+			while (true) {
+				hub.watermark(true);
+
+				const answer = await game.prompt.customSelect(
+					"Registry Options > Download",
+					[],
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
+					"Pack",
+					{
+						name: "Card (WIP)",
+						value: "card",
+						disabled: true,
+					},
+					new Separator(),
+					"Back",
+				);
+
+				if (answer === "back") {
+					break;
+				}
+
+				if (answer === "pack") {
+					await registry.download.pack();
+				}
+			}
 		},
-		...packs.map((pack) => ({
-			name: `@${pack.ownerName}/${pack.name}`,
-			value: pack.id,
-			description: regbot.displayPack(pack),
-		})),
-		new Separator(),
-		{
-			name: "Back",
-			value: "back",
+
+		pack: async () => {
+			while (true) {
+				hub.watermark(true);
+				console.log("<cyan>?</cyan> <b>Registry Options > Download > Pack</b>");
+
+				const regbot = new RegBot({
+					baseUrl: game.config.general.registryUrl,
+				});
+
+				// Ask for search query
+				const query = await input({
+					message: "Search query:",
+				});
+
+				// Search & Display packs
+				const packs = await regbot.searchPacks(query);
+				for (const pack of packs) {
+					console.log(regbot.displayPack(pack));
+				}
+
+				console.log();
+
+				// Prompt the user to select a pack to download
+				const id = await game.prompt.customSelect(
+					"Download",
+					[],
+					{
+						arrayTransform: undefined,
+						hideBack: true,
+					},
+					...packs.map((pack) => ({
+						name: `@${pack.ownerName}/${pack.name}`,
+						value: pack.id,
+						description: regbot.displayPack(pack),
+					})),
+					new Separator(),
+					"Back",
+				);
+
+				if (id === "back") {
+					break;
+				}
+
+				const pack = packs.find((pack) => pack.id === id);
+				if (!pack) {
+					throw new Error("Invalid option.");
+				}
+
+				// Download the pack to the 'packs' folder
+				// TODO: Add progress bar.
+				console.log("Downloading...");
+				await regbot.downloadToPath(
+					pack,
+					game.functions.util.restrictPath("/packs"),
+				);
+
+				const packsInFolder = await getPacks();
+				const packInFolder = packsInFolder.find(
+					(p) => p.ownerName === pack.ownerName && p.name === pack.name,
+				);
+				if (!packInFolder) {
+					throw new Error("Pack not downloaded successfully.");
+				}
+
+				// Prompt the user to import a pack
+				const success = await importPack(packInFolder, { forceDelete: true });
+				if (success) {
+					console.log(
+						"<green>Pack downloaded & imported successfully!</green>",
+					);
+					await game.pause();
+				}
+			}
 		},
-	);
-
-	if (id === "back") {
-		return;
-	}
-
-	const pack = packs.find((pack) => pack.id === id);
-	if (!pack) {
-		throw new Error("Invalid option.");
-	}
-
-	// Download the pack to the 'packs' folder
-	await regbot.downloadToPath(pack, game.functions.util.restrictPath("/packs"));
-
-	// Prompt the user to import a pack
-	await importPack();
-}
+	},
+};
 
 export async function main() {
 	while (true) {
 		hub.watermark();
 
 		const answer = await game.prompt.customSelect(
-			"Packager Options",
+			"Pack Options",
 			[],
 			{
 				arrayTransform: undefined,
@@ -709,8 +810,8 @@ export async function main() {
 			},
 			new Separator(),
 			{
-				name: "Registry (Experimental)",
-				value: "registry_experiment",
+				name: "Registry",
+				value: "registry",
 			},
 			new Separator(),
 			{
@@ -720,11 +821,11 @@ export async function main() {
 		);
 
 		if (answer === "export") {
-			await exportPack();
+			await promptExportPack();
 		} else if (answer === "import") {
-			await importPack();
-		} else if (answer === "registry_experiment") {
-			await registryExperiment();
+			await promptImportPack();
+		} else if (answer === "registry") {
+			await registry.prompt();
 		} else if (answer === "back") {
 			break;
 		}
