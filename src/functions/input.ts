@@ -103,10 +103,13 @@ export default createPrompt<string, InputConfig>((config, done) => {
 				setError(isValid);
 				setStatus("idle");
 			}
-		} else if (isBackspaceKey(key) && !value) {
+		} else if (isBackspaceKey(key)) {
 			game.functions.audio.playSFX("backspace");
+			setValue(rl.line);
 
-			setDefaultValue("");
+			if (!value) {
+				setDefaultValue("");
+			}
 		} else if (isTabKey(key) && !value) {
 			if (defaultValue) {
 				game.functions.audio.playSFX("tab");

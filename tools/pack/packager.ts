@@ -418,6 +418,8 @@ async function promptExportPack() {
 }
 
 async function configureMetadata(metadata: Metadata) {
+	let success = true;
+
 	await hub.createUILoop(
 		{
 			message: "Configure Metadata",
@@ -608,6 +610,7 @@ async function configureMetadata(metadata: Metadata) {
 				if (!dirty) {
 					// No changes have been made.
 					hub.playBack();
+					success = false;
 					return false;
 				}
 
@@ -621,6 +624,7 @@ async function configureMetadata(metadata: Metadata) {
 
 				if (done) {
 					hub.playBack();
+					success = false;
 					return false;
 				}
 
@@ -672,6 +676,8 @@ async function configureMetadata(metadata: Metadata) {
 			},
 		},
 	);
+
+	return success;
 }
 
 const registry = {

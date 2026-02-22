@@ -417,7 +417,7 @@ const prompt = {
 				callback: async () => {
 					if (!allowNew) {
 						game.functions.audio.playSFX("error");
-						return;
+						return true;
 					}
 
 					game.functions.audio.playSFX("delve");

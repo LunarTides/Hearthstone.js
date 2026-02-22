@@ -706,7 +706,13 @@ export const audioFunctions = {
 
 		this.close();
 
-		playback = sdl.audio.openDevice({ type: "playback" });
+		try {
+			playback = sdl.audio.openDevice({ type: "playback" });
+		} catch {
+			// No audio device. It's fine...
+			game.interest("Opening audio device failed.");
+			return;
+		}
 
 		channels = playback.channels;
 		frequency = playback.frequency;
