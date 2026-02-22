@@ -155,7 +155,10 @@ export type GameConfig = {
 	};
 
 	audio: {
-		disable: boolean;
+		enable: {
+			all: boolean;
+			sfx: boolean;
+		};
 	};
 
 	networking: {

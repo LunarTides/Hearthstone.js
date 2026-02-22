@@ -50,6 +50,8 @@ export const helpDebugColumns = [
 
 export const commands: CommandList = {
 	async end(): Promise<boolean> {
+		game.functions.audio.playSFX("endTurn");
+
 		await game.endTurn();
 		return true;
 	},

@@ -1,17 +1,17 @@
 import {
 	createPrompt,
-	useState,
-	useKeypress,
-	useEffect,
-	usePrefix,
 	isBackspaceKey,
+	isDownKey,
 	isEnterKey,
 	isTabKey,
-	makeTheme,
-	type Theme,
-	type Status,
 	isUpKey,
-	isDownKey,
+	makeTheme,
+	type Status,
+	type Theme,
+	useEffect,
+	useKeypress,
+	usePrefix,
+	useState,
 } from "@inquirer/core";
 import type { PartialDeep } from "@inquirer/type";
 
@@ -81,7 +81,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 
 			const isValid = await validate(answer);
 			if (isValid === true) {
-				game.functions.audio.playSine(880, 10);
+				game.functions.audio.playSFX("enter");
 
 				setValue(answer);
 				setStatus("done");
@@ -91,6 +91,8 @@ export default createPrompt<string, InputConfig>((config, done) => {
 					history.push(answer);
 				}
 			} else {
+				game.functions.audio.playSFX("error");
+
 				if (theme.validationFailureMode === "clear") {
 					setValue("");
 				} else {
@@ -102,18 +104,14 @@ export default createPrompt<string, InputConfig>((config, done) => {
 				setStatus("idle");
 			}
 		} else if (isBackspaceKey(key) && !value) {
-			game.functions.audio.playSine(220 + game.lodash.random(-50, 50), 10);
+			game.functions.audio.playSFX("backspace");
 
 			setDefaultValue("");
 		} else if (isTabKey(key) && !value) {
 			if (defaultValue) {
-				game.functions.audio.playSine(440, 10);
-				game.functions.audio.wait(10);
-				game.functions.audio.playSine(500, 10);
-				game.functions.audio.wait(10);
-				game.functions.audio.playSine(550, 10);
+				game.functions.audio.playSFX("tab");
 			} else {
-				game.functions.audio.playSine(440, 10);
+				game.functions.audio.playSFX("type");
 			}
 
 			setDefaultValue("");
@@ -128,19 +126,29 @@ export default createPrompt<string, InputConfig>((config, done) => {
 				setHistoryIndex(historyIndex - 1);
 			}
 
-			const value = history.at(historyIndex);
-			setValue(value ?? "");
+			const entry = history.at(historyIndex);
+
+			// Remove the existing line.
+			rl.clearLine(0);
+
+			rl.write(entry ?? "");
+			setValue(entry ?? "");
 			setError(undefined);
 		} else if (isDownKey(key)) {
 			if (historyIndex !== -1) {
 				setHistoryIndex(historyIndex + 1);
 			}
 
-			const value = history.at(historyIndex);
-			setValue(value ?? "");
+			const entry = history.at(historyIndex);
+
+			// Remove the existing line.
+			rl.clearLine(0);
+
+			rl.write(entry ?? "");
+			setValue(entry ?? "");
 			setError(undefined);
 		} else {
-			game.functions.audio.playSine(440 + game.lodash.random(-50, 50), 10);
+			game.functions.audio.playSFX("type");
 
 			setValue(rl.line);
 			setError(undefined);
@@ -169,7 +177,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 		formattedValue = theme.style.answer(value);
 	}
 
-	let defaultStr;
+	let defaultStr: string | undefined;
 	if (defaultValue && status !== "done" && !value) {
 		defaultStr = theme.style.defaultAnswer(defaultValue);
 	}

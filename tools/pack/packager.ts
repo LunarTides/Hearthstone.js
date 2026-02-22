@@ -6,7 +6,7 @@ import { createGame } from "@Game/game.ts";
 import type { Metadata } from "@Game/types/pack";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
-import { confirm, input, Separator } from "@inquirer/prompts";
+import { confirm, Separator } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";

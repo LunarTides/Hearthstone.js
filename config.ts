@@ -66,8 +66,13 @@ export const config: GameConfig = {
 	},
 
 	audio: {
-		// Globally disable playing audio.
-		disable: false,
+		enable: {
+			// Globally enable playing audio.
+			all: true,
+
+			// Enable playing sound effects.
+			sfx: true,
+		},
 	},
 
 	networking: {
@@ -76,7 +81,7 @@ export const config: GameConfig = {
 			 * Allow the game to perform networking requests.
 			 * If this is true, it will still prompt you before making any requests.
 			 */
-			game: true,
+			game: false,
 
 			/*
 			 * Allow packs to perform networking requests.

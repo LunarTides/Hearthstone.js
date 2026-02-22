@@ -12,7 +12,7 @@ import {
 	Tribe,
 	Type,
 } from "@Game/types.ts";
-import { confirm, input, Separator } from "@inquirer/prompts";
+import { confirm, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";

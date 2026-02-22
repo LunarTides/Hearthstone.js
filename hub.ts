@@ -2,6 +2,7 @@
  * The entry point of the program. Acts like a hub between the tools and the game.
  */
 import { Card } from "@Game/card.ts";
+import { UILoopDefaultOptions } from "@Game/functions/interact.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
@@ -12,7 +13,6 @@ import * as pkgr from "./tools/pack/packager.ts"; // Packager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
-import { octave } from "@Game/functions/audio.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -72,13 +72,6 @@ export const watermark = (showCards = true) => {
 	console.log();
 };
 
-const UILoopDefaultOptions = {
-	callbackBefore: watermark as () => Promise<void>,
-	message: "Options" as string,
-	seperatorBeforeBackButton: true as boolean,
-	backButtonText: "Back" as string,
-};
-
 export async function createUILoop(
 	rawOptions: Partial<typeof UILoopDefaultOptions> = UILoopDefaultOptions,
 	...choices: (
@@ -92,84 +85,29 @@ export async function createUILoop(
 		  }
 	)[]
 ) {
-	const options = {
-		...UILoopDefaultOptions,
-		...rawOptions,
-	};
-
-	while (true) {
-		if (options.callbackBefore) {
-			await options.callbackBefore();
-		}
-
-		// Find an existing back option.
-		const backOption = choices.find(
-			(choice) =>
-				!(choice instanceof Separator) &&
-				choice.name === options.backButtonText,
-		);
-
-		const answer = await game.prompt.customSelect(
-			options.message,
-			[],
-			{
-				hideBack: true,
-				arrayTransform: undefined,
-			},
-			...choices.map((choice, i) => ({
-				...choice,
-				value: i.toString(),
-			})),
-			options.seperatorBeforeBackButton && new Separator(),
-			!backOption && {
-				name: options.backButtonText,
-				value: "back",
-			},
-		);
-
-		const choseBack = answer === "back";
-		if (choseBack && !backOption) {
-			playBack();
-			break;
-		}
-
-		const parsed = Number.parseInt(answer, 10);
-		const choice = choices[parsed];
-		if (choice instanceof Separator) {
-			throw new Error("Selected a seperator");
-		}
-
-		if (choice.defaultSound !== false) {
-			if (choseBack) {
-				playBack();
-			} else {
-				playDelve();
-			}
-		}
-
-		const result = await choice.callback?.(parsed);
-		if (result === false) {
-			break;
-		}
-	}
+	return await game.prompt.createUILoop(
+		{
+			callbackBefore: async () => watermark(true),
+			...rawOptions,
+		},
+		...choices,
+	);
 }
 
 export async function playDelve() {
-	game.functions.audio.playSine(440, 50);
+	game.functions.audio.playSFX("delve");
 }
 
 export async function playBack() {
-	game.functions.audio.playSine(220, 50);
+	await game.functions.audio.playSFX("back");
 }
 
 export async function playLeaveUILoop() {
-	await game.functions.audio.playSlidingSine(880, 440, 100);
+	await game.functions.audio.playSFX("leaveUILoop");
 }
 
-// TODO: Use this somewhere.
 export async function playCool() {
-	game.functions.audio.playSine(440, 50);
-	await game.functions.audio.playSlidingSine(880, 440, 100);
+	await game.functions.audio.playSFX("cool");
 }
 
 /**

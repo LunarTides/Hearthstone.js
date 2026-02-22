@@ -8,7 +8,7 @@ import {
 	Rune,
 } from "@Game/types.ts";
 import util from "node:util";
-import { input, Separator, search } from "@inquirer/prompts";
+import { Separator, search } from "@inquirer/prompts";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import * as hub from "../hub.ts";
 

@@ -1,6 +1,6 @@
 import { createGame } from "@Game/game.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
-import { confirm, input, number, Separator } from "@inquirer/prompts";
+import { confirm, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
