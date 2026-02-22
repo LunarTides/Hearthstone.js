@@ -9,6 +9,7 @@ import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { LayoutRouteId, LayoutServerParentData, RouteId } from "./$types.js";
 import type { CensoredPack } from "$lib/pack.js";
+import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
 const getCards = async (
 	event: ServerLoadEvent<LayoutParams<RouteId>, LayoutServerParentData, LayoutRouteId>,
@@ -31,6 +32,7 @@ const getCards = async (
 };
 
 export const load = async (event) => {
+	const clientUser = event.locals.user;
 	const { username, packName, version } = event.params;
 
 	// TODO: Stream like in `routes/+layout.server.ts`.
@@ -53,8 +55,7 @@ export const load = async (event) => {
 	}
 
 	const formattedPacks = Promise.resolve({ current: pack, latest, all });
-	// TODO: Account for groups.
-	const canEditPack = pack.ownerName === event.locals.user?.username;
+	const canEditPack = await isUserMemberOfGroup(clientUser, clientUser?.username, pack.ownerName);
 
 	const fileResponse = await requestAPI<FileTree[]>(
 		event,

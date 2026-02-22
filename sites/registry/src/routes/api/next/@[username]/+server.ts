@@ -105,7 +105,7 @@ export async function PUT(event) {
 		const pronouns = userForm.data.pronouns;
 		const role = userForm.data.role;
 
-		let newRole = userForm.role;
+		let newRole = userForm.data.role;
 
 		// Only allow admins and up to change the role of users.
 		if (role && satisfiesRole(clientUser, "Admin")) {
