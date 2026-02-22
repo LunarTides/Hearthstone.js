@@ -310,7 +310,7 @@ export async function main(): Promise<void> {
 			}
 
 			if (["import", "eval"].includes(command)) {
-				const args = await input({
+				const args = await game.input({
 					message: command,
 				});
 

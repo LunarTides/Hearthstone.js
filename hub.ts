@@ -12,6 +12,7 @@ import * as pkgr from "./tools/pack/packager.ts"; // Packager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
+import { octave } from "@Game/functions/audio.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.functions.info.versionString(4);
@@ -86,6 +87,7 @@ export async function createUILoop(
 				name: string;
 				description?: string;
 				disabled?: boolean;
+				defaultSound?: boolean;
 				callback?: (value: number) => Promise<boolean>;
 		  }
 	)[]
@@ -100,6 +102,13 @@ export async function createUILoop(
 			await options.callbackBefore();
 		}
 
+		// Find an existing back option.
+		const backOption = choices.find(
+			(choice) =>
+				!(choice instanceof Separator) &&
+				choice.name === options.backButtonText,
+		);
+
 		const answer = await game.prompt.customSelect(
 			options.message,
 			[],
@@ -112,13 +121,15 @@ export async function createUILoop(
 				value: i.toString(),
 			})),
 			options.seperatorBeforeBackButton && new Separator(),
-			{
+			!backOption && {
 				name: options.backButtonText,
 				value: "back",
 			},
 		);
 
-		if (answer === "back") {
+		const choseBack = answer === "back";
+		if (choseBack && !backOption) {
+			playBack();
 			break;
 		}
 
@@ -128,11 +139,37 @@ export async function createUILoop(
 			throw new Error("Selected a seperator");
 		}
 
+		if (choice.defaultSound !== false) {
+			if (choseBack) {
+				playBack();
+			} else {
+				playDelve();
+			}
+		}
+
 		const result = await choice.callback?.(parsed);
 		if (result === false) {
 			break;
 		}
 	}
+}
+
+export async function playDelve() {
+	game.functions.audio.playSine(440, 50);
+}
+
+export async function playBack() {
+	game.functions.audio.playSine(220, 50);
+}
+
+export async function playLeaveUILoop() {
+	await game.functions.audio.playSlidingSine(880, 440, 100);
+}
+
+// TODO: Use this somewhere.
+export async function playCool() {
+	game.functions.audio.playSine(440, 50);
+	await game.functions.audio.playSlidingSine(880, 440, 100);
 }
 
 /**
@@ -145,7 +182,10 @@ export async function cardCreator() {
 		},
 		{
 			name: "Create a Custom Card",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Custom Card Creator...");
 				await ccc.main({});
 				game.interest("Starting Custom Card Creator...OK");
@@ -155,9 +195,11 @@ export async function cardCreator() {
 		},
 		{
 			name: "Create a Vanilla Card",
+			defaultSound: false,
 			callback: async () => {
 				// This is to throw an error if it can't find the vanilla cards
 				await game.functions.card.vanilla.getAll();
+				playLeaveUILoop();
 
 				game.interest("Starting Vanilla Card Creator...");
 				await vcc.main();
@@ -189,7 +231,10 @@ export async function devmode() {
 		},
 		{
 			name: "Create a Class",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Class Creator...");
 				await clc.main();
 				game.interest("Starting Class Creator...OK");
@@ -200,7 +245,10 @@ export async function devmode() {
 		new Separator(),
 		{
 			name: "Test Cards",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Card Test...");
 				await cardTest.main();
 				game.interest("Starting Card Test...OK");
@@ -210,7 +258,10 @@ export async function devmode() {
 		},
 		{
 			name: "Test Crash",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Crash Test...");
 				await crashTest.main();
 				game.interest("Starting Crash Test...OK");
@@ -240,6 +291,8 @@ export async function devmode() {
 					return true;
 				}
 
+				playLeaveUILoop();
+
 				game.interest("Generating vanilla cards...");
 				await generateVanilla.main();
 				game.interest("Generating vanilla cards...OK");
@@ -258,7 +311,10 @@ export async function main() {
 		},
 		{
 			name: "Play",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Game...");
 				await src.main();
 
@@ -272,7 +328,10 @@ export async function main() {
 		},
 		{
 			name: "Create a Deck",
+			defaultSound: false,
 			callback: async () => {
+				playLeaveUILoop();
+
 				game.interest("Starting Deck Creator...");
 				await dc.main();
 				game.interest("Starting Deck Creator...OK");

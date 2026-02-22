@@ -65,13 +65,18 @@ export const config: GameConfig = {
 		maxOfOneLegendary: 1,
 	},
 
+	audio: {
+		// Globally disable playing audio.
+		disable: false,
+	},
+
 	networking: {
 		allow: {
 			/*
 			 * Allow the game to perform networking requests.
 			 * If this is true, it will still prompt you before making any requests.
 			 */
-			game: false,
+			game: true,
 
 			/*
 			 * Allow packs to perform networking requests.

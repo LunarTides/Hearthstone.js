@@ -154,6 +154,10 @@ export type GameConfig = {
 		maxOfOneLegendary: number;
 	};
 
+	audio: {
+		disable: boolean;
+	};
+
 	networking: {
 		allow: {
 			game: boolean;

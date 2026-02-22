@@ -73,7 +73,7 @@ export async function create(
 
 	while (!classes.includes(cardClass)) {
 		cardClass = game.lodash.startCase(
-			await input({
+			await game.input({
 				message: parseTags(
 					"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
 				),
@@ -254,7 +254,7 @@ export async function main(
 			continue;
 		}
 		if (dbfId === -2) {
-			const name = await input({
+			const name = await game.input({
 				message: "Name / dbfId",
 				validate: (value) =>
 					vanillaCards.some(

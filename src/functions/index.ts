@@ -1,3 +1,4 @@
+import { audioFunctions } from "./audio.ts";
 import { cardFunctions } from "./card.ts";
 import { colorFunctions } from "./color.ts";
 import { deckcodeFunctions } from "./deckcode.ts";
@@ -36,4 +37,9 @@ export const functions = {
 	 * Interaction functions
 	 */
 	interact: interactFunctions,
+
+	/**
+	 * Audio functions
+	 */
+	audio: audioFunctions,
 };

@@ -25,23 +25,7 @@ import { createPrompt, Separator, useKeypress, useState } from "@inquirer/core";
 import { checkbox, confirm, input, number, select } from "@inquirer/prompts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
-
-// Make a custom `input` implementation.
-// This is to remove that stupid padding that comes with the standard implementation.
-// TODO: Add support for up arrow for history.
-const readInput = createPrompt((config: { message: string }, done) => {
-	const [value, setValue] = useState("");
-
-	useKeypress((key, readline) => {
-		if (key.name === "return" || key.name === "enter") {
-			done(value);
-		} else {
-			setValue(readline.line);
-		}
-	});
-
-	return `${config.message}${value}`;
-});
+import readInput, { InputConfig } from "./input";
 
 const overrideConsole = {
 	log: console.log.bind(console),
@@ -240,7 +224,7 @@ const prompt = {
 			);
 
 			if (answer === "new") {
-				const value = await input({
+				const value = await game.input({
 					message: "Value.",
 				});
 
@@ -257,7 +241,7 @@ const prompt = {
 
 			const index = parseInt(answer, 10);
 
-			const newValue = await input({
+			const newValue = await game.input({
 				message: "What will you change this value to?",
 				default: array[index],
 			});
@@ -426,10 +410,10 @@ const prompt = {
 
 			if (allowAddingAndDeleting) {
 				if (answer === "new") {
-					const key = await input({
+					const key = await game.input({
 						message: "Key.",
 					});
-					const value = await input({
+					const value = await game.input({
 						message: "Value.",
 					});
 
@@ -437,7 +421,7 @@ const prompt = {
 					dirty = true;
 					continue;
 				} else if (answer === "delete") {
-					const key = await input({
+					const key = await game.input({
 						message: "Key.",
 					});
 
@@ -488,7 +472,7 @@ const prompt = {
 				continue;
 			}
 
-			const newValue = await input({
+			const newValue = await game.input({
 				message: "What will you change this value to?",
 				default: value,
 			});
@@ -528,7 +512,7 @@ const prompt = {
 		const debugStatement = allowTestDeck
 			? " <gray>(Leave this empty for a test deck)</gray>"
 			: "";
-		const deckcode = await input({
+		const deckcode = await game.input({
 			message: parseTags(
 				`Player ${player.id + 1}, please type in your deckcode${debugStatement}`,
 			),
@@ -1682,37 +1666,36 @@ export const interactFunctions = {
 	 * @returns What the user answered
 	 */
 	async input(
-		q = "",
-		overrideNoInput = false,
-		useInputQueue = true,
+		options: InputConfig & {
+			overrideNoInput?: boolean;
+			ignoreInputQueue?: boolean;
+		},
 	): Promise<string> {
-		let question = q;
-
 		const wrapper = async (text: string) => {
 			await game.event.broadcast(Event.Input, text, game.player);
 			return text;
 		};
 
 		if (game.noOutput) {
-			question = "";
+			options.message = "";
 		}
 
-		if (game.noInput && !overrideNoInput) {
+		if (game.noInput && options.overrideNoInput !== true) {
 			return wrapper("");
 		}
 
-		question = game.translate(question);
-		question = parseTags(question);
+		options.message = game.translate(options.message);
+		options.message = parseTags(options.message);
 
 		// Let the game make choices for the user
-		if (useInputQueue) {
+		if (options.ignoreInputQueue !== true) {
 			const queue = game.player.inputQueueNext();
 			if (queue !== undefined) {
 				return wrapper(queue);
 			}
 		}
 
-		return wrapper((await readInput({ message: question })) as string);
+		return wrapper((await readInput(options)) as string);
 	},
 
 	/**
@@ -1875,7 +1858,7 @@ export const interactFunctions = {
 			await game.functions.interact.print.gameState(game.player);
 			console.log("");
 
-			user = await game.input("Which card do you want to play? ");
+			user = await game.input({ message: "Which card do you want to play? " });
 
 			if (!Number.isNaN(parseInt(user, 10))) {
 				user = (parseInt(user, 10) - 1).toString();
@@ -1947,13 +1930,14 @@ export const interactFunctions = {
 					}
 
 					// Handle commands with arguments.
+					// TODO: Use `search` for eval.
 					if (["give", "eval"].includes(command.toLowerCase())) {
 						await game.functions.interact.print.gameState(game.player);
 						console.log();
 
 						command = game.config.advanced.debugCommandPrefix + command;
 
-						const args = await input({
+						const args = await game.input({
 							message: command.toLowerCase(),
 						});
 

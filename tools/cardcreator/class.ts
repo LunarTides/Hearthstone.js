@@ -69,7 +69,7 @@ async function configure(
 		);
 
 		if (answer === "className") {
-			const className = (await input({
+			const className = (await game.input({
 				message: "Set the name of the class.",
 				default: heroBlueprint.classes.at(0) ?? "ChangeMe",
 				validate: (value) => !value.includes(" "),
@@ -80,21 +80,21 @@ async function configure(
 
 			dirty = true;
 		} else if (answer === "heroName") {
-			heroBlueprint.name = await input({
+			heroBlueprint.name = await game.input({
 				message: "Set the name of the default hero.",
 				default: heroBlueprint.name,
 			});
 
 			dirty = true;
 		} else if (answer === "heropowerName") {
-			heropowerBlueprint.name = await input({
+			heropowerBlueprint.name = await game.input({
 				message: "Set the name of the default hero's heropower.",
 				default: heropowerBlueprint.name,
 			});
 
 			dirty = true;
 		} else if (answer === "heropowerText") {
-			heropowerBlueprint.text = await input({
+			heropowerBlueprint.text = await game.input({
 				message: "Set the description of the default hero's heropower.",
 				default: heropowerBlueprint.text,
 			});

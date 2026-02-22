@@ -301,7 +301,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 			continue;
 		}
 
-		const newValue = await input({
+		const newValue = await game.input({
 			message: "What will you change this value to?",
 			default: value?.toString(),
 			validate: (value) => {

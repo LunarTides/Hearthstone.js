@@ -1248,17 +1248,7 @@ export class Game {
 	 *
 	 * @returns What the user answered
 	 */
-	async input(
-		prompt = "",
-		overrideNoInput = false,
-		useInputQueue = true,
-	): Promise<string> {
-		return await this.functions.interact.input(
-			prompt,
-			overrideNoInput,
-			useInputQueue,
-		);
-	}
+	input = this.functions.interact.input;
 
 	/**
 	 * Pause the game until the user presses the enter key.
@@ -1267,7 +1257,7 @@ export class Game {
 	 * @param [prompt="Press enter to continue..."] The prompt to show the user
 	 */
 	async pause(prompt = "Press enter to continue..."): Promise<void> {
-		await this.functions.interact.input(prompt);
+		await this.functions.interact.input({ message: prompt });
 	}
 
 	/**
@@ -1807,6 +1797,7 @@ export async function createGame(registerCards = true) {
 	await game.functions.util.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {
+		game.functions.audio.setupPlayback();
 		await Card.registerAll();
 	}
 

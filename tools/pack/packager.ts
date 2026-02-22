@@ -230,7 +230,10 @@ async function promptImportPack() {
 			name: `@${p.ownerName}/${p.name}`,
 			callback: async (answer) => {
 				const pack = packs[answer];
-				await importPack(pack);
+				const success = await importPack(pack);
+				if (success) {
+					hub.playCool();
+				}
 
 				return true;
 			},
@@ -415,244 +418,260 @@ async function promptExportPack() {
 }
 
 async function configureMetadata(metadata: Metadata) {
-	while (true) {
-		hub.watermark(false);
-		console.log(Bun.JSON5.stringify(metadata, null, 4));
-		console.log();
+	await hub.createUILoop(
+		{
+			message: "Configure Metadata",
+			backButtonText: "Done",
+			seperatorBeforeBackButton: false,
+			callbackBefore: async () => {
+				hub.watermark(false);
+				console.log(Bun.JSON5.stringify(metadata, null, 4));
+				console.log();
+			},
+		},
+		{
+			name: "Version",
+			description: "The version of the pack. Uses semver.",
+			callback: async () => {
+				// TODO: Use `game.input` instead.
+				metadata.versions.pack = await game.input({
+					message: "Set the version of the pack.",
+					default: metadata.versions.pack,
+					validate: (value) => semver.satisfies(value, ">0.0.0"),
+				});
 
-		const answer = await game.prompt.customSelect(
-			"Configure Metadata",
-			[],
-			{
-				hideBack: true,
-				arrayTransform: undefined,
-			},
-			{
-				name: "Version",
-				value: "version",
-				description: "The version of the pack. Uses semver.",
-			},
-			{
-				name: "Name",
-				value: "name",
-				description:
-					"The name of the pack. This must be unique for the author.",
-			},
-			{
-				name: "Description",
-				value: "description",
-				description: "The description of the pack.",
-			},
-			{
-				name: "Author",
-				value: "author",
-				description:
-					"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
-			},
-			{
-				name: "License",
-				value: "license",
-				description:
-					"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
-			},
-			{
-				name: "Links",
-				value: "links",
-				description:
-					"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
-			},
-			{
-				name: "Permissions",
-				value: "permissions",
-				description:
-					"Resources that the pack needs to function. Check this out before exporting.",
-			},
-			{
-				name: "Requires",
-				value: "requires",
-				description: "Pack dependencies.",
-			},
-			new Separator(),
-			{
-				name: "Cancel",
-				value: "cancel",
-				description: "Cancel changes to the metadata.",
-			},
-			{
-				name: "Done",
-				value: "done",
-				description: "Done configuring metadata.",
-			},
-		);
-
-		if (answer === "version") {
-			metadata.versions.pack = await input({
-				message: "Set the version of the pack.",
-				default: metadata.versions.pack,
-				validate: (value) => semver.satisfies(value, ">0.0.0"),
-			});
-
-			dirty = true;
-		} else if (answer === "name") {
-			metadata.name = await input({
-				message: "Set the name of the pack. This must be unique.",
-				default: metadata.name,
-			});
-
-			dirty = true;
-		} else if (answer === "description") {
-			metadata.description = await input({
-				message: "Set the description of the pack.",
-				default: metadata.description,
-			});
-
-			dirty = true;
-		} else if (answer === "author") {
-			metadata.author = await input({
-				message: "Author.",
-				default: metadata.author,
-			});
-
-			dirty = true;
-		} else if (answer === "license") {
-			const licenses = [
-				{
-					value: "Proprietary",
-					description:
-						"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
-				},
-				new Separator(),
-				{
-					value: "GPL-2.0",
-					description: "GNU General Public License Version 2.0",
-				},
-				{
-					value: "GPL-3.0",
-					description: "GNU General Public License Version 3.0",
-				},
-				{
-					value: "AGPL-3.0",
-					description: "GNU Affero General Public License Version 3.0",
-				},
-				{
-					value: "MIT",
-					description: "MIT License",
-				},
-				{
-					value: "Apache-2.0",
-					description: "Apache License Version 2.0",
-				},
-				new Separator(),
-				{
-					name: "Other",
-					value: "other",
-					description: "Specify another license.",
-				},
-			];
-
-			const license = await game.prompt.customSelect(
-				"Set the license of the pack.",
-				[],
-				{
-					hideBack: true,
-					// If the license exists, choose it by default. Otherwise choose "Other".
-					default: licenses
-						.map((l) => (l instanceof Separator ? undefined : l.value))
-						.includes(metadata.license)
-						? metadata.license
-						: "other",
-					arrayTransform: undefined,
-				},
-				...licenses,
-			);
-
-			if (license === "other") {
-				metadata.license = await input({ message: "License." });
 				dirty = true;
-				continue;
-			}
-
-			metadata.license = license;
-			dirty = true;
-		} else if (answer === "links") {
-			const changed = await game.prompt.configureObject(
-				metadata.links,
-				true,
-				async () => hub.watermark(false),
-			);
-
-			// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
-			// Learned that the hard way...
-			dirty ||= changed;
-		} else if (answer === "permissions") {
-			const changed = await game.prompt.configureObject(
-				metadata.permissions,
-				false,
-				async () => hub.watermark(false),
-			);
-
-			dirty ||= changed;
-		} else if (answer === "requires") {
-			// TODO: Capitalize the choices.
-			const changed = await game.prompt.configureObject(
-				metadata.requires,
-				false,
-				async () => hub.watermark(false),
-			);
-
-			dirty ||= changed;
-		} else if (answer === "cancel") {
-			if (!dirty) {
-				// No changes have been made.
-				return false;
-			}
-
-			const done = await confirm({
-				message:
-					"Are you sure you want to cancel configuring the metadata? Your changes will be lost.",
-				default: false,
-			});
-
-			if (done) {
-				return false;
-			}
-		} else if (answer === "done") {
-			if (metadata.license === "Proprietary") {
-				const licenseConfirm = await confirm({
-					message: parseTags(
-						"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
-					),
-					default: false,
-				});
-
-				if (!licenseConfirm) {
-					continue;
-				}
-			}
-
-			if (!Object.values(metadata.permissions).some(Boolean)) {
-				const permissionsConfirm = await confirm({
-					message: parseTags(
-						`<yellow>You haven't set any permissions. <bold>Are you sure your pack doesn't require any of the following permissions: ${getPermissions(metadata, false).join(", ")}?</bold></yellow>`,
-					),
-					default: false,
-				});
-
-				if (!permissionsConfirm) {
-					continue;
-				}
-			}
-
-			const done = await confirm({
-				message: "Are you sure you are done configuring the metadata?",
-				default: false,
-			});
-
-			if (done) {
 				return true;
-			}
-		}
-	}
+			},
+		},
+		{
+			name: "Name",
+			description: "The name of the pack. This must be unique for the author.",
+			callback: async () => {
+				metadata.name = await game.input({
+					message: "Set the name of the pack. This must be unique.",
+					default: metadata.name,
+				});
+
+				dirty = true;
+				return true;
+			},
+		},
+		{
+			name: "Description",
+			description: "The description of the pack.",
+			callback: async () => {
+				metadata.description = await game.input({
+					message: "Set the description of the pack.",
+					default: metadata.description,
+				});
+
+				dirty = true;
+				return true;
+			},
+		},
+		{
+			name: "Author",
+			description:
+				"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
+			callback: async () => {
+				metadata.author = await game.input({
+					message: "Author.",
+					default: metadata.author,
+				});
+
+				dirty = true;
+				return true;
+			},
+		},
+		{
+			name: "License",
+			description:
+				"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
+			callback: async () => {
+				const licenses = [
+					{
+						value: "Proprietary",
+						description:
+							"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
+					},
+					new Separator(),
+					{
+						value: "GPL-2.0",
+						description: "GNU General Public License Version 2.0",
+					},
+					{
+						value: "GPL-3.0",
+						description: "GNU General Public License Version 3.0",
+					},
+					{
+						value: "AGPL-3.0",
+						description: "GNU Affero General Public License Version 3.0",
+					},
+					{
+						value: "MIT",
+						description: "MIT License",
+					},
+					{
+						value: "Apache-2.0",
+						description: "Apache License Version 2.0",
+					},
+					new Separator(),
+					{
+						name: "Other",
+						value: "other",
+						description: "Specify another license.",
+					},
+				];
+
+				// TODO: Use `hub.createUILoop`
+				const license = await game.prompt.customSelect(
+					"Set the license of the pack.",
+					[],
+					{
+						hideBack: true,
+						// If the license exists, choose it by default. Otherwise choose "Other".
+						default: licenses
+							.map((l) => (l instanceof Separator ? undefined : l.value))
+							.includes(metadata.license)
+							? metadata.license
+							: "other",
+						arrayTransform: undefined,
+					},
+					...licenses,
+				);
+
+				if (license === "other") {
+					metadata.license = await game.input({ message: "License." });
+					dirty = true;
+					return true;
+				}
+
+				metadata.license = license;
+				dirty = true;
+				return true;
+			},
+		},
+		{
+			name: "Links",
+			description:
+				"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
+			callback: async () => {
+				const changed = await game.prompt.configureObject(
+					metadata.links,
+					true,
+					async () => hub.watermark(false),
+				);
+
+				// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+				// Learned that the hard way...
+				dirty ||= changed;
+				return true;
+			},
+		},
+		{
+			name: "Permissions",
+			description:
+				"Resources that the pack needs to function. Check this out before exporting.",
+			callback: async () => {
+				const changed = await game.prompt.configureObject(
+					metadata.permissions,
+					false,
+					async () => hub.watermark(false),
+				);
+
+				dirty ||= changed;
+				return true;
+			},
+		},
+		{
+			name: "Requires",
+			description: "Pack dependencies.",
+			callback: async () => {
+				// TODO: Capitalize the choices.
+				const changed = await game.prompt.configureObject(
+					metadata.requires,
+					false,
+					async () => hub.watermark(false),
+				);
+
+				dirty ||= changed;
+				return true;
+			},
+		},
+		new Separator(),
+		{
+			name: "Cancel",
+			description: "Cancel changes to the metadata.",
+			defaultSound: false,
+			callback: async () => {
+				if (!dirty) {
+					// No changes have been made.
+					hub.playBack();
+					return false;
+				}
+
+				hub.playDelve();
+
+				const done = await confirm({
+					message:
+						"Are you sure you want to cancel configuring the metadata? Your changes will be lost.",
+					default: false,
+				});
+
+				if (done) {
+					hub.playBack();
+					return false;
+				}
+
+				return true;
+			},
+		},
+		{
+			name: "Done",
+			description: "Done configuring the metadata.",
+			callback: async () => {
+				if (metadata.license === "Proprietary") {
+					const licenseConfirm = await confirm({
+						message: parseTags(
+							"<yellow>You haven't changed the license.\nOthers are not allowed to use this pack without a proper open-source license.\nThink about changing the license to 'GPL-3', 'MIT', 'Apache-2.0', etc...\nContinue anyway?</yellow>",
+						),
+						default: false,
+					});
+
+					if (!licenseConfirm) {
+						return true;
+					}
+				}
+
+				if (!Object.values(metadata.permissions).some(Boolean)) {
+					const permissionsConfirm = await confirm({
+						message: parseTags(
+							`<yellow>You haven't set any permissions. <bold>Are you sure your pack doesn't require any of the following permissions: ${getPermissions(metadata, false).join(", ")}?</bold></yellow>`,
+						),
+						default: false,
+					});
+
+					if (!permissionsConfirm) {
+						return true;
+					}
+				}
+
+				// TODO: Wrap for sfx.
+				const done = await confirm({
+					message: "Are you sure you are done configuring the metadata?",
+					default: false,
+				});
+
+				if (done) {
+					hub.playBack();
+					return false;
+				}
+
+				return true;
+			},
+		},
+	);
 }
 
 const registry = {
@@ -713,7 +732,7 @@ const registry = {
 			});
 
 			// Ask for search query
-			const query = await input({
+			const query = await game.input({
 				message: "Search query:",
 			});
 
@@ -757,6 +776,7 @@ const registry = {
 							forceDelete: true,
 						});
 						if (success) {
+							hub.playCool();
 							console.log(
 								"<green>Pack downloaded & imported successfully!</green>",
 							);
