@@ -12,6 +12,7 @@ import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 import * as pkgr from "./tools/pack/packager.ts"; // Packager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
+import * as soundTest from "./tools/test/sound.ts"; // Sound Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
@@ -203,6 +204,19 @@ export async function devmode() {
 				game.interest("Starting Crash Test...");
 				await crashTest.main();
 				game.interest("Starting Crash Test...OK");
+
+				return true;
+			},
+		},
+		{
+			name: "Test Sounds",
+			defaultSound: false,
+			callback: async () => {
+				playLeaveUILoop();
+
+				game.interest("Starting Sound Test...");
+				await soundTest.main();
+				game.interest("Starting Sound Test...OK");
 
 				return true;
 			},
