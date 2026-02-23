@@ -59,6 +59,7 @@ export const UILoopDefaultOptions = {
 	message: "Options" as string,
 	seperatorBeforeBackButton: true as boolean,
 	backButtonText: "Back" as string,
+	default: undefined as number | undefined,
 };
 
 let seenFunFacts: string[] = [];
@@ -215,6 +216,9 @@ const prompt = {
 			...rawOptions,
 		};
 
+		// Filter out invalid choices.
+		choices = choices.filter((choice) => choice !== false);
+
 		while (true) {
 			if (options.callbackBefore) {
 				await options.callbackBefore();
@@ -234,6 +238,7 @@ const prompt = {
 				{
 					hideBack: true,
 					arrayTransform: undefined,
+					default: options.default ? options.default.toString() : undefined,
 				},
 				...choices.map((choice, i) => ({
 					...choice,
@@ -497,7 +502,8 @@ const prompt = {
 			...Object.keys(object).map((element) => ({
 				name: element,
 				callback: async (answer) => {
-					const value = object[answer];
+					const key = Object.keys(object)[answer];
+					const value = object[key];
 
 					if (Array.isArray(value)) {
 						const changed = await game.prompt.configureArray(value, onLoop);
@@ -519,17 +525,29 @@ const prompt = {
 							},
 						);
 
-						object[answer] = newValue === "true";
+						object[key] = newValue === "true";
 						dirty = true;
 						return true;
 					} else if (!Number.isNaN(parseInt(value, 10))) {
 						const newValue = await number({
 							message: "What will you change this value to?",
 							default: value,
+							step: "any",
 						});
 
-						object[answer] = newValue;
+						object[key] = newValue;
 						dirty = true;
+						return true;
+					} else if (game.lodash.isObject(value)) {
+						const changed = await game.prompt.configureObject(
+							value,
+							allowAddingAndDeleting,
+							onLoop,
+						);
+
+						// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+						// Learned that the hard way...
+						dirty ||= changed;
 						return true;
 					}
 
@@ -538,7 +556,7 @@ const prompt = {
 						default: value,
 					});
 
-					object[answer] = newValue;
+					object[key] = newValue;
 					dirty = true;
 					return true;
 				},
@@ -1918,7 +1936,7 @@ export const interactFunctions = {
 
 		const result = await game.play(card, game.player);
 		if (result === GamePlayCardReturn.Success) {
-			game.functions.audio.playSFX("playCard", { card });
+			game.functions.audio.playSFX("playCard", { info: { card } });
 		}
 
 		return result;

@@ -621,7 +621,7 @@ export class Card {
 		// Set maxHealth if the card is a minion or weapon
 		this.maxHealth = this.blueprint.health;
 
-		if (this.heropowerId) {
+		if (this.heropowerId && this.heropowerId !== game.ids.null) {
 			this.heropower = await Card.create(this.heropowerId, this.owner, true);
 		}
 

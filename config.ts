@@ -66,12 +66,35 @@ export const config: GameConfig = {
 	},
 
 	audio: {
-		enable: {
-			// Globally enable playing audio.
-			all: true,
+		// Globally disable playing audio.
+		// This also stops the audio engine from being invoked, which can save resources.
+		disable: false,
 
+		sfx: {
 			// Enable playing sound effects.
-			sfx: true,
+			enable: true,
+
+			blacklist: [
+				// UI Navigation
+				// "delve",
+				// "back",
+				// "leaveUILoop",
+				// "cool",
+				//
+				// Typing
+				// "type",
+				// "backspace",
+				// "enter",
+				// "tab",
+				//
+				// Game Feedback
+				// "playCard",
+				// "endTurn",
+				//
+				// Other
+				// "error",
+				// "delete",
+			],
 		},
 	},
 

@@ -155,9 +155,11 @@ export type GameConfig = {
 	};
 
 	audio: {
-		enable: {
-			all: boolean;
-			sfx: boolean;
+		disable: boolean;
+
+		sfx: {
+			enable: boolean;
+			blacklist: string[];
 		};
 	};
 

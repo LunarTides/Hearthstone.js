@@ -491,66 +491,85 @@ async function configureMetadata(metadata: Metadata) {
 			description:
 				"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
 			callback: async () => {
+				const select = async (answer: number) => {
+					const license = licenses[answer];
+					if (license instanceof Separator) {
+						// Shouldn't be possible.
+						throw TypeError("Chose a seperator");
+					}
+
+					metadata.license = license.name;
+					return false;
+				};
+
 				const licenses = [
 					{
-						value: "Proprietary",
+						name: "Proprietary",
 						description:
 							"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
+						callback: select,
 					},
 					new Separator(),
 					{
-						value: "GPL-2.0",
+						name: "GPL-2.0",
 						description: "GNU General Public License Version 2.0",
+						callback: select,
 					},
 					{
-						value: "GPL-3.0",
+						name: "GPL-3.0",
 						description: "GNU General Public License Version 3.0",
+						callback: select,
 					},
 					{
-						value: "AGPL-3.0",
+						name: "AGPL-3.0",
 						description: "GNU Affero General Public License Version 3.0",
+						callback: select,
 					},
 					{
-						value: "MIT",
+						name: "MIT",
 						description: "MIT License",
+						callback: select,
 					},
 					{
-						value: "Apache-2.0",
+						name: "Apache-2.0",
 						description: "Apache License Version 2.0",
+						callback: select,
 					},
 					new Separator(),
 					{
 						name: "Other",
-						value: "other",
 						description: "Specify another license.",
+						callback: async () => {
+							metadata.license = await game.input({ message: "License." });
+							dirty = true;
+
+							return false;
+						},
 					},
 				];
 
-				// TODO: Use `hub.createUILoop`
-				const license = await game.prompt.customSelect(
-					"Set the license of the pack.",
-					[],
+				const existingLicense = licenses.find(
+					(l) => !(l instanceof Separator) && l.name === metadata.license,
+				);
+				const otherOption = licenses.find(
+					(l) => !(l instanceof Separator) && l.name === "Other",
+				);
+
+				await game.prompt.createUILoop(
 					{
-						hideBack: true,
+						message: "Set the license of the pack.",
+						backButtonText: "",
+						seperatorBeforeBackButton: false,
 						// If the license exists, choose it by default. Otherwise choose "Other".
-						default: licenses
-							.map((l) => (l instanceof Separator ? undefined : l.value))
-							.includes(metadata.license)
-							? metadata.license
-							: "other",
-						arrayTransform: undefined,
+						default: existingLicense
+							? licenses.indexOf(existingLicense)
+							: otherOption
+								? licenses.indexOf(otherOption)
+								: undefined,
 					},
 					...licenses,
 				);
 
-				if (license === "other") {
-					metadata.license = await game.input({ message: "License." });
-					dirty = true;
-					return true;
-				}
-
-				metadata.license = license;
-				dirty = true;
 				return true;
 			},
 		},
