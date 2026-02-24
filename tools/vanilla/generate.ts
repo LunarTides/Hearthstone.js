@@ -49,7 +49,7 @@ export async function main(): Promise<void> {
 
 	if (!game.config.networking.allow.game) {
 		console.error(
-			"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+			"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
 		);
 		return;
 	}

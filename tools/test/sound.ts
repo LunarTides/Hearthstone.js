@@ -8,6 +8,14 @@ if (import.meta.main) {
 }
 
 export async function main() {
+	if (game.config.audio.disable) {
+		console.error(
+			"<red>The audio engine is disabled. Please ensure that 'Audio > Disable' is 'false'.</red>\n",
+		);
+		await game.pause();
+		return;
+	}
+
 	const options = {
 		multiply: {
 			duration: 1,
@@ -44,11 +52,11 @@ export async function main() {
 		lastPlayed = sound;
 
 		if (sound === "back") {
-			game.functions.audio.playSFX("back");
+			game.functions.audio.playSFX("ui.back");
 			break;
 		}
 		if (sound === "options") {
-			game.functions.audio.playSFX("delve");
+			game.functions.audio.playSFX("ui.delve");
 
 			await game.prompt.configureObject(options, false, async () => {
 				hub.watermark(false);

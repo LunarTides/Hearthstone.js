@@ -76,24 +76,26 @@ export const config: GameConfig = {
 
 			blacklist: [
 				// UI Navigation
-				// "delve",
-				// "back",
-				// "leaveUILoop",
-				// "cool",
+				// "ui.delve",
+				// "ui.back",
+				// "ui.delete",
+				// "ui.leaveLoop",
+				// "ui.action1",
 				//
 				// Typing
-				// "type",
-				// "backspace",
-				// "enter",
-				// "tab",
+				// "input.type",
+				// "input.backspace",
+				// "input.tab",
+				// "input.arrow.up",
+				// "input.arrow.down",
+				// "input.enter",
 				//
 				// Game Feedback
-				// "playCard",
-				// "endTurn",
+				// "game.playCard",
+				// "game.endTurn",
 				//
 				// Other
 				// "error",
-				// "delete",
 			],
 		},
 	},

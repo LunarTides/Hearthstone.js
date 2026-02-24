@@ -228,11 +228,11 @@ async function promptImportPack() {
 		},
 		...packs.map((p) => ({
 			name: `@${p.ownerName}/${p.name}`,
-			callback: async (answer) => {
+			callback: async (answer: number) => {
 				const pack = packs[answer];
 				const success = await importPack(pack);
 				if (success) {
-					hub.playCool();
+					hub.playAction1();
 				}
 
 				return true;
@@ -395,7 +395,7 @@ async function promptExportPack() {
 		},
 		...packs.map((p) => ({
 			name: `@${p.ownerName}/${p.name}`,
-			callback: async (answer) => {
+			callback: async (answer: number) => {
 				const pack = packs.at(answer);
 				await exportPack(pack);
 
@@ -704,7 +704,7 @@ const registry = {
 		// Ensure networking permissions
 		if (!game.config.networking.allow.game) {
 			console.error(
-				"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+				"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>\n",
 			);
 			await game.pause();
 			return;
@@ -762,6 +762,7 @@ const registry = {
 			});
 
 			// Search & Display packs
+			console.log("Searching...");
 			const packs = await regbot.searchPacks(query);
 			for (const pack of packs) {
 				console.log(regbot.displayPack(pack));
@@ -777,8 +778,10 @@ const registry = {
 				...packs.map((pack) => ({
 					name: `@${pack.ownerName}/${pack.name}`,
 					description: regbot.displayPack(pack),
-					callback: async (answer) => {
+					callback: async (answer: number) => {
 						const pack = packs[answer];
+
+						// TODO: Allow selecting the version to download.
 
 						// Download the pack to the 'packs' folder
 						// TODO: Add progress bar.
@@ -801,7 +804,7 @@ const registry = {
 							forceDelete: true,
 						});
 						if (success) {
-							hub.playCool();
+							hub.playAction1();
 							console.log(
 								"<green>Pack downloaded & imported successfully!</green>",
 							);

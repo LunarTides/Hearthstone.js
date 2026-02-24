@@ -81,7 +81,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 
 			const isValid = await validate(answer);
 			if (isValid === true) {
-				game.functions.audio.playSFX("enter");
+				game.functions.audio.playSFX("input.enter");
 
 				setValue(answer);
 				setStatus("done");
@@ -104,7 +104,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 				setStatus("idle");
 			}
 		} else if (isBackspaceKey(key)) {
-			game.functions.audio.playSFX("backspace");
+			game.functions.audio.playSFX("input.backspace");
 			setValue(rl.line);
 
 			if (!value) {
@@ -112,9 +112,9 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			}
 		} else if (isTabKey(key) && !value) {
 			if (defaultValue) {
-				game.functions.audio.playSFX("tab");
+				game.functions.audio.playSFX("input.tab");
 			} else {
-				game.functions.audio.playSFX("type");
+				game.functions.audio.playSFX("input.type");
 			}
 
 			setDefaultValue("");
@@ -122,6 +122,8 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			rl.write(defaultValue);
 			setValue(defaultValue);
 		} else if (isUpKey(key)) {
+			game.functions.audio.playSFX("input.arrow.up");
+
 			if (historyIndex === -1) {
 				// NOTE: Subtract 2 for some reason.
 				setHistoryIndex(history.length - 2);
@@ -138,6 +140,8 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			setValue(entry ?? "");
 			setError(undefined);
 		} else if (isDownKey(key)) {
+			game.functions.audio.playSFX("input.arrow.down");
+
 			if (historyIndex !== -1) {
 				setHistoryIndex(historyIndex + 1);
 			}
@@ -151,7 +155,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			setValue(entry ?? "");
 			setError(undefined);
 		} else {
-			game.functions.audio.playSFX("type");
+			game.functions.audio.playSFX("input.type");
 
 			setValue(rl.line);
 			setError(undefined);

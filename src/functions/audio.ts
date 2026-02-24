@@ -28,7 +28,7 @@ let channels = 0,
 let octaves: ReturnType<typeof audioFunctions.getOctave>[] = [];
 
 export const sfx = {
-	delve: async (
+	"ui.delve": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -42,7 +42,7 @@ export const sfx = {
 		);
 	},
 
-	back: async (
+	"ui.back": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -56,7 +56,22 @@ export const sfx = {
 		);
 	},
 
-	leaveUILoop: async (
+	"ui.delete": async (
+		info: any,
+		durationMultiplier: number,
+		hzMultiplier: number,
+		volumeMultiplier: number,
+	) => {
+		game.functions.audio.playSlidingWave(
+			"sine",
+			440 * hzMultiplier,
+			450 * hzMultiplier,
+			50 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+	},
+
+	"ui.leaveLoop": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -71,8 +86,7 @@ export const sfx = {
 		);
 	},
 
-	// TODO: Rename
-	cool: async (
+	"ui.action1": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -93,7 +107,7 @@ export const sfx = {
 		);
 	},
 
-	type: async (
+	"input.type": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -107,7 +121,7 @@ export const sfx = {
 		);
 	},
 
-	backspace: async (
+	"input.backspace": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -121,21 +135,7 @@ export const sfx = {
 		);
 	},
 
-	enter: async (
-		info: any,
-		durationMultiplier: number,
-		hzMultiplier: number,
-		volumeMultiplier: number,
-	) => {
-		game.functions.audio.playWave(
-			"sine",
-			880 * hzMultiplier,
-			10 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-	},
-
-	tab: async (
+	"input.tab": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -167,7 +167,7 @@ export const sfx = {
 		);
 	},
 
-	error: async (
+	"input.arrow.up": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -175,8 +175,8 @@ export const sfx = {
 	) => {
 		game.functions.audio.playWave(
 			"sine",
-			220 * hzMultiplier,
-			50 * durationMultiplier,
+			octaves[5].A * hzMultiplier,
+			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
@@ -184,28 +184,50 @@ export const sfx = {
 
 		game.functions.audio.playWave(
 			"sine",
-			110 * hzMultiplier,
-			100 * durationMultiplier,
+			octaves[5].A * hzMultiplier,
+			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 	},
 
-	delete: async (
+	"input.arrow.down": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playSlidingWave(
+		game.functions.audio.playWave(
 			"sine",
-			440 * hzMultiplier,
-			450 * hzMultiplier,
-			50 * durationMultiplier,
+			octaves[4].A * hzMultiplier,
+			10 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+
+		game.functions.audio.wait(50);
+
+		game.functions.audio.playWave(
+			"sine",
+			octaves[4].A * hzMultiplier,
+			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 	},
 
-	playCard: async (
+	"input.enter": async (
+		info: any,
+		durationMultiplier: number,
+		hzMultiplier: number,
+		volumeMultiplier: number,
+	) => {
+		game.functions.audio.playWave(
+			"sine",
+			880 * hzMultiplier,
+			10 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+	},
+
+	"game.playCard": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -234,50 +256,7 @@ export const sfx = {
 		);
 	},
 
-	_playCard: async (
-		info: any,
-		durationMultiplier: number,
-		hzMultiplier: number,
-		volumeMultiplier: number,
-	) => {
-		// TODO: Make less obnoxious.
-		game.functions.audio.playSlidingWave(
-			"sine",
-			octaves[6].C * hzMultiplier,
-			octaves[6].C_SHARP * hzMultiplier,
-			50 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-		game.functions.audio.playWave(
-			"sine",
-			octaves[6].C_SHARP * hzMultiplier,
-			100 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-
-		game.functions.audio.wait(50 * durationMultiplier);
-
-		game.functions.audio.playWave(
-			"sine",
-			octaves[5].G_SHARP * hzMultiplier,
-			50 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-		game.functions.audio.playWave(
-			"sine",
-			octaves[5].A * hzMultiplier,
-			50 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-		game.functions.audio.playWave(
-			"sine",
-			octaves[6].C_SHARP * hzMultiplier,
-			200 * durationMultiplier,
-			0.3 * volumeMultiplier,
-		);
-	},
-
-	endTurn: async (
+	"game.endTurn": async (
 		info: any,
 		durationMultiplier: number,
 		hzMultiplier: number,
@@ -340,6 +319,72 @@ export const sfx = {
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.0125 * volumeMultiplier,
+		);
+	},
+
+	error: async (
+		info: any,
+		durationMultiplier: number,
+		hzMultiplier: number,
+		volumeMultiplier: number,
+	) => {
+		game.functions.audio.playWave(
+			"sine",
+			220 * hzMultiplier,
+			50 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+
+		game.functions.audio.wait(50);
+
+		game.functions.audio.playWave(
+			"sine",
+			110 * hzMultiplier,
+			100 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+	},
+
+	unnamed1: async (
+		info: any,
+		durationMultiplier: number,
+		hzMultiplier: number,
+		volumeMultiplier: number,
+	) => {
+		// TODO: Make less obnoxious.
+		game.functions.audio.playSlidingWave(
+			"sine",
+			octaves[6].C * hzMultiplier,
+			octaves[6].C_SHARP * hzMultiplier,
+			50 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+		game.functions.audio.playWave(
+			"sine",
+			octaves[6].C_SHARP * hzMultiplier,
+			100 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+
+		game.functions.audio.wait(50 * durationMultiplier);
+
+		game.functions.audio.playWave(
+			"sine",
+			octaves[5].G_SHARP * hzMultiplier,
+			50 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+		game.functions.audio.playWave(
+			"sine",
+			octaves[5].A * hzMultiplier,
+			50 * durationMultiplier,
+			0.3 * volumeMultiplier,
+		);
+		game.functions.audio.playWave(
+			"sine",
+			octaves[6].C_SHARP * hzMultiplier,
+			200 * durationMultiplier,
+			0.3 * volumeMultiplier,
 		);
 	},
 
@@ -704,9 +749,9 @@ export const audioFunctions = {
 
 		if (
 			game.config.audio.disable ||
-			!game.config.audio.sfx.enable ||
 			(!options.playAgainstUserWishes &&
-				game.config.audio.sfx.blacklist.includes(key)) ||
+				(!game.config.audio.sfx.enable ||
+					game.config.audio.sfx.blacklist.includes(key))) ||
 			game.player.ai
 		) {
 			return false;

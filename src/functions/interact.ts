@@ -256,7 +256,7 @@ const prompt = {
 
 			const choseBack = answer === "back";
 			if (choseBack && !backOption) {
-				game.functions.audio.playSFX("back");
+				game.functions.audio.playSFX("ui.back");
 				break;
 			}
 
@@ -268,9 +268,9 @@ const prompt = {
 
 			if (choice.defaultSound !== false) {
 				if (choseBack) {
-					game.functions.audio.playSFX("back");
+					game.functions.audio.playSFX("ui.back");
 				} else {
-					game.functions.audio.playSFX("delve");
+					game.functions.audio.playSFX("ui.delve");
 				}
 			}
 
@@ -305,7 +305,7 @@ const prompt = {
 			},
 			...array.map((element, i) => ({
 				name: `Element ${i}`,
-				callback: async (answer) => {
+				callback: async (answer: number) => {
 					const newValue = await game.input({
 						message: "What will you change this value to?",
 						default: array[answer],
@@ -331,7 +331,10 @@ const prompt = {
 			},
 			{
 				name: "Delete",
+				defaultSound: false,
 				callback: async () => {
+					game.functions.audio.playSFX("ui.delete");
+
 					array.pop();
 					dirty = true;
 					return true;
@@ -384,9 +387,7 @@ const prompt = {
 			},
 			...array.map((element, i) => ({
 				name: `Element ${i}`,
-				callback: async (answer) => {
-					const index = parseInt(answer, 10);
-
+				callback: async (answer: number) => {
 					if (!allowEdit) {
 						return true;
 					}
@@ -409,7 +410,7 @@ const prompt = {
 						return true;
 					}
 
-					(array as unknown[])[index] = value;
+					(array as unknown[])[answer] = value;
 					dirty = true;
 					return true;
 				},
@@ -425,7 +426,7 @@ const prompt = {
 						return true;
 					}
 
-					game.functions.audio.playSFX("delve");
+					game.functions.audio.playSFX("ui.delve");
 
 					let filtered: any = Object.keys(enumType).filter(
 						(c) => options?.allowDuplicates || !array.includes(c),
@@ -443,7 +444,7 @@ const prompt = {
 						},
 						...filtered.map((element: any) => ({
 							name: element,
-							callback: async (answer) => {
+							callback: async (answer: number) => {
 								const value = filtered[answer];
 
 								(array as unknown[]).push(value);
@@ -460,7 +461,7 @@ const prompt = {
 				name: "Delete",
 				defaultSound: false,
 				callback: async () => {
-					game.functions.audio.playSFX("delete");
+					game.functions.audio.playSFX("ui.delete");
 
 					array.pop();
 					dirty = true;
@@ -501,7 +502,7 @@ const prompt = {
 			},
 			...Object.keys(object).map((element) => ({
 				name: element,
-				callback: async (answer) => {
+				callback: async (answer: number) => {
 					const key = Object.keys(object)[answer];
 					const value = object[key];
 
@@ -584,7 +585,7 @@ const prompt = {
 						message: "Key.",
 					});
 
-					game.functions.audio.playSFX("delete");
+					game.functions.audio.playSFX("ui.delete");
 
 					delete object[key];
 					dirty = true;
@@ -1936,7 +1937,7 @@ export const interactFunctions = {
 
 		const result = await game.play(card, game.player);
 		if (result === GamePlayCardReturn.Success) {
-			game.functions.audio.playSFX("playCard", { info: { card } });
+			game.functions.audio.playSFX("game.playCard", { info: { card } });
 		}
 
 		return result;
@@ -1997,7 +1998,7 @@ export const interactFunctions = {
 				...cards.map((readable) => ({
 					name: readable,
 					defaultSound: false,
-					callback: async (answer) => {
+					callback: async (answer: number) => {
 						user = answer.toString();
 						return false;
 					},
@@ -2030,7 +2031,7 @@ export const interactFunctions = {
 							},
 							...cmds.map((c) => ({
 								name: c,
-								callback: async (answer) => {
+								callback: async (answer: number) => {
 									user = cmds[answer].toLowerCase();
 									return false;
 								},
@@ -2039,7 +2040,7 @@ export const interactFunctions = {
 							...debugCmds.map((c) => ({
 								name: c,
 								disabled: debugCommandsDisabled,
-								callback: async (answer) => {
+								callback: async (answer: number) => {
 									// Account for the other choices.
 									answer -= cmds.length + 1;
 

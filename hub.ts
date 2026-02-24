@@ -96,19 +96,19 @@ export async function createUILoop(
 }
 
 export async function playDelve() {
-	game.functions.audio.playSFX("delve");
+	game.functions.audio.playSFX("ui.delve");
 }
 
 export async function playBack() {
-	await game.functions.audio.playSFX("back");
+	await game.functions.audio.playSFX("ui.back");
 }
 
 export async function playLeaveUILoop() {
-	await game.functions.audio.playSFX("leaveUILoop");
+	await game.functions.audio.playSFX("ui.leaveLoop");
 }
 
-export async function playCool() {
-	await game.functions.audio.playSFX("cool");
+export async function playAction1() {
+	await game.functions.audio.playSFX("ui.action1");
 }
 
 /**
@@ -210,6 +210,9 @@ export async function devmode() {
 		},
 		{
 			name: "Test Sounds",
+			// NOTE: The user should be able to choose this option and see the resulting error,
+			// therefore, the following line is commented out.
+			// disabled: game.config.audio.disable,
 			defaultSound: false,
 			callback: async () => {
 				playLeaveUILoop();
@@ -227,7 +230,7 @@ export async function devmode() {
 				// TODO: Move this to the tool.
 				if (!game.config.networking.allow.game) {
 					console.error(
-						"<yellow>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</yellow>",
+						"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
 					);
 					console.error();
 					await game.pause();
