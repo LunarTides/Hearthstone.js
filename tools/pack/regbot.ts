@@ -19,8 +19,19 @@ export class RegBot {
 	#options: RegBotOptions;
 
 	constructor(options: Partial<RegBotOptions>) {
+		// Load dotenv file.
+		try {
+			process.loadEnvFile("../../.env");
+		} catch {}
+
+		let token = "";
+		if (process.env.REGISTRY_API_TOKEN) {
+			token = process.env.REGISTRY_API_TOKEN;
+		}
+
 		this.#options = {
 			...defaultOptions,
+			token,
 			...options,
 		};
 	}

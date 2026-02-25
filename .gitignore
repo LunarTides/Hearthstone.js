@@ -9,3 +9,4 @@ dist/
 \.ignore.*
 *-output\.txt
 vanillacards.json
+**/.env

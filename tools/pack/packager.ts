@@ -699,6 +699,10 @@ async function configureMetadata(metadata: Metadata) {
 	return success;
 }
 
+const regbot = new RegBot({
+	baseUrl: game.config.general.registryUrl,
+});
+
 const registry = {
 	prompt: async () => {
 		// Ensure networking permissions
@@ -751,10 +755,6 @@ const registry = {
 		pack: async () => {
 			hub.watermark(true);
 			console.log("<cyan>?</cyan> <b>Registry Options > Download > Pack</b>");
-
-			const regbot = new RegBot({
-				baseUrl: game.config.general.registryUrl,
-			});
 
 			// Ask for search query
 			const query = await game.input({
