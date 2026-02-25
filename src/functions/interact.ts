@@ -1668,7 +1668,13 @@ const print = {
 		});
 
 		// --- Finished ---
-		console.log(align(finished));
+		console.log(
+			boxen(align(parseTags(finished)), {
+				padding: 0.5,
+				title: "Stats",
+				titleAlignment: "center",
+			}),
+		);
 	},
 
 	/**
@@ -1676,23 +1682,26 @@ const print = {
 	 */
 	async board(player: Player): Promise<void> {
 		for (const plr of [game.player1, game.player2]) {
-			const sideMessage =
-				plr === player
-					? "----- Board (You) ------"
-					: "--- Board (Opponent) ---";
-			console.log(sideMessage);
-
+			let strbuilder = "";
 			if (plr.board.length === 0) {
-				console.log("<gray>Empty</gray>");
-				continue;
+				strbuilder += "<gray>Empty</gray>";
+			} else {
+				for (const [index, card] of plr.board.entries()) {
+					strbuilder += `${await card.readable(index + 1)}\n`;
+				}
+
+				// Remove trailing newline.
+				strbuilder = strbuilder.slice(0, -1);
 			}
 
-			for (const [index, card] of plr.board.entries()) {
-				console.log(await card.readable(index + 1));
-			}
+			console.log(
+				boxen(parseTags(strbuilder), {
+					padding: 0.5,
+					title: plr === player ? "Board (You)" : "Board (Opponent)",
+					titleAlignment: "center",
+				}),
+			);
 		}
-
-		console.log("------------------------");
 	},
 
 	/**

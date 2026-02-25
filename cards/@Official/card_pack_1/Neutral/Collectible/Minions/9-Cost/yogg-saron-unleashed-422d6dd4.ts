@@ -24,6 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7007-8ed1-422d6dd4a646",
 
+	// TODO: Show titan stats in `Card.readable`
 	attack: 7,
 	health: 5,
 	tribes: [Tribe.None],

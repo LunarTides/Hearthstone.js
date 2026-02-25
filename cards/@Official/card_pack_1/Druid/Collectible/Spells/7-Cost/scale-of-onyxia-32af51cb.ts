@@ -11,6 +11,7 @@ import {
 } from "@Game/types.ts";
 import assert from "node:assert";
 
+// TODO: Sometimes, the whelps don't take damage when attacking.
 export const blueprint: Blueprint = {
 	name: "Scale of Onyxia",
 	text: "Fill your board with 2/1 Whelps with <b>Rush</b>.",

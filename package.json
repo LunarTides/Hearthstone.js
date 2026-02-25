@@ -38,6 +38,7 @@
 	},
 	"trustedDependencies": [
 		"@biomejs/biome",
-		"@kmamal/sdl"
+		"@kmamal/sdl",
+		"bun"
 	]
 }
