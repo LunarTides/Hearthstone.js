@@ -3,11 +3,16 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function POST(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "packs.like")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const username = event.params.username;

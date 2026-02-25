@@ -1,15 +1,43 @@
 import { sequence } from "@sveltejs/kit/hooks";
 import * as auth from "$lib/server/auth";
-import type { Handle } from "@sveltejs/kit";
+import type { Handle, RequestEvent } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import { count } from "drizzle-orm";
 import { generateDefaultSettings } from "$lib/server/db/setting";
 
+const handleGradualToken = async (event: RequestEvent) => {
+	// Gradual tokens don't work outside the API.
+	if (!event.route.id?.startsWith("/api")) {
+		return false;
+	}
+
+	const authHeader = event.request.headers.get("Authorization");
+	if (!authHeader) {
+		return false;
+	}
+
+	if (!authHeader.toLowerCase().startsWith("bearer ")) {
+		return false;
+	}
+
+	const tokenInHeader = authHeader.slice("bearer ".length);
+
+	const { token, user } = await auth.validateGradualToken(tokenInHeader);
+
+	event.locals.user = user;
+	event.locals.token = token;
+	return true;
+};
+
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const sessionToken = event.cookies.get(auth.sessionCookieName);
 
 	if (!sessionToken) {
+		if (await handleGradualToken(event)) {
+			return resolve(event);
+		}
+
 		event.locals.user = null;
 		event.locals.session = null;
 		return resolve(event);

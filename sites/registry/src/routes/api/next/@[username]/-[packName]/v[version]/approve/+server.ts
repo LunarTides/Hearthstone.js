@@ -10,11 +10,16 @@ import { setLatestVersion } from "$lib/server/db/pack.js";
 import { grantKarma } from "$lib/server/db/user.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 import { notify } from "$lib/server/db/notification.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function POST(event) {
 	const user = event.locals.user;
 	if (!user) {
 		return json({ message: "Please log in." });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, `moderation.packs.approve`)) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const { username, packName, version: packVersion } = event.params;

@@ -8,6 +8,7 @@ import { count, eq, and } from "drizzle-orm";
 import { memberHasPermission } from "$lib/group.js";
 import { resolve } from "$app/paths";
 import { notify } from "$lib/server/db/notification.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function POST(event) {
 	const clientUser = event.locals.user;
@@ -28,6 +29,12 @@ export async function POST(event) {
 
 	const { username: groupName } = event.params;
 	const { username } = form.data;
+
+	if (
+		!hasGradualPermission(event.locals.token?.permissions, `groups.@${groupName}.members.invite`)
+	) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+	}
 
 	const clientMember = (
 		await db

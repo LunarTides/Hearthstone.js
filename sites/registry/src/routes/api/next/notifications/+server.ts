@@ -1,4 +1,5 @@
 import * as table from "$lib/db/schema";
+import { hasGradualPermission } from "$lib/server/auth.js";
 import { db } from "$lib/server/db/index.js";
 import { getSetting } from "$lib/server/db/setting";
 import { json } from "@sveltejs/kit";
@@ -8,6 +9,10 @@ export async function GET(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "notifications.get")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	// TODO: Extract page logic.

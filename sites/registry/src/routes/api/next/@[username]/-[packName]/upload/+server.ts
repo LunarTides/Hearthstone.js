@@ -12,6 +12,7 @@ import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
 import { memberHasPermission } from "$lib/group.js";
 import { setLatestVersion } from "$lib/server/db/pack.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 interface Metadata {
 	versions: {
@@ -80,6 +81,10 @@ export async function POST(event) {
 	const user = event.locals.user;
 	if (!user) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "packs.upload")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const username = event.params.username;

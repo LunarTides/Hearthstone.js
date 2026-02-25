@@ -4,11 +4,16 @@ import { json } from "@sveltejs/kit";
 import { and, eq } from "drizzle-orm";
 import { satisfiesRole } from "$lib/user.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function DELETE(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "comments.delete")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const username = event.params.username;

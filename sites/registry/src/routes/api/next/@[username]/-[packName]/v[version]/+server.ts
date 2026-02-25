@@ -6,6 +6,7 @@ import fs from "node:fs/promises";
 import { getFullPacks, setLatestVersion } from "$lib/server/db/pack.js";
 import { censorPack } from "$lib/pack.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -53,6 +54,10 @@ export async function DELETE(event) {
 	const username = event.params.username;
 	const packName = event.params.packName;
 	const packVersion = event.params.version;
+
+	if (!hasGradualPermission(event.locals.token?.permissions, `packs.-${packName}.delete`)) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+	}
 
 	const pack = (
 		await db

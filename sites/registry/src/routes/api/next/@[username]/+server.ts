@@ -10,6 +10,7 @@ import { zod4 } from "sveltekit-superforms/adapters";
 import { userSchema, groupSchema } from "../../../@[username]/settings/profile/schema.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 import { notify } from "$lib/server/db/notification.js";
+import { hasGradualPermission } from "$lib/server/auth.js";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -60,6 +61,10 @@ export async function PUT(event) {
 	if (!clientUser) {
 		// TODO: Replace all `error` with `json`.
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "user.edit")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const username = event.params.username;

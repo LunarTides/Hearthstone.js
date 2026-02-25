@@ -3,11 +3,16 @@ import type { Notification } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function DELETE(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "notifications.delete")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const notificationId = event.params.uuid;

@@ -36,6 +36,15 @@ export const session = pgTable("session", {
 	}).notNull(),
 });
 
+export const gradualToken = pgTable("gradualToken", {
+	id: text("id").primaryKey(),
+	username: text("username")
+		.notNull()
+		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
+	hashedToken: text("hashed_token").notNull(),
+	permissions: text("permissions").array().notNull(),
+});
+
 export const userProfile = pgTable("userProfile", {
 	username: text("username")
 		.primaryKey()
@@ -234,6 +243,7 @@ export const setting = pgTable("setting", {
 });
 
 export type Session = typeof session.$inferSelect;
+export type GradualToken = typeof gradualToken.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Role = (typeof rolesEnum.enumValues)[number];
 export type UserProfile = typeof userProfile.$inferSelect;

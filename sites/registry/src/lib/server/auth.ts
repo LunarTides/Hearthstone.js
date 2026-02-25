@@ -4,6 +4,7 @@ import { sha256 } from "@oslojs/crypto/sha2";
 import { encodeBase64url, encodeHexLowerCase } from "@oslojs/encoding";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
+import { hash } from "@node-rs/argon2";
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -79,4 +80,75 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
 	event.cookies.delete(sessionCookieName, {
 		path: "/",
 	});
+}
+
+// Gradual Tokens
+export function generateGradualToken() {
+	const bytes = crypto.getRandomValues(new Uint8Array(64));
+	const token = encodeBase64url(bytes);
+	return token;
+}
+
+export async function createGradualToken(username: string, token: string, permissions: string[]) {
+	const tokenId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const tokenHash = await hash(token, {
+		// recommended minimum parameters
+		memoryCost: 19456,
+		timeCost: 2,
+		outputLen: 32,
+		parallelism: 1,
+	});
+
+	const gradualToken: table.GradualToken = {
+		id: tokenId,
+		username,
+		hashedToken: tokenHash,
+		permissions,
+	};
+
+	await db.insert(table.gradualToken).values(gradualToken);
+	return gradualToken;
+}
+
+export async function validateGradualToken(token: string) {
+	const tokenId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const [result] = await db
+		.select({
+			// Adjust user table here to tweak returned data
+			user: { username: table.user.username, role: table.user.role },
+			gradualToken: table.gradualToken,
+		})
+		.from(table.gradualToken)
+		.innerJoin(table.user, eq(table.gradualToken.username, table.user.username))
+		.where(eq(table.gradualToken.id, tokenId));
+
+	if (!result) {
+		return { token: null, user: null };
+	}
+
+	const { gradualToken, user } = result;
+
+	return { token: gradualToken, user };
+}
+
+export type GradualTokenValidationResult = Awaited<ReturnType<typeof validateGradualToken>>;
+
+export async function invalidateGradualToken(tokenId: string) {
+	await db.delete(table.gradualToken).where(eq(table.gradualToken.id, tokenId));
+}
+
+export function hasGradualPermission(permissions: string[] | undefined, permission: string) {
+	if (permissions === undefined) {
+		// Gradual permissions aren't used.
+		// Therefore, treat the user as having all permissions.
+		return true;
+	}
+
+	if (permission === "*") {
+		return true;
+	}
+
+	// TODO: Account for `group.*`
+
+	return permissions.includes(permission);
 }

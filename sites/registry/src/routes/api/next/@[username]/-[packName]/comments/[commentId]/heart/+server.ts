@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { getFullPackComment } from "$lib/server/db/comment.js";
 import type { RequestEvent } from "./$types.js";
-import type { ClientUser } from "$lib/server/auth.js";
+import { hasGradualPermission, type ClientUser } from "$lib/server/auth.js";
 import { resolve } from "$app/paths";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 import { notify } from "$lib/server/db/notification.js";
@@ -55,6 +55,10 @@ export async function POST(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
+	if (!hasGradualPermission(event.locals.token?.permissions, "comments.heart")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+	}
+
 	const comment = await setup(event, clientUser);
 	if (comment instanceof Response) {
 		return comment;
@@ -90,6 +94,10 @@ export async function DELETE(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "comments.heart")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const comment = await setup(event, clientUser);

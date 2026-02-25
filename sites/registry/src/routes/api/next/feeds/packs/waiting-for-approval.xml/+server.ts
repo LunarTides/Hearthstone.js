@@ -1,5 +1,6 @@
 import { resolve } from "$app/paths";
 import * as table from "$lib/db/schema.js";
+import { hasGradualPermission } from "$lib/server/auth";
 import { db } from "$lib/server/db/index.js";
 import { satisfiesRole } from "$lib/user.js";
 import { json } from "@sveltejs/kit";
@@ -16,6 +17,10 @@ export async function GET(event) {
 			{ message: "You do not have the the necessary privileges to view this RSS feed." },
 			{ status: 403 },
 		);
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "feeds.packs.waiting-for-approval")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const packs = await db.select().from(table.pack).where(eq(table.pack.approved, false));

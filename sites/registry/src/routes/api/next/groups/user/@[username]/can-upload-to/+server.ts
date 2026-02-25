@@ -3,11 +3,16 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import { and, eq } from "drizzle-orm";
 import { censorGroup, memberHasPermission } from "$lib/group.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "groups.get.can-upload-to")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const { username } = event.params;

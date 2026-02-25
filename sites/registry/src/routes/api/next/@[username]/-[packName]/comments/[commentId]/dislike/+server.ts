@@ -12,6 +12,10 @@ export async function POST(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
+	if (!hasGradualPermission(event.locals.token?.permissions, "comments.dislike")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+	}
+
 	const username = event.params.username;
 	const packName = event.params.packName;
 

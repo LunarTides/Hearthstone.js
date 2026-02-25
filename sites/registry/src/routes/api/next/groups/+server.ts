@@ -5,6 +5,7 @@ import { json } from "@sveltejs/kit";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import { count, ilike } from "drizzle-orm";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function POST(event) {
 	const clientUser = event.locals.user;
@@ -24,6 +25,9 @@ export async function POST(event) {
 	}
 
 	const { name } = form.data;
+	if (!hasGradualPermission(event.locals.token?.permissions, `groups.@${name}.edit`)) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+	}
 
 	const existingGroup = await db
 		.select({ count: count() })

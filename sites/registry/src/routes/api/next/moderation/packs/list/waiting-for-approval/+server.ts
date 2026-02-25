@@ -5,6 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { getFullPacks } from "$lib/server/db/pack";
 import { getSetting } from "$lib/server/db/setting";
 import { satisfiesRole } from "$lib/user.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function GET(event) {
 	const clientUser = event.locals.user;
@@ -18,6 +19,15 @@ export async function GET(event) {
 			{ message: "You do not have the the necessary privileges to do this." },
 			{ status: 403 },
 		);
+	}
+
+	if (
+		!hasGradualPermission(
+			event.locals.token?.permissions,
+			"moderation.packs.list.waiting-for-approval",
+		)
+	) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const page = parseInt(event.url.searchParams.get("page") || "1");

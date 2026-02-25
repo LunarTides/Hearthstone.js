@@ -5,11 +5,16 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import { eq, and } from "drizzle-orm";
 import z from "zod";
+import { hasGradualPermission } from "$lib/server/auth";
 
 export async function POST(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
 		return json({ message: "Please log in." }, { status: 401 });
+	}
+
+	if (!hasGradualPermission(event.locals.token?.permissions, "groups.invites.accept")) {
+		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
 
 	const j = await event.request.json();
