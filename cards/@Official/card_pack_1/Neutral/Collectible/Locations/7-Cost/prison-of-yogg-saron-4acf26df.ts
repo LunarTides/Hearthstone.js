@@ -41,6 +41,7 @@ export const blueprint: Blueprint = {
 				continue;
 			}
 
+			card.owner = owner;
 			await card.trigger(Ability.Cast);
 		}
 

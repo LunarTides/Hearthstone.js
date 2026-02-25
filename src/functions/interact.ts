@@ -114,7 +114,7 @@ const prompt = {
 				parseInt(i, 10),
 				element,
 			)) ?? {
-				name: element,
+				name: parseTags(element),
 				value: i,
 			};
 
@@ -149,13 +149,16 @@ const prompt = {
 
 			if (typeof element === "string") {
 				choices.push({
-					name: element,
+					name: parseTags(element),
 					value: element.toLowerCase(),
 				});
 				continue;
 			}
 
-			choices.push(element);
+			choices.push({
+				...element,
+				name: element.name && parseTags(element.name),
+			});
 		}
 
 		const answer = await select({
@@ -679,6 +682,7 @@ const prompt = {
 		times: number,
 		...prompts: Array<[string, () => Promise<void>]>
 	): Promise<void> {
+		// TODO: Add event broadcast.
 		for (let i = 0; i < times; i++) {
 			const queue = game.player.inputQueueNext();
 			if (queue !== undefined) {

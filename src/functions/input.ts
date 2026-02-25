@@ -37,6 +37,7 @@ export type InputConfig = {
 
 const history: string[] = [];
 
+// TODO: Stop pasting a deckcode killing the user's ears.
 export default createPrompt<string, InputConfig>((config, done) => {
 	const { prefill = "tab" } = config;
 	const theme = makeTheme<InputTheme>(inputTheme, config.theme);

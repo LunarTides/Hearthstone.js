@@ -406,7 +406,7 @@ export const config: GameConfig = {
 		hideValueHistoryKeys: [
 			Event.DrawCard,
 			Event.ForgeCard,
-			Event.BurnCard,
+			// Event.BurnCard,
 			Event.AddCardToHand,
 			Event.AddCardToDeck,
 		],

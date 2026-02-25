@@ -166,9 +166,8 @@ export const deckcodeFunctions = {
 				}
 
 				const card = await Card.create(blueprint.id, player, true);
-
 				for (let i = 0; i < parseInt(copies, 10); i++) {
-					newDeck.push(card);
+					newDeck.push(await card.imperfectCopy());
 				}
 
 				if (card.deckSettings) {

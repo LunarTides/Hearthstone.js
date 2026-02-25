@@ -70,6 +70,7 @@ export const blueprint: Blueprint = {
 							continue;
 						}
 
+						card.owner = player;
 						if (player === owner) {
 							card.addKeyword(Keyword.Rush);
 						}
