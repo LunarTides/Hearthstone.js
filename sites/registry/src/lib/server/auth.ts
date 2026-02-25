@@ -90,9 +90,10 @@ export function generateGradualToken() {
 }
 
 export async function createGradualToken(username: string, token: string, permissions: string[]) {
-	const tokenId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const tokenHash = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const gradualToken: table.GradualToken = {
-		id: tokenId,
+		id: Bun.randomUUIDv7(),
+		hashedToken: tokenHash,
 		username,
 		permissions,
 	};
@@ -102,7 +103,7 @@ export async function createGradualToken(username: string, token: string, permis
 }
 
 export async function validateGradualToken(token: string) {
-	const tokenId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+	const tokenHash = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const [result] = await db
 		.select({
 			// Adjust user table here to tweak returned data
@@ -111,7 +112,7 @@ export async function validateGradualToken(token: string) {
 		})
 		.from(table.gradualToken)
 		.innerJoin(table.user, eq(table.gradualToken.username, table.user.username))
-		.where(eq(table.gradualToken.id, tokenId));
+		.where(eq(table.gradualToken.hashedToken, tokenHash));
 
 	if (!result) {
 		return { token: null, user: null };
