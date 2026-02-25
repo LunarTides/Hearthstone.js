@@ -41,7 +41,6 @@ export const gradualToken = pgTable("gradualToken", {
 	username: text("username")
 		.notNull()
 		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
-	hashedToken: text("hashed_token").notNull(),
 	permissions: text("permissions").array().notNull(),
 });
 

@@ -91,18 +91,9 @@ export function generateGradualToken() {
 
 export async function createGradualToken(username: string, token: string, permissions: string[]) {
 	const tokenId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-	const tokenHash = await hash(token, {
-		// recommended minimum parameters
-		memoryCost: 19456,
-		timeCost: 2,
-		outputLen: 32,
-		parallelism: 1,
-	});
-
 	const gradualToken: table.GradualToken = {
 		id: tokenId,
 		username,
-		hashedToken: tokenHash,
 		permissions,
 	};
 
