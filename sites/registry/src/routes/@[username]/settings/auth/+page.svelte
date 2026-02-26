@@ -24,7 +24,7 @@
 <div class="flex flex-col gap-1 m-1 p-2 bg-header">
 	<h2>Gradual Tokens</h2>
 
-	{#each data.tokens as token (token.id)}
+	{#each data.tokens as token (token.name)}
 		<div class="p-2 bg-background">
 			<div class="float-right">
 				<!-- TODO: Make these work. -->

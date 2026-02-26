@@ -100,6 +100,7 @@ export async function createGradualToken(
 		username,
 		name,
 		permissions,
+		creationDate: new Date(Date.now()),
 	};
 
 	await db.insert(table.gradualToken).values(gradualToken);
