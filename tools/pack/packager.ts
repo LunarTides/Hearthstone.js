@@ -81,7 +81,8 @@ async function getPacks() {
 		false,
 	);
 
-	return packs;
+	// NOTE: The packs are sorted so that they are in a consistant order.
+	return packs.toSorted((a, b) => a.path.localeCompare(b.path));
 }
 
 async function parseMetadataFile(pack: string) {
@@ -202,6 +203,9 @@ async function importPack(
 				recursive: true,
 				force: true,
 			});
+		} else {
+			// Re-compress pack for the future.
+			await compressPack(pack.path);
 		}
 	}
 
@@ -344,38 +348,44 @@ async function exportPack(pack?: Pack) {
 	);
 
 	// Add files to archive.
-	const files: Record<string, string> = {};
-
-	await game.functions.util.searchFolder(
-		`/packs/${author}+${name}`,
-		async (index, path, file, content) => {
-			if (!content) {
-				return;
-			}
-
-			const relativePath = path.split(`${author}+${name}`)[1];
-			files[relativePath] = content;
-		},
-	);
-
-	const archive = new Bun.Archive(files, { compress: "gzip" });
-	const bytes = await archive.bytes();
-	await game.functions.util.fs(
-		"writeFile",
-		`/packs/${author}+${name}.tar.gz`,
-		bytes,
-	);
-
-	await game.functions.util.fs("rm", `/packs/${author}+${name}`, {
-		recursive: true,
-		force: true,
-	});
+	await compressPack(`/packs/${author}+${name}`);
 
 	await game.pause(
 		`<green>Done.</green> Send the compressed file to whoever you'd like.\n`,
 	);
 
 	return true;
+}
+
+async function compressPack(path: string) {
+	const stats = await game.functions.util.fs("stat", path);
+	if (!stats.isDirectory()) {
+		return;
+	}
+
+	// Add files to archive.
+	const files: Record<string, string> = {};
+
+	await game.functions.util.searchFolder(
+		path,
+		async (index, p, file, content) => {
+			if (!content) {
+				return;
+			}
+
+			const relativePath = p.split(path)[1];
+			files[relativePath] = content;
+		},
+	);
+
+	const archive = new Bun.Archive(files, { compress: "gzip" });
+	const bytes = await archive.bytes();
+	await game.functions.util.fs("writeFile", `${path}.tar.gz`, bytes);
+
+	await game.functions.util.fs("rm", path, {
+		recursive: true,
+		force: true,
+	});
 }
 
 async function promptExportPack() {
@@ -897,11 +907,17 @@ const registry = {
 
 	upload: {
 		prompt: async () => {
+			hub.watermark(false);
+			console.log("<cyan>?</cyan> <b>Registry Options > Upload</b>");
+
 			if (!(await promptForAPIToken())) {
 				return;
 			}
 
 			let packs = await getPacks();
+			for (const pack of packs) {
+				await compressPack(pack.path);
+			}
 
 			await hub.createUILoop(
 				{

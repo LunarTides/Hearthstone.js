@@ -196,10 +196,6 @@ class Pack {
 	 */
 	async downloadToPath(folderPath: string) {
 		const downloadInfo = await this.downloadBlob();
-		if (!downloadInfo) {
-			throw new Error("This error should never trigger.");
-		}
-
 		const bytes = await downloadInfo.data.bytes();
 
 		await fs.writeFile(`${folderPath}/${downloadInfo.filename}`, bytes);
