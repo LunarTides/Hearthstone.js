@@ -99,7 +99,7 @@ export async function POST(event) {
 			)
 			.where(eq(table.group.username, username))
 			.limit(1);
-		if (!result) {
+		if (result.length <= 0) {
 			return json(
 				{ message: "You do not have permission to upload a pack for this user." },
 				{ status: 403 },
