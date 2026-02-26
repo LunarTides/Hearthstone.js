@@ -7,6 +7,7 @@
 	import { Heart, HeartPlus, ThumbsDown, ThumbsUp, Trash2 } from "lucide-svelte";
 	import type { CommentWithExtras } from "$lib/db/schema";
 	import type { ClientUser } from "$lib/server/auth";
+	import { dateFormat } from "$lib/date";
 
 	let {
 		comment,
@@ -19,16 +20,6 @@
 	} = $props();
 
 	let commentDeleteConfirm = $state("");
-
-	const dateFormat = new Intl.DateTimeFormat("en-US", {
-		day: "2-digit",
-		month: "long",
-		year: "numeric",
-		hour12: false,
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-	});
 </script>
 
 <div

@@ -4,7 +4,6 @@ import { sha256 } from "@oslojs/crypto/sha2";
 import { encodeBase64url, encodeHexLowerCase } from "@oslojs/encoding";
 import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
-import { hash } from "@node-rs/argon2";
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -89,12 +88,17 @@ export function generateGradualToken() {
 	return token;
 }
 
-export async function createGradualToken(username: string, token: string, permissions: string[]) {
+export async function createGradualToken(
+	username: string,
+	name: string,
+	token: string,
+	permissions: string[],
+) {
 	const tokenHash = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const gradualToken: table.GradualToken = {
-		id: Bun.randomUUIDv7(),
 		hashedToken: tokenHash,
 		username,
+		name,
 		permissions,
 	};
 
@@ -125,8 +129,8 @@ export async function validateGradualToken(token: string) {
 
 export type GradualTokenValidationResult = Awaited<ReturnType<typeof validateGradualToken>>;
 
-export async function invalidateGradualToken(tokenId: string) {
-	await db.delete(table.gradualToken).where(eq(table.gradualToken.id, tokenId));
+export async function invalidateGradualToken(tokenHash: string) {
+	await db.delete(table.gradualToken).where(eq(table.gradualToken.hashedToken, tokenHash));
 }
 
 export function hasGradualPermission(permissions: string[] | undefined, permission: string) {

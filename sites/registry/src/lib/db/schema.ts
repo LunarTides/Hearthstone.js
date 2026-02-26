@@ -37,14 +37,13 @@ export const session = pgTable("session", {
 });
 
 export const gradualToken = pgTable("gradualToken", {
-	id: uuid("id")
-		.primaryKey()
-		.default(sql`uuidv7()`),
-	hashedToken: text("hashed_token").notNull(),
+	hashedToken: text("hashed_token").primaryKey(),
 	username: text("username")
 		.notNull()
 		.references(() => user.username, { onUpdate: "cascade", onDelete: "cascade" }),
+	name: text("name").notNull(),
 	permissions: text("permissions").array().notNull(),
+	creationDate: timestamp("creation_date").notNull().defaultNow(),
 });
 
 export const userProfile = pgTable("userProfile", {

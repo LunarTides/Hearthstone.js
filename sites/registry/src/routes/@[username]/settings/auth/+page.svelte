@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dateFormat } from "$lib/date.js";
 	import { RefreshCw, Trash2 } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
 
@@ -20,8 +21,9 @@
 
 <p>2-Factor Auth</p>
 
-<h2>Gradual Tokens</h2>
 <div class="flex flex-col gap-1 m-1 p-2 bg-header">
+	<h2>Gradual Tokens</h2>
+
 	{#each data.tokens as token (token.id)}
 		<div class="p-2 bg-background">
 			<div class="float-right">
@@ -34,8 +36,9 @@
 				</button>
 			</div>
 
-			<p class="font-mono">{token.id}</p>
-			<p>{token.permissions.toSorted((a, b) => a.localeCompare(b)).join(", ")}</p>
+			<p class="font-bold">{token.name}</p>
+			<p class="font-mono">{token.permissions.toSorted((a, b) => a.localeCompare(b)).join(", ")}</p>
+			<p class="text-gray-500 italic">Created {dateFormat.format(new Date(token.creationDate))}</p>
 		</div>
 	{/each}
 
@@ -59,6 +62,18 @@
 			{/each}
 		{/if}
 
+		<label for="name">Name</label>
+		<input
+			name="name"
+			class="bg-background"
+			aria-invalid={$createTokenErrors.name ? "true" : undefined}
+			bind:value={$createTokenForm.name}
+			{...$createTokenConstraints.name}
+		/>
+		{#if $createTokenErrors.name}
+			<span class="text-red-500">{$createTokenErrors.name}</span>
+		{/if}
+
 		<!-- TODO: Make this better. -->
 		<label for="permissions">Permissions</label>
 		<textarea
@@ -68,9 +83,9 @@
 			bind:value={$createTokenForm.permissions}
 			{...$createTokenConstraints.permissions}
 		></textarea>
-		{#if $createTokenErrors.permissions}<span class="text-red-500"
-				>{$createTokenErrors.permissions}</span
-			>{/if}
+		{#if $createTokenErrors.permissions}
+			<span class="text-red-500">{$createTokenErrors.permissions}</span>
+		{/if}
 
 		<button class="custom-button p-2 rounded-none">Save</button>
 	</form>

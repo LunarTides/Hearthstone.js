@@ -25,7 +25,7 @@ export async function GET(event) {
 		.select()
 		.from(table.gradualToken)
 		.where(eq(table.gradualToken.username, username))
-		.orderBy(table.gradualToken.id);
+		.orderBy(table.gradualToken.creationDate);
 
 	return json(
 		{
@@ -56,10 +56,10 @@ export async function POST(event) {
 		);
 	}
 
-	const { permissions } = form.data;
+	const { name, permissions } = form.data;
 
 	const token = auth.generateGradualToken();
-	const gradualToken = await auth.createGradualToken(clientUser.username, token, permissions);
+	const gradualToken = await auth.createGradualToken(clientUser.username, name, token, permissions);
 
 	return json(
 		{
