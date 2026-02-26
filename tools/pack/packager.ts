@@ -703,6 +703,58 @@ const regbot = new RegBot({
 	baseUrl: game.config.general.registryUrl,
 });
 
+async function promptForAPIToken() {
+	if (regbot.getOptions().token) {
+		return true;
+	}
+
+	console.log("<yellow>This requires an API token to use.</yellow>");
+	console.log();
+	console.log("<b>How to obtain a token.</b>");
+	console.log("1. Go to your profile in the registry, and click 'Settings'.");
+	console.log(
+		"2. Under 'Authentication', you should find the 'Gradual Tokens' section.",
+	);
+	console.log(
+		"3. Create a new token here. Remember to give it a unique name to remember it.",
+	);
+	console.log("4. Give it the scope 'packs.upload' at minimum.");
+	console.log(
+		"5. After creation, you will see the token. You <i>cannot</i> see the token again after this point. Copy and paste that token here.",
+	);
+	console.log();
+
+	const token = await game.input({
+		message: "Token:",
+	});
+
+	if (!token) {
+		return false;
+	}
+
+	let dotenvContent = "";
+	if (await game.functions.util.fs("exists", "/.env")) {
+		dotenvContent = (await game.functions.util.fs(
+			"readFile",
+			"/.env",
+		)) as string;
+		dotenvContent += "\n";
+	}
+
+	const tokenEnvEntry = `REGISTRY_API_TOKEN='${token}'`;
+	await game.functions.util.fs(
+		"writeFile",
+		"/.env",
+		`${dotenvContent}${tokenEnvEntry}`,
+	);
+
+	regbot.useOptions({
+		token,
+	});
+
+	return true;
+}
+
 const registry = {
 	prompt: async () => {
 		// Ensure networking permissions
@@ -726,8 +778,11 @@ const registry = {
 				},
 			},
 			{
-				name: "Upload (WIP)",
-				disabled: true,
+				name: "Upload",
+				callback: async () => {
+					await registry.upload.prompt();
+					return true;
+				},
 			},
 		);
 	},
@@ -763,9 +818,22 @@ const registry = {
 
 			// Search & Display packs
 			console.log("Searching...");
-			const packs = await regbot.searchPacks(query);
+
+			let packs: Awaited<ReturnType<typeof regbot.searchPacks>>;
+			try {
+				packs = await regbot.searchPacks(query);
+			} catch (error) {
+				game.functions.audio.playSFX("error");
+
+				console.log(`<red>ERROR: ${error.message} (${error.status})`);
+				console.log();
+				await game.pause();
+
+				return;
+			}
+
 			for (const pack of packs) {
-				console.log(regbot.displayPack(pack));
+				console.log(pack.display());
 			}
 
 			console.log();
@@ -777,7 +845,7 @@ const registry = {
 				},
 				...packs.map((pack) => ({
 					name: `@${pack.ownerName}/${pack.name}`,
-					description: regbot.displayPack(pack),
+					description: pack.display(),
 					callback: async (answer: number) => {
 						const pack = packs[answer];
 
@@ -786,10 +854,19 @@ const registry = {
 						// Download the pack to the 'packs' folder
 						// TODO: Add progress bar.
 						console.log("Downloading...");
-						await regbot.downloadToPath(
-							pack,
-							game.functions.util.restrictPath("/packs"),
-						);
+						try {
+							await pack.downloadToPath(
+								game.functions.util.restrictPath("/packs"),
+							);
+						} catch (error) {
+							game.functions.audio.playSFX("error");
+
+							console.log(`<red>ERROR: ${error.message} (${error.status})`);
+							console.log();
+							await game.pause();
+
+							return true;
+						}
 
 						const packsInFolder = await getPacks();
 						const packInFolder = packsInFolder.find(
@@ -814,6 +891,66 @@ const registry = {
 						return false;
 					},
 				})),
+			);
+		},
+	},
+
+	upload: {
+		prompt: async () => {
+			if (!(await promptForAPIToken())) {
+				return;
+			}
+
+			let packs = await getPacks();
+
+			await hub.createUILoop(
+				{
+					message: "Upload a Pack",
+					backButtonText: "Done",
+					seperatorBeforeBackButton: false,
+					callbackBefore: async () => {
+						hub.watermark(false);
+						console.log("<cyan>?</cyan> <b>Registry Options > Upload</b>");
+
+						packs = await getPacks();
+					},
+				},
+				...packs.map((p) => ({
+					name: `@${p.ownerName}/${p.name}`,
+					callback: async (answer: number) => {
+						const packInfo = packs[answer];
+						const pack = new regbot.Pack(packInfo);
+
+						console.log("Uploading...");
+						try {
+							const uploadedPack = await pack.upload(packInfo.bytes);
+							hub.playAction1();
+
+							console.log(uploadedPack.display());
+							console.log("<green>The pack was uploaded successfully!</green>");
+						} catch (error) {
+							game.functions.audio.playSFX("error");
+							console.log(`<red>ERROR: ${error.message} (${error.status})`);
+
+							if (
+								error.message ===
+								"This request is outside the scope of this token."
+							) {
+								console.log(
+									`<yellow>HINT: Have you already uploaded a different version of this pack? If so, make sure your token has the 'packs.-${pack.name}.upload' scope.</yellow>`,
+								);
+							}
+						}
+
+						console.log();
+						await game.pause();
+						return true;
+					},
+				})),
+				new Separator(),
+				{
+					name: "Refresh",
+				},
 			);
 		},
 	},
