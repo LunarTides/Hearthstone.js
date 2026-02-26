@@ -3,6 +3,7 @@ import * as table from "$lib/db/schema.js";
 import { json } from "@sveltejs/kit";
 import { eq, and } from "drizzle-orm";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
+import { hasGradualPermission } from "$lib/server/auth";
 
 // TODO: Deduplicate.
 // TODO: Split into POST and DELETE for dislikes and undislikes.
