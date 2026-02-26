@@ -95,6 +95,7 @@ export async function createUILoop(
 	);
 }
 
+// TODO: Remove at some point.
 export async function playDelve() {
 	game.functions.audio.playSFX("ui.delve");
 }

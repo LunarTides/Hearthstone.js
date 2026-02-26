@@ -142,9 +142,9 @@ async function importPack(
 	pack: Pack,
 	options: { forceDelete: boolean } = { forceDelete: false },
 ) {
+	const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 	if (pack.compressed) {
 		const archive = new Bun.Archive(pack.bytes);
-		const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 		await game.functions.util.fs("mkdir", folderPath);
 		await archive.extract(folderPath);
 		await game.functions.util.fs("rm", pack.path);
@@ -156,6 +156,7 @@ async function importPack(
 	// Read and validate metadata.
 	const metadata = await parseMetadataFile(`${pack.ownerName}+${pack.name}`);
 	if (!metadata) {
+		await compressPack(folderPath);
 		return false;
 	}
 
@@ -171,6 +172,7 @@ async function importPack(
 			default: false,
 		});
 		if (!permissionConfirm) {
+			await compressPack(folderPath);
 			return false;
 		}
 	}
@@ -252,10 +254,13 @@ async function promptImportPack() {
 async function exportPack(pack?: Pack) {
 	let metadata: Metadata;
 
+	const folderPath = pack
+		? `${pack.parentPath}/${pack.ownerName}+${pack.name}`
+		: "";
 	if (pack) {
+		const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 		if (pack.compressed) {
 			const archive = new Bun.Archive(pack.bytes);
-			const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 			await game.functions.util.fs("mkdir", folderPath);
 			await archive.extract(folderPath);
 			await game.functions.util.fs("rm", pack.path);
@@ -273,6 +278,7 @@ async function exportPack(pack?: Pack) {
 			await game.pause(
 				"<yellow>That pack doesn't have a 'pack.json5' file.</yellow>",
 			);
+			await compressPack(folderPath);
 			return false;
 		}
 
@@ -313,6 +319,10 @@ async function exportPack(pack?: Pack) {
 
 	// If the configuration was cancelled, don't export the pack.
 	if (!(await configureMetadata(metadata))) {
+		if (folderPath) {
+			await compressPack(folderPath);
+		}
+
 		return false;
 	}
 
@@ -898,7 +908,7 @@ const registry = {
 							await game.pause();
 						}
 
-						return false;
+						return true;
 					},
 				})),
 			);

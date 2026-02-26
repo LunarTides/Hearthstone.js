@@ -722,6 +722,7 @@ export const audioFunctions = {
 	 *
 	 * @returns If the sound effect was successfully played.
 	 */
+	// TODO: Make this function more accessible.
 	async playSFX(
 		key: keyof typeof sfx,
 		rawOptions?: Partial<{

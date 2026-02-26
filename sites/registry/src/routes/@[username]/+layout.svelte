@@ -84,6 +84,7 @@
 		{#await data.currentUser}
 			<p>Loading...</p>
 		{:then user}
+			<!-- TODO: Make this `ml-1`. Do this elsewhere too. -->
 			<div class="ml-2 my-2">
 				{#if user.type === "User"}
 					<UserBig {user} clientUser={data.user} />
