@@ -6,7 +6,7 @@ import { tmpdir } from "os";
 import { db } from "$lib/server/db/index.js";
 import type { Pack } from "$lib/db/schema.js";
 import * as table from "$lib/db/schema.js";
-import { eq, and, type InferInsertModel } from "drizzle-orm";
+import { eq, and, type InferInsertModel, count } from "drizzle-orm";
 import semver from "semver";
 import { getCategorySettings } from "$lib/server/db/setting.js";
 import { censorPack } from "$lib/pack.js";
@@ -83,10 +83,6 @@ export async function POST(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
-	if (!hasGradualPermission(event.locals.token?.permissions, "packs.upload")) {
-		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
-	}
-
 	const username = event.params.username;
 	const packName = event.params.packName;
 
@@ -118,6 +114,23 @@ export async function POST(event) {
 				{ message: "You do not have permission to upload a pack for this user." },
 				{ status: 403 },
 			);
+		}
+	}
+
+	const existingVersions = await db
+		.select({ count: count() })
+		.from(table.pack)
+		.where(and(eq(table.pack.ownerName, username), eq(table.pack.name, packName)))
+		.limit(1);
+	if (existingVersions[0].count > 0) {
+		// This is an existing pack.
+		if (!hasGradualPermission(event.locals.token?.permissions, `packs.-${packName}.upload`)) {
+			return json({ message: "This request is outside the scope of this token." }, { status: 403 });
+		}
+	} else {
+		// This is a new pack.
+		if (!hasGradualPermission(event.locals.token?.permissions, "packs.upload")) {
+			return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 		}
 	}
 
