@@ -1,4 +1,4 @@
-import type { AI } from "@Game/ai.ts";
+import { SentimentAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import {
 	commands,
@@ -694,7 +694,9 @@ const prompt = {
 			}
 
 			if (game.player.ai) {
-				const aiChoice = game.player.ai.chooseOne(prompts.map((p) => p[0]));
+				const aiChoice = await game.player.ai.chooseOne(
+					prompts.map((p) => p[0]),
+				);
 				if (aiChoice === undefined) {
 					continue;
 				}
@@ -747,7 +749,7 @@ const prompt = {
 		await game.functions.interact.print.gameState(player);
 
 		if (player.ai) {
-			const aiChoice = player.ai.chooseFromList(prompt, answers);
+			const aiChoice = await player.ai.chooseFromList(prompt, answers);
 			if (!aiChoice) {
 				// Code, expected, actual
 				throw new Error(
@@ -780,7 +782,7 @@ const prompt = {
 		}
 
 		if (player?.ai) {
-			return player.ai.yesNoQuestion(prompt);
+			return await player.ai.yesNoQuestion(prompt);
 		}
 
 		console.log();
@@ -914,7 +916,7 @@ const prompt = {
 
 		// If the player is an ai, hand over control to the ai.
 		if (game.player.ai) {
-			return game.player.ai.promptTarget(newPrompt, card, flags);
+			return await game.player.ai.promptTarget(newPrompt, card, flags);
 		}
 
 		const choices = [];
@@ -1125,7 +1127,7 @@ const prompt = {
 		let toMulligan: Card[];
 
 		if (player.ai) {
-			toMulligan = player.ai.mulligan();
+			toMulligan = await player.ai.mulligan();
 		} else {
 			const choices = [];
 
@@ -1181,7 +1183,7 @@ const prompt = {
 
 		// Check if ai
 		if (game.player.ai) {
-			const card = game.player.ai.dredge(cards);
+			const card = await game.player.ai.dredge(cards);
 			if (!card) {
 				return undefined;
 			}
@@ -1249,7 +1251,7 @@ const prompt = {
 		}
 
 		if (game.player.ai) {
-			return game.player.ai.discover(cards);
+			return await game.player.ai.discover(cards);
 		}
 
 		const choice = await game.prompt.customSelect(
@@ -1277,13 +1279,21 @@ const prompt = {
 		let target: Target | -1 | null;
 
 		if (game.player.ai) {
-			const alternativeModel = `legacyAttack${game.config.ai.attackModel}`;
+			let aiSelections: Array<-1 | Target> = [];
 
-			// Run the correct ai attack model
-			const model = game.player.ai[alternativeModel as keyof AI];
-			const aiSelections = model
-				? (model as () => Array<-1 | Target>)()
-				: game.player.ai.attack();
+			if (game.player.ai instanceof SentimentAI) {
+				const alternativeModel = `legacyAttack${game.config.ai.sentiment.attackModel}`;
+
+				// Run the correct ai attack model
+				const model = game.player.ai[alternativeModel as keyof SentimentAI];
+				aiSelections = model
+					? (model as () => Array<-1 | Target>)()
+					: await game.player.ai.attack();
+			} else {
+				// Simulation AI.
+				const result = await game.player.ai.attack();
+				aiSelections = [result.attacker, result.target];
+			}
 
 			attacker = aiSelections[0];
 			target = aiSelections[1];
@@ -1967,10 +1977,16 @@ export const interactFunctions = {
 		await game.event.tick(Event.Dummy, undefined, game.player);
 
 		if (game.player.ai) {
-			const rawInput = game.player.ai.calcMove();
+			console.log("The AI is thinking...");
+			const rawInput = await game.player.ai.gameloop();
 			if (!rawInput) {
 				return false;
 			}
+
+			// TODO: Remove.
+			// console.log("\n<b>Best Move</b>:");
+			// console.log(rawInput);
+			// await game.pause();
 
 			const input =
 				rawInput instanceof Card

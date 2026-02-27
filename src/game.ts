@@ -1,4 +1,4 @@
-import { AI } from "@Game/ai.ts";
+import { SentimentAI, SimulationAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { eventManager } from "@Game/event.ts";
 import { functions } from "@Game/functions/index.ts";
@@ -819,7 +819,7 @@ const playCard = {
 		let q: boolean;
 
 		if (player.ai) {
-			q = player.ai.trade(card);
+			q = await player.ai.trade(card);
 		} else {
 			await game.functions.interact.print.gameState(player);
 			q = await game.prompt.yesNo(
@@ -866,7 +866,7 @@ const playCard = {
 		let q: boolean;
 
 		if (player.ai) {
-			q = player.ai.forge(card);
+			q = await player.ai.forge(card);
 		} else {
 			await game.functions.interact.print.gameState(player);
 			q = await game.prompt.yesNo(
@@ -1168,6 +1168,8 @@ export class Game {
 	 */
 	noOutput = false;
 
+	isSimulation = false;
+
 	/**
 	 * If the game is currently running.
 	 *
@@ -1334,12 +1336,23 @@ export class Game {
 
 			// HACK: Use of never. Might not update correctly if the config format is changed
 			if (this.config.ai[`player${player.id + 1}` as never]) {
-				player.ai = new AI(player);
+				let ai: SentimentAI | SimulationAI;
+
+				const model = this.config.ai[`player${player.id + 1}Model` as never];
+				if (model === "sentiment") {
+					ai = new SentimentAI(player);
+				} else if (model === "simulation") {
+					ai = new SimulationAI(player);
+				} else {
+					throw new Error(`"${model}" is not a valid AI model.`);
+				}
+
+				player.ai = ai;
 			}
 
 			if (this.config.ai.random && !setRandomAI && this.lodash.random() > 0.5) {
 				setRandomAI = true;
-				player.ai = new AI(player);
+				player.ai = new SentimentAI(player);
 			}
 		}
 
@@ -1477,7 +1490,7 @@ export class Game {
 	 * @returns Success
 	 */
 	async endGame(winner: Player): Promise<boolean> {
-		if (!winner) {
+		if (!winner || this.isSimulation) {
 			return false;
 		}
 

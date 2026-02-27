@@ -1,4 +1,4 @@
-import type { AI } from "@Game/ai.ts";
+import type { SentimentAI, SimulationAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 
 import {
@@ -37,7 +37,7 @@ export class Player {
 	 *
 	 * console.log(discover);
 	 */
-	ai?: AI;
+	ai?: SentimentAI | SimulationAI;
 
 	/**
 	 * How much damage the player gets damaged the next time they draw a card from an empty deck.

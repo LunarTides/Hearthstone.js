@@ -171,124 +171,208 @@ export const config: GameConfig = {
 		 */
 		random: false,
 
-		// If the ai should look at the context of a card's description in order to judge more accurately.
-		contextAnalysis: true,
+		// Which AI model the players should use.
+		// The available options are "sentiment" and "simulation".
+		// Sentiment is older and far less accurate, but faster.
+		// Simulation is newer and far more accurate, but slower. It is also experimental.
+		player1Model: "simulation",
+		player2Model: "sentiment",
 
-		/*
-		 * Which attacking model should the ai use.
-		 * For example, 1 will use the legacy attacking model
-		 * Set to -1 to use the latest model.
-		 */
-		attackModel: -1,
+		// Options for the simulation model.
+		// The simulation model plays cards in a "simulation" of the game.
+		// This allows it to see exactly what every card does.
+		//
+		// Due to having to create a simulation per action at depth 1, it is also quite slow.
+		simulation: {
+			// How far into the future the AI will predict.
+			// It cannot see your cards unless '... > Difficulty > Mirror' is true.
+			depth: 3,
 
-		// How much score a card needs to be spared from mulliganing.
-		mulliganThreshold: 3,
+			// The future is uncertain. Therefore, the further the AI sees into the future,
+			// the less valuable that information is.
+			//
+			// This is how much is scales. The formula is: evaluation -= currentDepth * depthCost
+			depthCost: 2,
 
-		// How much score a card needs to not be traded.
-		tradeThreshold: 2,
+			difficulty: {
+				// If the card can see cards burned in the future.
+				// This allows the AI to avoid actions that burns cards in the future.
+				canSeeFutureBurnedCards: true,
 
-		/*
-		 * How much the ai values stats.
-		 * The formula is: score += (attack + health) * statsBias
-		 * For example, at 0.2, 1/1 stats is valued at 0.4
-		 * Another example, at 1, 1/1 stats is valued at 2
-		 */
-		statsBias: 0.2,
+				// If enabled, the AI will play a mirror-match with itself every turn.
+				// This makes the AI a lot more accurate, at the cost of revealing your hand to the AI.
+				mirror: true,
+			},
+		},
 
-		/*
-		 * How much the ai dislikes mana cost.
-		 * The formula is: score -= cost * costBias
-		 */
-		costBias: 0.333,
+		// Options for the sentiment model.
+		//
+		// The sentiment model scores cards based on superficial information,
+		// and looks for certain words in the card's text.
+		// This is pretty much educated guessing.
+		//
+		// Due to only having to do a little math, and regex calculations, this model is quite fast.
+		sentiment: {
+			// If the ai should look at the context of a card's description in order to judge more accurately.
+			contextAnalysis: true,
 
-		/*
-		 * How much the ai values spells. This exists for equality with minions, since minions gets stats.
-		 * The formula is: score += spellValue * statsBias
-		 */
-		spellValue: 4,
+			/*
+			 * Which attacking model should the ai use.
+			 * For example, 1 will use the legacy attacking model
+			 * Set to -1 to use the latest model.
+			 */
+			attackModel: -1,
 
-		/*
-		 * How much the ai values keywords.
-		 * The formula is: score += amountOfKeywords * keywordValue
-		 */
-		keywordValue: 2,
+			// How much score a card needs to be spared from mulliganing.
+			mulliganThreshold: 3,
 
-		/*
-		 * How much the ai values abilites.
-		 * The formula is: score += amountOfAbilities * abilityValue
-		 */
-		abilityValue: 1,
+			// How much score a card needs to not be traded.
+			tradeThreshold: 2,
 
-		/*
-		 * How much score a card needs for the ai to "protect" it.
-		 * Protecting for the ai means to not attack with that minion, unless the minion attacks the enemy hero directly.
-		 */
-		protectThreshold: 5,
+			/*
+			 * How much the ai values spells. This exists for equality with minions, since minions gets stats.
+			 * The formula is: score += spellValue * statsBias
+			 */
+			spellValue: 4,
 
-		/*
-		 * How much score a card needs for the ai to "ignore" it.
-		 * Ignoring a minion for the ai means to not "waste resources" attacking that minion.
-		 */
-		ignoreThreshold: -1,
+			/*
+			 * How much the ai values keywords.
+			 * The formula is: score += amountOfKeywords * keywordValue
+			 */
+			keywordValue: 2,
 
-		/*
-		 * How much of an advantage the ai needs to be at in order to enter "risk mode".
-		 * While in risk mode, the ai ignores all minions on your board and tries to rush your face to kill you as fast as possible.
-		 */
-		riskThreshold: 10,
+			/*
+			 * How much the ai values abilites.
+			 * The formula is: score += amountOfAbilities * abilityValue
+			 */
+			abilityValue: 1,
 
-		sentiments: {
-			// The ai's positive sentiments.
-			positive: {
+			/*
+			 * How much score a card needs for the ai to "protect" it.
+			 * Protecting for the ai means to not attack with that minion, unless the minion attacks the enemy hero directly.
+			 */
+			protectThreshold: 5,
+
+			/*
+			 * How much score a card needs for the ai to "ignore" it.
+			 * Ignoring a minion for the ai means to not "waste resources" attacking that minion.
+			 */
+			ignoreThreshold: -1,
+
+			/*
+			 * How much of an advantage the ai needs to be at in order to enter "risk mode".
+			 * While in risk mode, the ai ignores all minions on your board and tries to rush your face to kill you as fast as possible.
+			 */
+			riskThreshold: 10,
+
+			sentiments: {
+				// The ai's positive sentiments.
+				positive: {
+					/*
+					 * Any number with a plus in front of it.
+					 * For example, +1
+					 */
+					"\\+\\d+": 1,
+
+					/*
+					 * Anything formed like this "d/d" where "d" is a number.
+					 * For example, 1/1
+					 */
+					"\\d+/\\d+": 1,
+
+					heal: 0.5,
+					give: 2,
+					gain: 1,
+					set: 1,
+					restore: 0.5,
+					attack: 0.5,
+					health: 0.5,
+					copy: 2,
+					draw: 2,
+					mana: 1,
+					hand: 1,
+					deck: 1,
+					battlefield: 1,
+					trigger: 3,
+					twice: 2,
+					double: 2,
+					your: 1,
+					maximum: 1,
+					crystal: 1,
+					add: 2,
+					permanent: 3,
+				},
+
+				// The ai's negative sentiments
+				negative: {
+					/*
+					 * Any number with a minus in front of it.
+					 * For example, -1
+					 */
+					"-\\d+": 1,
+
+					deal: 1,
+					remove: 2,
+					damage: 1,
+					silence: 5,
+					destroy: 9,
+					kill: 3,
+				},
+			},
+		},
+
+		// The higher the numer is, the more the AI will try to persue it.
+		biases: {
+			card: {
 				/*
-				 * Any number with a plus in front of it.
-				 * For example, +1
+				 * How much the ai values stats.
+				 * The formula is: score += (attack + health) * statsBias
+				 * For example, at 0.2, 1/1 stats is valued at 0.4
+				 * Another example, at 1, 1/1 stats is valued at 2
 				 */
-				"\\+\\d+": 1,
+				stats: 0.2,
 
 				/*
-				 * Anything formed like this "d/d" where "d" is a number.
-				 * For example, 1/1
+				 * How much the ai dislikes mana cost.
+				 * The formula is: score -= cost * costBias
 				 */
-				"\\d+/\\d+": 1,
+				cost: 0.333,
 
-				heal: 0.5,
-				give: 2,
-				gain: 1,
-				set: 1,
-				restore: 0.5,
-				attack: 0.5,
-				health: 0.5,
-				copy: 2,
-				draw: 2,
-				mana: 1,
-				hand: 1,
-				deck: 1,
-				battlefield: 1,
-				trigger: 3,
-				twice: 2,
-				double: 2,
-				your: 1,
-				maximum: 1,
-				crystal: 1,
-				add: 2,
-				permanent: 3,
+				// How much the AI dislikes burning cards.
+				burn: 5,
 			},
 
-			// The ai's negative sentiments
-			negative: {
-				/*
-				 * Any number with a minus in front of it.
-				 * For example, -1
-				 */
-				"-\\d+": 1,
+			player: {
+				// How much the AI likes health.
+				health: 3,
 
-				deal: 1,
-				remove: 2,
-				damage: 1,
-				silence: 5,
-				destroy: 9,
-				kill: 3,
+				// How much the AI likes max health.
+				maxHealth: 10,
+
+				// How much the AI likes attack.
+				attack: 2,
+
+				// How much the AI likes armor.
+				armor: 2,
+
+				// How much the AI likes empty mana crystals.
+				emptyMana: 5,
+
+				// How much the AI likes max mana.
+				maxMana: 10,
+
+				// How much the AI likes spell damage.
+				spellDamage: 1,
+
+				// How much the AI likes quests.
+				quests: 10,
+
+				// How much the AI likes having more cards in their hand.
+				// This should nudge the AI towards saving cards if they don't currently do anything.
+				hand: 0.25,
+
+				// How much the AI likes having more cards on the board.
+				board: 2,
 			},
 		},
 	},

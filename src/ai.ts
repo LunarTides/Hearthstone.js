@@ -12,6 +12,291 @@ import {
 	TargetType,
 	Type,
 } from "@Game/types.ts";
+import type { Game } from "./game";
+
+let depth = 1;
+let isSimulating = false;
+
+export class SimulationAI {
+	player: Player;
+	opponent: Player;
+	config: typeof game.config.ai.simulation;
+
+	// TODO: Replace with a better history.
+	history: [];
+
+	constructor(player: Player) {
+		this.player = player;
+		this.opponent = player.getOpponent();
+		this.config = game.config.ai.simulation;
+	}
+
+	async evaluateGame(player = this.player) {
+		let evaluation = 0;
+
+		const config = game.config.ai;
+
+		evaluation += player.health * config.biases.player.health;
+		evaluation += player.maxHealth * config.biases.player.maxHealth;
+		evaluation += player.attack * config.biases.player.attack;
+		evaluation += player.armor * config.biases.player.armor;
+		evaluation += player.emptyMana * config.biases.player.emptyMana;
+		evaluation += player.maxMana * config.biases.player.maxMana;
+		evaluation += player.spellDamage * config.biases.player.spellDamage;
+		evaluation += player.quests.length * config.biases.player.quests;
+		evaluation += player.hand.length * config.biases.player.hand;
+		evaluation += player.board.length * config.biases.player.board;
+
+		const totalCardAttack = player.board.reduce(
+			(prev, acc) => prev + (acc.attack ?? 0),
+			0,
+		);
+		const totalCardHealth = player.board.reduce(
+			(prev, acc) => prev + (acc.health ?? 0),
+			0,
+		);
+
+		evaluation +=
+			(totalCardAttack + totalCardHealth) * config.biases.card.stats;
+
+		if (config.simulation.difficulty.canSeeFutureBurnedCards) {
+			evaluation -=
+				(game.event.events.BurnCard?.[this.player.id].length ?? 0) *
+				config.biases.card.burn;
+		}
+
+		// Do the calculations for the opponent.
+		if (player.id === this.player.id) {
+			evaluation -= await this.evaluateGame(this.opponent);
+		}
+
+		// console.log(evaluation);
+		return evaluation;
+	}
+
+	async evaluate(callback: () => Promise<void>, currentSnapshot?: Game) {
+		const currentGame = currentSnapshot ?? (await game.createSnapshot());
+		depth++;
+
+		const oldIsSimulating = isSimulating;
+		if (!isSimulating) {
+			const snapshot = await game.createSnapshot();
+			snapshot.isSimulation = true;
+			game.useSnapshot(snapshot);
+			isSimulating = true;
+		}
+
+		// We're now in an insolated env.
+		await callback();
+		const evaluation = await this.continueGame();
+
+		// If 'isSimulating' was false, return to the current snapshot.
+		if (!oldIsSimulating) {
+			game.useSnapshot(currentGame);
+			isSimulating = false;
+		}
+
+		depth--;
+		return evaluation;
+	}
+
+	async evaluateCard(card: Card, currentSnapshot?: Game) {
+		return await this.evaluate(async () => {
+			await game.play(card, this.player);
+		}, currentSnapshot);
+	}
+
+	async getBestMove() {
+		let bestMove = {
+			evaluation: -Infinity,
+			text: "",
+			found: false,
+		};
+
+		if (depth > this.config.depth) {
+			bestMove = {
+				evaluation: NaN,
+				text: "end",
+				found: true,
+			};
+			return bestMove;
+		}
+
+		const check = async (text: string, callback: () => Promise<number>) => {
+			const evaluation = await callback();
+			if (evaluation <= bestMove.evaluation) {
+				return;
+			}
+
+			bestMove = {
+				evaluation,
+				text,
+				found: true,
+			};
+		};
+
+		// console.log(`\n${this.player.getName()} - Turn ${game.turn}`);
+
+		const currentGame = await game.createSnapshot();
+		// const currentEvaluation = await this.evaluateGame();
+
+		// Go through cards.
+		for (const card of this.player.hand) {
+			if (card.cost > this.player.mana) {
+				continue;
+			}
+
+			const index = this.player.hand.indexOf(card).toString();
+			// TODO: Optimize. Cut trees early.
+			await check(index, async () => {
+				return await this.evaluateCard(card, currentGame);
+			});
+		}
+
+		// TODO: Go through commands.
+
+		// End turn
+		// TODO: With a high enough depth (>=4) the AI starts skipping it's turn constantly.
+		await check("end", async () => {
+			return await this.evaluate(async () => {
+				await game.endTurn();
+			}, currentGame);
+		});
+
+		// if (!bestMove.found) {
+		// Default to end turn.
+		// 	bestMove = {
+		// 		evaluation: NaN,
+		// 		text: "end",
+		// 		found: true,
+		// 	};
+		// }
+
+		// console.log(bestMove);
+		return bestMove;
+	}
+
+	async continueGame(currentEvaluation?: number) {
+		let evaluation = currentEvaluation ?? (await this.evaluateGame());
+
+		if (this.config.depth < 2) {
+			// Not high enough depth to continue past 1 turn.
+			return evaluation;
+		}
+
+		// Enable mirror mode.
+		const mirror = this.config.difficulty.mirror;
+		if (mirror) {
+			this.opponent.ai = new SimulationAI(this.opponent);
+		}
+
+		for (let i = 0; i < this.config.depth - 1; i++) {
+			const opponentsTurn = i % 2 === 0;
+			if (mirror && opponentsTurn) {
+				// Let the opponent AI play.
+				await game.endTurn();
+
+				// Disable mirror mode for the opponent for optimization.
+				game.config.ai.simulation.difficulty.mirror = false;
+				const bestMove = await (this.opponent.ai as SimulationAI).getBestMove();
+				game.config.ai.simulation.difficulty.mirror = true;
+
+				if (
+					!Number.isNaN(bestMove.evaluation) &&
+					Number.isFinite(bestMove.evaluation)
+				) {
+					evaluation -=
+						bestMove.evaluation - evaluation - (i + 1) * this.config.depthCost;
+				}
+
+				await game.endTurn();
+			} else {
+				// Do the next turn.
+				const bestMove = await this.getBestMove();
+
+				if (
+					!Number.isNaN(bestMove.evaluation) &&
+					Number.isFinite(bestMove.evaluation)
+				) {
+					evaluation +=
+						bestMove.evaluation - evaluation - (i + 1) * this.config.depthCost;
+				}
+			}
+		}
+
+		return evaluation;
+	}
+
+	async gameloop() {
+		const bestMove = await this.getBestMove();
+		return bestMove.text;
+	}
+
+	async attack() {
+		return { attacker: this.player, target: this.opponent };
+	}
+
+	async promptTarget(
+		prompt: string,
+		card: Card | undefined,
+		flags: TargetFlags,
+	) {
+		if (
+			flags.targetType === undefined ||
+			flags.targetType === TargetType.Player
+		) {
+			if (flags.alignment === Alignment.Enemy) {
+				return this.opponent;
+			}
+			if (flags.alignment === Alignment.Friendly) {
+				return this.player;
+			}
+
+			return this.opponent;
+		}
+
+		if (flags.alignment === Alignment.Enemy) {
+			return this.opponent.board.at(0) ?? null;
+		}
+		if (flags.alignment === Alignment.Friendly) {
+			return this.player.board.at(0) ?? null;
+		}
+
+		return this.opponent.board.at(0) ?? null;
+	}
+
+	async discover(cards: Card[]) {
+		return cards[0];
+	}
+
+	async dredge(cards: Card[]) {
+		return cards[0];
+	}
+
+	async chooseOne(options: string[]) {
+		return 0;
+	}
+
+	async chooseFromList(prompt: string, options: string[]) {
+		return options[0];
+	}
+
+	async yesNoQuestion(prompt: string) {
+		return true;
+	}
+
+	async trade(card: Card) {
+		return false;
+	}
+
+	async forge(card: Card) {
+		return false;
+	}
+
+	async mulligan() {
+		return [];
+	}
+}
 
 // TODO: Ai gets stuck in infinite loop when using cathedral of atonement (location) | shadowcloth needle (0 attack wpn) | that minion has no attack. #374
 
@@ -20,7 +305,7 @@ import {
  *
  * **Don't directly call any methods in this class since they get called automatically in various function in-game that requires player input.**
  */
-export class AI {
+export class SentimentAI {
 	/**
 	 * The history of the AI. Also known as its "logs".
 	 */
@@ -60,7 +345,7 @@ export class AI {
 	 *
 	 * @returns Result
 	 */
-	calcMove(): AiCalcMoveOption {
+	async gameloop(): Promise<AiCalcMoveOption> {
 		let bestMove: AiCalcMoveOption | undefined;
 		let bestScore = -100_000;
 
@@ -148,7 +433,7 @@ export class AI {
 	 *
 	 * @returns Attacker, Target
 	 */
-	attack(): Array<Target | -1> {
+	async attack(): Promise<Array<Target | -1>> {
 		// Assign a score to all minions
 		const board: ScoredCard[][] = [game.player1.board, game.player2.board].map(
 			(m) => m.map((c) => ({ card: c, score: this.analyzePositiveCard(c) })),
@@ -164,7 +449,8 @@ export class AI {
 
 		// If the ai is winner by more than 'threshold' points, enable risk mode
 		const riskMode =
-			currentWinner[1] >= opponentScore + game.config.ai.riskThreshold;
+			currentWinner[1] >=
+			opponentScore + game.config.ai.sentiment.riskThreshold;
 
 		const taunts = this._findTaunts();
 
@@ -285,11 +571,11 @@ export class AI {
 	 *
 	 * @returns The target selected.
 	 */
-	promptTarget(
+	async promptTarget(
 		prompt: string,
 		card: Card | undefined,
 		flags: TargetFlags,
-	): Target | null {
+	): Promise<Target | null> {
 		if (flags.allowLocations && flags.targetType !== TargetType.Player) {
 			const locations = this.player.board.filter(
 				(m) =>
@@ -410,7 +696,7 @@ export class AI {
 	 *
 	 * @returns Result
 	 */
-	discover(cards: Card[]): Card | undefined {
+	async discover(cards: Card[]): Promise<Card | undefined> {
 		let bestCard: Card | undefined;
 		let bestScore = -100_000;
 
@@ -441,7 +727,7 @@ export class AI {
 	 *
 	 * @returns Result
 	 */
-	dredge(cards: Card[]): Card | undefined {
+	async dredge(cards: Card[]): Promise<Card | undefined> {
 		let bestCard: Card | undefined;
 		let bestScore = -100_000;
 
@@ -472,7 +758,7 @@ export class AI {
 	 *
 	 * @returns The index of the question chosen
 	 */
-	chooseOne(options: string[]): number | undefined {
+	async chooseOne(options: string[]): Promise<number | undefined> {
 		/*
 		 * I know this is a bad solution
 		 * "Deal 2 damage to a minion; or Restore 5 Health."
@@ -507,7 +793,10 @@ export class AI {
 	 *
 	 * @returns The index of the option chosen + 1
 	 */
-	chooseFromList(prompt: string, options: string[]): string | undefined {
+	async chooseFromList(
+		prompt: string,
+		options: string[],
+	): Promise<string | undefined> {
 		let bestChoice = null;
 		let bestScore = -100_000;
 
@@ -541,7 +830,7 @@ export class AI {
 	 *
 	 * @returns `true` if "Yes", `false` if "No"
 	 */
-	yesNoQuestion(prompt: string): boolean {
+	async yesNoQuestion(prompt: string): Promise<boolean> {
 		const score = this.analyzePositive(prompt);
 		const returnValue = score > 0;
 
@@ -557,7 +846,7 @@ export class AI {
 	 *
 	 * @returns If the card should be traded
 	 */
-	trade(card: Card): boolean {
+	async trade(card: Card): Promise<boolean> {
 		// If the ai doesn't have any cards to trade into, don't trade the card.
 		if (this.player.deck.length <= 1) {
 			return false;
@@ -569,7 +858,7 @@ export class AI {
 		}
 
 		const score = this.analyzePositiveCard(card);
-		const returnValue = score <= game.config.ai.tradeThreshold;
+		const returnValue = score <= game.config.ai.sentiment.tradeThreshold;
 
 		this.history.push({ type: "trade", data: [card.uuid, returnValue, score] });
 
@@ -583,7 +872,7 @@ export class AI {
 	 *
 	 * @returns If the card should be forged
 	 */
-	forge(card: Card): boolean {
+	async forge(card: Card): Promise<boolean> {
 		// Always forge the card if the ai has enough mana
 		const returnValue = !(this.player.mana < 2);
 
@@ -596,7 +885,7 @@ export class AI {
 	 *
 	 * @returns The indexes of the cards to mulligan. Look in `Interact.mulligan` for more details.
 	 */
-	mulligan(): Card[] {
+	async mulligan(): Promise<Card[]> {
 		const toMulligan = [];
 		let scores = "(";
 
@@ -607,7 +896,7 @@ export class AI {
 
 			const score = this.analyzePositiveCard(card);
 
-			if (score < game.config.ai.mulliganThreshold) {
+			if (score < game.config.ai.sentiment.mulliganThreshold) {
 				toMulligan.push(card);
 			}
 
@@ -617,7 +906,7 @@ export class AI {
 		scores = `${scores.slice(0, -2)})`;
 
 		this.history.push({
-			type: `mulligan (T${game.config.ai.mulliganThreshold})`,
+			type: `mulligan (T${game.config.ai.sentiment.mulliganThreshold})`,
 			data: [toMulligan, scores],
 		});
 
@@ -633,7 +922,7 @@ export class AI {
 	 * @returns The score the string gets
 	 */
 	analyzePositive(text: string, _context = true): number {
-		const context = _context && game.config.ai.contextAnalysis;
+		const context = _context && game.config.ai.sentiment.contextAnalysis;
 
 		let score = 0;
 
@@ -683,7 +972,7 @@ export class AI {
 				let returnValue = false;
 
 				for (const sentimentObject of Object.entries(
-					game.config.ai.sentiments,
+					game.config.ai.sentiment.sentiments,
 				)) {
 					if (returnValue) {
 						continue;
@@ -715,19 +1004,22 @@ export class AI {
 
 		// Stats
 		score +=
-			(c.attack && c.health ? c.attack + c.health : game.config.ai.spellValue) *
-			game.config.ai.statsBias;
+			(c.attack && c.health
+				? c.attack + c.health
+				: game.config.ai.sentiment.spellValue) *
+			game.config.ai.biases.card.stats;
 
 		// Cost
-		score -= c.cost * game.config.ai.costBias;
+		score -= c.cost * game.config.ai.biases.card.cost;
 
 		// Keywords
-		score += Object.keys(c.keywords).length * game.config.ai.keywordValue;
+		score +=
+			Object.keys(c.keywords).length * game.config.ai.sentiment.keywordValue;
 
 		// Abilities
 		for (const value of Object.values(c)) {
 			if (Array.isArray(value) && value[0] instanceof Function) {
-				score += game.config.ai.abilityValue;
+				score += game.config.ai.sentiment.abilityValue;
 			}
 		}
 
@@ -806,7 +1098,7 @@ export class AI {
 
 			// Don't attack with high-value minions.
 			if (
-				score > game.config.ai.protectThreshold ||
+				score > game.config.ai.sentiment.protectThreshold ||
 				trades.map((c) => c[0]).includes(card)
 			) {
 				continue;
@@ -830,7 +1122,7 @@ export class AI {
 				const score = this.analyzePositiveCard(target);
 
 				// Don't waste resources attacking useless targets.
-				if (score < game.config.ai.ignoreThreshold) {
+				if (score < game.config.ai.sentiment.ignoreThreshold) {
 					continue;
 				}
 
@@ -946,7 +1238,8 @@ export class AI {
 		const opponentScore = this._scorePlayer(this.player.getOpponent(), board);
 
 		// If the ai is winner by more than 'threshold' points, enable risk mode
-		const riskMode = winner[1] >= opponentScore + game.config.ai.riskThreshold;
+		const riskMode =
+			winner[1] >= opponentScore + game.config.ai.sentiment.riskThreshold;
 
 		// If there are taunts, override risk mode
 		const taunts = this._findTaunts();
@@ -1103,7 +1396,7 @@ export class AI {
 
 			if (
 				score > lowestScore[1] ||
-				(score > game.config.ai.protectThreshold && !targetIsPlayer)
+				(score > game.config.ai.sentiment.protectThreshold && !targetIsPlayer)
 			) {
 				continue;
 			}

@@ -184,23 +184,56 @@ export type GameConfig = {
 		player2: boolean;
 		random: boolean;
 
-		contextAnalysis: boolean;
-		attackModel: number;
-		mulliganThreshold: number;
-		tradeThreshold: number;
-		statsBias: number;
-		costBias: number;
-		spellValue: number;
-		keywordValue: number;
-		abilityValue: number;
+		player1Model: "sentiment" | "simulation";
+		player2Model: "sentiment" | "simulation";
 
-		protectThreshold: number;
-		ignoreThreshold: number;
-		riskThreshold: number;
+		simulation: {
+			depth: number;
+			depthCost: number;
+			difficulty: {
+				canSeeFutureBurnedCards: boolean;
+				mirror: boolean;
+			};
+		};
 
-		sentiments: {
-			positive: Record<string, number>;
-			negative: Record<string, number>;
+		sentiment: {
+			contextAnalysis: boolean;
+			attackModel: number;
+			mulliganThreshold: number;
+			tradeThreshold: number;
+			spellValue: number;
+			keywordValue: number;
+			abilityValue: number;
+
+			protectThreshold: number;
+			ignoreThreshold: number;
+			riskThreshold: number;
+
+			sentiments: {
+				positive: Record<string, number>;
+				negative: Record<string, number>;
+			};
+		};
+
+		biases: {
+			card: {
+				stats: number;
+				cost: number;
+				burn: number;
+			};
+
+			player: {
+				health: number;
+				maxHealth: number;
+				attack: number;
+				armor: number;
+				emptyMana: number;
+				maxMana: number;
+				spellDamage: number;
+				quests: number;
+				hand: number;
+				board: number;
+			};
 		};
 	};
 
