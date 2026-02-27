@@ -1,6 +1,6 @@
 import type { Card } from "@Game/card.ts";
 import type { Player } from "@Game/player.ts";
-import type { Ability, Blueprint, Event, EventValue } from "@Game/types.ts";
+import type { Ability, Blueprint, Event } from "@Game/types.ts";
 
 /**
  * Game.play return value
@@ -173,6 +173,7 @@ export type GameConfig = {
 	debug: {
 		all: boolean;
 		commands: boolean;
+		commandPrefix: string;
 		allowTestDeck: boolean;
 		hideLicense: boolean;
 		additionalInfoInReadable: boolean;
@@ -238,14 +239,13 @@ export type GameConfig = {
 	};
 
 	advanced: {
-		debugCommandPrefix: string;
 		spawnInDiyCards: boolean;
 		diyCardSpawnChance: number;
 		gameloopUseOldUserInterface: boolean;
-		dcShowUncollectible: boolean;
-		getReadableCardMaxDepth: number;
-		getReadableCardNoRecursion: boolean;
-		getReadableCardAlwaysShowFullCard: boolean;
+		deckcreatorShowUncollectible: boolean;
+		cardReadableMaxDepth: number;
+		cardReadableNoRecursion: boolean;
+		cardReadableAlwaysShowFullCard: boolean;
 
 		forgetfulRandomTargetFailAmount: number;
 
@@ -253,13 +253,6 @@ export type GameConfig = {
 		noBounceOnCancelAbilities: Ability[];
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
-		readableHistory: {
-			[E in Event]: (
-				plr: Player,
-				value: EventValue<E>,
-				handle: (value: unknown, hide?: boolean) => Promise<string>,
-			) => Promise<string>;
-		};
 	};
 
 	info: {
@@ -272,6 +265,4 @@ export type GameConfig = {
 
 		githubUrl: string;
 	};
-
-	funFacts: string[];
 };

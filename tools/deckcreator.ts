@@ -22,7 +22,7 @@ enum DeckcodeFormat {
 }
 
 const player = game.player;
-const cards = await Card.all(game.config.advanced.dcShowUncollectible);
+const cards = await Card.all(game.config.advanced.deckcreatorShowUncollectible);
 
 let viewingClass: Class;
 

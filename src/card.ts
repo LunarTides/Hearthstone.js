@@ -1683,11 +1683,11 @@ export class Card {
 				if (replacement instanceof Card) {
 					// The replacement is a card
 					const onlyShowName =
-						game.config.advanced.getReadableCardNoRecursion ||
+						game.config.advanced.cardReadableNoRecursion ||
 						!game.player.detailedView;
 
 					const alwaysShowFullCard =
-						game.config.advanced.getReadableCardAlwaysShowFullCard;
+						game.config.advanced.cardReadableAlwaysShowFullCard;
 
 					replacement =
 						onlyShowName && !alwaysShowFullCard
@@ -2035,7 +2035,7 @@ export class Card {
 		// If it should show detailed errors regarding depth.
 		const showDetailedError: boolean = game.player.detailedView;
 
-		if (_depth > 0 && game.config.advanced.getReadableCardNoRecursion) {
+		if (_depth > 0 && game.config.advanced.cardReadableNoRecursion) {
 			if (showDetailedError) {
 				return "RECURSION ATTEMPT BLOCKED";
 			}
@@ -2043,7 +2043,7 @@ export class Card {
 			return "...";
 		}
 
-		if (_depth > game.config.advanced.getReadableCardMaxDepth) {
+		if (_depth > game.config.advanced.cardReadableMaxDepth) {
 			if (showDetailedError) {
 				return "MAX DEPTH REACHED";
 			}

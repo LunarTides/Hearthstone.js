@@ -10,6 +10,7 @@ import {
 	UseLocationError,
 } from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { readableHistory } from "./event";
 
 /*
  * This is the list of commands that can be used in the game.
@@ -236,9 +237,7 @@ export const commands: CommandList = {
 
 		// Debug Commands
 		for (const alignedColumn of debugAlignedColumns) {
-			console.log(
-				condColor(game.config.advanced.debugCommandPrefix + alignedColumn),
-			);
+			console.log(condColor(game.config.debug.commandPrefix + alignedColumn));
 		}
 
 		console.log(
@@ -521,7 +520,7 @@ export const commands: CommandList = {
 					newValue.push(await handle(value, shouldHide));
 				}
 
-				let entry = await game.config.advanced.readableHistory[key]?.(
+				let entry = await readableHistory[key]?.(
 					player,
 					// Can't narrow the type of `value` here to `EventValue<E>`,
 					// so I'm casting to `never` to suppress the error.
@@ -785,7 +784,7 @@ export const debugCommands: CommandList = {
 
 	async frl(): Promise<string> {
 		return (await game.functions.interact.processCommand(
-			`${game.config.advanced.debugCommandPrefix}rl`,
+			`${game.config.debug.commandPrefix}rl`,
 			{ debug: true },
 		)) as string;
 	},
