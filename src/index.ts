@@ -8,7 +8,7 @@ import { createGame } from "@Game/game.ts";
  * Starts the game.
  */
 export async function main(): Promise<void> {
-	const { game, player1, player2 } = await createGame();
+	const { player1, player2 } = await createGame();
 	game.interest("Creating game...OK");
 
 	game.functions.interact.print.watermark();

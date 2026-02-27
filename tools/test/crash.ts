@@ -39,7 +39,7 @@ export async function main(): Promise<void> {
 		process.stderr.write(`\r\u001B[KPlaying game ${index + 1} / ${games}...`);
 
 		// Test the main game
-		const { game } = await createGame(false);
+		await createGame(false);
 		game.blueprints = blueprints;
 
 		// Setup the ais

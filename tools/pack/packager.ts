@@ -13,7 +13,7 @@ import * as hub from "hub.ts";
 import { validate } from "tools/id/lib";
 import { RegBot } from "./regbot";
 
-const { game } = await createGame();
+await createGame();
 
 type Pack = Awaited<ReturnType<typeof getPacks>>[0];
 

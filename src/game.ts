@@ -1356,8 +1356,43 @@ export class Game {
 		return event && !this.config.general.disableEvents;
 	}
 
+	/**
+	 * Returns if the supplied debug setting is enabled.
+	 * This accounts for 'Debug > All'
+	 */
 	isDebugSettingEnabled(setting: boolean): boolean {
 		return setting || this.config.debug.all;
+	}
+
+	/**
+	 * @returns A clone of the game. This is creates a deep clone of the game.
+	 */
+	async createSnapshot(): Promise<Game> {
+		const snapshot = this.lodash.cloneDeepWith(this, (value, key, object) => {
+			// TODO: Customize
+		});
+		return snapshot;
+	}
+
+	/**
+	 * Applies a snapshot as the current game.
+	 */
+	useSnapshot(snapshot: Game) {
+		game = snapshot;
+	}
+
+	/**
+	 * Run code in an isolated snapshot. The effects of the code will not carry over outside the callback.
+	 *
+	 * @param callback The code to run
+	 */
+	async dryRun(callback: () => Promise<void>) {
+		const current = await this.createSnapshot();
+		const snapshot = await this.createSnapshot();
+
+		this.useSnapshot(snapshot);
+		await callback();
+		this.useSnapshot(current);
 	}
 
 	// Start / End

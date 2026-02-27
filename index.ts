@@ -4,7 +4,7 @@
 import { createGame } from "@Game/game.ts";
 import { validate as validateIds } from "./tools/id/lib.ts";
 
-const { game } = await createGame();
+await createGame();
 
 import { isCLICommand, main } from "./tools/cli.ts";
 

@@ -4,7 +4,7 @@
 
 import { createGame } from "@Game/game.ts";
 
-const { game } = await createGame();
+await createGame();
 
 const idRegex = /id: "([0-9a-f-]+)"/;
 

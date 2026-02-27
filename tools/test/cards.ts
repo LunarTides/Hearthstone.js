@@ -40,7 +40,7 @@ export async function main(): Promise<void> {
 		);
 
 		// Create a game
-		const { game, player1, player2 } = await createGame(false);
+		const { player1, player2 } = await createGame(false);
 		game.noOutput = true;
 		game.blueprints = blueprints;
 		game.config.ai.player1 = false;
