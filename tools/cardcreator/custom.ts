@@ -1,3 +1,4 @@
+import { SentimentAI, SimulationAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import {
@@ -13,6 +14,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { confirm, Separator } from "@inquirer/prompts";
+import boxen from "boxen";
 import { parseTags } from "chalk-tags";
 import * as hub from "../../hub.ts";
 import * as lib from "./lib.ts";
@@ -59,6 +61,32 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		game.ids.Official.builtin.sheep[0],
 		game.player,
 	);
+
+	// Create sentiment references.
+	const coin = await Card.create(
+		game.ids.Official.builtin.the_coin[0],
+		game.player,
+	);
+	const galakrond = await Card.create(
+		game.ids.Official.builtin.armor_up[0],
+		game.player,
+	);
+
+	game.player.ai = new SentimentAI(game.player);
+	const sentimentReferences = [
+		{
+			card: await card.imperfectCopy(),
+			evaluation: game.player.ai.analyzePositiveCard(card),
+		},
+		{
+			card: coin,
+			evaluation: game.player.ai.analyzePositiveCard(coin),
+		},
+		{
+			card: galakrond,
+			evaluation: game.player.ai.analyzePositiveCard(galakrond),
+		},
+	];
 
 	// NOTE: The game is *not* meant for this. Oh well!
 	card.blueprint = blueprint;
@@ -118,6 +146,25 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 				.replace(/("tags": \[.*\],)/, "$1\n")
 				.replace(/("keywords": \[.*\],)/, "\n    $1"),
 		);
+		console.log();
+
+		// AI
+		let aiSection = "";
+		game.player1.ai = new SentimentAI(game.player1);
+		aiSection += `Sentiment: ${game.player1.ai.analyzePositiveCard(card)}\n`;
+		aiSection += (
+			await Promise.all(
+				sentimentReferences.map(
+					async (ref) =>
+						`Reference: ${await ref.card.readable()} = ${ref.evaluation}`,
+				),
+			)
+		).join("\n");
+		aiSection += "\n\n";
+		game.player1.ai = new SimulationAI(game.player1);
+		aiSection += `Simulation: N/A (Too situational)`;
+		console.log(boxen(parseTags(aiSection), { title: "AI", padding: 0.5 }));
+
 		console.log();
 		console.log(await card.readable());
 		console.log();
