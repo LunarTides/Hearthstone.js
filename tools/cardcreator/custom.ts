@@ -1,4 +1,4 @@
-import { SentimentAI, SimulationAI } from "@Game/ai.ts";
+import { SentimentAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
 import {
@@ -161,8 +161,8 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 			)
 		).join("\n");
 		aiSection += "\n\n";
-		game.player1.ai = new SimulationAI(game.player1);
 		aiSection += `Simulation: N/A (Too situational)`;
+		game.player1.ai = undefined;
 		console.log(boxen(parseTags(aiSection), { title: "AI", padding: 0.5 }));
 
 		console.log();
