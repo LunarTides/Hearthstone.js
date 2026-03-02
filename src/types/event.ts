@@ -44,11 +44,16 @@ export type EventListenerCallback<E extends Event> = (
 	eventPlayer: Player,
 ) => Promise<EventListenerMessage>;
 
-export type HistoryKey<E extends Event> = [
-	E,
-	EventValue<E>,
-	Player | undefined,
-];
+export interface HistoryObject<E extends Event> {
+	signature: EventObject<E>;
+	children: HistoryObject<Event>[];
+}
+
+export interface EventObject<E extends Event> {
+	key: E;
+	value: EventValue<E>;
+	eventPlayer: Player;
+}
 
 export enum QuestType {
 	Quest = "Quest",

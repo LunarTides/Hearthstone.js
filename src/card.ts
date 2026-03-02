@@ -24,6 +24,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
+import { historyTree } from "./event.ts";
 import { PackValidationResult } from "./types/pack.ts";
 
 /**
@@ -550,10 +551,10 @@ export class Card {
 
 		if (suppressEvent) {
 			await game.event.withSuppressed(Event.CreateCard, async () => {
-				await game.event.broadcast(Event.CreateCard, this, this.owner);
+				await game.event.broadcast(Event.CreateCard, this, this.owner, false);
 			});
 		} else {
-			await game.event.broadcast(Event.CreateCard, this, this.owner);
+			await game.event.broadcast(Event.CreateCard, this, this.owner, false);
 		}
 
 		/*
@@ -979,7 +980,10 @@ export class Card {
 	 * @param amount The amount to damage this card by.
 	 * @returns Success
 	 */
+	@historyTree
 	async damage(amount: number): Promise<boolean> {
+		game.event.newHistoryChild(Event.DamageCard, [this, amount], this.owner);
+
 		if (this.health === undefined) {
 			return false;
 		}
@@ -1222,7 +1226,10 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
+	@historyTree
 	async silence(): Promise<boolean> {
+		game.event.newHistoryChild(Event.SilenceCard, this, this.owner);
+
 		/*
 		 * Tell the minion to undo it's passive.
 		 * The false tells the minion that this is the last time it will call remove
@@ -1407,7 +1414,10 @@ export class Card {
 	 *
 	 * @returns If the card was successfully discarded
 	 */
+	@historyTree
 	async discard(player = this.owner): Promise<boolean> {
+		game.event.newHistoryChild(Event.DiscardCard, this, player);
+
 		const returnValue = game.functions.util.remove(player.hand, this);
 
 		if (returnValue) {

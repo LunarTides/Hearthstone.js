@@ -725,11 +725,15 @@ export class Player {
 				continue;
 			}
 
+			game.event.newHistoryChild(Event.DrawCard, card, this);
+
 			// Burn
 			if (this.hand.length >= game.config.general.maxHandLength) {
 				// NOTE: The card has already been removed from the deck due to `deck.pop`.
 				card.setLocation(Location.None);
 				await game.event.broadcast(Event.BurnCard, card, this);
+
+				game.event.finishHistoryChild();
 				continue;
 			}
 
@@ -740,6 +744,8 @@ export class Player {
 				(await card.trigger(Ability.Cast))
 			) {
 				drawAmount += 1;
+
+				game.event.finishHistoryChild();
 				continue;
 			}
 
@@ -748,12 +754,15 @@ export class Player {
 				await this.summon(card);
 
 				drawAmount += 1;
+
+				game.event.finishHistoryChild();
 				continue;
 			}
 
 			await this.addToHand(card);
 			await game.event.broadcast(Event.DrawCard, card, this);
 			cards.push(card);
+			game.event.finishHistoryChild();
 		}
 
 		unsuppress();
@@ -785,7 +794,10 @@ export class Player {
 	 *
 	 * @returns The card drawn
 	 */
+	@historyTree
 	async drawSpecific(card: Card): Promise<Card | undefined> {
+		game.event.newHistoryChild(Event.DrawCard, card, this);
+
 		if (this.deck.length <= 0 || !this.deck.includes(card)) {
 			return undefined;
 		}
@@ -816,7 +828,10 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
+	@historyTree
 	async addToHand(card: Card): Promise<boolean> {
+		game.event.newHistoryChild(Event.AddCardToHand, card, this);
+
 		if (this.hand.length >= game.config.general.maxHandLength) {
 			return false;
 		}
@@ -858,7 +873,11 @@ export class Player {
 	 *
 	 * @returns Success
 	 */
+	@historyTree
 	async setHero(hero: Card, setHeroClass = true): Promise<boolean> {
+		const previousHero = this.hero;
+		game.event.newHistoryChild(Event.ChangeHero, [previousHero, hero], this);
+
 		if (setHeroClass && hero.classes.includes(Class.Neutral)) {
 			game.interest(
 				"Setting player's class to Neutral. This may cause issues.",
@@ -881,7 +900,6 @@ export class Player {
 			this.hero.setLocation(Location.None);
 		}
 
-		const previousHero = this.hero;
 		this.hero = hero;
 		this.hero.setLocation(Location.Hero);
 
@@ -921,12 +939,15 @@ export class Player {
 	 *
 	 * @returns Success | Cancelled
 	 */
+	@historyTree
 	async heroPower(): Promise<boolean | typeof Card.REFUND> {
-		if (!this.canUseHeroPower()) {
-			return false;
+		if (!this.hero.heropower) {
+			throw new Error("Hero has no heropower.");
 		}
 
-		if (!this.hero || !this.hero.heropower) {
+		game.event.newHistoryChild(Event.HeroPower, this.hero.heropower, this);
+
+		if (!this.canUseHeroPower()) {
 			return false;
 		}
 
@@ -1111,6 +1132,7 @@ export class Player {
 	 * @returns The cards mulligan'd
 	 */
 	async mulligan(cards: Card[]): Promise<Card[]> {
+		// TODO: Add mulligan event tree.
 		const mulligan = [];
 
 		for (const card of cards) {

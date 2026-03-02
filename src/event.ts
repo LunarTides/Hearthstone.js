@@ -8,7 +8,7 @@ import {
 	EventListenerMessage,
 	type EventManagerEvents,
 	type EventValue,
-	type HistoryKey,
+	type HistoryObject,
 	type QuestObject,
 	QuestType,
 	TargetType,
@@ -71,7 +71,7 @@ export const readableHistory: {
 		`${await handle(value)} was silenced`,
 
 	[Event.DiscardCard]: async (plr, value, handle) =>
-		`${await handle(value)} was discarded`,
+		`${await handle(value)} was discarded from the player's hand`,
 
 	[Event.CancelCard]: async (plr, [card, ability], handle) =>
 		`${await handle(card)}'s <b>${await handle(ability)}</b> was cancelled`,
@@ -139,6 +139,26 @@ export const readableHistory: {
 		`${await handle(plr)} typed: ${await handle(value)}`,
 };
 
+/**
+ * An annotation to automatically call {@link game.event.finishHistoryChild} when the method returns.
+ * If using this, you MUST call {@link game.event.newHistoryChild} before any returns (early returns included).
+ */
+export function historyTree(
+	originalMethod: any,
+	_context: ClassMethodDecoratorContext,
+) {
+	async function replacementMethod(this: any, ...args: any[]) {
+		const result = await originalMethod.call(this, ...args);
+
+		// Pop from the history tree.
+		game.event.finishHistoryChild();
+
+		return result;
+	}
+
+	return replacementMethod;
+}
+
 export const eventManager = {
 	/**
 	 * The event listeners that are attached to the game currently.
@@ -161,9 +181,14 @@ export const eventManager = {
 	/**
 	 * The history of the game.
 	 *
-	 * It looks like this: `history[turn] = [[key, val, player], ...]`
+	 * It looks like this: `history[turn] = { signature: { key, value, eventPlayer }, children: [ { signature: { ... }, children: [...] } ] }`
 	 */
-	history: {} as Record<number, HistoryKey<Event>[]>,
+	history: {} as Record<number, HistoryObject<Event>[]>,
+
+	/**
+	 * Where we are in the history tree. DO NOT CHANGE MANUALLY.
+	 */
+	historyTreeDepth: 0,
 
 	/**
 	 * Used like this:
@@ -403,11 +428,6 @@ export const eventManager = {
 	): Promise<boolean> {
 		await this.tick(key, value, player);
 
-		// Check if the event is suppressed
-		if (this.suppressed.includes(key) && !this.forced.includes(key)) {
-			return false;
-		}
-
 		if (updateHistory) {
 			if (value instanceof Card) {
 				// Clone the value if it is a card.
@@ -417,6 +437,11 @@ export const eventManager = {
 			} else {
 				this.addHistory(key, value, player);
 			}
+		}
+
+		// Check if the event is suppressed
+		if (this.suppressed.includes(key) && !this.forced.includes(key)) {
+			return false;
 		}
 
 		if (player.id === -1) {
@@ -440,22 +465,94 @@ export const eventManager = {
 	},
 
 	/**
+	 * Create a new child of the current branch in the history.
+	 * Make sure to always call {@link game.event.finishHistoryChild} after calling this function.
+	 *
+	 * @param key The key to represent this child.
+	 * @param value The value for the representation.
+	 * @param eventPlayer The event player for the representation.
+	 */
+	newHistoryChild<E extends Event>(
+		key: E,
+		value: EventValue<E>,
+		eventPlayer: Player,
+	): void {
+		this.addHistory(key, value, eventPlayer);
+		this.historyTreeDepth++;
+	},
+
+	/**
+	 * Move up one branch. This basically sets the old branch in stone.
+	 */
+	finishHistoryChild() {
+		this.historyTreeDepth--;
+	},
+
+	/**
 	 * Write an event to history. Done automatically by `broadcast`.
 	 *
 	 * @param key The key of the event
 	 * @param value The value of the event
-	 * @param player The player who caused the event to happen
+	 * @param eventPlayer The player who caused the event to happen
 	 */
 	addHistory<E extends Event>(
 		key: E,
 		value: EventValue<E>,
-		player: Player,
+		eventPlayer: Player,
 	): void {
+		// Don't bother adding turn 0 stuff or stuff the Player 2 does on turn 1.
+		if (game.turn < 1 || (game.turn === 1 && eventPlayer.id === 1)) {
+			return;
+		}
+
 		if (!this.history[game.turn]) {
 			this.history[game.turn] = [];
 		}
 
-		this.history[game.turn].push([key, value, player]);
+		const depth = this.historyTreeDepth;
+
+		// New branch.
+		if (depth <= 0 || this.history[game.turn].length <= 0) {
+			this.history[game.turn].push({
+				signature: {
+					key,
+					value,
+					eventPlayer,
+				},
+				children: [],
+			});
+			return;
+		}
+
+		// Add entry to child of current branch.
+		const latestBranch = this.history[game.turn].at(-1)!;
+
+		let currentDepth = 0;
+		const getBranch = (branch: HistoryObject<Event>) => {
+			currentDepth++;
+			if (currentDepth >= depth) {
+				return branch;
+			}
+
+			const newBranch = branch.children.at(-1);
+			if (!newBranch) {
+				throw new Error(
+					"Depth too high for history to handle. This means 'newHistoryChild' has been called _more_ than 'finishHistoryChild'. The calls need to be equal.",
+				);
+			}
+
+			return getBranch(newBranch);
+		};
+
+		const branch = getBranch(latestBranch);
+		branch.children.push({
+			signature: {
+				key,
+				value,
+				eventPlayer: eventPlayer,
+			},
+			children: [],
+		});
 	},
 
 	/**

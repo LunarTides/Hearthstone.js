@@ -49,6 +49,8 @@ export const blueprint: Blueprint = {
 			throw new Error("No choice found");
 		}
 
+		game.event.newHistoryChild(Event.CardEvent, [self, choice], owner);
+
 		const pool = await Card.all();
 
 		const minionPool = pool.filter((card) => card.type === Type.Minion);
@@ -175,6 +177,7 @@ export const blueprint: Blueprint = {
 		}
 
 		await game.event.broadcast(Event.CardEvent, [self, choice], owner);
+		game.event.finishHistoryChild();
 	},
 
 	async placeholders(self, owner) {

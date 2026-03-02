@@ -952,6 +952,12 @@ const prompt = {
 		flags: TargetFlags = {},
 		shouldBeDisabled?: (target: Target) => Promise<boolean>,
 	): Promise<Target | null> {
+		game.event.newHistoryChild(
+			Event.TargetSelectionStarts,
+			[prompt, card, flags],
+			game.player,
+		);
+
 		await game.event.broadcast(
 			Event.TargetSelectionStarts,
 			[prompt, card, flags],
@@ -968,6 +974,7 @@ const prompt = {
 			);
 		}
 
+		game.event.finishHistoryChild();
 		return target;
 	},
 

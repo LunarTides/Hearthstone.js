@@ -5,11 +5,13 @@ import {
 	Alignment,
 	type CommandList,
 	Event,
+	type HistoryObject,
 	Keyword,
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import { resumeTagParsing, stopTagParsing } from "chalk-tags";
+import boxen from "boxen";
+import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import { readableHistory } from "./event.ts";
 
 /*
@@ -142,6 +144,8 @@ export const commands: CommandList = {
 	},
 
 	async titan(): Promise<boolean> {
+		// TODO: Add to history tree.
+
 		// Use titan card
 		const card = await game.prompt.targetCard(
 			"Which card do you want to use?",
@@ -397,143 +401,208 @@ export const commands: CommandList = {
 			// Hide the card
 			let revealed = false;
 
-			// It has has been revealed, show it.
-			for (const historyValue of Object.values(history)) {
-				if (revealed) {
-					break;
-				}
-
-				for (const historyKey of historyValue) {
-					if (revealed) {
-						break;
-					}
-
-					const [key, newValue] = historyKey;
+			const findInBranch = (historyObject: HistoryObject<Event>) => {
+				for (const child of historyObject.children) {
+					const { key, value: newValue } = child.signature;
 					if (!newValue) {
+						findInBranch(child);
 						continue;
 					}
 
 					if (game.config.advanced.whitelistedHistoryKeys.includes(key)) {
 						// Do nothing
 					} else {
+						findInBranch(child);
 						continue;
 					}
 
 					if (game.config.advanced.hideValueHistoryKeys.includes(key)) {
+						findInBranch(child);
 						continue;
 					}
 
 					// If it is not a card
 					if (!(newValue instanceof Card)) {
+						findInBranch(child);
 						continue;
 					}
 
-					if (value.uuid !== newValue.uuid) {
+					if (newValue.uuid !== value.uuid) {
+						findInBranch(child);
 						continue;
 					}
 
 					// The card has been revealed.
 					revealed = true;
 				}
+			};
+
+			// It has has been revealed, show it.
+			for (const historyObjects of Object.values(history)) {
+				if (revealed) {
+					break;
+				}
+
+				for (const historyObject of historyObjects) {
+					if (revealed) {
+						break;
+					}
+
+					findInBranch(historyObject);
+				}
 			}
 
 			if (revealed) {
-				return `<b>Hidden > Revealed as:</b> ${await value.readable()}`;
+				//return `<b>Hidden > Revealed as:</b> ${await value.readable()}`;
+				return await value.readable();
 			}
 
 			return "<b>Hidden</b>";
 		};
 
-		for (const [historyListIndex, historyList] of Object.values(
-			history,
-		).entries()) {
+		const getEntry = async (key: Event, value: any, eventPlayer: Player) => {
+			const shouldHide =
+				game.config.advanced.hideValueHistoryKeys.includes(key) &&
+				!flags?.debug;
+
+			const newValue: unknown[] = [];
+
+			if (Array.isArray(value)) {
+				newValue.push(
+					...(await Promise.all(
+						value.map(async (element) => await handle(element, shouldHide)),
+					)),
+				);
+			} else {
+				newValue.push(await handle(value, shouldHide));
+			}
+
+			let entry = await readableHistory[key]?.(
+				eventPlayer,
+				// Can't narrow the type of `value` here to `EventValue<E>`,
+				// so I'm casting to `never` to suppress the error.
+				value as never,
+				(value: unknown, hide?: boolean) => handle(value, hide ?? shouldHide),
+			);
+			if (!entry) {
+				entry = `${key}: ${newValue?.join(", ")}`;
+			}
+
+			return entry;
+		};
+
+		const doBranch = async (historyObject: HistoryObject<Event>) => {
+			let branchFinished = "";
+
+			const { signature, children } = historyObject;
+			const { key, value, eventPlayer } = signature;
+
+			if (
+				!flags?.debug &&
+				!game.config.advanced.whitelistedHistoryKeys.includes(key)
+			) {
+				return "";
+			}
+
+			// Add signature.
+			const filteredChildren = flags?.debug
+				? children
+				: children?.filter((child) =>
+						game.config.advanced.whitelistedHistoryKeys.includes(
+							child.signature.key,
+						),
+					);
+
+			// Add signature.
+			const hasSignatureInChildren = filteredChildren.some(
+				(c) => c.signature.key === key,
+			);
+			const needsSignatureInChildren = [Event.PlayCard].includes(key);
+
+			let addedSignature = false;
+			if (key !== Event.Dummy) {
+				if (needsSignatureInChildren && !hasSignatureInChildren) {
+				} else {
+					const entry = await getEntry(key, value, eventPlayer);
+					const treeString =
+						treeDepth > 0
+							? `${treeDepth > 1 ? `${"|   ".repeat(treeDepth - 1)}` : ""}+${treeDepth ? "--" : ""} `
+							: "";
+					branchFinished += `${treeString}${entry}\n`;
+					treeDepth++;
+
+					addedSignature = true;
+				}
+			}
+
+			// Add children.
+			for (const child of filteredChildren) {
+				// Including a copy of a signature is unnecessary.
+				if (child.signature.key === key) {
+					continue;
+				}
+
+				branchFinished += await doBranch(child);
+			}
+
+			if (addedSignature) {
+				treeDepth--;
+
+				if (treeDepth <= 0) {
+					// Add curve to the border at the end.
+					const branchSplit = branchFinished.split("\n");
+					const last = branchSplit.at(-2)!;
+
+					if (last.startsWith("|")) {
+						// Handle if the last line has a depth of more than 0.
+						const lineSplit = last.split("+--");
+						lineSplit[0] = `\`${"-".repeat(lineSplit[0].length - 1)}`;
+
+						branchSplit.splice(-2, 1, `${lineSplit[0]}---${lineSplit[1]}`);
+					} else {
+						// Handle if the last line has a depth of 0.
+						branchSplit.splice(
+							-2,
+							1,
+							branchSplit.at(-2)!.replace("+--", "`--"),
+						);
+					}
+
+					branchFinished = branchSplit.join("\n");
+				}
+			}
+
+			// Split the headers by a newline.
+			const newHeader = treeDepth <= 0;
+			if (newHeader && filteredChildren.length > 0) {
+				branchFinished += "\n";
+			}
+
+			return branchFinished;
+		};
+
+		let treeDepth = 0;
+		let turnFinished = "";
+
+		for (const [turnString, historyObjects] of Object.entries(history)) {
+			const turn = Number.parseInt(turnString, 10);
+
 			// Ignore everything that happens on turn 0.
-			if (historyListIndex <= 0 && !flags?.debug) {
+			if (turn <= 0 && !flags?.debug) {
 				continue;
 			}
 
-			let hasPrintedHeader = false;
-			let previousPlayer: Player | undefined;
-
-			for (const [historyIndex, historyKey] of historyList.entries()) {
-				const [key, value, player] = historyKey;
-				if (!player) {
-					continue;
-				}
-
-				// Ignore everything the second player does on turn 1.
-				// The turn counter goes up at the end of every player's turn,
-				// so it should be impossible for the second player to do things on turn 1.
-				if (historyListIndex === 1 && player.id === 1 && !flags?.debug) {
-					continue;
-				}
-
-				if (player !== previousPlayer) {
-					hasPrintedHeader = false;
-				}
-
-				previousPlayer = player;
-
-				if (
-					game.config.advanced.whitelistedHistoryKeys.includes(key) ||
-					flags?.debug
-				) {
-					// Pass
-				} else {
-					continue;
-				}
-
-				/*
-				 * If the `key` is `AddCardToHand`, check if the previous history entry was `DrawCard`, and they both contained the exact same `val`.
-				 * If so, ignore it.
-				 */
-				if (key === Event.AddCardToHand && historyIndex > 0) {
-					const lastEntry = history[historyListIndex][historyIndex - 1];
-
-					if (
-						lastEntry[0] === Event.DrawCard &&
-						(lastEntry[1] as Card).uuid === (value as Card).uuid
-					) {
-						continue;
-					}
-				}
-
-				const shouldHide =
-					game.config.advanced.hideValueHistoryKeys.includes(key) &&
-					!flags?.debug;
-
-				if (!hasPrintedHeader) {
-					finished += `\nTurn ${historyListIndex} - ${player.getName()}\n`;
-				}
-
-				hasPrintedHeader = true;
-
-				const newValue: unknown[] = [];
-
-				if (Array.isArray(value)) {
-					newValue.push(
-						...(await Promise.all(
-							value.map(async (element) => await handle(element, shouldHide)),
-						)),
-					);
-				} else {
-					newValue.push(await handle(value, shouldHide));
-				}
-
-				let entry = await readableHistory[key]?.(
-					player,
-					// Can't narrow the type of `value` here to `EventValue<E>`,
-					// so I'm casting to `never` to suppress the error.
-					value as never,
-					(value: unknown, hide?: boolean) => handle(value, hide ?? shouldHide),
-				);
-				if (!entry) {
-					entry = `${key}: ${newValue?.join(", ")}`;
-				}
-
-				// Add a dash for readability.
-				finished += `- ${entry}\n`;
+			for (const historyObject of historyObjects) {
+				turnFinished += await doBranch(historyObject);
 			}
+
+			finished += boxen(parseTags(turnFinished.trim()), {
+				title: `Turn ${turn} - Player ${turn % 2 === 0 ? 2 : 1}`,
+				padding: 0.5,
+			});
+			finished += "\n";
+
+			turnFinished = "";
 		}
 
 		if (flags?.echo === false) {
@@ -611,6 +680,8 @@ export const debugCommands: CommandList = {
 		const code = await game.functions.util.parseEvalArgs(args);
 		console.log(`\`\`\`\nawait ${code}\n\`\`\`\n`);
 
+		game.event.newHistoryChild(Event.Eval, code, game.player);
+
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.
 			await eval(code);
@@ -632,6 +703,8 @@ export const debugCommands: CommandList = {
 		}
 
 		await game.event.broadcast(Event.Eval, code, game.player);
+
+		game.event.finishHistoryChild();
 		return true;
 	},
 

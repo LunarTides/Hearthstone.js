@@ -1,6 +1,6 @@
 import { SentimentAI, SimulationAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
-import { eventManager } from "@Game/event.ts";
+import { eventManager, historyTree } from "@Game/event.ts";
 import { functions } from "@Game/functions/index.ts";
 import { Player } from "@Game/player.ts";
 import {
@@ -642,6 +642,8 @@ const playCard = {
 	 * @param player The card's owner
 	 */
 	async play(card: Card, player: Player): Promise<GamePlayCardReturn> {
+		game.event.newHistoryChild(Event.PlayCard, card, player);
+
 		// Forge
 		const forge = await playCard._forge(card, player);
 		if (forge !== GamePlayCardReturn.Invalid) {
@@ -1130,7 +1132,16 @@ export class Game {
 	 */
 	activeCards: Card[] = [];
 
-	play = playCard.play;
+	/**
+	 * Play a card
+	 *
+	 * @param card The card to play
+	 * @param player The card's owner
+	 */
+	@historyTree
+	async play(card: Card, player: Player) {
+		return await playCard.play(card, player);
+	}
 
 	/**
 	 * Makes a minion or hero attack another minion or hero
@@ -1141,7 +1152,35 @@ export class Game {
 	 *
 	 * @returns Success | Errorcode
 	 */
-	attack = attack.attack;
+	async attack(
+		attacker: Target | number,
+		target: Target,
+		flags: GameAttackFlags = {},
+	): Promise<GameAttackReturn> {
+		// Create history branch.
+		if (typeof attacker === "number") {
+			if (target instanceof Card) {
+				game.event.newHistoryChild(
+					Event.DamageCard,
+					[target, attacker],
+					target.owner,
+				);
+			} else {
+				game.event.newHistoryChild(Event.TakeDamage, attacker, target);
+			}
+		} else {
+			game.event.newHistoryChild(
+				Event.Attack,
+				[attacker, target, flags],
+				attacker instanceof Player ? attacker : attacker.owner,
+			);
+		}
+
+		const result = await attack.attack(attacker, target, flags);
+
+		game.event.finishHistoryChild();
+		return result;
+	}
 
 	/**
 	 * The turn counter.
@@ -1517,6 +1556,8 @@ export class Game {
 	 * @returns Success
 	 */
 	async endTurn(): Promise<boolean> {
+		game.event.newHistoryChild(Event.EndTurn, this.turn, this.player);
+
 		// Everything after this comment happens when the player's turn ends
 		const player = this.player;
 		const opponent = this.opponent;
@@ -1536,9 +1577,11 @@ export class Game {
 		}
 
 		await this.event.broadcast(Event.EndTurn, this.turn, player);
+		game.event.finishHistoryChild();
 
 		// Everything after this comment happens when the opponent's turn starts
 		this.turn++;
+		game.event.newHistoryChild(Event.StartTurn, this.turn, opponent);
 
 		// Mana stuff
 		opponent.addEmptyMana(1);
@@ -1620,6 +1663,8 @@ export class Game {
 		this.opponent = player;
 
 		await this.event.broadcast(Event.StartTurn, this.turn, opponent);
+
+		game.event.finishHistoryChild();
 		return true;
 	}
 
@@ -1635,11 +1680,14 @@ export class Game {
 	 *
 	 * @returns The minion summoned
 	 */
+	@historyTree
 	async summon(
 		card: Card,
 		player: Player,
 		colossal = true,
 	): Promise<GamePlayCardReturn> {
+		game.event.newHistoryChild(Event.SummonCard, card, player);
+
 		if (!card.canBeOnBoard()) {
 			return GamePlayCardReturn.Invalid;
 		}
