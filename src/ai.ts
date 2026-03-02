@@ -12,7 +12,7 @@ import {
 	TargetType,
 	Type,
 } from "@Game/types.ts";
-import type { Game } from "./game";
+import type { Game } from "./game.ts";
 
 let depth = 1;
 let isSimulating = false;

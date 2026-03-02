@@ -25,7 +25,7 @@ import { Separator } from "@inquirer/core";
 import { checkbox, confirm, number, select } from "@inquirer/prompts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
-import readInput, { type InputConfig } from "./input";
+import readInput, { type InputConfig } from "./input.ts";
 
 const overrideConsole = {
 	log: console.log.bind(console),

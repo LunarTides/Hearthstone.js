@@ -17,6 +17,7 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
+import { historyTree } from "./event.ts";
 
 export class Player {
 	/**

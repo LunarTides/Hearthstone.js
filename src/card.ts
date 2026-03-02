@@ -24,7 +24,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
-import { PackValidationResult } from "./types/pack";
+import { PackValidationResult } from "./types/pack.ts";
 
 /**
  * Use this error type when throwing an error in a card

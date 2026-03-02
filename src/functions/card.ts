@@ -1,5 +1,5 @@
 import { Card } from "@Game/card.ts";
-import { type Metadata, PackValidationResult } from "@Game/types/pack";
+import { type Metadata, PackValidationResult } from "@Game/types/pack.ts";
 import {
 	Ability,
 	type Blueprint,

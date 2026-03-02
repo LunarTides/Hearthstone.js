@@ -10,7 +10,7 @@ import {
 	UseLocationError,
 } from "@Game/types.ts";
 import { resumeTagParsing, stopTagParsing } from "chalk-tags";
-import { readableHistory } from "./event";
+import { readableHistory } from "./event.ts";
 
 /*
  * This is the list of commands that can be used in the game.

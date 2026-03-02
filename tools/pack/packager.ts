@@ -3,15 +3,15 @@
 // But even having 80+ packs in the packs folder at once doesn't cause any issues on a relatively bad pc.
 
 import { createGame } from "@Game/game.ts";
-import type { Metadata } from "@Game/types/pack";
+import type { Metadata } from "@Game/types/pack.ts";
 import fs from "node:fs/promises";
 import { resolve } from "node:path";
 import { confirm, Separator } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
 import * as hub from "hub.ts";
-import { validate } from "tools/id/lib";
-import { RegBot } from "./regbot";
+import { validate } from "tools/id/lib.ts";
+import { RegBot } from "./regbot.ts";
 
 await createGame();
 
