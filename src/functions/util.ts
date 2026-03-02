@@ -119,8 +119,8 @@ export const utilFunctions = {
 		const now = new Date();
 		const dateString = formatDate(now, "DD/MM/YYYY HH:mm:ss");
 
-		// 01.01.23-23.59.59
-		const dateStringFileFriendly = formatDate(now, "DD.MM.YY-HH.mm.ss");
+		// 23.12.24-23.59.59
+		const dateStringFileFriendly = formatDate(now, "YY.MM.DD-HH.mm.ss");
 
 		// Grab the history of the game
 		let history = await game.functions.interact.processCommand("history", {
@@ -156,7 +156,7 @@ ${error.stack}
 		}
 
 		const debugLogContent = `-- Log --\n${game.debugLog.join("\n")}\n-- Log --\n`;
-		const historyContent = `\n-- History --${history}-- History --\n`;
+		const historyContent = `\n-- History --\n${history}-- History --\n`;
 		const aiContent = `\n-- AI Logs --\n${aiHistory}-- AI Logs --\n`;
 
 		const config = JSON.stringify(game.config, null, 2);
