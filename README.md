@@ -41,7 +41,7 @@ A console-based recreation of Hearthstone.
 ## Running
 > See [the docs](https://hs.lunartides.dev/guides/installation/) for a more comprehensive guide.
 
-You need to have [Bun](https://bun.sh) installed.
+You need to have [Node](https://nodejs.org) and [Bun](https://bun.sh) installed.
 
 - If you are on Windows, open `setup.bat`, then `run.bat`.
 - Otherwise, open a console / terminal, then run `bun install`, and `bun .`
@@ -127,4 +127,4 @@ Bronzebeard work properly.
 
 This is the result of running the `History` command in-game.
 It shows a log of what has happened since the game started.
-This is helpful for seeing what happened last turn. 
+This is helpful for seeing what happened last turn.
