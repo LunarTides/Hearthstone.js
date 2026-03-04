@@ -95,23 +95,6 @@ export async function createUILoop(
 	);
 }
 
-// TODO: Remove at some point.
-export async function playDelve() {
-	game.audio.playSFX("ui.delve");
-}
-
-export async function playBack() {
-	await game.audio.playSFX("ui.back");
-}
-
-export async function playLeaveUILoop() {
-	await game.audio.playSFX("ui.leaveLoop");
-}
-
-export async function playAction1() {
-	await game.audio.playSFX("ui.action1");
-}
-
 /**
  * Asks the user which card creator variant they want to use.
  */
@@ -124,7 +107,7 @@ export async function cardCreator() {
 			name: "Create a Custom Card",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Custom Card Creator...");
 				await ccc.main({});
@@ -139,7 +122,7 @@ export async function cardCreator() {
 			callback: async () => {
 				// This is to throw an error if it can't find the vanilla cards
 				await game.card.vanilla.getAll();
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Vanilla Card Creator...");
 				await vcc.main();
@@ -173,7 +156,7 @@ export async function devmode() {
 			name: "Create a Class",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Class Creator...");
 				await clc.main();
@@ -187,7 +170,7 @@ export async function devmode() {
 			name: "Test Cards",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Card Test...");
 				await cardTest.main();
@@ -200,7 +183,7 @@ export async function devmode() {
 			name: "Test Crash",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Crash Test...");
 				await crashTest.main();
@@ -216,7 +199,7 @@ export async function devmode() {
 			// disabled: game.config.audio.disable,
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Sound Test...");
 				await soundTest.main();
@@ -247,7 +230,7 @@ export async function devmode() {
 					return true;
 				}
 
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Generating vanilla cards...");
 				await generateVanilla.main();
@@ -269,7 +252,7 @@ export async function main() {
 			name: "Play",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Game...");
 				await src.main();
@@ -286,7 +269,7 @@ export async function main() {
 			name: "Create a Deck",
 			defaultSound: false,
 			callback: async () => {
-				playLeaveUILoop();
+				game.audio.playSFX("ui.leaveLoop");
 
 				game.interest("Starting Deck Creator...");
 				await dc.main();

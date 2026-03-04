@@ -230,7 +230,7 @@ async function promptImportPack() {
 				const pack = packs[answer];
 				const success = await importPack(pack);
 				if (success) {
-					hub.playAction1();
+					game.audio.playSFX("ui.action1");
 				}
 
 				return true;
@@ -627,12 +627,12 @@ async function configureMetadata(metadata: Metadata) {
 			callback: async () => {
 				if (!dirty) {
 					// No changes have been made.
-					hub.playBack();
+					game.audio.playSFX("ui.back");
 					success = false;
 					return false;
 				}
 
-				hub.playDelve();
+				game.audio.playSFX("ui.delve");
 
 				const done = await confirm({
 					message:
@@ -641,7 +641,7 @@ async function configureMetadata(metadata: Metadata) {
 				});
 
 				if (done) {
-					hub.playBack();
+					game.audio.playSFX("ui.back");
 					success = false;
 					return false;
 				}
@@ -686,7 +686,7 @@ async function configureMetadata(metadata: Metadata) {
 				});
 
 				if (done) {
-					hub.playBack();
+					game.audio.playSFX("ui.back");
 					return false;
 				}
 
@@ -871,7 +871,7 @@ const registry = {
 							forceDelete: true,
 						});
 						if (success) {
-							hub.playAction1();
+							game.audio.playSFX("ui.action1");
 							console.log(
 								"<green>Pack downloaded & imported successfully!</green>",
 							);
@@ -920,7 +920,7 @@ const registry = {
 						console.log("Uploading...");
 						try {
 							const uploadedPack = await pack.upload(packInfo.bytes);
-							hub.playAction1();
+							game.audio.playSFX("ui.action1");
 
 							console.log(uploadedPack.display());
 							console.log("<green>The pack was uploaded successfully!</green>");
