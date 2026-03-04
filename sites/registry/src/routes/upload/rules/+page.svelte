@@ -52,7 +52,7 @@ in this document are to be interpreted as described in <a
 3. File System
    Since file system operations have the potential to be dangerous, there are a few rules on how they're used.
 
-   a. You MUST use the `game.util.fs` function to interact with the file system,
+   a. You MUST use the `game.fs.call` function to interact with the file system,
       UNLESS the wrapper doesn't fit your specific needs. Exceptions will be heavily scrutinized.
 
    b. If your pack uses file system operations, you MUST declare so by setting the `fileSystem` permission to `true` when configuring your pack.

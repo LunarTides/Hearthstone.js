@@ -109,7 +109,7 @@ export const print = {
 				? 4
 				: 3;
 
-		const eventEmojis = game.util.getCurrentEventEmojis();
+		const eventEmojis = game.configuration.getCurrentEventEmojis();
 		let eventEmojisText = eventEmojis.join("");
 		if (eventEmojis.length > 0) {
 			eventEmojisText += " ";
@@ -247,11 +247,11 @@ export const print = {
 
 			// Align the ':' in the first half
 			const firstHalf = textSplit.map((line) => line.split("|")[0]);
-			const firstHalfAligned = game.util.alignColumns(firstHalf, ":");
+			const firstHalfAligned = game.data.alignColumns(firstHalf, ":");
 
 			// Align the ':' in the second half
 			const secondHalf = textSplit.map((line) => line.split("|")[1]);
-			const secondHalfAligned = game.util.alignColumns(secondHalf, ":");
+			const secondHalfAligned = game.data.alignColumns(secondHalf, ":");
 
 			// Combine the two halves
 			const newText = firstHalfAligned.map(
@@ -259,7 +259,7 @@ export const print = {
 			);
 
 			// Align the '|' in the final result
-			const aligned = game.util.alignColumns(newText, "|");
+			const aligned = game.data.alignColumns(newText, "|");
 			return aligned.join("\n");
 		};
 

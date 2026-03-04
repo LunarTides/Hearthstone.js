@@ -1,6 +1,4 @@
-import { Card } from "@Game/card.ts";
 import { createGame } from "@Game/game.ts";
-import { GamePlayCardReturn } from "@Game/types.ts";
 import { describe, expect, test } from "bun:test";
 
 /*
@@ -19,67 +17,33 @@ describe("src/game", () => {
 	test.todo("startGame", async () => {});
 	test.todo("endGame", async () => {});
 	test.todo("endTurn", async () => {});
+
+	test("turnCounter", async () => {
+		/*
+		 * Game.turn will be set to 1 when starting the game,
+		 * but since the game has not started yet, it will be 0
+		 * We can't start the game since it would immediately end the game again
+		 * since a player would die in the starting phase
+		 */
+		game.turn = 1;
+
+		let counter = game.turnCounter();
+		expect(counter).toEqual(1);
+
+		await game.endTurn();
+		await game.endTurn();
+
+		// Turn starts at 1, every `game.endTurn` increments it by 1, 1 + 2 = 3
+		expect(game.turn).toEqual(3);
+
+		counter = game.turnCounter();
+		expect(counter).toEqual(2);
+	});
+
+	test.todo("randomTarget", async () => {});
+	test.todo("randomTargetRelative", async () => {});
 	test.todo("summon", async () => {});
 	test.todo("killCardsOnBoard", async () => {});
 	test.todo("createGame", async () => {});
 	test.todo("attack", async () => {});
-
-	test("play", async () => {
-		// TODO: Expand this test to cover more cases. So far it only covers:
-		// - Success
-		// - Cost
-		// - Space
-
-		const sheep = await Card.create(
-			game.ids.Official.builtin.sheep[0],
-			game.player,
-		);
-		const play = async (player = game.player) => {
-			const card = await sheep.imperfectCopy();
-			await player.addToHand(card);
-			expect(player.hand).toContain(card);
-
-			const handSize = player.hand.length;
-			const mana = player.mana;
-			const returnValue = await game.play(card, player);
-
-			if (returnValue === GamePlayCardReturn.Success) {
-				expect(player.hand).not.toContain(card);
-				expect(player.hand).toBeArrayOfSize(handSize > 0 ? handSize - 1 : 0);
-				expect(player.mana).toBe(mana > 0 ? mana - 1 : 0);
-			} else {
-				// An error in `game.play` should result in the card remaining in their hand.
-				expect(player.hand).toContain(card);
-				expect(player.hand).toBeArrayOfSize(handSize);
-				expect(player.mana).toBe(mana);
-			}
-
-			return returnValue;
-		};
-
-		expect(game.player.board).toBeArrayOfSize(0);
-
-		// Cost
-		let returnValue = await play();
-		expect(returnValue).toBe(GamePlayCardReturn.Cost);
-		expect(game.player.board).toBeArrayOfSize(0);
-
-		// Success
-		game.player.mana = 100;
-
-		returnValue = await play();
-		expect(returnValue).toBe(GamePlayCardReturn.Success);
-		expect(game.player.board).toBeArrayOfSize(1);
-
-		// Space
-		for (let i = 0; i < game.config.general.maxBoardSpace - 1; i++) {
-			expect(await play()).toBe(GamePlayCardReturn.Success);
-		}
-
-		returnValue = await play();
-		expect(returnValue).toBe(GamePlayCardReturn.Space);
-		expect(game.player.board).toBeArrayOfSize(
-			game.config.general.maxBoardSpace,
-		);
-	});
 });

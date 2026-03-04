@@ -160,8 +160,8 @@ export const card = {
 
 		// NOTE: I don't know why Object.keys returns `string[]` here but ok.
 		const unwanted = Object.keys(requiredFieldsTable) as unknown as Type[];
-		game.util.remove(unwanted, blueprint.type);
-		game.util.remove(unwanted, Type.Undefined);
+		game.data.remove(unwanted, blueprint.type);
+		game.data.remove(unwanted, Type.Undefined);
 
 		let result: string | boolean = true;
 		for (const field of required) {
@@ -207,12 +207,12 @@ export const card = {
 		);
 		const packPath = resolve(basePath, "pack.json5");
 
-		if (!(await game.util.fs("exists", packPath))) {
+		if (!(await game.fs.call("exists", packPath))) {
 			// No metadata file found.
 			return null;
 		}
 
-		const packContent = (await game.util.fs("readFile", packPath)) as string;
+		const packContent = (await game.fs.call("readFile", packPath)) as string;
 		const metadata = Bun.JSON5.parse(packContent) as Metadata;
 
 		return metadata;
@@ -275,7 +275,7 @@ export const card = {
 		};
 
 		// Collect the cards.
-		await game.util.searchCardsFolder(async (path, content, file) => {
+		await game.fs.searchCardsFolder(async (path, content, file) => {
 			const nameRegex = /name: "(.+)"/;
 			const nameMatch = nameRegex.exec(content);
 			if (!nameMatch) {
@@ -355,7 +355,7 @@ export const card = {
 
 		idsContent += "\n\t},\n};\n";
 
-		game.util.fs("writeFile", "/cards/ids.ts", idsContent);
+		game.fs.call("writeFile", "/cards/ids.ts", idsContent);
 	},
 
 	/**

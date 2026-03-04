@@ -84,7 +84,7 @@ export const info = {
 		if (game.cache.latestCommitHash === undefined) {
 			// Save to a cache since `runCommand` is slow.
 			try {
-				game.cache.latestCommitHash = game.util
+				game.cache.latestCommitHash = game.os
 					.runCommand("git rev-parse --short=7 HEAD")
 					.trim();
 			} catch (error) {

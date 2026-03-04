@@ -66,7 +66,7 @@ export async function main(): Promise<void> {
 			data = game.card.vanilla.filter(data, false, false, true);
 		}
 
-		await game.util.fs("writeFile", "/vanillacards.json", JSON.stringify(data));
+		await game.fs.call("writeFile", "/vanillacards.json", JSON.stringify(data));
 
 		const difference = oldLength - data.length;
 		console.log(

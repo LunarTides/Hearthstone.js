@@ -1145,7 +1145,7 @@ export const prompt = {
 		if (queue !== undefined) {
 			const card = cards[parseInt(queue, 10) - 1];
 
-			game.util.remove(game.player.deck, card);
+			game.data.remove(game.player.deck, card);
 			game.player.addToDeck(card);
 
 			return card;
@@ -1159,7 +1159,7 @@ export const prompt = {
 			}
 
 			// Removes the selected card from the players deck.
-			game.util.remove(game.player.deck, card);
+			game.data.remove(game.player.deck, card);
 			game.player.addToDeck(card);
 
 			return card;
@@ -1180,7 +1180,7 @@ export const prompt = {
 		const card = cards[parseInt(chosen, 10)];
 
 		// Removes the selected card from the players deck.
-		game.util.remove(game.player.deck, card);
+		game.data.remove(game.player.deck, card);
 		game.player.addToDeck(card);
 
 		return card;

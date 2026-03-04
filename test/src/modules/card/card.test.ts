@@ -10,12 +10,7 @@ import {
 } from "@Game/types.ts";
 import { describe, expect, test } from "bun:test";
 
-describe("src/functions/card", () => {
-	describe("vanilla", () => {
-		test.todo("getAll", async () => {});
-		test.todo("filter", async () => {});
-	});
-
+describe("src/modules/card", () => {
 	test("validateClasses", async () => {
 		expect(cardFunctions.validateClasses([Class.Mage], Class.Druid)).toEqual(
 			false,

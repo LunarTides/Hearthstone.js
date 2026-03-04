@@ -489,7 +489,7 @@ export class Card {
 	 * @returns Success
 	 */
 	static async registerAll(): Promise<boolean> {
-		await game.util.searchCardsFolder(async (fullPath) => {
+		await game.fs.searchCardsFolder(async (fullPath) => {
 			// Check if the associated pack is valid.
 			switch (await game.card.validatePackFromPath(fullPath)) {
 				case PackValidationResult.InvalidGameVersion:
@@ -1056,7 +1056,7 @@ export class Card {
 		this.location = location;
 
 		if (location === Location.None) {
-			game.util.remove(game.activeCards, this);
+			game.data.remove(game.activeCards, this);
 		} else if (!game.activeCards.includes(this)) {
 			game.activeCards.push(this);
 		}
@@ -1079,7 +1079,7 @@ export class Card {
 		const opponent = this.owner.getOpponent();
 
 		if (opponent.board.includes(this)) {
-			game.util.remove(opponent.board, this);
+			game.data.remove(opponent.board, this);
 
 			await game.event.withSuppressed(Event.SummonCard, async () => {
 				await this.owner.summon(this);
@@ -1089,7 +1089,7 @@ export class Card {
 		}
 
 		if (opponent.hand.includes(this)) {
-			game.util.remove(opponent.hand, this);
+			game.data.remove(opponent.hand, this);
 
 			await game.event.withSuppressed(Event.AddCardToHand, async () => {
 				await this.owner.addToHand(this);
@@ -1099,7 +1099,7 @@ export class Card {
 		}
 
 		if (opponent.deck.includes(this)) {
-			game.util.remove(opponent.deck, this);
+			game.data.remove(opponent.deck, this);
 
 			await game.event.withSuppressed(Event.AddCardToDeck, async () => {
 				await this.owner.shuffleIntoDeck(this);
@@ -1109,7 +1109,7 @@ export class Card {
 		}
 
 		if (opponent.graveyard.includes(this)) {
-			game.util.remove(opponent.graveyard, this);
+			game.data.remove(opponent.graveyard, this);
 			this.owner.graveyard.push(this);
 
 			return true;
@@ -1418,7 +1418,7 @@ export class Card {
 	async discard(player = this.owner): Promise<boolean> {
 		game.event.newHistoryChild(Event.DiscardCard, this, player);
 
-		const returnValue = game.util.remove(player.hand, this);
+		const returnValue = game.data.remove(player.hand, this);
 
 		if (returnValue) {
 			this.setLocation(Location.None);
@@ -1601,7 +1601,7 @@ export class Card {
 			this,
 		);
 
-		game.util.remove(this.activeEnchantments, activeEnchantment);
+		game.data.remove(this.activeEnchantments, activeEnchantment);
 		await activeEnchantment.enchantment.removeFromPlay();
 
 		await this.refreshEnchantments();
@@ -2013,7 +2013,7 @@ export class Card {
 	 * @param newOwner The new owner of the card.
 	 */
 	async takeControl(newOwner: Player): Promise<void> {
-		game.util.remove(this.owner.board, this);
+		game.data.remove(this.owner.board, this);
 
 		this.owner = newOwner;
 		await newOwner.summon(this);

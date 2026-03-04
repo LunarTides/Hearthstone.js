@@ -166,7 +166,7 @@ export const blueprint: Blueprint = {
 				);
 
 				while (game.player1.isAlive() && game.player2.isAlive()) {
-					owner.forceTarget = game.util.getRandomTarget();
+					owner.forceTarget = game.randomTarget();
 					await rod.trigger(Ability.Cast);
 				}
 

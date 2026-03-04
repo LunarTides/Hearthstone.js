@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	async cast(self, owner) {
 		// Gain mana equal to the turn counter.
-		const turns = game.util.getTraditionalTurnCounter();
+		const turns = game.turnCounter();
 
 		owner.addMana(turns);
 	},
@@ -40,7 +40,7 @@ export const blueprint: Blueprint = {
 		 * All `{nextThingIs}` will be replaced by "The next thing is:".
 		 * The `{placeholder without replacement}` doesn't have a replacement, so it will remain "{placeholder without replacement}".
 		 */
-		const turns = game.util.getTraditionalTurnCounter();
+		const turns = game.turnCounter();
 
 		/*
 		 * Here we use static placeholders. Static placeholders are placeholders that don't change.

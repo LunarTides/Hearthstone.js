@@ -96,7 +96,7 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	// Create a path to put the card in.
 
 	// DO NOT CHANGE THIS
-	const staticPath = `${game.util.dirname()}/cards/`;
+	const staticPath = `${game.fs.dirname()}/cards/`;
 
 	// You can change everything below this comment
 	const classesString = blueprint.classes.join("/");
@@ -300,7 +300,7 @@ export async function create(
 
 	// If this function was passed in a path, use that instead.
 	if (overridePath) {
-		path = game.util.dirname() + overridePath;
+		path = game.fs.dirname() + overridePath;
 	}
 
 	// Create a filename. Example: "Test Card" -> "test-card-abcdef12.ts"
@@ -470,12 +470,12 @@ export const blueprint: Blueprint = {
 		await game.pause();
 	} else {
 		// If debug mode is disabled, write the card to disk.
-		if (!(await game.util.fs("exists", path))) {
-			await game.util.fs("mkdir", path, { recursive: true });
+		if (!(await game.fs.call("exists", path))) {
+			await game.fs.call("mkdir", path, { recursive: true });
 		}
 
 		// Write the file to the path
-		await game.util.fs("writeFile", filePath, content);
+		await game.fs.call("writeFile", filePath, content);
 
 		console.log(`File created at: "${filePath}"`);
 	}
@@ -486,7 +486,7 @@ export const blueprint: Blueprint = {
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
 	if (abilities.length > 0 && !debugMode) {
-		game.util.runCommand(`${game.config.general.editor} "${filePath}"`);
+		game.os.runCommand(`${game.config.general.editor} "${filePath}"`);
 	}
 
 	return filePath;

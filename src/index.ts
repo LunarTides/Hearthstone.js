@@ -65,7 +65,7 @@ export async function main(): Promise<void> {
 		game.interest("Throwing error, goodbye!");
 
 		// Create error report file
-		await game.util.createLogFile(error);
+		await game.logfile.create(error);
 
 		throw error;
 	}
@@ -73,5 +73,5 @@ export async function main(): Promise<void> {
 	game.interest("Game finished successfully.");
 
 	// Create log file
-	await game.util.createLogFile();
+	await game.logfile.create();
 }

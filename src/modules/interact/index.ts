@@ -171,6 +171,104 @@ export const interact = {
 	},
 
 	/**
+	 * Parses the given arguments for the eval command and returns the code to evaluate
+	 */
+	async parseEvalArgs(args: string[]): Promise<string> {
+		if (args.length <= 0) {
+			await game.pause("<red>Too few arguments.</red>\n");
+			return args.join(" ");
+		}
+
+		let log = false;
+		if (args[0] === "log") {
+			log = true;
+			args.shift();
+		}
+
+		const variables: string[] = [];
+		let code = args.join(" ");
+
+		// Allow for stuff like `/eval @Player1.addToHand(@00ff00.perfectCopy());`
+		code = code.replaceAll("@Player", "game.player");
+
+		// Replace @abcdefg with a new variable "__card_abcdefg" which contains the card with that uuid.
+		const uuidsProcessed: string[] = [];
+		const uuidRegex = /@\w+/g;
+		for (const match of code.matchAll(uuidRegex)) {
+			const uuid = match[0].slice(1);
+
+			if (uuidsProcessed.includes(uuid)) {
+				continue;
+			}
+			uuidsProcessed.push(uuid);
+
+			variables.push(`const __card_${uuid} = Card.fromUUID("${uuid}");`);
+			variables.push(
+				`if (!__card_${uuid}) throw new Error("Card with uuid \\"${uuid}\\" not found");`,
+			);
+			code = code.replaceAll(`@${uuid}`, `__card_${uuid}`);
+		}
+
+		/*
+		 * Allow for stuff like `/eval h#c#1.addAttack(b#o#2.attack)`;
+		 * ^^ This adds the second card on the opponent's side of the board's attack to the card at index 1 in the current player's hand
+		 */
+		const indexBasedRegex = /#([pco])([hbdg])(\d+)/g;
+		for (const match of code.matchAll(indexBasedRegex)) {
+			const [line, side, where, index] = match;
+
+			let locationString = `game.${["p", "c"].includes(side) ? "player" : "opponent"}.`;
+
+			switch (where) {
+				case "h": {
+					locationString += "hand";
+					break;
+				}
+
+				case "d": {
+					locationString += "deck";
+					break;
+				}
+
+				case "b": {
+					locationString += "board";
+					break;
+				}
+
+				case "g": {
+					locationString += "graveyard";
+					break;
+				}
+			}
+
+			code = code.replace(line, `${locationString}[${index} - 1]`);
+		}
+
+		if (log) {
+			// This only happens if there isn't a uuid query in the code.
+			if (code.at(-1) === ";") {
+				code = code.slice(0, -1);
+			}
+
+			code = `console.log(${code});await game.pause();`;
+		}
+
+		const variablesString =
+			variables.length > 0
+				? `\n\t// Variables\n\t${variables.join("\n\t")}\n`
+				: "";
+
+		let codeJoined = code.split(";").join(";\n\t");
+		if (codeJoined.endsWith("\n\t")) {
+			codeJoined = codeJoined.slice(0, -2);
+		}
+
+		const codeString = `\n\t// Code\n\t${codeJoined}\n`;
+
+		return `(async () => {${variablesString}${codeString}})();`;
+	},
+
+	/**
 	 * Tries to run `cmd` as a command. If it fails, return -1
 	 *
 	 * @param cmd The command
@@ -341,13 +439,13 @@ export const interact = {
 						);
 
 						// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
-						const cmds = game.util.alignColumns(
+						const cmds = game.data.alignColumns(
 							helpColumns
 								.filter((c) => !c.startsWith("(name)"))
 								.map((c) => c[0].toUpperCase() + c.slice(1)),
 							"-",
 						);
-						const debugCmds = game.util.alignColumns(
+						const debugCmds = game.data.alignColumns(
 							helpDebugColumns
 								.filter((c) => !c.startsWith("(name)"))
 								.map((c) => c[0].toUpperCase() + c.slice(1)),

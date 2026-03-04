@@ -38,7 +38,7 @@ async function getPacks() {
 		bytes: Buffer;
 	}[] = [];
 
-	await game.util.searchFolder(
+	await game.fs.searchFolder(
 		"/packs",
 		async (index, path, file) => {
 			if (
@@ -46,7 +46,7 @@ async function getPacks() {
 				!(
 					(file.isFile() && file.name.endsWith(".tar.gz")) ||
 					(file.isDirectory() &&
-						(await game.util.fs("exists", resolve(path, "pack.json5"))))
+						(await game.fs.call("exists", resolve(path, "pack.json5"))))
 				)
 			) {
 				return;
@@ -83,7 +83,7 @@ async function getPacks() {
 }
 
 async function parseMetadataFile(pack: string) {
-	if (!(await game.util.fs("exists", `/packs/${pack}/pack.json5`))) {
+	if (!(await game.fs.call("exists", `/packs/${pack}/pack.json5`))) {
 		await game.pause(
 			"<red>Invalid pack. This pack doesn't include a 'pack.json5' file.</red>\n",
 		);
@@ -91,7 +91,7 @@ async function parseMetadataFile(pack: string) {
 	}
 
 	const metadata: Metadata = Bun.JSON5.parse(
-		(await game.util.fs("readFile", `/packs/${pack}/pack.json5`, "utf8", {
+		(await game.fs.call("readFile", `/packs/${pack}/pack.json5`, "utf8", {
 			invalidateCache: true,
 		})) as string,
 	) as Metadata;
@@ -137,9 +137,9 @@ async function importPack(
 	const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 	if (pack.compressed) {
 		const archive = new Bun.Archive(pack.bytes);
-		await game.util.fs("mkdir", folderPath);
+		await game.fs.call("mkdir", folderPath);
 		await archive.extract(folderPath);
-		await game.util.fs("rm", pack.path);
+		await game.fs.call("rm", pack.path);
 
 		pack.path = folderPath;
 		pack.compressed = false;
@@ -169,10 +169,10 @@ async function importPack(
 		}
 	}
 
-	await game.util.fs(
+	await game.fs.call(
 		"cp",
 		pack.path,
-		game.util.restrictPath(`/cards/@${pack.ownerName}/${pack.name}`),
+		game.fs.restrictPath(`/cards/@${pack.ownerName}/${pack.name}`),
 		{ recursive: true },
 	);
 
@@ -184,7 +184,7 @@ async function importPack(
 	);
 
 	if (options.forceDelete) {
-		await game.util.fs("rm", pack.path, {
+		await game.fs.call("rm", pack.path, {
 			recursive: true,
 			force: true,
 		});
@@ -193,7 +193,7 @@ async function importPack(
 			message: `Do you want to delete '/packs/${pack.ownerName}+${pack.name}'?`,
 		});
 		if (deleteConfirm) {
-			await game.util.fs("rm", pack.path, {
+			await game.fs.call("rm", pack.path, {
 				recursive: true,
 				force: true,
 			});
@@ -253,15 +253,15 @@ async function exportPack(pack?: Pack) {
 		const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 		if (pack.compressed) {
 			const archive = new Bun.Archive(pack.bytes);
-			await game.util.fs("mkdir", folderPath);
+			await game.fs.call("mkdir", folderPath);
 			await archive.extract(folderPath);
-			await game.util.fs("rm", pack.path);
+			await game.fs.call("rm", pack.path);
 
 			pack.path = folderPath;
 			pack.compressed = false;
 		}
 
-		if (!(await game.util.fs("exists", resolve(pack.path, "pack.json5")))) {
+		if (!(await game.fs.call("exists", resolve(pack.path, "pack.json5")))) {
 			await game.pause(
 				"<yellow>That pack doesn't have a 'pack.json5' file.</yellow>",
 			);
@@ -270,7 +270,7 @@ async function exportPack(pack?: Pack) {
 		}
 
 		metadata = Bun.JSON5.parse(
-			(await game.util.fs("readFile", `${pack.path}/pack.json5`, "utf8", {
+			(await game.fs.call("readFile", `${pack.path}/pack.json5`, "utf8", {
 				invalidateCache: true,
 			})) as string,
 		) as Metadata;
@@ -313,23 +313,23 @@ async function exportPack(pack?: Pack) {
 	const author = metadata.author || "You";
 	const name = metadata.name || Bun.randomUUIDv7();
 
-	await game.util.fs("mkdir", `/packs/${author}+${name}`, {
+	await game.fs.call("mkdir", `/packs/${author}+${name}`, {
 		recursive: true,
 	});
 
 	// Copy custom cards over to the pack.
-	await game.util.searchCardsFolder(async (path, content, file) => {
+	await game.fs.searchCardsFolder(async (path, content, file) => {
 		if (path.includes("Custom")) {
-			await game.util.fs(
+			await game.fs.call(
 				"cp",
 				path,
-				game.util.restrictPath(`/packs/${author}+${name}/${file.name}`),
+				game.fs.restrictPath(`/packs/${author}+${name}/${file.name}`),
 			);
 		}
 	});
 
 	// Write metadata file.
-	await game.util.fs(
+	await game.fs.call(
 		"writeFile",
 		`/packs/${author}+${name}/pack.json5`,
 		Bun.JSON5.stringify(metadata, null, 4)!,
@@ -350,7 +350,7 @@ async function exportPack(pack?: Pack) {
 }
 
 async function compressPack(path: string) {
-	const stats = await game.util.fs("stat", path);
+	const stats = await game.fs.call("stat", path);
 	if (!stats.isDirectory()) {
 		return;
 	}
@@ -358,7 +358,7 @@ async function compressPack(path: string) {
 	// Add files to archive.
 	const files: Record<string, string> = {};
 
-	await game.util.searchFolder(path, async (index, p, file, content) => {
+	await game.fs.searchFolder(path, async (index, p, file, content) => {
 		if (!content) {
 			return;
 		}
@@ -369,9 +369,9 @@ async function compressPack(path: string) {
 
 	const archive = new Bun.Archive(files, { compress: "gzip" });
 	const bytes = await archive.bytes();
-	await game.util.fs("writeFile", `${path}.tar.gz`, bytes);
+	await game.fs.call("writeFile", `${path}.tar.gz`, bytes);
 
-	await game.util.fs("rm", path, {
+	await game.fs.call("rm", path, {
 		recursive: true,
 		force: true,
 	});
@@ -732,13 +732,13 @@ async function promptForAPIToken() {
 	}
 
 	let dotenvContent = "";
-	if (await game.util.fs("exists", "/.env")) {
-		dotenvContent = (await game.util.fs("readFile", "/.env")) as string;
+	if (await game.fs.call("exists", "/.env")) {
+		dotenvContent = (await game.fs.call("readFile", "/.env")) as string;
 		dotenvContent += "\n";
 	}
 
 	const tokenEnvEntry = `REGISTRY_API_TOKEN='${token}'`;
-	await game.util.fs("writeFile", "/.env", `${dotenvContent}${tokenEnvEntry}`);
+	await game.fs.call("writeFile", "/.env", `${dotenvContent}${tokenEnvEntry}`);
 
 	regbot.useOptions({
 		token,
@@ -847,7 +847,7 @@ const registry = {
 						// TODO: Add progress bar.
 						console.log("Downloading...");
 						try {
-							await pack.downloadToPath(game.util.restrictPath("/packs"));
+							await pack.downloadToPath(game.fs.restrictPath("/packs"));
 						} catch (error) {
 							game.audio.playSFX("error");
 

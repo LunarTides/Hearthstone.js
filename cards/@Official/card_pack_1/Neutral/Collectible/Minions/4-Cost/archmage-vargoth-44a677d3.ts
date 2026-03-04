@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 
 		const spell = game.lodash.sample(spells);
 
-		owner.forceTarget = game.util.getRandomTarget();
+		owner.forceTarget = game.randomTarget();
 		await spell?.trigger(Ability.Cast);
 		owner.forceTarget = undefined;
 	},

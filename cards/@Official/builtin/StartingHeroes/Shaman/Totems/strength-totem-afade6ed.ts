@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 
 		// The list that to choose from. Remove this minion from the list
 		const board = owner.board.filter((card) => card.type === Type.Minion);
-		game.util.remove(board, self);
+		game.data.remove(board, self);
 
 		// Choose the random minion
 		const minion = game.lodash.sample(board);

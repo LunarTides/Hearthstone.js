@@ -83,7 +83,7 @@ export async function main(): Promise<void> {
 
 			// If it crashes, show the ai's actions, and the history of the game before actually crashing
 			game.config.debug.commands = true;
-			await game.util.createLogFile(error);
+			await game.logfile.create(error);
 
 			await game.interact.processCommand("/ai");
 			await game.interact.processCommand("history", { debug: true });

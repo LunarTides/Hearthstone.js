@@ -17,9 +17,9 @@ export const vanilla = {
 	 */
 	async getAll(): Promise<VanillaCard[]> {
 		const fileLocation = "/vanillacards.json";
-		if (await game.util.fs("exists", fileLocation)) {
+		if (await game.fs.call("exists", fileLocation)) {
 			return JSON.parse(
-				(await game.util.fs("readFile", fileLocation)) as string,
+				(await game.fs.call("readFile", fileLocation)) as string,
 			) as VanillaCard[];
 		}
 

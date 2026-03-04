@@ -92,7 +92,7 @@ function add(card: Card): boolean {
  * Removes a card from the deck
  */
 function remove(card: Card): boolean {
-	return game.util.remove(deck, card);
+	return game.data.remove(deck, card);
 }
 
 /**
@@ -287,7 +287,7 @@ export async function main(): Promise<void> {
 				"Exit - Quit the deck creator.",
 			];
 
-			commands = game.util.alignColumns(commands, "-");
+			commands = game.data.alignColumns(commands, "-");
 
 			let command = await game.prompt.customSelect(
 				"Which command do you want to run?",
@@ -430,7 +430,7 @@ const commands: CommandList = {
 		return true;
 	},
 	async eval(args): Promise<boolean> {
-		const code = await game.util.parseEvalArgs(args);
+		const code = await game.interact.parseEvalArgs(args);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.

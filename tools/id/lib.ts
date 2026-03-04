@@ -22,7 +22,7 @@ export async function validate(
 ): Promise<number> {
 	const ids: [[string, string]] = [["", ""]];
 
-	await game.util.searchCardsFolder(async (path, content) => {
+	await game.fs.searchCardsFolder(async (path, content) => {
 		const idMatch = idRegex.exec(content);
 		if (!idMatch) {
 			console.error(`No id found in ${path}`);

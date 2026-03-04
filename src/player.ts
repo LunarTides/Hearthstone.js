@@ -802,7 +802,7 @@ export class Player {
 			return undefined;
 		}
 
-		game.util.remove(this.deck, card);
+		game.data.remove(this.deck, card);
 
 		if (
 			card.type === Type.Spell &&
@@ -992,7 +992,7 @@ export class Player {
 	 * @returns Returns false if this card wasn't blocked by that source.
 	 */
 	enableHeroPower(blockerId: string | number): boolean {
-		return game.util.remove(this.heroPowerBlockers, blockerId);
+		return game.data.remove(this.heroPowerBlockers, blockerId);
 	}
 
 	// Other
@@ -1352,7 +1352,7 @@ export class Player {
 
 			times++;
 			cards.push(card);
-			game.util.remove(list, card);
+			game.data.remove(list, card);
 		}
 
 		return cards;

@@ -210,12 +210,12 @@ export const commands: CommandList = {
 		console.log("Available commands:");
 
 		const columns = helpColumns.map((column) => game.translate(column));
-		const alignedColumns = game.util.alignColumns(columns, "-");
+		const alignedColumns = game.data.alignColumns(columns, "-");
 
 		const debugColumns = helpDebugColumns.map((column) =>
 			game.translate(column),
 		);
-		const debugAlignedColumns = game.util.alignColumns(debugColumns, "-");
+		const debugAlignedColumns = game.data.alignColumns(debugColumns, "-");
 
 		// Normal commands
 		for (const alignedColumn of alignedColumns) {
@@ -273,7 +273,7 @@ export const commands: CommandList = {
 	},
 
 	async license(): Promise<boolean> {
-		game.util.openInBrowser(`${game.config.info.githubUrl}/blob/main/LICENSE`);
+		game.os.openInBrowser(`${game.config.info.githubUrl}/blob/main/LICENSE`);
 
 		return true;
 	},
@@ -358,7 +358,7 @@ export const commands: CommandList = {
 		);
 
 		if (openIssues) {
-			game.util.openInBrowser(`${game.config.info.githubUrl}/issues`);
+			game.os.openInBrowser(`${game.config.info.githubUrl}/issues`);
 		}
 
 		return true;
@@ -672,7 +672,7 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
-		const code = await game.util.parseEvalArgs(args);
+		const code = await game.interact.parseEvalArgs(args);
 		console.log(`\`\`\`\nawait ${code}\n\`\`\`\n`);
 
 		game.event.newHistoryChild(Event.Eval, code, game.player);
@@ -738,12 +738,12 @@ export const debugCommands: CommandList = {
 
 		success &&= await game.interact.withStatus(
 			"Reloading config",
-			async () => await game.util.importConfig(),
+			async () => await game.configuration.import(),
 		);
 
 		success &&= await game.interact.withStatus(
 			"Reloading language map",
-			async () => Boolean(await game.util.importLanguageMap(true)),
+			async () => Boolean(await game.configuration.importLanguageMap(true)),
 		);
 
 		if (success) {
@@ -785,7 +785,7 @@ export const debugCommands: CommandList = {
 
 		// If the card can appear on the board, remove it.
 		if (card.canBeOnBoard()) {
-			game.util.remove(game.player.board, card);
+			game.data.remove(game.player.board, card);
 
 			// If the card has 0 or less health, restore it to its original health (according to the blueprint)
 			if (card.type === Type.Minion && !card.isAlive()) {

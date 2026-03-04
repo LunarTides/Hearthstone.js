@@ -4,11 +4,10 @@ import { eventManager, historyTree } from "@Game/modules/event.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
-	Alignment,
 	type Blueprint,
 	Event,
 	type GameAttackFlags,
-	GameAttackReturn,
+	type GameAttackReturn,
 	type GameConfig,
 	GamePlayCardReturn,
 	Keyword,
@@ -16,1065 +15,26 @@ import {
 	RemoveReason,
 	Tag,
 	type Target,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import { format } from "node:util";
 import _ from "lodash";
 import cardIds from "../cards/ids.ts";
+import { attack } from "./modules/attack.ts";
 import { audio } from "./modules/audio.ts";
 import { card } from "./modules/card/index.ts";
+import { playCard } from "./modules/card/play.ts";
 import { color } from "./modules/color.ts";
+import { config as configuration } from "./modules/config.ts";
+import { data } from "./modules/data.ts";
 import { deckcode } from "./modules/deckcode.ts";
+import { fileSystem } from "./modules/fs.ts";
 import { info } from "./modules/info.ts";
 import { interact } from "./modules/interact/index.ts";
-import { util } from "./modules/util.ts";
-
-const attack = {
-	/**
-	 * Makes a minion or hero attack another minion or hero
-	 *
-	 * @param attacker attacker | Amount of damage to deal
-	 * @param target The target
-	 * @param flags An object with boolean properties to modify the behavior of the attack (e.g., { force: true })
-	 *
-	 * @returns Success | Errorcode
-	 */
-	async attack(
-		attacker: Target | number,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		let returnValue: GameAttackReturn;
-
-		// Target is the same as the attacker
-		if (!flags.force && attacker === target) {
-			return GameAttackReturn.Invalid;
-		}
-
-		// Attacker is a number
-		if (typeof attacker === "number") {
-			return await attack._attackerIsNum(attacker, target, flags);
-		}
-
-		// Check if there is a minion with taunt
-		const taunts = (
-			target instanceof Player ? target : target.owner
-		).board.filter((m) => m.hasKeyword(Keyword.Taunt));
-
-		if (taunts.length > 0 && !flags.force) {
-			// If the target is a card and has taunt, you are allowed to attack it
-			if (target instanceof Card && target.hasKeyword(Keyword.Taunt)) {
-				// Allow the attack since the target also has taunt
-			} else {
-				return GameAttackReturn.Taunt;
-			}
-		}
-
-		if (attacker instanceof Player) {
-			// Attacker is a player
-			returnValue = await attack._attackerIsPlayer(attacker, target, flags);
-		} else if (attacker instanceof Card) {
-			// Attacker is a minion
-			returnValue = await attack._attackerIsCard(attacker, target, flags);
-		} else {
-			// Otherwise
-			return GameAttackReturn.Invalid;
-		}
-
-		return returnValue;
-	},
-
-	// Attacker is a number
-	async _attackerIsNum(
-		attacker: number,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (target instanceof Player && target.immune) {
-				return GameAttackReturn.Immune;
-			}
-
-			if (target instanceof Card) {
-				if (target.hasKeyword(Keyword.Stealth)) {
-					return GameAttackReturn.Stealth;
-				}
-
-				if (target.hasKeyword(Keyword.Immune)) {
-					return GameAttackReturn.Immune;
-				}
-
-				if (target.hasKeyword(Keyword.Dormant)) {
-					return GameAttackReturn.Dormant;
-				}
-			}
-
-			if (!target.canBeAttacked()) {
-				return GameAttackReturn.Invalid;
-			}
-		}
-
-		/*
-		 * Attacker is a number
-		 * Spell damage
-		 */
-		const damage = await attack._spellDamage(attacker, target, flags);
-
-		if (target instanceof Player) {
-			await target.damage(damage);
-			return GameAttackReturn.Success;
-		}
-
-		if (target.hasKeyword(Keyword.DivineShield)) {
-			target.removeKeyword(Keyword.DivineShield);
-			return GameAttackReturn.DivineShield;
-		}
-
-		await target.damage(damage);
-
-		// Remove frenzy
-		await attack._doFrenzy(target);
-
-		return GameAttackReturn.Success;
-	},
-
-	// Attacker is a player
-	async _attackerIsPlayer(
-		attacker: Player,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (attacker.frozen) {
-				return GameAttackReturn.Frozen;
-			}
-
-			if (!attacker.canAttack) {
-				return GameAttackReturn.PlayerHasAttacked;
-			}
-
-			if (attacker.attack <= 0) {
-				return GameAttackReturn.PlayerNoAttack;
-			}
-		}
-
-		// Target is a player
-		if (target instanceof Player) {
-			return await attack._attackerIsPlayerAndTargetIsPlayer(
-				attacker,
-				target,
-				flags,
-			);
-		}
-
-		// Target is a card
-		if (target instanceof Card) {
-			return await attack._attackerIsPlayerAndTargetIsCard(
-				attacker,
-				target,
-				flags,
-			);
-		}
-
-		// Otherwise
-		return GameAttackReturn.Invalid;
-	},
-
-	// Attacker is a player and target is a player
-	async _attackerIsPlayerAndTargetIsPlayer(
-		attacker: Player,
-		target: Player,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (target.immune) {
-				return GameAttackReturn.Immune;
-			}
-
-			if (!target.canBeAttacked()) {
-				return GameAttackReturn.Invalid;
-			}
-		}
-
-		// Get the attacker's attack damage, and attack the target with it
-		await attack.attack(attacker.attack, target);
-
-		// The attacker can't attack anymore this turn.
-		await attack._removeDurabilityFromWeapon(attacker, target);
-
-		await game.event.broadcast(
-			Event.Attack,
-			[attacker, target, flags],
-			attacker,
-		);
-		return GameAttackReturn.Success;
-	},
-
-	// Attacker is a player and target is a card
-	async _attackerIsPlayerAndTargetIsCard(
-		attacker: Player,
-		target: Card,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		// If the target has stealth, the attacker can't attack it
-		if (!flags.force) {
-			if (target.hasKeyword(Keyword.Stealth)) {
-				return GameAttackReturn.Stealth;
-			}
-
-			if (target.hasKeyword(Keyword.Immune)) {
-				return GameAttackReturn.Immune;
-			}
-
-			if (target.hasKeyword(Keyword.Dormant)) {
-				return GameAttackReturn.Dormant;
-			}
-
-			if (!target.canBeAttacked()) {
-				return GameAttackReturn.Invalid;
-			}
-		}
-
-		// The attacker should damage the target
-		await game.attack(attacker.attack, target);
-		await game.attack(target.attack ?? 0, attacker);
-
-		// Remove frenzy
-		await attack._doFrenzy(target);
-		await attack._removeDurabilityFromWeapon(attacker, target);
-
-		await game.event.broadcast(
-			Event.Attack,
-			[attacker, target, flags],
-			attacker,
-		);
-		return GameAttackReturn.Success;
-	},
-
-	// Attacker is a card
-	async _attackerIsCard(
-		attacker: Card,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (attacker.hasKeyword(Keyword.Dormant)) {
-				return GameAttackReturn.Dormant;
-			}
-
-			if (attacker.hasKeyword(Keyword.Titan)) {
-				return GameAttackReturn.Titan;
-			}
-
-			if (attacker.hasKeyword(Keyword.Frozen)) {
-				return GameAttackReturn.Frozen;
-			}
-
-			if (attacker.attackTimes && attacker.attackTimes <= 0) {
-				return GameAttackReturn.CardHasAttacked;
-			}
-
-			if ((attacker.attack ?? 0) <= 0) {
-				return GameAttackReturn.CardNoAttack;
-			}
-
-			if (attacker.attackTimes <= 0) {
-				return GameAttackReturn.Exhausted;
-			}
-
-			if (await this._forgetful(attacker, flags)) {
-				return GameAttackReturn.Success;
-			}
-		}
-
-		// Target is a player
-		if (target instanceof Player) {
-			return await attack._attackerIsCardAndTargetIsPlayer(
-				attacker,
-				target,
-				flags,
-			);
-		}
-
-		// Target is a minion
-		if (target instanceof Card) {
-			return await attack._attackerIsCardAndTargetIsCard(
-				attacker,
-				target,
-				flags,
-			);
-		}
-
-		// Otherwise
-		return GameAttackReturn.Invalid;
-	},
-
-	// Attacker is a card and target is a player
-	async _attackerIsCardAndTargetIsPlayer(
-		attacker: Card,
-		target: Player,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (target.immune) {
-				return GameAttackReturn.Immune;
-			}
-
-			if (!attacker.canAttackHero) {
-				return GameAttackReturn.CantAttackHero;
-			}
-
-			if (!target.canBeAttacked()) {
-				return GameAttackReturn.Invalid;
-			}
-		}
-
-		// If attacker has stealth, remove it
-		attacker.removeKeyword(Keyword.Stealth);
-
-		// If attacker has lifesteal, heal it's owner
-		attack._doLifesteal(attacker);
-
-		// Deal damage
-		await attack.attack(attacker.attack ?? 0, target);
-
-		// Remember this attack
-		attacker.decrementAttackTimes();
-
-		await game.event.broadcast(
-			Event.Attack,
-			[attacker, target, flags],
-			attacker.owner,
-		);
-		return GameAttackReturn.Success;
-	},
-
-	// Attacker is a card and target is a card
-	async _attackerIsCardAndTargetIsCard(
-		attacker: Card,
-		target: Card,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		if (!flags.force) {
-			if (target.hasKeyword(Keyword.Stealth)) {
-				return GameAttackReturn.Stealth;
-			}
-
-			if (target.hasKeyword(Keyword.Immune)) {
-				return GameAttackReturn.Immune;
-			}
-
-			if (target.hasKeyword(Keyword.Dormant)) {
-				return GameAttackReturn.Dormant;
-			}
-
-			if (!target.canBeAttacked()) {
-				return GameAttackReturn.Invalid;
-			}
-		}
-
-		await attack._attackerIsCardAndTargetIsCardDoAttacker(
-			attacker,
-			target,
-			flags,
-		);
-		await attack._attackerIsCardAndTargetIsCardDoTarget(
-			attacker,
-			target,
-			flags,
-		);
-
-		await game.event.broadcast(
-			Event.Attack,
-			[attacker, target, flags],
-			attacker.owner,
-		);
-		return GameAttackReturn.Success;
-	},
-	async _attackerIsCardAndTargetIsCardDoAttacker(
-		attacker: Card,
-		target: Card,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		// Cleave
-		await attack._cleave(attacker, target);
-
-		attacker.decrementAttackTimes();
-		attacker.removeKeyword(Keyword.Stealth);
-
-		const shouldDamage = attack._cardAttackHelper(attacker);
-		if (!shouldDamage) {
-			return GameAttackReturn.Success;
-		}
-
-		await attack.attack(target.attack ?? 0, attacker);
-
-		// Remove frenzy
-		await attack._doFrenzy(attacker);
-
-		// If the target has poison, kill the attacker
-		await attack._doPoison(target, attacker);
-
-		return GameAttackReturn.Success;
-	},
-	async _attackerIsCardAndTargetIsCardDoTarget(
-		attacker: Card,
-		target: Card,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		const shouldDamage = attack._cardAttackHelper(target);
-		if (!shouldDamage) {
-			return GameAttackReturn.Success;
-		}
-
-		await attack.attack(attacker.attack ?? 0, target);
-
-		attack._doLifesteal(attacker);
-		await attack._doPoison(attacker, target);
-
-		// Remove frenzy
-		await attack._doFrenzy(target);
-		if (target.health && target.health < 0) {
-			await attacker.trigger(Ability.Overkill);
-		}
-
-		if (target.health && target.health === 0) {
-			await attacker.trigger(Ability.HonorableKill);
-		}
-
-		return GameAttackReturn.Success;
-	},
-
-	// Helper functions
-	_cardAttackHelper(card: Card): boolean {
-		if (card.hasKeyword(Keyword.Immune)) {
-			return false;
-		}
-
-		if (card.hasKeyword(Keyword.DivineShield)) {
-			card.removeKeyword(Keyword.DivineShield);
-			return false;
-		}
-
-		return true;
-	},
-
-	async _cleave(attacker: Card, target: Card): Promise<void> {
-		if (!attacker.hasKeyword(Keyword.Cleave)) {
-			return;
-		}
-
-		const board = target.owner.board;
-		const index = board.indexOf(target);
-
-		const below = board[index - 1];
-		const above = board[index + 1];
-
-		// If there is a card below the target, also deal damage to it.
-		if (below) {
-			await game.attack(attacker.attack ?? 0, below);
-		}
-
-		// If there is a card above the target, also deal damage to it.
-		if (above) {
-			await game.attack(attacker.attack ?? 0, above);
-		}
-	},
-
-	async _doFrenzy(card: Card): Promise<void> {
-		if (!card.isAlive()) {
-			return;
-		}
-
-		// The card has more than 0 health
-		if ((await card.trigger(Ability.Frenzy)) !== Card.REFUND) {
-			card.abilities.frenzy = undefined;
-		}
-	},
-
-	async _doPoison(poisonCard: Card, other: Card): Promise<void> {
-		if (!poisonCard.hasKeyword(Keyword.Poisonous)) {
-			return;
-		}
-
-		// The attacker has poison
-		await other.destroy();
-	},
-
-	_doLifesteal(attacker: Card): void {
-		if (!attacker.hasKeyword(Keyword.Lifesteal)) {
-			return;
-		}
-
-		// The attacker has lifesteal
-		attacker.owner.addHealth(attacker.attack ?? 0);
-	},
-
-	async _spellDamage(
-		attacker: number,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<number> {
-		if (!flags.spellDamage) {
-			return attacker;
-		}
-
-		const dmg = attacker + game.player.spellDamage;
-
-		await game.event.broadcast(
-			Event.SpellDealsDamage,
-			[target, dmg],
-			game.player,
-		);
-
-		return dmg;
-	},
-
-	async _removeDurabilityFromWeapon(
-		attacker: Player,
-		target: Target,
-	): Promise<void> {
-		const weapon = attacker.weapon;
-		if (!weapon) {
-			attacker.canAttack = false;
-			return;
-		}
-
-		// If the weapon would be part of the attack, remove 1 durability
-		if (weapon.attackTimes && weapon.attackTimes > 0 && weapon.attack) {
-			weapon.decrementAttackTimes();
-
-			// Only remove 1 durability if the weapon is not unbreakable
-			if (!weapon.hasKeyword(Keyword.Unbreakable)) {
-				await weapon.damage(1);
-			}
-
-			// If the weapon is alive and it has unlimited attacks, the player can attack again this turn
-			if (!weapon.isAlive() || !weapon.hasKeyword(Keyword.UnlimitedAttacks)) {
-				attacker.canAttack = false;
-			}
-
-			if (target instanceof Card) {
-				await attack._doPoison(weapon, target);
-			}
-		}
-	},
-
-	async _forgetful(
-		attacker: Card,
-		flags: GameAttackFlags = {},
-	): Promise<boolean> {
-		if (!attacker.hasKeyword(Keyword.Forgetful)) {
-			return false;
-		}
-
-		// Get the forgetful state
-		let forgetfulState = attacker.getKeyword(Keyword.Forgetful) as
-			| undefined
-			| number;
-
-		// If the forgetful state is undefined, set it to 1
-		if (forgetfulState === undefined) {
-			attacker.setKeyword(Keyword.Forgetful, 1);
-			forgetfulState = 1;
-		}
-
-		/*
-		 * We only do the coin flip if the forgetful state is 1
-		 * This is so we can disable forgetful when attacking the random target
-		 */
-		if (forgetfulState !== 1 || game.lodash.random(0, 1) === 0) {
-			return false;
-		}
-
-		// Attack a random target instead
-		let result: GameAttackReturn = GameAttackReturn.Invalid;
-
-		// Get the owner of the attacker, so we can exclude them from the target selection
-		const ownerIsPlayer1 = attacker.owner === game.player1;
-		const ownerIsPlayer2 = attacker.owner === game.player2;
-
-		// Set the forgetful state to 2, so we don't do the coin flip again when attacking the random target
-		attacker.setKeyword(Keyword.Forgetful, 2);
-
-		// Keep on trying to attack random targets until it works, or we've tried the max times
-		for (
-			let i = 0;
-			i < game.config.advanced.forgetfulRandomTargetFailAmount &&
-			result !== GameAttackReturn.Success;
-			i++
-		) {
-			/*
-			 * Choose a random enemy target
-			 * Only include "Player 1" if player 1 isn't the owner of the attacker
-			 * Only include "Player 2" if player 2 isn't the owner of the attacker
-			 * Only include player 1's side of the board if player 1 isn't the owner of the attacker
-			 * Only include player 2's side of the board if player 2 isn't the owner of the attacker
-			 */
-			const target = game.util.getRandomTarget(
-				!ownerIsPlayer1,
-				!ownerIsPlayer2,
-				!ownerIsPlayer1,
-				!ownerIsPlayer2,
-			);
-
-			// If a target wasn't found, just continue with the attack
-			if (!target) {
-				break;
-			}
-
-			// If this doesn't work, it tries again do to the loop
-			result = await game.attack(attacker, target, flags);
-		}
-
-		// After the loop, set the forgetful state back to 1 so we can do the coin flip again next time
-		attacker.setKeyword(Keyword.Forgetful, 1);
-
-		// If the attack was successful, return since it already attacked a random target and this attack is useless now.
-		if (result === GameAttackReturn.Success) {
-			return true;
-		}
-
-		return false;
-	},
-};
-
-const playCard = {
-	/**
-	 * Play a card
-	 *
-	 * @param card The card to play
-	 * @param player The card's owner
-	 */
-	async play(card: Card, player: Player): Promise<GamePlayCardReturn> {
-		game.event.newHistoryChild(Event.PlayCard, card, player);
-
-		// Forge
-		const forge = await playCard._forge(card, player);
-		if (forge !== GamePlayCardReturn.Invalid) {
-			return forge;
-		}
-
-		// Trade
-		const trade = await playCard._trade(card, player);
-		if (trade !== GamePlayCardReturn.Invalid) {
-			return trade;
-		}
-
-		// Cost
-		if (player[card.costType] < card.cost) {
-			return GamePlayCardReturn.Cost;
-		}
-
-		// If the board has max capacity, and the card played is a minion or location card, prevent it.
-		if (!(await playCard._hasCapacity(card, player))) {
-			return GamePlayCardReturn.Space;
-		}
-
-		// Condition
-		if (!(await playCard._condition(card, player))) {
-			return GamePlayCardReturn.Refund;
-		}
-
-		// Charge you for the card
-		player[card.costType] -= card.cost;
-		await game.event.withSuppressed(Event.DiscardCard, async () =>
-			card.discard(),
-		);
-
-		// Counter
-		if (playCard._countered(card, player)) {
-			return GamePlayCardReturn.Counter;
-		}
-
-		// Broadcast `PlayCardUnsafe` event without adding it to the history
-		await game.event.broadcast(Event.PlayCardUnsafe, card, player, false);
-
-		// Finale
-		if (player[card.costType] === 0) {
-			await card.trigger(Ability.Finale);
-		}
-
-		// Store the result of the type-specific code
-		let result: GamePlayCardReturn = GamePlayCardReturn.Success;
-
-		/*
-		 * Type specific code
-		 * HACK: Use of never
-		 */
-		const typeFunction: (
-			card: Card,
-			player: Player,
-		) => Promise<GamePlayCardReturn> =
-			playCard.typeSpecific[card.type as never];
-
-		if (!typeFunction) {
-			throw new TypeError(`Cannot handle playing card of type: ${card.type}`);
-		}
-
-		result = await typeFunction(card, player);
-
-		// Refund
-		if (result === GamePlayCardReturn.Refund) {
-			return result;
-		}
-
-		card.turnPlayed = game.turn;
-
-		// Add the `PlayCardUnsafe` event to the history, now that it's safe to do so
-		game.event.addHistory(Event.PlayCardUnsafe, card, player);
-
-		await playCard._echo(card, player);
-		await playCard._combo(card, player);
-		await playCard._corrupt(card, player);
-
-		// Broadcast `PlayCard` event
-		await game.event.broadcast(Event.PlayCard, card, player);
-		return result;
-	},
-
-	// Card type specific code
-	typeSpecific: {
-		async Minion(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			// Magnetize
-			if (await playCard._magnetize(card, player)) {
-				return GamePlayCardReturn.Magnetize;
-			}
-
-			if (
-				!card.hasKeyword(Keyword.Dormant) &&
-				(await card.trigger(Ability.Battlecry)) === Card.REFUND
-			) {
-				return GamePlayCardReturn.Refund;
-			}
-
-			return game.event.withSuppressed(Event.SummonCard, async () =>
-				player.summon(card),
-			);
-		},
-
-		async Spell(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.trigger(Ability.Cast)) === Card.REFUND) {
-				return GamePlayCardReturn.Refund;
-			}
-
-			// Twinspell functionality
-			if (card.hasKeyword(Keyword.Twinspell)) {
-				card.removeKeyword(Keyword.Twinspell);
-				card.text = card.text.split("Twinspell")[0].trim();
-
-				await player.addToHand(card);
-			}
-
-			// Spellburst functionality
-			for (const card of player.board) {
-				await card.trigger(Ability.Spellburst);
-				card.abilities.spellburst = undefined;
-			}
-
-			return GamePlayCardReturn.Success;
-		},
-
-		async Weapon(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.trigger(Ability.Battlecry)) === Card.REFUND) {
-				return GamePlayCardReturn.Refund;
-			}
-
-			await player.setWeapon(card);
-			return GamePlayCardReturn.Success;
-		},
-
-		async Hero(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			if ((await card.trigger(Ability.Battlecry)) === Card.REFUND) {
-				return GamePlayCardReturn.Refund;
-			}
-
-			await player.setHero(card);
-			return GamePlayCardReturn.Success;
-		},
-
-		async Location(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			await card.setStats(0, card.health);
-			card.addKeyword(Keyword.Immune);
-			card.cooldown = 0;
-
-			return game.event.withSuppressed(Event.SummonCard, async () =>
-				player.summon(card),
-			);
-		},
-
-		async HeroPower(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			// A hero power card shouldn't really be played, but oh well.
-			player.hero.heropowerId = card.id;
-			player.hero.heropower = card;
-
-			return GamePlayCardReturn.Success;
-		},
-
-		async Enchantment(card: Card, player: Player): Promise<GamePlayCardReturn> {
-			// I don't *really* know how you would be able to play an enchantment, but ok.
-			// I can't really think if anything specific it should do, so...
-			return GamePlayCardReturn.Success;
-		},
-	},
-
-	async _trade(card: Card, player: Player): Promise<GamePlayCardReturn> {
-		if (!card.hasKeyword(Keyword.Tradeable)) {
-			return GamePlayCardReturn.Invalid;
-		}
-
-		let q: boolean;
-
-		if (player.ai) {
-			q = await player.ai.trade(card);
-		} else {
-			await game.interact.print.gameState(player);
-			q = await game.prompt.yesNo(
-				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
-				player,
-			);
-		}
-
-		if (!q) {
-			return GamePlayCardReturn.Invalid;
-		}
-
-		if (player.mana < 1) {
-			return GamePlayCardReturn.Cost;
-		}
-
-		if (player.hand.length >= game.config.general.maxHandLength) {
-			return GamePlayCardReturn.Space;
-		}
-
-		if (player.deck.length <= 0) {
-			return GamePlayCardReturn.Space;
-		}
-
-		player.mana -= 1;
-
-		await game.event.withSuppressed(Event.DiscardCard, async () =>
-			card.discard(),
-		);
-		await player.drawCards(1);
-		await player.shuffleIntoDeck(card);
-
-		await game.event.broadcast(Event.TradeCard, card, player);
-		return GamePlayCardReturn.Success;
-	},
-
-	async _forge(card: Card, player: Player): Promise<GamePlayCardReturn> {
-		const forgeId = card.getKeyword(Keyword.Forge) as string | undefined;
-
-		if (!forgeId) {
-			return GamePlayCardReturn.Invalid;
-		}
-
-		let q: boolean;
-
-		if (player.ai) {
-			q = await player.ai.forge(card);
-		} else {
-			await game.interact.print.gameState(player);
-			q = await game.prompt.yesNo(
-				`Would you like to forge ${card.colorFromRarity()}?`,
-				player,
-			);
-		}
-
-		if (!q) {
-			return GamePlayCardReturn.Invalid;
-		}
-
-		if (player.mana < 2) {
-			return GamePlayCardReturn.Cost;
-		}
-
-		player.mana -= 2;
-
-		await game.event.withSuppressed(Event.DiscardCard, async () =>
-			card.discard(),
-		);
-		const forged = await Card.create(forgeId, player);
-		await player.addToHand(forged);
-
-		await game.event.broadcast(Event.ForgeCard, card, player);
-		return GamePlayCardReturn.Success;
-	},
-
-	async _hasCapacity(card: Card, player: Player): Promise<boolean> {
-		// Cards that aren't summoned to the board bypass this condition.
-		// This is so that you can play, for example, spells while the board is full.
-		if (!card.canBeOnBoard()) {
-			return true;
-		}
-
-		return player.board.length < game.config.general.maxBoardSpace;
-	},
-
-	async _condition(card: Card, player: Player): Promise<boolean> {
-		const condition = await card.trigger(Ability.Condition);
-		if (!Array.isArray(condition)) {
-			return true;
-		}
-
-		// This is if the condition is cleared
-		const cleared = !condition.includes(false);
-		if (cleared) {
-			return true;
-		}
-
-		// Warn the user that the condition is not fulfilled
-		const warnMessage =
-			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
-
-		await game.interact.print.gameState(player);
-		const warn = await game.prompt.yesNo(warnMessage, player);
-
-		if (!warn) {
-			return false;
-		}
-
-		return true;
-	},
-
-	_countered(card: Card, player: Player): boolean {
-		const opponent = player.getOpponent();
-
-		// Check if the card is countered
-		if (opponent.counter?.includes(card.type)) {
-			game.util.remove(opponent.counter, card.type);
-			return true;
-		}
-
-		return false;
-	},
-
-	async _echo(card: Card, player: Player): Promise<boolean> {
-		if (!card.hasKeyword(Keyword.Echo)) {
-			return false;
-		}
-
-		// Create an exact copy of the card played
-		const echo = card.perfectCopy();
-		echo.addKeyword(Keyword.Echo);
-
-		await player.addToHand(echo);
-		return true;
-	},
-
-	async _combo(card: Card, player: Player): Promise<boolean> {
-		const playedCards = player.getPlayedCards();
-		if (playedCards.length <= 0) {
-			return false;
-		}
-
-		// Get the player's PlayCard event history
-		const latest = game.lodash.last(playedCards);
-		if (!latest) {
-			return false;
-		}
-
-		// If the previous card played was played on the same turn as this one, activate combo
-		if (latest.turnCreated === game.turn) {
-			await card.trigger(Ability.Combo);
-		}
-
-		return true;
-	},
-
-	async _corrupt(card: Card, player: Player): Promise<boolean> {
-		for (const toCorrupt of player.hand) {
-			const corruptId = toCorrupt.getKeyword(Keyword.Corrupt) as
-				| string
-				| undefined;
-			if (!corruptId || card.cost <= toCorrupt.cost) {
-				continue;
-			}
-
-			// Corrupt that card
-			const corrupted = await Card.create(corruptId, player);
-
-			await game.event.withSuppressed(Event.DiscardCard, async () =>
-				card.discard(),
-			);
-			await game.event.withSuppressed(Event.AddCardToHand, async () =>
-				player.addToHand(corrupted),
-			);
-		}
-
-		return true;
-	},
-
-	async _magnetize(card: Card, player: Player): Promise<boolean> {
-		const board = player.board;
-
-		if (!card.hasKeyword(Keyword.Magnetic) || board.length <= 0) {
-			return false;
-		}
-
-		// Find the mechs on the board
-		const mechs = board.filter((m) => m.tribes?.includes(Tribe.Mech));
-		if (mechs.length <= 0) {
-			return false;
-		}
-
-		const mech = await game.prompt.targetCard(
-			"Which minion do you want this card to Magnetize to:",
-			undefined,
-			{ alignment: Alignment.Friendly },
-		);
-
-		if (!mech) {
-			return false;
-		}
-
-		if (!mech.tribes?.includes(Tribe.Mech)) {
-			console.log("That minion is not a Mech.");
-			return playCard._magnetize(card, player);
-		}
-
-		await mech.addStats(card.attack, card.health);
-
-		for (const entry of Object.entries(card.keywords)) {
-			mech.addKeyword(entry[0] as unknown as Keyword, entry[1]);
-		}
-
-		if (mech.maxHealth && card.maxHealth) {
-			mech.maxHealth += card.maxHealth;
-		}
-
-		// Transfer the abilities over.
-		for (const entry of Object.entries(card.abilities)) {
-			const [key, value] = entry;
-
-			for (const ability of value) {
-				mech.addAbility(key as Ability, ability);
-			}
-		}
-
-		// Echo
-		await playCard._echo(card, player);
-
-		// Corrupt
-		await playCard._corrupt(card, player);
-
-		return true;
-	},
-};
+import { logfile } from "./modules/logfile.ts";
+import { os } from "./modules/os.ts";
 
 export class Game {
-	/**
-	 * Interact module.
-	 */
-	interact = interact;
-
-	/**
-	 * Shortcut for `game.interact.prompt`.
-	 */
-	prompt = interact.prompt;
-
 	/**
 	 * Audio module.
 	 */
@@ -1086,9 +46,19 @@ export class Game {
 	card = card;
 
 	/**
+	 * Configuration module.
+	 */
+	configuration = configuration;
+
+	/**
 	 * Color module.
 	 */
 	color = color;
+
+	/**
+	 * Data manipulation module.
+	 */
+	data = data;
 
 	/**
 	 * Deckcode module.
@@ -1096,14 +66,34 @@ export class Game {
 	deckcode = deckcode;
 
 	/**
+	 * File system module.
+	 */
+	fs = fileSystem;
+
+	/**
 	 * Info module.
 	 */
 	info = info;
 
 	/**
-	 * Util module.
+	 * Interact module.
 	 */
-	util = util;
+	interact = interact;
+
+	/**
+	 * Logfile module.
+	 */
+	logfile = logfile;
+
+	/**
+	 * OS module.
+	 */
+	os = os;
+
+	/**
+	 * Shortcut for `game.interact.prompt`.
+	 */
+	prompt = interact.prompt;
 
 	/**
 	 * The player that starts first.
@@ -1166,56 +156,6 @@ export class Game {
 	activeCards: Card[] = [];
 
 	/**
-	 * Play a card
-	 *
-	 * @param card The card to play
-	 * @param player The card's owner
-	 */
-	@historyTree
-	async play(card: Card, player: Player) {
-		return await playCard.play(card, player);
-	}
-
-	/**
-	 * Makes a minion or hero attack another minion or hero
-	 *
-	 * @param attacker attacker | Amount of damage to deal
-	 * @param target The target
-	 * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
-	 *
-	 * @returns Success | Errorcode
-	 */
-	async attack(
-		attacker: Target | number,
-		target: Target,
-		flags: GameAttackFlags = {},
-	): Promise<GameAttackReturn> {
-		// Create history branch.
-		if (typeof attacker === "number") {
-			if (target instanceof Card) {
-				game.event.newHistoryChild(
-					Event.DamageCard,
-					[target, attacker],
-					target.owner,
-				);
-			} else {
-				game.event.newHistoryChild(Event.TakeDamage, attacker, target);
-			}
-		} else {
-			game.event.newHistoryChild(
-				Event.Attack,
-				[attacker, target, flags],
-				attacker instanceof Player ? attacker : attacker.owner,
-			);
-		}
-
-		const result = await attack.attack(attacker, target, flags);
-
-		game.event.finishHistoryChild();
-		return result;
-	}
-
-	/**
 	 * The turn counter.
 	 *
 	 * This goes up at the beginning of each player's turn.
@@ -1224,7 +164,7 @@ export class Game {
 	 *
 	 * Do
 	 * ```
-	 * game.util.getTraditionalTurnCounter();
+	 * game.turnCounter();
 	 * ```
 	 * for a more conventional turn counter.
 	 */
@@ -1308,7 +248,7 @@ export class Game {
 		// Check if the date is the 14th of February
 		const currentDate = new Date();
 		this.time.year = currentDate.getFullYear();
-		this.util.setupTimeEvents(currentDate);
+		this.configuration.setupTimeEvents(currentDate);
 
 		// this.time.events.anniversary = true;
 		// this.time.events.pride.month = true;
@@ -1356,7 +296,7 @@ export class Game {
 			if (this.debugLog.includes(split)) {
 				this.debugLog.splice(this.debugLog.indexOf(split), 1, string);
 
-				game.util.remove(data, string);
+				game.data.remove(data, string);
 			}
 		}
 
@@ -1384,7 +324,7 @@ export class Game {
 		}
 
 		const newText =
-			start + (this.util.getCachedLanguageMap()?.[text] || text) + end;
+			start + (this.configuration.getCachedLanguageMap()?.[text] || text) + end;
 
 		return format(newText, ...args);
 	}
@@ -1699,7 +639,125 @@ export class Game {
 		return true;
 	}
 
-	// Interacting with minions
+	/**
+	 * Returns a more traditional turn counter format.
+	 *
+	 * `game.turns` increments at the end of every player's turn.
+	 * This only increments at the end of the second player's turn.
+	 */
+	turnCounter(): number {
+		return Math.ceil(game.turn / 2);
+	}
+
+	/**
+	 * Gets a random target from the game. All arguments default to true.
+	 *
+	 * @param includePlayer1 If it should include `game.player1` in the list of targets.
+	 * @param includePlayer2 If it should include `game.player2` in the list of targets.
+	 * @param includePlayer1Board If it should include player1's board in the list of targets.
+	 * @param includePlayer2Board If it should include player2's board in the list of targets.
+	 * @param [filter=() => true] Filter predicate.
+	 */
+	randomTarget(
+		includePlayer1 = true,
+		includePlayer2 = true,
+		includePlayer1Board = true,
+		includePlayer2Board = true,
+		filter: (target: Target) => boolean = () => true,
+	): Target | undefined {
+		const targets: Target[] = [];
+
+		if (includePlayer1) {
+			targets.push(game.player1);
+		}
+
+		if (includePlayer2) {
+			targets.push(game.player2);
+		}
+
+		if (includePlayer1Board) {
+			targets.push(...game.player1.board);
+		}
+
+		if (includePlayer2Board) {
+			targets.push(...game.player2.board);
+		}
+
+		return game.lodash.sample(targets.filter(filter));
+	}
+
+	/**
+	 * The same as `getRandomTarget` but uses relative terms (current & opposing) rather than absolute terms (player1 & player2).
+	 */
+	randomTargetRelative(
+		includeCurrentPlayer = true,
+		includeOpposingPlayer = true,
+		includeCurrentBoard = true,
+		includeOpposingBoard = true,
+		filter: (target: Target) => boolean = () => true,
+	): Target | undefined {
+		return this.randomTarget(
+			(includeCurrentPlayer && game.player.id === 0) ||
+				(includeOpposingPlayer && game.opponent.id === 0),
+			(includeCurrentPlayer && game.player.id === 1) ||
+				(includeOpposingPlayer && game.opponent.id === 1),
+			(includeCurrentBoard && game.player.id === 0) ||
+				(includeOpposingBoard && game.opponent.id === 0),
+			(includeCurrentBoard && game.player.id === 1) ||
+				(includeOpposingBoard && game.opponent.id === 1),
+			filter,
+		);
+	}
+
+	/**
+	 * Play a card
+	 *
+	 * @param card The card to play
+	 * @param player The card's owner
+	 */
+	@historyTree
+	async play(card: Card, player: Player) {
+		return await playCard.play(card, player);
+	}
+
+	/**
+	 * Makes a minion or hero attack another minion or hero
+	 *
+	 * @param attacker attacker | Amount of damage to deal
+	 * @param target The target
+	 * @param force Whether to force the attack. This will bypass any attack restrictions. By default, this is false.
+	 *
+	 * @returns Success | Errorcode
+	 */
+	async attack(
+		attacker: Target | number,
+		target: Target,
+		flags: GameAttackFlags = {},
+	): Promise<GameAttackReturn> {
+		// Create history branch.
+		if (typeof attacker === "number") {
+			if (target instanceof Card) {
+				game.event.newHistoryChild(
+					Event.DamageCard,
+					[target, attacker],
+					target.owner,
+				);
+			} else {
+				game.event.newHistoryChild(Event.TakeDamage, attacker, target);
+			}
+		} else {
+			game.event.newHistoryChild(
+				Event.Attack,
+				[attacker, target, flags],
+				attacker instanceof Player ? attacker : attacker.owner,
+			);
+		}
+
+		const result = await attack.attack(attacker, target, flags);
+
+		game.event.finishHistoryChild();
+		return result;
+	}
 
 	/**
 	 * Summon a minion.
@@ -1920,8 +978,8 @@ export async function createGame(registerCards = true) {
 	const player1 = new Player();
 	const player2 = new Player();
 	const game = new Game(player1, player2);
-	await game.util.importConfig();
-	await game.util.importLanguageMap();
+	await game.configuration.import();
+	await game.configuration.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {
 		game.audio.setupPlayback();

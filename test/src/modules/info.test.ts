@@ -2,7 +2,7 @@ import { info } from "@Game/modules/info.ts";
 import { describe, expect, test } from "bun:test";
 import { format } from "node:util";
 
-describe("src/functions/info.", () => {
+describe("src/functions/info", () => {
 	test.todo("version", async () => {});
 
 	test("versionString", async () => {
@@ -45,16 +45,14 @@ describe("src/functions/info.", () => {
 			}),
 		).toEqual(format("%s-%s.1 (%s)", version, branch, info.latestCommit()));
 
-		expect(info.versionString.bind(5)).toThrow("Invalid detail amount");
+		expect(info.versionString.bind(info, 5)).toThrow("Invalid detail amount");
 	});
 
 	test("latestCommit", async () => {
 		let latestCommit: string | undefined;
 
 		try {
-			latestCommit = game.util
-				.runCommand("git rev-parse --short=7 HEAD")
-				.trim();
+			latestCommit = game.os.runCommand("git rev-parse --short=7 HEAD").trim();
 		} catch {
 			return;
 		}
