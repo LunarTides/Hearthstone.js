@@ -429,6 +429,7 @@ export const eventManager = {
 		await this.tick(key, value, player);
 
 		if (updateHistory) {
+			// TODO: Handle arrays and objects containing cards. Do this in `addHistory`.
 			if (value instanceof Card) {
 				// Clone the value if it is a card.
 				const card = value.perfectCopy();
