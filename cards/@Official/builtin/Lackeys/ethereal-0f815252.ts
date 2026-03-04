@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 			(await Card.all()).filter(
 				(c) =>
 					c.type === Type.Spell &&
-					game.functions.card.validateClasses(self.classes, owner.heroClass),
+					game.card.validateClasses(self.classes, owner.heroClass),
 			).length <= 0
 		) {
 			return;

@@ -17,7 +17,7 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
-import { historyTree } from "./event.ts";
+import { historyTree } from "./modules/event.ts";
 
 export class Player {
 	/**
@@ -196,7 +196,7 @@ export class Player {
 	hasUsedHeroPowerThisTurn = false;
 
 	/**
-	 * The playerId / card uuids of the entities blocking this players hero power. Use the {@link disableHeroPower} and {@link enableHeroPower} functions.
+	 * The playerId / card uuids of the entities blocking this players hero power. Use the {@link disableHeroPower} and {@link enableHeroPower}
 	 */
 	heroPowerBlockers: (string | number)[] = [];
 
@@ -778,14 +778,14 @@ export class Player {
 	 * This works
 	 * ```
 	 * // Get a random card from the player's deck
-	 * const card = game.functions.randList(player.deck);
+	 * const card = game.randList(player.deck);
 	 *
 	 * await player.drawSpecific(card);
 	 * ```
 	 *
 	 * This doesn't work
 	 * ```
-	 * const card = game.functions.randList(player.deck).perfectCopy();
+	 * const card = game.randList(player.deck).perfectCopy();
 	 *
 	 * await player.drawSpecific(card);
 	 * ```
@@ -802,7 +802,7 @@ export class Player {
 			return undefined;
 		}
 
-		game.functions.util.remove(this.deck, card);
+		game.util.remove(this.deck, card);
 
 		if (
 			card.type === Type.Spell &&
@@ -992,7 +992,7 @@ export class Player {
 	 * @returns Returns false if this card wasn't blocked by that source.
 	 */
 	enableHeroPower(blockerId: string | number): boolean {
-		return game.functions.util.remove(this.heroPowerBlockers, blockerId);
+		return game.util.remove(this.heroPowerBlockers, blockerId);
 	}
 
 	// Other
@@ -1352,7 +1352,7 @@ export class Player {
 
 			times++;
 			cards.push(card);
-			game.functions.util.remove(list, card);
+			game.util.remove(list, card);
 		}
 
 		return cards;

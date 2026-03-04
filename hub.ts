@@ -2,7 +2,7 @@
  * The entry point of the program. Acts like a hub between the tools and the game.
  */
 import { Card } from "@Game/card.ts";
-import { UILoopDefaultOptions } from "@Game/functions/interact.ts";
+import { UILoopDefaultOptions } from "@Game/modules/interact/prompt.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import * as src from "./src/index.ts"; // Source Code
 import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
@@ -16,7 +16,7 @@ import * as soundTest from "./tools/test/sound.ts"; // Sound Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
-const version = game.functions.info.versionString(4);
+const version = game.info.versionString(4);
 const customCardsAmount = (await Card.all(true)).length;
 const collectibleCardsAmount = (await Card.all(false)).length;
 let vanillaCardsAmount = Number.NaN;
@@ -24,7 +24,7 @@ let collectibleVanillaCardsAmount = Number.NaN;
 
 try {
 	// `vanilla.getAll` will throw an error if the `vanillacards.json` file is missing.
-	const vanillaCards = await game.functions.card.vanilla.getAll();
+	const vanillaCards = await game.card.vanilla.getAll();
 	vanillaCardsAmount = vanillaCards.length;
 	collectibleVanillaCardsAmount = vanillaCards.filter(
 		(card) => card.collectible,
@@ -35,7 +35,7 @@ try {
  * Clears the console and prints the version information of the Hearthstone.js Hub.
  */
 export const watermark = (showCards = true) => {
-	game.functions.interact.cls();
+	game.interact.cls();
 
 	console.log(
 		`
@@ -97,19 +97,19 @@ export async function createUILoop(
 
 // TODO: Remove at some point.
 export async function playDelve() {
-	game.functions.audio.playSFX("ui.delve");
+	game.audio.playSFX("ui.delve");
 }
 
 export async function playBack() {
-	await game.functions.audio.playSFX("ui.back");
+	await game.audio.playSFX("ui.back");
 }
 
 export async function playLeaveUILoop() {
-	await game.functions.audio.playSFX("ui.leaveLoop");
+	await game.audio.playSFX("ui.leaveLoop");
 }
 
 export async function playAction1() {
-	await game.functions.audio.playSFX("ui.action1");
+	await game.audio.playSFX("ui.action1");
 }
 
 /**
@@ -138,7 +138,7 @@ export async function cardCreator() {
 			defaultSound: false,
 			callback: async () => {
 				// This is to throw an error if it can't find the vanilla cards
-				await game.functions.card.vanilla.getAll();
+				await game.card.vanilla.getAll();
 				playLeaveUILoop();
 
 				game.interest("Starting Vanilla Card Creator...");

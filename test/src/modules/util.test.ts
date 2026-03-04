@@ -1,11 +1,11 @@
-import { utilFunctions } from "@Game/functions/util.ts";
+import { util } from "@Game/modules/util.ts";
 import { describe, expect, test } from "bun:test";
 
 describe("src/functions/util", () => {
 	test("remove", async () => {
 		const list = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
 
-		utilFunctions.remove(list, 3);
+		util.remove(list, 3);
 
 		/*
 		 * One 3 should be removed, not both.
@@ -22,7 +22,7 @@ describe("src/functions/util", () => {
 			"Tiny - This is even longer then that one!",
 		];
 
-		const alignedColumns = utilFunctions.alignColumns(columns, "-");
+		const alignedColumns = util.alignColumns(columns, "-");
 
 		expect(alignedColumns).toEqual([
 			"Example             - Example",
@@ -42,7 +42,7 @@ describe("src/functions/util", () => {
 		 * We shouldn't count on other programs / commands being installed here
 		 */
 		const command = "bun --version";
-		const result = utilFunctions.runCommand(command);
+		const result = util.runCommand(command);
 
 		expect(result).toStartWith(Bun.version);
 	});
@@ -58,7 +58,7 @@ describe("src/functions/util", () => {
 		 */
 		game.turn = 1;
 
-		let counter = utilFunctions.getTraditionalTurnCounter();
+		let counter = util.getTraditionalTurnCounter();
 		expect(counter).toEqual(1);
 
 		await game.endTurn();
@@ -67,7 +67,7 @@ describe("src/functions/util", () => {
 		// Turn starts at 1, every `game.endTurn` increments it by 1, 1 + 2 = 3
 		expect(game.turn).toEqual(3);
 
-		counter = utilFunctions.getTraditionalTurnCounter();
+		counter = util.getTraditionalTurnCounter();
 		expect(counter).toEqual(2);
 	});
 
@@ -79,9 +79,7 @@ describe("src/functions/util", () => {
 
 	test("restrictPath", async () => {
 		const match = (path: string) => {
-			expect(utilFunctions.restrictPath(path)).toEqual(
-				`${utilFunctions.dirname()}/cards/`,
-			);
+			expect(util.restrictPath(path)).toEqual(`${util.dirname()}/cards/`);
 		};
 
 		// All of these should resolve to "(Path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/"
@@ -89,7 +87,7 @@ describe("src/functions/util", () => {
 		match("~/cards/");
 		match("./cards/");
 		match("cards/");
-		match(`${utilFunctions.dirname()}/cards/`);
+		match(`${util.dirname()}/cards/`);
 
 		// Try to escape the directory, shouldn't work
 		match("../cards/");
@@ -119,93 +117,87 @@ describe("src/functions/util", () => {
 	test.todo("getCurrentEventEmojis", async () => {});
 
 	test("parseEvalArgs", async () => {
-		expect(
-			await utilFunctions.parseEvalArgs(["console.log('Hello World')"]),
-		).toEqual("(async () => {\n\t// Code\n\tconsole.log('Hello World')\n})();");
+		expect(await util.parseEvalArgs(["console.log('Hello World')"])).toEqual(
+			"(async () => {\n\t// Code\n\tconsole.log('Hello World')\n})();",
+		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", '"Hello World"'])).toEqual(
+		expect(await util.parseEvalArgs(["log", '"Hello World"'])).toEqual(
 			'(async () => {\n\t// Code\n\tconsole.log("Hello World");\n\tawait game.pause();\n})();',
 		);
 
 		expect(
-			await utilFunctions.parseEvalArgs([
+			await util.parseEvalArgs([
 				"log",
 				"await",
-				"game.functions.util.parseEvalArgs([\"console.log('hi')\"])",
+				"game.util.parseEvalArgs([\"console.log('hi')\"])",
 			]),
 		).toEqual(
-			"(async () => {\n\t// Code\n\tconsole.log(await game.functions.util.parseEvalArgs([\"console.log('hi')\"]));\n\tawait game.pause();\n})();",
+			"(async () => {\n\t// Code\n\tconsole.log(await game.util.parseEvalArgs([\"console.log('hi')\"]));\n\tawait game.pause();\n})();",
 		);
 
 		// @
-		expect(
-			await utilFunctions.parseEvalArgs(["log", "@Player1.getName()"]),
-		).toEqual(
+		expect(await util.parseEvalArgs(["log", "@Player1.getName()"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player1.getName());\n\tawait game.pause();\n})();",
 		);
 
-		expect(
-			await utilFunctions.parseEvalArgs(["log", "@Player2.getName()"]),
-		).toEqual(
+		expect(await util.parseEvalArgs(["log", "@Player2.getName()"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player2.getName());\n\tawait game.pause();\n})();",
 		);
 
-		expect(
-			await utilFunctions.parseEvalArgs(["log", "@Player.getName()"]),
-		).toEqual(
+		expect(await util.parseEvalArgs(["log", "@Player.getName()"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.getName());\n\tawait game.pause();\n})();",
 		);
 
 		// Location codes
-		expect(await utilFunctions.parseEvalArgs(["log", "#ph1.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#ph1.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#ch2.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#ch2.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.hand[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#oh1.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#oh1.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.hand[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#pd1.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#pd1.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.deck[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#od2.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#od2.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.deck[2 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#pb1.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#pb1.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.board[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#ob5.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#ob5.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.board[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#pg1.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#pg1.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.player.graveyard[1 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
-		expect(await utilFunctions.parseEvalArgs(["log", "#og5.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "#og5.name"])).toEqual(
 			"(async () => {\n\t// Code\n\tconsole.log(game.opponent.graveyard[5 - 1].name);\n\tawait game.pause();\n})();",
 		);
 
 		// UUID
-		expect(await utilFunctions.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
+		expect(await util.parseEvalArgs(["log", "@ffffff.name"])).toEqual(
 			'(async () => {\n\t// Variables\n\tconst __card_ffffff = Card.fromUUID("ffffff");\n\tif (!__card_ffffff) throw new Error("Card with uuid \\"ffffff\\" not found");\n\n\t// Code\n\tconsole.log(__card_ffffff.name);\n\tawait game.pause();\n})();',
 		);
 
 		expect(
-			await utilFunctions.parseEvalArgs(["log", "await", "@ffffff.readable()"]),
+			await util.parseEvalArgs(["log", "await", "@ffffff.readable()"]),
 		).toEqual(
 			'(async () => {\n\t// Variables\n\tconst __card_ffffff = Card.fromUUID("ffffff");\n\tif (!__card_ffffff) throw new Error("Card with uuid \\"ffffff\\" not found");\n\n\t// Code\n\tconsole.log(await __card_ffffff.readable());\n\tawait game.pause();\n})();',
 		);
 
 		expect(
-			await utilFunctions.parseEvalArgs([
+			await util.parseEvalArgs([
 				"await",
 				// biome-ignore lint/suspicious/noTemplateCurlyInString: testing code generation
 				"game.pause(`${@abcdefg.uuid} ||| ${@1234567.uuid}`)",

@@ -71,7 +71,7 @@ export const blueprint: Blueprint = {
 
 		owner.health = trueOgHealth;
 
-		await game.functions.card.verifyDiySolution(solved, self);
+		await game.card.verifyDiySolution(solved, self);
 
 		return true;
 	},

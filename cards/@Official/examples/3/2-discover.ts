@@ -64,7 +64,7 @@ export const blueprint: Blueprint = {
 			assert.equal(card.type, "Spell");
 			assert(
 				Boolean(card) &&
-					game.functions.card.validateClasses(card.classes, owner.heroClass),
+					game.card.validateClasses(card.classes, owner.heroClass),
 			);
 		}
 	},

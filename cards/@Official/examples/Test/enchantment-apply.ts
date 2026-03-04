@@ -53,7 +53,7 @@ export const blueprint: Blueprint = {
 			owner,
 		);
 
-		const target = game.functions.util.getRandomTargetRelative(
+		const target = game.util.getRandomTargetRelative(
 			false,
 			false,
 			true,

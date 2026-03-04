@@ -14,7 +14,7 @@ import {
 // To decode vanilla deckcodes
 import deckstrings from "deckstrings";
 
-export const deckcodeFunctions = {
+export const deckcode = {
 	/**
 	 * Imports a deck using a code and put the cards into the player's deck
 	 *
@@ -79,7 +79,7 @@ export const deckcodeFunctions = {
 		hero = hero.trim();
 		actualCode = sep[1] + actualCode.split(sep)[1];
 
-		if (!(await game.functions.card.getClasses()).includes(hero)) {
+		if (!(await game.card.getClasses()).includes(hero)) {
 			await panic("INVALIDHERO");
 			return;
 		}
@@ -493,7 +493,7 @@ export const deckcodeFunctions = {
 		const cards = codeSplit[1].trim();
 
 		// Now it's just the cards left
-		const vanillaCards = await game.functions.card.vanilla.getAll();
+		const vanillaCards = await game.card.vanilla.getAll();
 
 		const cardsSplit = cards.split(",");
 		const cardsSplitId = await Promise.all(cardsSplit.map(Card.fromID));
@@ -551,11 +551,7 @@ export const deckcodeFunctions = {
 				(a) => a.name.toLowerCase() === cardName.toLowerCase(),
 			);
 
-			matches = game.functions.card.vanilla.filter(
-				matches,
-				true,
-				extraFiltering,
-			);
+			matches = game.card.vanilla.filter(matches, true, extraFiltering);
 
 			if (matches.length === 0) {
 				// Invalid card
@@ -615,7 +611,7 @@ export const deckcodeFunctions = {
 		// Use the 'deckstrings' library's decode
 		const deckWithFormat: deckstrings.DeckDefinition = deckstrings.decode(code);
 
-		const vanillaCards = await game.functions.card.vanilla.getAll();
+		const vanillaCards = await game.card.vanilla.getAll();
 
 		// We don't care about the format
 		const { format: _, ...deck } = deckWithFormat;

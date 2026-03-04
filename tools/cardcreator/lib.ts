@@ -96,7 +96,7 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	// Create a path to put the card in.
 
 	// DO NOT CHANGE THIS
-	const staticPath = `${game.functions.util.dirname()}/cards/`;
+	const staticPath = `${game.util.dirname()}/cards/`;
 
 	// You can change everything below this comment
 	const classesString = blueprint.classes.join("/");
@@ -200,14 +200,14 @@ export async function create(
 			validationBlueprint[ability] = async () => {};
 		}
 
-		const error = game.functions.card.validateBlueprint(validationBlueprint);
+		const error = game.card.validateBlueprint(validationBlueprint);
 		if (error !== true) {
 			console.error(error);
 			return "";
 		}
 	}
 
-	const cleanedDescription = game.functions.color.stripTags(blueprint.text);
+	const cleanedDescription = game.color.stripTags(blueprint.text);
 
 	// Add create ability
 	{
@@ -300,7 +300,7 @@ export async function create(
 
 	// If this function was passed in a path, use that instead.
 	if (overridePath) {
-		path = game.functions.util.dirname() + overridePath;
+		path = game.util.dirname() + overridePath;
 	}
 
 	// Create a filename. Example: "Test Card" -> "test-card-abcdef12.ts"
@@ -470,25 +470,23 @@ export const blueprint: Blueprint = {
 		await game.pause();
 	} else {
 		// If debug mode is disabled, write the card to disk.
-		if (!(await game.functions.util.fs("exists", path))) {
-			await game.functions.util.fs("mkdir", path, { recursive: true });
+		if (!(await game.util.fs("exists", path))) {
+			await game.util.fs("mkdir", path, { recursive: true });
 		}
 
 		// Write the file to the path
-		await game.functions.util.fs("writeFile", filePath, content);
+		await game.util.fs("writeFile", filePath, content);
 
 		console.log(`File created at: "${filePath}"`);
 	}
 
 	// Update the ids so that `game.ids` is updated immediately.
 	game.blueprints.push(blueprint);
-	await game.functions.card.generateIdsFile();
+	await game.card.generateIdsFile();
 
 	// Open the defined editor on that card if it has a function to edit, and debug mode is disabled
 	if (abilities.length > 0 && !debugMode) {
-		game.functions.util.runCommand(
-			`${game.config.general.editor} "${filePath}"`,
-		);
+		game.util.runCommand(`${game.config.general.editor} "${filePath}"`);
 	}
 
 	return filePath;

@@ -11,7 +11,7 @@ export async function main(): Promise<void> {
 	const { player1, player2 } = await createGame();
 	game.interest("Creating game...OK");
 
-	game.functions.interact.print.watermark();
+	game.interact.print.watermark();
 
 	// Ask the players for deck codes.
 	game.interest("Asking players for deck codes...");
@@ -44,7 +44,7 @@ export async function main(): Promise<void> {
 	try {
 		// Game loop
 		while (game.running) {
-			await game.functions.interact.gameloop();
+			await game.interact.gameloop();
 		}
 
 		game.interest("Starting game loop...OK");
@@ -65,7 +65,7 @@ export async function main(): Promise<void> {
 		game.interest("Throwing error, goodbye!");
 
 		// Create error report file
-		await game.functions.util.createLogFile(error);
+		await game.util.createLogFile(error);
 
 		throw error;
 	}
@@ -73,5 +73,5 @@ export async function main(): Promise<void> {
 	game.interest("Game finished successfully.");
 
 	// Create log file
-	await game.functions.util.createLogFile();
+	await game.util.createLogFile();
 }

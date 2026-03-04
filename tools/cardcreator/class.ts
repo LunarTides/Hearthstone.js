@@ -47,7 +47,7 @@ async function configure(
 					`Heropower: ${await heropower.readable()}`,
 				];
 
-				console.log(game.functions.util.alignColumns(columns, ":").join("\n"));
+				console.log(game.util.alignColumns(columns, ":").join("\n"));
 				console.log();
 			},
 		},

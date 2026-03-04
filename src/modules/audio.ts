@@ -25,7 +25,7 @@ let channels = 0,
 	maxSampleValue = 0,
 	zeroSampleValue = 0;
 
-let octaves: ReturnType<typeof audioFunctions.getOctave>[] = [];
+let octaves: ReturnType<typeof audio.getOctave>[] = [];
 
 export const sfx = {
 	"ui.delve": async (
@@ -34,7 +34,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		await game.functions.audio.playWave(
+		await game.audio.playWave(
 			"sine",
 			440 * hzMultiplier,
 			50 * durationMultiplier,
@@ -48,7 +48,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		await game.functions.audio.playWave(
+		await game.audio.playWave(
 			"sine",
 			220 * hzMultiplier,
 			50 * durationMultiplier,
@@ -62,7 +62,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"sine",
 			440 * hzMultiplier,
 			450 * hzMultiplier,
@@ -77,7 +77,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		await game.functions.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"sine",
 			880 * hzMultiplier,
 			440 * hzMultiplier,
@@ -92,13 +92,13 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			440 * hzMultiplier,
 			50 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		await game.functions.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"sine",
 			880 * hzMultiplier,
 			440 * hzMultiplier,
@@ -113,7 +113,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			(440 + game.lodash.random(-50, 50)) * hzMultiplier,
 			10 * durationMultiplier,
@@ -127,7 +127,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			(220 + game.lodash.random(-50, 50)) * hzMultiplier,
 			10 * durationMultiplier,
@@ -141,25 +141,25 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			440 * hzMultiplier,
 			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(10);
+		game.audio.wait(10);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			500 * hzMultiplier,
 			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(10);
+		game.audio.wait(10);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			550 * hzMultiplier,
 			10 * durationMultiplier,
@@ -173,16 +173,16 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[5].A * hzMultiplier,
 			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50);
+		game.audio.wait(50);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[5].A * hzMultiplier,
 			10 * durationMultiplier,
@@ -196,16 +196,16 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			10 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50);
+		game.audio.wait(50);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			10 * durationMultiplier,
@@ -219,7 +219,7 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			880 * hzMultiplier,
 			10 * durationMultiplier,
@@ -233,14 +233,14 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			150 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			octaves[4].A_SHARP * hzMultiplier,
@@ -248,7 +248,7 @@ export const sfx = {
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			150 * durationMultiplier,
@@ -263,58 +263,58 @@ export const sfx = {
 		volumeMultiplier: number,
 	) => {
 		// Echo effect.
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.2 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.1 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50 * durationMultiplier);
+		game.audio.wait(50 * durationMultiplier);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.1 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.05 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50 * durationMultiplier);
+		game.audio.wait(50 * durationMultiplier);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.05 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.025 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50 * durationMultiplier);
+		game.audio.wait(50 * durationMultiplier);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.025 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
@@ -328,16 +328,16 @@ export const sfx = {
 		hzMultiplier: number,
 		volumeMultiplier: number,
 	) => {
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			220 * hzMultiplier,
 			50 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50);
+		game.audio.wait(50);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			110 * hzMultiplier,
 			100 * durationMultiplier,
@@ -352,35 +352,35 @@ export const sfx = {
 		volumeMultiplier: number,
 	) => {
 		// TODO: Make less obnoxious.
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"sine",
 			octaves[6].C * hzMultiplier,
 			octaves[6].C_SHARP * hzMultiplier,
 			50 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[6].C_SHARP * hzMultiplier,
 			100 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.wait(50 * durationMultiplier);
+		game.audio.wait(50 * durationMultiplier);
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[5].G_SHARP * hzMultiplier,
 			50 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[5].A * hzMultiplier,
 			50 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[6].C_SHARP * hzMultiplier,
 			200 * durationMultiplier,
@@ -395,49 +395,49 @@ export const sfx = {
 		volumeMultiplier: number,
 	) => {
 		// C-Major Scale
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].C * hzMultiplier,
 			200 * durationMultiplier,
 			2 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].D * hzMultiplier,
 			200 * durationMultiplier,
 			1 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].E * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].F * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].G * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].A * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[4].B * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"sine",
 			octaves[5].C * hzMultiplier,
 			200 * durationMultiplier,
@@ -445,35 +445,35 @@ export const sfx = {
 		);
 
 		// Square Test
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"square",
 			octaves[2].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 			0.9,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"square",
 			octaves[3].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 			0.75,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"square",
 			octaves[4].C * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 			0.5,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"square",
 			octaves[5].C * hzMultiplier,
 			200 * durationMultiplier,
 			0.3 * volumeMultiplier,
 			0.25,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"square",
 			octaves[6].C * hzMultiplier,
 			200 * durationMultiplier,
@@ -482,59 +482,59 @@ export const sfx = {
 		);
 
 		// Saw Test
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"saw",
 			octaves[0].C * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"saw",
 			octaves[2].C * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"saw",
 			octaves[3].C * hzMultiplier,
 			2000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"saw",
 			octaves[4].C * hzMultiplier,
 			100 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"saw",
 			octaves[5].C * hzMultiplier,
 			100 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
 
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"sine",
 			octaves[6].C * hzMultiplier,
 			octaves[7].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"saw",
 			octaves[3].C * hzMultiplier,
 			octaves[4].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"triangle",
 			octaves[3].C * hzMultiplier,
 			octaves[4].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.playSlidingWave(
+		game.audio.playSlidingWave(
 			"square",
 			octaves[3].C * hzMultiplier,
 			octaves[4].C * hzMultiplier,
@@ -546,154 +546,154 @@ export const sfx = {
 		// Test Song
 		durationMultiplier /= 2;
 
-		game.functions.audio.playWave(
+		game.audio.playWave(
 			"triangle",
 			octaves[4].C * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].D * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].E * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].F * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].G * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(100 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(100 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].G * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(100 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(100 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].A * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].G * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(1000 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(1000 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].F * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].F * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].F * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].F * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].E * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(100 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(100 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].E * hzMultiplier,
 			1000 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(100 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(100 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].D * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].D * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].D * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].D * hzMultiplier,
 			500 * durationMultiplier,
 			0.3 * volumeMultiplier,
 		);
-		game.functions.audio.wait(25 * durationMultiplier);
-		game.functions.audio.playWave(
+		game.audio.wait(25 * durationMultiplier);
+		game.audio.playWave(
 			"triangle",
 			octaves[4].C * hzMultiplier,
 			1000 * durationMultiplier,
@@ -702,7 +702,7 @@ export const sfx = {
 	},
 };
 
-// TODO: Use better, more accurate, functions.
+// TODO: Use better, more accurate,
 const waveTypeFunctions = {
 	sine: (phase: number) => Math.sin(phase),
 	triangle: (phase: number) =>
@@ -712,7 +712,7 @@ const waveTypeFunctions = {
 	saw: (phase: number) => 2 * (phase / 6.6 - Math.floor(0.5 + phase / 6.6)),
 };
 
-export const audioFunctions = {
+export const audio = {
 	/**
 	 * Play a sound effect.
 	 *

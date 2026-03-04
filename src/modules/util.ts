@@ -16,7 +16,7 @@ type FsFunctionKeys = {
 		: never;
 }[keyof typeof fs];
 
-export const utilFunctions = {
+export const util = {
 	/**
 	 * Removes `element` from `list`.
 	 *
@@ -70,7 +70,7 @@ export const utilFunctions = {
 		for (const column of columns) {
 			const columnSplit = column.split(sep);
 
-			const columnLength = game.functions.color.stripAll(columnSplit[0]).length;
+			const columnLength = game.color.stripAll(columnSplit[0]).length;
 			if (columnLength <= longestColumn[1]) {
 				continue;
 			}
@@ -83,7 +83,7 @@ export const utilFunctions = {
 		for (const column of columns) {
 			const columnSplit = column.split(sep);
 			const difference =
-				longestColumn[1] - game.functions.color.stripAll(columnSplit[0]).length;
+				longestColumn[1] - game.color.stripAll(columnSplit[0]).length;
 
 			const alignedColumn = `${columnSplit[0]}${" ".repeat(difference)}${sep}${game.lodash.tail(columnSplit).join(sep)}`;
 			alignedColumns.push(alignedColumn);
@@ -123,7 +123,7 @@ export const utilFunctions = {
 		const dateStringFileFriendly = formatDate(now, "YY.MM.DD-HH.mm.ss");
 
 		// Grab the history of the game
-		let history = await game.functions.interact.processCommand("history", {
+		let history = await game.interact.processCommand("history", {
 			echo: false,
 			debug: true,
 		});
@@ -133,14 +133,14 @@ export const utilFunctions = {
 		}
 
 		// Strip the color codes from the history
-		history = game.functions.color.stripAll(history);
+		history = game.color.stripAll(history);
 
 		/*
 		 * AI log
 		 * Do this so it can actually run '/ai'
 		 */
 		game.config.debug.commands = true;
-		const aiHistory = await game.functions.interact.processCommand("/ai", {
+		const aiHistory = await game.interact.processCommand("/ai", {
 			echo: false,
 		});
 
@@ -190,7 +190,7 @@ ${error.stack}
 
 		let content = `Hearthstone.js ${name}
 Date: ${dateString}
-Version: ${game.functions.info.versionString(4)}
+Version: ${game.info.versionString(4)}
 Operating System: ${osName}
 Log File Version: 3
 
@@ -294,7 +294,7 @@ ${mainContent}
 					? "start"
 					: "xdg-open";
 
-		game.functions.util.runCommand(`${start} ${link}`);
+		game.util.runCommand(`${start} ${link}`);
 	},
 
 	/**

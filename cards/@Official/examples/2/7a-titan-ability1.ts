@@ -28,7 +28,7 @@ export const blueprint: Blueprint = {
 		// Destroy a random enemy minion.
 
 		// Select an enemy minion to destroy
-		const target = game.functions.util.getRandomTarget(
+		const target = game.util.getRandomTarget(
 			false, // Don't include player 1
 			false, // Don't include player 2
 			owner !== game.player1, // Only include player 1's board if it's not the friendly player

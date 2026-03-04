@@ -12,7 +12,7 @@ import {
 } from "@Game/types.ts";
 import boxen from "boxen";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
-import { readableHistory } from "./event.ts";
+import { readableHistory } from "./modules/event.ts";
 
 /*
  * This is the list of commands that can be used in the game.
@@ -53,7 +53,7 @@ export const helpDebugColumns = [
 
 export const commands: CommandList = {
 	async end(): Promise<boolean> {
-		game.functions.audio.playSFX("game.endTurn");
+		game.audio.playSFX("game.endTurn");
 
 		await game.endTurn();
 		return true;
@@ -83,7 +83,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		await game.functions.interact.print.gameState(game.player);
+		await game.interact.print.gameState(game.player);
 		const ask = await game.prompt.yesNo(
 			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
 			game.player,
@@ -93,7 +93,7 @@ export const commands: CommandList = {
 			return false;
 		}
 
-		await game.functions.interact.print.gameState(game.player);
+		await game.interact.print.gameState(game.player);
 		await game.player.heroPower();
 		return true;
 	},
@@ -170,7 +170,7 @@ export const commands: CommandList = {
 
 		const choice = await game.prompt.customSelect(
 			"Which ability do you want to trigger?",
-			await game.functions.card.readables(titanCards),
+			await game.card.readables(titanCards),
 		);
 		if (choice === "Back") {
 			return false;
@@ -201,7 +201,7 @@ export const commands: CommandList = {
 	},
 
 	async help(): Promise<boolean> {
-		game.functions.interact.print.watermark();
+		game.interact.print.watermark();
 
 		console.log(
 			"\n(In order to run a command; input the name of the command and follow further instruction.)\n",
@@ -210,15 +210,12 @@ export const commands: CommandList = {
 		console.log("Available commands:");
 
 		const columns = helpColumns.map((column) => game.translate(column));
-		const alignedColumns = game.functions.util.alignColumns(columns, "-");
+		const alignedColumns = game.util.alignColumns(columns, "-");
 
 		const debugColumns = helpDebugColumns.map((column) =>
 			game.translate(column),
 		);
-		const debugAlignedColumns = game.functions.util.alignColumns(
-			debugColumns,
-			"-",
-		);
+		const debugAlignedColumns = game.util.alignColumns(debugColumns, "-");
 
 		// Normal commands
 		for (const alignedColumn of alignedColumns) {
@@ -230,7 +227,7 @@ export const commands: CommandList = {
 		);
 
 		const condColor = (text: string) =>
-			// We can't use `game.functions.color.if` here since the text should be uncolored if the condition is met.
+			// We can't use `game.color.if` here since the text should be uncolored if the condition is met.
 			isDebugCommandsEnabled ? text : `<gray>${text}</gray>`;
 
 		const debugEnabledText = isDebugCommandsEnabled
@@ -261,7 +258,7 @@ export const commands: CommandList = {
 	},
 
 	async concede(): Promise<boolean> {
-		await game.functions.interact.print.gameState(game.player);
+		await game.interact.print.gameState(game.player);
 
 		const confirmation = await game.prompt.yesNo(
 			"Are you sure you want to concede?",
@@ -276,17 +273,15 @@ export const commands: CommandList = {
 	},
 
 	async license(): Promise<boolean> {
-		game.functions.util.openInBrowser(
-			`${game.config.info.githubUrl}/blob/main/LICENSE`,
-		);
+		game.util.openInBrowser(`${game.config.info.githubUrl}/blob/main/LICENSE`);
 
 		return true;
 	},
 
 	async version(): Promise<boolean> {
-		const { version, branch, build } = game.functions.info.version();
+		const { version, branch, build } = game.info.version();
 
-		await game.functions.interact.print.gameState(game.player);
+		await game.interact.print.gameState(game.player);
 
 		let strbuilder = `\nYou are on version: <yellow>${version}</yellow>, on `;
 
@@ -318,7 +313,7 @@ export const commands: CommandList = {
 		}
 
 		strbuilder += `, on build <yellow>${build}</yellow>`;
-		strbuilder += `, with latest commit hash <yellow>${game.functions.info.latestCommit()}</yellow>.`;
+		strbuilder += `, with latest commit hash <yellow>${game.info.latestCommit()}</yellow>.`;
 
 		console.log(`${strbuilder}.\n`);
 		console.log("Version Description:");
@@ -363,7 +358,7 @@ export const commands: CommandList = {
 		);
 
 		if (openIssues) {
-			game.functions.util.openInBrowser(`${game.config.info.githubUrl}/issues`);
+			game.util.openInBrowser(`${game.config.info.githubUrl}/issues`);
 		}
 
 		return true;
@@ -645,7 +640,7 @@ export const debugCommands: CommandList = {
 		if (cards.length > 1) {
 			const choice = await game.prompt.customSelect(
 				`Multiple cards matching '${cardName}' found. Select one.`,
-				await game.functions.card.readables(cards),
+				await game.card.readables(cards),
 			);
 			if (choice === "Back") {
 				return false;
@@ -677,7 +672,7 @@ export const debugCommands: CommandList = {
 			return false;
 		}
 
-		const code = await game.functions.util.parseEvalArgs(args);
+		const code = await game.util.parseEvalArgs(args);
 		console.log(`\`\`\`\nawait ${code}\n\`\`\`\n`);
 
 		game.event.newHistoryChild(Event.Eval, code, game.player);
@@ -711,13 +706,13 @@ export const debugCommands: CommandList = {
 	async rl(_, flags): Promise<boolean> {
 		let success = true;
 
-		success &&= await game.functions.interact.withStatus(
+		success &&= await game.interact.withStatus(
 			"Reloading cards",
 			async () => await Card.reloadAll(),
 		);
 
 		// Go through all the cards and reload them
-		success &&= await game.functions.interact.withStatus(
+		success &&= await game.interact.withStatus(
 			"Applying changes to existing cards",
 			async () => {
 				const uuids: string[] = [];
@@ -741,14 +736,14 @@ export const debugCommands: CommandList = {
 			},
 		);
 
-		success &&= await game.functions.interact.withStatus(
+		success &&= await game.interact.withStatus(
 			"Reloading config",
-			async () => await game.functions.util.importConfig(),
+			async () => await game.util.importConfig(),
 		);
 
-		success &&= await game.functions.interact.withStatus(
+		success &&= await game.interact.withStatus(
 			"Reloading language map",
-			async () => Boolean(await game.functions.util.importLanguageMap(true)),
+			async () => Boolean(await game.util.importLanguageMap(true)),
 		);
 
 		if (success) {
@@ -790,7 +785,7 @@ export const debugCommands: CommandList = {
 
 		// If the card can appear on the board, remove it.
 		if (card.canBeOnBoard()) {
-			game.functions.util.remove(game.player.board, card);
+			game.util.remove(game.player.board, card);
 
 			// If the card has 0 or less health, restore it to its original health (according to the blueprint)
 			if (card.type === Type.Minion && !card.isAlive()) {
@@ -850,13 +845,13 @@ export const debugCommands: CommandList = {
 	},
 
 	async history(): Promise<string> {
-		return (await game.functions.interact.processCommand("history", {
+		return (await game.interact.processCommand("history", {
 			debug: true,
 		})) as string;
 	},
 
 	async frl(): Promise<string> {
-		return (await game.functions.interact.processCommand(
+		return (await game.interact.processCommand(
 			`${game.config.debug.commandPrefix}rl`,
 			{ debug: true },
 		)) as string;

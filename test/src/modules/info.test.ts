@@ -1,71 +1,65 @@
-import { infoFunctions } from "@Game/functions/info.ts";
+import { info } from "@Game/modules/info.ts";
 import { describe, expect, test } from "bun:test";
 import { format } from "node:util";
 
-describe("src/functions/info", () => {
+describe("src/functions/info.", () => {
 	test.todo("version", async () => {});
 
 	test("versionString", async () => {
-		const { version, branch } = infoFunctions.version();
+		const { version, branch } = info.version();
 
 		expect(
-			infoFunctions.versionString(1, () => {
+			info.versionString(1, () => {
 				return { version, branch, build: 0 };
 			}),
 		).toEqual(format("%s", version));
 
 		expect(
-			infoFunctions.versionString(2, () => {
+			info.versionString(2, () => {
 				return { version, branch, build: 0 };
 			}),
 		).toEqual(format("%s-%s", version, branch));
 
 		// If the build is 0, we don't want to show it
 		expect(
-			infoFunctions.versionString(3, () => {
+			info.versionString(3, () => {
 				return { version, branch, build: 0 };
 			}),
 		).toEqual(format("%s-%s", version, branch));
 
 		expect(
-			infoFunctions.versionString(4, () => {
+			info.versionString(4, () => {
 				return { version, branch, build: 0 };
 			}),
-		).toEqual(
-			format("%s-%s (%s)", version, branch, infoFunctions.latestCommit()),
-		);
+		).toEqual(format("%s-%s (%s)", version, branch, info.latestCommit()));
 
 		expect(
-			infoFunctions.versionString(3, () => {
+			info.versionString(3, () => {
 				return { version, branch, build: 1 };
 			}),
 		).toEqual(format("%s-%s.1", version, branch));
 
 		expect(
-			infoFunctions.versionString(4, () => {
+			info.versionString(4, () => {
 				return { version, branch, build: 1 };
 			}),
-		).toEqual(
-			format("%s-%s.1 (%s)", version, branch, infoFunctions.latestCommit()),
-		);
+		).toEqual(format("%s-%s.1 (%s)", version, branch, info.latestCommit()));
 
-		expect(infoFunctions.versionString.bind(infoFunctions, 5)).toThrow(
-			"Invalid detail amount",
-		);
+		expect(info.versionString.bind(5)).toThrow("Invalid detail amount");
 	});
 
 	test("latestCommit", async () => {
 		let latestCommit: string | undefined;
 
 		try {
-			latestCommit = game.functions.util
+			latestCommit = game.util
 				.runCommand("git rev-parse --short=7 HEAD")
 				.trim();
 		} catch {
 			return;
 		}
 
-		expect(infoFunctions.latestCommit()).toEqual(latestCommit);
+		expect(info.latestCommit()).toEqual(latestCommit);
 		expect(game.cache.latestCommitHash).toEqual(latestCommit);
 	});
 });

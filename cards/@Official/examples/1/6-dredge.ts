@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	async battlecry(self, owner) {
 		// Dredge.
 
-		// "game.prompt" links to "game.functions.interact.prompt", which is an instance of the interact object as defined in `src/functions/interact.ts`.
+		// "game.prompt" links to "game.interact.prompt", which is an instance of the interact object as defined in `src/functions/interact.ts`.
 		await game.prompt.dredge();
 	},
 

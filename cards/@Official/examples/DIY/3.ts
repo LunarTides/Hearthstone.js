@@ -115,7 +115,7 @@ export const blueprint: Blueprint = {
 			(game.player1.graveyard.includes(target) ||
 				game.player2.graveyard.includes(target));
 
-		await game.functions.card.verifyDiySolution(solved, self);
+		await game.card.verifyDiySolution(solved, self);
 
 		return true;
 	},

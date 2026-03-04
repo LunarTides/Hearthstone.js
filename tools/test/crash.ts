@@ -72,7 +72,7 @@ export async function main(): Promise<void> {
 
 		try {
 			while (game.running) {
-				await game.functions.interact.gameloop();
+				await game.interact.gameloop();
 			}
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -83,10 +83,10 @@ export async function main(): Promise<void> {
 
 			// If it crashes, show the ai's actions, and the history of the game before actually crashing
 			game.config.debug.commands = true;
-			await game.functions.util.createLogFile(error);
+			await game.util.createLogFile(error);
 
-			await game.functions.interact.processCommand("/ai");
-			await game.functions.interact.processCommand("history", { debug: true });
+			await game.interact.processCommand("/ai");
+			await game.interact.processCommand("history", { debug: true });
 
 			console.log(
 				"THE GAME CRASHED: LOOK ABOVE FOR THE HISTORY, AND THE AI'S LOGS.",

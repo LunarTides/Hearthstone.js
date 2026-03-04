@@ -1,7 +1,9 @@
 import { Rarity } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 
-export const colorFunctions = {
+export const color = {
+	parseTags,
+
 	/**
 	 * Colors `text` based on `rarity`.
 	 *

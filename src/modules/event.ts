@@ -355,7 +355,7 @@ export const eventManager = {
 		player: Player,
 	): Promise<boolean> {
 		const removeQuest = async (quest: QuestObject<Event>) => {
-			game.functions.util.remove(player.quests, quest);
+			game.util.remove(player.quests, quest);
 
 			if (quest.type === QuestType.Secret) {
 				console.log();
@@ -391,7 +391,7 @@ export const eventManager = {
 					quest.progress = [0, max];
 					continue;
 				case EventListenerMessage.Destroy:
-					game.functions.util.remove(player.quests, quest);
+					game.util.remove(player.quests, quest);
 					continue;
 				case EventListenerMessage.Success:
 					break;
@@ -556,7 +556,7 @@ export const eventManager = {
 	},
 
 	/**
-	 * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.functions.hookToTick`.
+	 * Broadcast a dummy event. Use if you need to broadcast any event to kickstart an event listener, consider looking into `game.hookToTick`.
 	 *
 	 * Specifically, this broadcasts the `Dummy` event. DO NOT LISTEN FOR THAT EVENT.
 	 *
@@ -662,7 +662,7 @@ export const eventManager = {
 		(this.tickHooks as TickHookCallback<E>[]).push(callback);
 
 		const unhook = () => {
-			game.functions.util.remove(this.tickHooks, callback);
+			game.util.remove(this.tickHooks, callback);
 		};
 
 		return unhook;
@@ -681,7 +681,7 @@ export const eventManager = {
 		/**
 		 * Unsuppresses the event key.
 		 */
-		const unsuppress = () => game.functions.util.remove(this.suppressed, key);
+		const unsuppress = () => game.util.remove(this.suppressed, key);
 
 		return unsuppress;
 	},
@@ -699,7 +699,7 @@ export const eventManager = {
 		/**
 		 * Stops ignoring suppressions for that key
 		 */
-		const undo = () => game.functions.util.remove(this.suppressed, key);
+		const undo = () => game.util.remove(this.suppressed, key);
 
 		return undo;
 	},

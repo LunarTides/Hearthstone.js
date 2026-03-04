@@ -92,7 +92,7 @@ function add(card: Card): boolean {
  * Removes a card from the deck
  */
 function remove(card: Card): boolean {
-	return game.functions.util.remove(deck, card);
+	return game.util.remove(deck, card);
 }
 
 /**
@@ -101,11 +101,7 @@ function remove(card: Card): boolean {
  * @param parseVanillaOnPseudo Converts the deckcode to a vanilla one even if the deck is pseudo-valid. This will decrease performance.
  */
 async function generateDeckcode(parseVanillaOnPseudo = false) {
-	const deckcode = game.functions.deckcode.export(
-		deck,
-		player.heroClass,
-		player.runes,
-	);
+	const deckcode = game.deckcode.export(deck, player.heroClass, player.runes);
 	const error = deckcode.error;
 
 	if (error) {
@@ -165,10 +161,7 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			return deckcode;
 		}
 
-		deckcode.code = await game.functions.deckcode.toVanilla(
-			player,
-			deckcode.code,
-		);
+		deckcode.code = await game.deckcode.toVanilla(player, deckcode.code);
 	}
 
 	return deckcode;
@@ -294,7 +287,7 @@ export async function main(): Promise<void> {
 				"Exit - Quit the deck creator.",
 			];
 
-			commands = game.functions.util.alignColumns(commands, "-");
+			commands = game.util.alignColumns(commands, "-");
 
 			let command = await game.prompt.customSelect(
 				"Which command do you want to run?",
@@ -388,7 +381,7 @@ const commands: CommandList = {
 		game.config.decks.validate = false;
 		let newDeck: Card[] | undefined;
 		try {
-			newDeck = await game.functions.deckcode.import(player, deckcode);
+			newDeck = await game.deckcode.import(player, deckcode);
 		} finally {
 			game.config.decks.validate = true;
 		}
@@ -437,7 +430,7 @@ const commands: CommandList = {
 		return true;
 	},
 	async eval(args): Promise<boolean> {
-		const code = await game.functions.util.parseEvalArgs(args);
+		const code = await game.util.parseEvalArgs(args);
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.

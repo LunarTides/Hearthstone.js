@@ -1,4 +1,4 @@
-import { cardFunctions } from "@Game/functions/card.ts";
+import { card as cardFunctions } from "@Game/modules/card/index.ts";
 import {
 	type Blueprint,
 	Class,

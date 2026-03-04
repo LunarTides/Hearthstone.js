@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 		const possibleCards = (await Card.all()).filter(
 			(c) =>
 				c.type === Type.Minion &&
-				game.functions.card.validateClasses(c.classes, Class.Priest),
+				game.card.validateClasses(c.classes, Class.Priest),
 		);
 
 		if (possibleCards.length <= 0) {

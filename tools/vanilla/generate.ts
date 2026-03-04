@@ -63,14 +63,10 @@ export async function main(): Promise<void> {
 		const oldLength = data.length;
 
 		if (filterAwayUseless) {
-			data = game.functions.card.vanilla.filter(data, false, false, true);
+			data = game.card.vanilla.filter(data, false, false, true);
 		}
 
-		await game.functions.util.fs(
-			"writeFile",
-			"/vanillacards.json",
-			JSON.stringify(data),
-		);
+		await game.util.fs("writeFile", "/vanillacards.json", JSON.stringify(data));
 
 		const difference = oldLength - data.length;
 		console.log(

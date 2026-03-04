@@ -24,7 +24,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
-import { historyTree } from "./event.ts";
+import { historyTree } from "./modules/event.ts";
 import { PackValidationResult } from "./types/pack.ts";
 
 /**
@@ -52,7 +52,7 @@ export class Card {
 	 * The card's description / text.
 	 *
 	 * Might include color tags like `Example <red>Example 2</red>`.
-	 * Use `game.functions.color.stripAll` to remove these.
+	 * Use `game.color.stripAll` to remove these.
 	 */
 	text: string;
 
@@ -454,7 +454,7 @@ export class Card {
 			);
 
 			if (generateIds) {
-				await game.functions.card.generateIdsFile();
+				await game.card.generateIdsFile();
 			}
 		}
 
@@ -489,9 +489,9 @@ export class Card {
 	 * @returns Success
 	 */
 	static async registerAll(): Promise<boolean> {
-		await game.functions.util.searchCardsFolder(async (fullPath) => {
+		await game.util.searchCardsFolder(async (fullPath) => {
 			// Check if the associated pack is valid.
-			switch (await game.functions.card.validatePackFromPath(fullPath)) {
+			switch (await game.card.validatePackFromPath(fullPath)) {
 				case PackValidationResult.InvalidGameVersion:
 					throw new Error(
 						`The pack associated with '${fullPath}' is made for a different version of the game.`,
@@ -511,7 +511,7 @@ export class Card {
 		// Remove falsy values
 		game.blueprints = game.blueprints.filter(Boolean);
 
-		if (!game.functions.card.runBlueprintValidator()) {
+		if (!game.card.runBlueprintValidator()) {
 			throw new Error(
 				"Some cards are invalid. Please fix these issues before playing.",
 			);
@@ -1056,7 +1056,7 @@ export class Card {
 		this.location = location;
 
 		if (location === Location.None) {
-			game.functions.util.remove(game.activeCards, this);
+			game.util.remove(game.activeCards, this);
 		} else if (!game.activeCards.includes(this)) {
 			game.activeCards.push(this);
 		}
@@ -1079,7 +1079,7 @@ export class Card {
 		const opponent = this.owner.getOpponent();
 
 		if (opponent.board.includes(this)) {
-			game.functions.util.remove(opponent.board, this);
+			game.util.remove(opponent.board, this);
 
 			await game.event.withSuppressed(Event.SummonCard, async () => {
 				await this.owner.summon(this);
@@ -1089,7 +1089,7 @@ export class Card {
 		}
 
 		if (opponent.hand.includes(this)) {
-			game.functions.util.remove(opponent.hand, this);
+			game.util.remove(opponent.hand, this);
 
 			await game.event.withSuppressed(Event.AddCardToHand, async () => {
 				await this.owner.addToHand(this);
@@ -1099,7 +1099,7 @@ export class Card {
 		}
 
 		if (opponent.deck.includes(this)) {
-			game.functions.util.remove(opponent.deck, this);
+			game.util.remove(opponent.deck, this);
 
 			await game.event.withSuppressed(Event.AddCardToDeck, async () => {
 				await this.owner.shuffleIntoDeck(this);
@@ -1109,7 +1109,7 @@ export class Card {
 		}
 
 		if (opponent.graveyard.includes(this)) {
-			game.functions.util.remove(opponent.graveyard, this);
+			game.util.remove(opponent.graveyard, this);
 			this.owner.graveyard.push(this);
 
 			return true;
@@ -1418,7 +1418,7 @@ export class Card {
 	async discard(player = this.owner): Promise<boolean> {
 		game.event.newHistoryChild(Event.DiscardCard, this, player);
 
-		const returnValue = game.functions.util.remove(player.hand, this);
+		const returnValue = game.util.remove(player.hand, this);
 
 		if (returnValue) {
 			this.setLocation(Location.None);
@@ -1601,7 +1601,7 @@ export class Card {
 			this,
 		);
 
-		game.functions.util.remove(this.activeEnchantments, activeEnchantment);
+		game.util.remove(this.activeEnchantments, activeEnchantment);
 		await activeEnchantment.enchantment.removeFromPlay();
 
 		await this.refreshEnchantments();
@@ -1857,7 +1857,7 @@ export class Card {
 	 * @returns The name of the adapt chosen, or -1 if the user cancelled.
 	 */
 	async adapt(prompt = "Choose One:"): Promise<string | -1> {
-		await game.functions.interact.print.gameState(game.player);
+		await game.interact.print.gameState(game.player);
 
 		const possibleCards = [
 			["Crackling Shield", "Divine Shield"],
@@ -1994,7 +1994,7 @@ export class Card {
 	 * @param text The text to add the the color to. Defaults to this card's name
 	 */
 	colorFromRarity(text = this.name): string {
-		return game.functions.color.fromRarity(text, this.rarity);
+		return game.color.fromRarity(text, this.rarity);
 	}
 
 	/**
@@ -2013,7 +2013,7 @@ export class Card {
 	 * @param newOwner The new owner of the card.
 	 */
 	async takeControl(newOwner: Player): Promise<void> {
-		game.functions.util.remove(this.owner.board, this);
+		game.util.remove(this.owner.board, this);
 
 		this.owner = newOwner;
 		await newOwner.summon(this);
@@ -2117,12 +2117,12 @@ export class Card {
 			const titan = this.getKeyword(Keyword.Titan) as number[] | false;
 
 			sb += titan
-				? game.functions.color.if(
+				? game.color.if(
 						this.attackTimes > 0,
 						"bright:green",
 						` [${titan.length} Abilities Left]`,
 					)
-				: game.functions.color.if(
+				: game.color.if(
 						this.canAttack(),
 						"bright:green",
 						` [${this.attack} / ${this.health}]`,

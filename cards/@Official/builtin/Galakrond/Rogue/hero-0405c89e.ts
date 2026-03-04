@@ -27,7 +27,7 @@ export const blueprint: Blueprint = {
 		// Draw {amount} cards. They cost (0).
 
 		// Get the amount of cards to draw
-		const amount = game.functions.card.galakrondFormula(
+		const amount = game.card.galakrondFormula(
 			self.getStorage(self.uuid, "invokeCount") as number,
 		);
 
@@ -52,7 +52,7 @@ export const blueprint: Blueprint = {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
 
-		const amount = game.functions.card.galakrondFormula(invokeCount);
+		const amount = game.card.galakrondFormula(invokeCount);
 		const multiple = amount > 1;
 
 		const plural = multiple ? "s" : "";

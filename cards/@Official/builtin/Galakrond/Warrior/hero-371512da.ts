@@ -25,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	async battlecry(self, owner) {
 		// Draw 1 minion. Give them +4/+4.
-		const amount = game.functions.card.galakrondFormula(
+		const amount = game.card.galakrondFormula(
 			self.getStorage(self.uuid, "invokeCount") as number,
 		);
 
@@ -48,7 +48,7 @@ export const blueprint: Blueprint = {
 			return { amount: 0, plural: "s", plural2: "They" };
 		}
 
-		const amount = game.functions.card.galakrondFormula(invokeCount);
+		const amount = game.card.galakrondFormula(invokeCount);
 		const multiple = amount > 1;
 
 		const plural = multiple ? "s" : "";

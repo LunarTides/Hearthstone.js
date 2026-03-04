@@ -19,7 +19,7 @@ const error = (message: string, options?: ErrorOptions): never => {
 program
 	.name("hearthstone.js")
 	.description("A console-based recreation of Hearthstone.js")
-	.version(game.functions.info.versionString(4));
+	.version(game.info.versionString(4));
 
 // Deck
 const deck = program.command("deck").description("manage decks");

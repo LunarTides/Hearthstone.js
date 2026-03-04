@@ -82,7 +82,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 
 			const isValid = await validate(answer);
 			if (isValid === true) {
-				game.functions.audio.playSFX("input.enter");
+				game.audio.playSFX("input.enter");
 
 				setValue(answer);
 				setStatus("done");
@@ -92,7 +92,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 					history.push(answer);
 				}
 			} else {
-				game.functions.audio.playSFX("error");
+				game.audio.playSFX("error");
 
 				if (theme.validationFailureMode === "clear") {
 					setValue("");
@@ -105,7 +105,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 				setStatus("idle");
 			}
 		} else if (isBackspaceKey(key)) {
-			game.functions.audio.playSFX("input.backspace");
+			game.audio.playSFX("input.backspace");
 			setValue(rl.line);
 
 			if (!value) {
@@ -113,9 +113,9 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			}
 		} else if (isTabKey(key) && !value) {
 			if (defaultValue) {
-				game.functions.audio.playSFX("input.tab");
+				game.audio.playSFX("input.tab");
 			} else {
-				game.functions.audio.playSFX("input.type");
+				game.audio.playSFX("input.type");
 			}
 
 			setDefaultValue("");
@@ -123,7 +123,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			rl.write(defaultValue);
 			setValue(defaultValue);
 		} else if (isUpKey(key)) {
-			game.functions.audio.playSFX("input.arrow.up");
+			game.audio.playSFX("input.arrow.up");
 
 			if (historyIndex === -1) {
 				// NOTE: Subtract 2 for some reason.
@@ -141,7 +141,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			setValue(entry ?? "");
 			setError(undefined);
 		} else if (isDownKey(key)) {
-			game.functions.audio.playSFX("input.arrow.down");
+			game.audio.playSFX("input.arrow.down");
 
 			if (historyIndex !== -1) {
 				setHistoryIndex(historyIndex + 1);
@@ -156,7 +156,7 @@ export default createPrompt<string, InputConfig>((config, done) => {
 			setValue(entry ?? "");
 			setError(undefined);
 		} else {
-			game.functions.audio.playSFX("input.type");
+			game.audio.playSFX("input.type");
 
 			setValue(rl.line);
 			setError(undefined);

@@ -1,7 +1,7 @@
 import pkg from "@Game/../package.json" with { type: "json" };
 import { format } from "node:util";
 
-export const infoFunctions = {
+export const info = {
 	version(): { version: string; branch: string; build: number } {
 		const ver = pkg.version.split("-")[0];
 		const branch = pkg.version.split("-")[1].split(".")[0];
@@ -84,7 +84,7 @@ export const infoFunctions = {
 		if (game.cache.latestCommitHash === undefined) {
 			// Save to a cache since `runCommand` is slow.
 			try {
-				game.cache.latestCommitHash = game.functions.util
+				game.cache.latestCommitHash = game.util
 					.runCommand("git rev-parse --short=7 HEAD")
 					.trim();
 			} catch (error) {

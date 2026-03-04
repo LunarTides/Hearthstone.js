@@ -372,7 +372,7 @@ describe("src/player", () => {
 			attempts < maxAttempts
 		) {
 			attempts++;
-			game.functions.util.remove(player.deck, sheep);
+			game.util.remove(player.deck, sheep);
 			expect(await player.shuffleIntoDeck(sheep)).toBe(true);
 		}
 

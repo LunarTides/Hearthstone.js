@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		}
 
 		// If the turn counter is an even number, gain mana equal to the turn counter (up to 10).
-		let turns = game.functions.util.getTraditionalTurnCounter();
+		let turns = game.util.getTraditionalTurnCounter();
 
 		// Cap the turn counter at 10
 		if (turns > 10) {
@@ -46,7 +46,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async condition(self, owner) {
-		let turns = game.functions.util.getTraditionalTurnCounter();
+		let turns = game.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
 		}
@@ -60,7 +60,7 @@ export const blueprint: Blueprint = {
 	},
 
 	async placeholders(self, owner) {
-		let turns = game.functions.util.getTraditionalTurnCounter();
+		let turns = game.util.getTraditionalTurnCounter();
 		if (turns > 10) {
 			turns = 10;
 		}
@@ -70,7 +70,7 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		const turn = () => {
-			let turns = game.functions.util.getTraditionalTurnCounter();
+			let turns = game.util.getTraditionalTurnCounter();
 			if (turns > 10) {
 				turns = 10;
 			}

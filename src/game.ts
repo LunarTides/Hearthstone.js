@@ -1,7 +1,6 @@
 import { SentimentAI, SimulationAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
-import { eventManager, historyTree } from "@Game/event.ts";
-import { functions } from "@Game/functions/index.ts";
+import { eventManager, historyTree } from "@Game/modules/event.ts";
 import { Player } from "@Game/player.ts";
 import {
 	Ability,
@@ -23,6 +22,13 @@ import {
 import { format } from "node:util";
 import _ from "lodash";
 import cardIds from "../cards/ids.ts";
+import { audio } from "./modules/audio.ts";
+import { card } from "./modules/card/index.ts";
+import { color } from "./modules/color.ts";
+import { deckcode } from "./modules/deckcode.ts";
+import { info } from "./modules/info.ts";
+import { interact } from "./modules/interact/index.ts";
+import { util } from "./modules/util.ts";
 
 const attack = {
 	/**
@@ -606,7 +612,7 @@ const attack = {
 			 * Only include player 1's side of the board if player 1 isn't the owner of the attacker
 			 * Only include player 2's side of the board if player 2 isn't the owner of the attacker
 			 */
-			const target = game.functions.util.getRandomTarget(
+			const target = game.util.getRandomTarget(
 				!ownerIsPlayer1,
 				!ownerIsPlayer2,
 				!ownerIsPlayer1,
@@ -823,7 +829,7 @@ const playCard = {
 		if (player.ai) {
 			q = await player.ai.trade(card);
 		} else {
-			await game.functions.interact.print.gameState(player);
+			await game.interact.print.gameState(player);
 			q = await game.prompt.yesNo(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
@@ -870,7 +876,7 @@ const playCard = {
 		if (player.ai) {
 			q = await player.ai.forge(card);
 		} else {
-			await game.functions.interact.print.gameState(player);
+			await game.interact.print.gameState(player);
 			q = await game.prompt.yesNo(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
@@ -923,7 +929,7 @@ const playCard = {
 		const warnMessage =
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
-		await game.functions.interact.print.gameState(player);
+		await game.interact.print.gameState(player);
 		const warn = await game.prompt.yesNo(warnMessage, player);
 
 		if (!warn) {
@@ -938,7 +944,7 @@ const playCard = {
 
 		// Check if the card is countered
 		if (opponent.counter?.includes(card.type)) {
-			game.functions.util.remove(opponent.counter, card.type);
+			game.util.remove(opponent.counter, card.type);
 			return true;
 		}
 
@@ -1060,17 +1066,44 @@ const playCard = {
 
 export class Game {
 	/**
-	 * Some general functions that can be used.
-	 *
-	 * This has a lot of abstraction, so don't be afraid to use them.
-	 * Look in here for more.
+	 * Interact module.
 	 */
-	functions = functions;
+	interact = interact;
 
 	/**
-	 * Shortcut for `game.functions.interact.prompt`.
+	 * Shortcut for `game.interact.prompt`.
 	 */
-	prompt = functions.interact.prompt;
+	prompt = interact.prompt;
+
+	/**
+	 * Audio module.
+	 */
+	audio = audio;
+
+	/**
+	 * Card module.
+	 */
+	card = card;
+
+	/**
+	 * Color module.
+	 */
+	color = color;
+
+	/**
+	 * Deckcode module.
+	 */
+	deckcode = deckcode;
+
+	/**
+	 * Info module.
+	 */
+	info = info;
+
+	/**
+	 * Util module.
+	 */
+	util = util;
 
 	/**
 	 * The player that starts first.
@@ -1191,7 +1224,7 @@ export class Game {
 	 *
 	 * Do
 	 * ```
-	 * game.functions.util.getTraditionalTurnCounter();
+	 * game.util.getTraditionalTurnCounter();
 	 * ```
 	 * for a more conventional turn counter.
 	 */
@@ -1275,7 +1308,7 @@ export class Game {
 		// Check if the date is the 14th of February
 		const currentDate = new Date();
 		this.time.year = currentDate.getFullYear();
-		this.functions.util.setupTimeEvents(currentDate);
+		this.util.setupTimeEvents(currentDate);
 
 		// this.time.events.anniversary = true;
 		// this.time.events.pride.month = true;
@@ -1289,7 +1322,7 @@ export class Game {
 	 *
 	 * @returns What the user answered
 	 */
-	input = this.functions.interact.input;
+	input = this.interact.input;
 
 	/**
 	 * Pause the game until the user presses the enter key.
@@ -1298,7 +1331,7 @@ export class Game {
 	 * @param [prompt="Press enter to continue..."] The prompt to show the user
 	 */
 	async pause(prompt = "Press enter to continue..."): Promise<void> {
-		await this.functions.interact.input({ message: prompt });
+		await this.interact.input({ message: prompt });
 	}
 
 	/**
@@ -1323,7 +1356,7 @@ export class Game {
 			if (this.debugLog.includes(split)) {
 				this.debugLog.splice(this.debugLog.indexOf(split), 1, string);
 
-				game.functions.util.remove(data, string);
+				game.util.remove(data, string);
 			}
 		}
 
@@ -1351,9 +1384,7 @@ export class Game {
 		}
 
 		const newText =
-			start +
-			(this.functions.util.getCachedLanguageMap()?.[text] || text) +
-			end;
+			start + (this.util.getCachedLanguageMap()?.[text] || text) + end;
 
 		return format(newText, ...args);
 	}
@@ -1533,11 +1564,11 @@ export class Game {
 			return false;
 		}
 
-		this.functions.interact.print.watermark();
+		this.interact.print.watermark();
 		console.log();
 
 		// Do this to bypass 'Press enter to continue' prompt when showing history
-		const history = await this.functions.interact.processCommand("history", {
+		const history = await this.interact.processCommand("history", {
 			echo: false,
 		});
 
@@ -1889,11 +1920,11 @@ export async function createGame(registerCards = true) {
 	const player1 = new Player();
 	const player2 = new Player();
 	const game = new Game(player1, player2);
-	await game.functions.util.importConfig();
-	await game.functions.util.importLanguageMap();
+	await game.util.importConfig();
+	await game.util.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {
-		game.functions.audio.setupPlayback();
+		game.audio.setupPlayback();
 		await Card.registerAll();
 	}
 

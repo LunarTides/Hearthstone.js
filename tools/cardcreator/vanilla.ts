@@ -68,7 +68,7 @@ export async function create(
 	text = text.replaceAll("\n", " ");
 	text = text.replaceAll("[x]", "");
 
-	const classes = (await game.functions.card.getClasses()) as Class[];
+	const classes = (await game.card.getClasses()) as Class[];
 	classes.push(Class.Neutral);
 
 	while (!classes.includes(cardClass)) {
@@ -85,7 +85,7 @@ export async function create(
 		// Add the hero power
 		console.log("<green>Adding the hero power</green>");
 
-		const heroPower = (await game.functions.card.vanilla.getAll()).find(
+		const heroPower = (await game.card.vanilla.getAll()).find(
 			(c) => c.dbfId === card.heroPowerDbfId,
 		);
 
@@ -186,7 +186,7 @@ export async function main(
 	debug = false,
 	overrideType?: lib.CCType,
 ): Promise<boolean> {
-	const vanillaCards = await game.functions.card.vanilla.getAll();
+	const vanillaCards = await game.card.vanilla.getAll();
 
 	while (true) {
 		hub.watermark(false);

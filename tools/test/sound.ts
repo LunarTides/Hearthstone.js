@@ -1,5 +1,5 @@
-import { sfx } from "@Game/functions/audio.ts";
 import { createGame } from "@Game/game.ts";
+import { sfx } from "@Game/modules/audio.ts";
 import { Separator, search } from "@inquirer/prompts";
 import * as hub from "../../hub.ts";
 
@@ -52,11 +52,11 @@ export async function main() {
 		lastPlayed = sound;
 
 		if (sound === "back") {
-			game.functions.audio.playSFX("ui.back");
+			game.audio.playSFX("ui.back");
 			break;
 		}
 		if (sound === "options") {
-			game.functions.audio.playSFX("ui.delve");
+			game.audio.playSFX("ui.delve");
 
 			await game.prompt.configureObject(options, false, async () => {
 				hub.watermark(false);
@@ -65,7 +65,7 @@ export async function main() {
 		}
 
 		const key = sound.split(":")[1] as keyof typeof sfx;
-		game.functions.audio.playSFX(key, {
+		game.audio.playSFX(key, {
 			...options,
 			playAgainstUserWishes: true,
 		});
