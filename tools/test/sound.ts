@@ -66,7 +66,7 @@ export async function main() {
 
 		const key = sound.split(":")[1] as keyof typeof sfx;
 		game.audio.playSFX(key, {
-			...options,
+			options,
 			playAgainstUserWishes: true,
 		});
 	}
