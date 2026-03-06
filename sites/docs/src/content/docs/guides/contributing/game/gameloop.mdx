@@ -7,9 +7,9 @@ import { Steps } from "@astrojs/starlight/components";
 
 These functions are relevant for the gameloop.
 ```ts
-// src/functions/interact.ts
+// src/modules/interact/index.ts
 
-export const interactFunctions = {
+export const interact = {
     async processCommand(cmd: string);
     async _gameloopHandleInput(input: string);
     async gameloop();
@@ -37,9 +37,9 @@ If it is, it will call the relevant function in:
     and the `_gameloopHandleInput` will return early.
 
 3. If the action is not a command, it will try to parse it to a card in the players hand.
-If this is successful, it will call the `play` function as defined here:
+If this is successful, it will call `game.play` will which call this function as defined here:
     ```ts
-    // src/game.ts
+    // src/modules/card/play.ts
 
     const playCard = {
         async play(card: Card, player: Player): Promise<GamePlayCardReturn>;
@@ -47,6 +47,6 @@ If this is successful, it will call the `play` function as defined here:
     ```
 
 4. Now, once the command / play is over, the game goes back to step 1 and calls `gameloop` again.
-It continues this until `game.running` becomes `false`.
+It continues this until `game.running` becomes `false`. **Everything that happens in the game is a result of a command running, or a card being played.**
 
 </Steps>

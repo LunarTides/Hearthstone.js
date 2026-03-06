@@ -1,0 +1,22 @@
+User-agent: *
+Disallow:
+
+# Disallow "good faith" AI bots.
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: Google-Extended
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Meta-ExternalAgent
+User-agent: Meta-WebIndexer
+User-agent: Gemini-Deep-Research
+User-agent: Bytespider
+User-agent: Amazonbot
+Disallow: /
+
+Sitemap: https://hs.lunartides.dev/sitemap-index.xml

@@ -5,7 +5,7 @@ description: TODO
 
 import { Kbd } from 'starlight-kbd/components';
 
-This guide expects you to know the rules of Hearthstone. You can find that [here](https://hearthstone.wiki.gg/wiki/Gameplay).
+This guide expects you to know the rules of Hearthstone. You can find them [here](https://hearthstone.wiki.gg/wiki/Gameplay).
 
 ## Game State
 If you've followed the previous guide, you should be seeing a screen like this: \
@@ -24,14 +24,14 @@ And a random fun fact. [(Can be disabled)](../settings/)
 ### Stats
 ![Screenshot of Stats](../../../../assets/guides/game/state/stats.webp)
 
-After the watermark is the "stats". This shows information about the **players**.
-
+After the watermark is the "stats". This shows information about the **players**. \
 The left side of the **"|"** is **your** stats, the right side is the **opponent's** stats.
 
-Here it says that you have 1/1 Mana (Current Mana Crystals / Empty Mana Crystals), while the opponent has 0/0. \
-On the next line, it says that you have 30 / 30 Health, and 0 Armor. \
-On the next line, it says that you have **27** cards in your deck, and **3** cards in your hand. \
-On the next line, it shows your Hero Power, that being "Jaina Proudmoore"'s hero power that costs **2** mana to use.
+Here it says that:
+1. You have **1** / **1** Mana (Current Mana Crystals / Empty Mana Crystals), while the opponent has **0** / **0**.
+2. You have **30** / **30** Health, and **0** Armor.
+3. You have **27** cards in your deck, and **3** cards in your hand.
+4. Your Hero Power, that being '**Jaina Proudmoore**''s Hero Power, costs **2** mana to use. It's gray, meaning that it can't currently be used.
 
 ### Board
 ![Screenshot of Board](../../../../assets/guides/game/state/board.webp)
@@ -41,11 +41,10 @@ Here it shows you and your opponent's board. Any cards played will show up here.
 ### Hand
 ![Screenshot of Hand & Interaction](../../../../assets/guides/game/state/hand.webp)
 
-The first line says which player you are (Player 1), and your class (Mage). \
-The second line shows how to read cards. First the index, then cost, then name, then [id and uuid](../../creating/cards/ids/), and tags, then attack and health, then type.
-The cards don't *always* show like this, but it should be a good reference.
+1. The first line says which player you are (**Player 1**), and your class (**Mage**).
+2. The second line shows how to read cards. First the index, then cost, then name, then [id and uuid](../../creating/cards/ids/), and tags, then attack and health, then type. The cards don't *always* show like this, but it should be a good reference.
 
-It then shows you the cards in your hand after the **"Which card do you want to play?"** prompt.
+It then shows you the cards in your hand after the **"Which card do you want to play?"** prompt. You also have the option to run a command instead.
 
 ## Interaction
 
@@ -79,12 +78,12 @@ If you select end, it will end your turn. By default, you will play against an A
 ### Hero Power
 ![Screenshot of confirming the usage of your hero power](../../../../assets/guides/game/commands/hero-power/confirm.webp)
 
-If you select Hero Power, it will ask you if you're sure.
+If you select Hero Power, it will ask you if you're sure. Type <Kbd windows='Y' /> for yes, or <Kbd windows='N' /> for no.
 
 ![Screenshot of selecting a target for your hero power](../../../../assets/guides/game/commands/hero-power/target.webp)
 
-If you select "Y", it will ask you to select a target. Since it says "Deal 1 damage." instead of "Deal 1 damage to an enemy target.", it allows you to select any target.
+If you select <Kbd windows='Y' />, it will ask you to select a target. Since it says 'Deal 1 damage.' instead of 'Deal 1 damage to an enemy target.', it naturally allows you to select any target.
 
 :::tip
-Press <Kbd windows="e" /> on your keyboard to navigate to the enemy secion, and <Kbd windows="f" /> to navigate to the friendly section.
+Press <Kbd windows="e" /> on your keyboard to navigate to the enemy section, and <Kbd windows="f" /> to navigate to the friendly section.
 :::

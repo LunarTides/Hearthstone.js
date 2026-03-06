@@ -179,6 +179,7 @@ export enum Keyword {
 export enum Tag {
 	StartingHero = "StartingHero",
 	Galakrond = "Galakrond",
+	// Rename to `BasicTotem`
 	Totem = "Totem",
 	Lackey = "Lackey",
 	DIY = "Diy",

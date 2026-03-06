@@ -1,8 +1,12 @@
 ---
 import Default from '@astrojs/starlight/components/SiteTitle.astro';
+import { Icon } from '@astrojs/starlight/components';
 ---
 
-<a href="https://lunartides.dev" set:text="<" class="home"></a>
+<a href="https://lunartides.dev" class="home">
+    <Icon name="left-arrow" />
+</a>
+
 <div class="seperator"></div>
 
 <Default><slot /></Default>
@@ -29,7 +33,7 @@ import Default from '@astrojs/starlight/components/SiteTitle.astro';
   }
 
   a {
-    color: white;
+    color: var(--sl-color-white);
     text-decoration: none;
   }
 
@@ -38,10 +42,14 @@ import Default from '@astrojs/starlight/components/SiteTitle.astro';
   }
 
   .home {
-    font-size: 32px;
-    color: slategray;
-    margin-right: 1%;
-    align-self: center;
+    font-size: 38px;
+    color: var(--sl-color-white);
+    margin-left: -1%;
+    display: flex;
+  }
+
+  .home svg {
+      align-self: center;
   }
 
   .seperator {

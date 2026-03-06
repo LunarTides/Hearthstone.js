@@ -15,13 +15,13 @@ A console-based recreation of Hearthstone.
 
 - Most of Hearthstone's features before 2025!
 - Create your own cards. Minimal programming knowledge required!
-- No known limitations to what cards can do!
+- Limitations on what cards can do are considered bugs!
 - Make your own decks.
-- A great developer experience!
 - A relatively clean codebase which is easy to mod!
 - 70+ configurable settings to change how the game works!
-- An AI you can play against!
+- An AI (or two) you can play against!
 - Import cards directly from Hearthstone!
+- Procedural audio support!
 - ~150 pre-built cards. (26 Collectible.)
 - Publish cards online for others to see and use!
 - GPL-3.0 License.

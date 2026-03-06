@@ -19,6 +19,9 @@ export default defineConfig({
 			editLink: {
 				baseUrl: 'https://github.com/LunarTides/Hearthstone.js/edit/main/sites/docs/',
 			},
+      customCss: [
+        "./src/styles/global.css",
+			],
 			components: {
 				SiteTitle: './src/overrides/SiteTitle.astro',
 				ThemeSelect: './src/overrides/ThemeSelect.astro',
@@ -68,6 +71,7 @@ export default defineConfig({
 												{ label: 'The Blueprint', slug: 'guides/creating/cards/logic/blueprint' },
 												{ label: 'Abilities', slug: 'guides/creating/cards/logic/abilities' },
 												{ label: 'Card-to-Card Interaction', slug: 'guides/creating/cards/logic/card-to-card' },
+												{ label: 'Game Modules', slug: 'guides/creating/cards/logic/modules' },
 												{ label: 'Passives', slug: 'guides/creating/cards/logic/passives' },
 												{
 													label: 'Concepts',

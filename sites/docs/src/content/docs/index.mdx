@@ -16,25 +16,46 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Image } from '@astrojs/starlight/components';
 
-## Next steps
+## Play Hearthstone in your terminal
+![A screenshot of the game](../../assets/preview.webp)
 
-<CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+Hearthstone.js is a recreation of [Hearthstone made by Blizzard.](https://hearthstone.wiki.gg/wiki/Hearthstone)
+
+It is played entirely in your terminal.
+
+### Features
+- Most of Hearthstone's features before 2025!
+- Create your own cards. Minimal programming knowledge required!
+- Limitations on what cards can do are considered bugs!
+- Make your own decks.
+- A relatively clean codebase which is easy to mod!
+- 70+ configurable settings to change how the game works!
+- An AI (or two) you can play against!
+- Import cards directly from Hearthstone!
+- Procedural audio support!
+- ~150 pre-built cards. (26 Collectible.)
+- Publish cards online for others to see and use!
+- GPL-3.0 License.
+
+<CardGrid>
+	<Card title="Create cards" icon="add-document">
+	    Make your own cards!
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Play against your computer" icon="laptop">
+	    Your computer will decide what moves to play on your opponent's turn.
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Mod the game" icon="pen">
+	    Extend the game with a easily customizable codebase.
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Configuration" icon="setting">
+    Configure the game to your liking!
+	</Card>
+	<Card title="Download cards online" icon="download">
+	  Download and upload cards to the [registry](/registry).
 	</Card>
 	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+		Learn more by [reading the docs](./guides/introduction).
 	</Card>
 </CardGrid>

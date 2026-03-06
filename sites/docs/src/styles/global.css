@@ -1,0 +1,4 @@
+:root {
+    /* Change the gap between the logo and name. */
+    --sl-nav-gap: 0.5rem;
+}
