@@ -59,7 +59,7 @@ export async function validate(
 
 	if (logFailure) {
 		if (duplicates > 0) {
-			console.log("<yellow>Found %s duplicate(s).</yellow>", duplicates);
+			console.log(`<yellow>Found ${duplicates} duplicate(s).</yellow>`);
 		}
 	}
 

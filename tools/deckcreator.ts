@@ -7,7 +7,6 @@ import {
 	type GameConfig,
 	Rune,
 } from "@Game/types.ts";
-import util from "node:util";
 import { Separator, search } from "@inquirer/prompts";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import * as hub from "../hub.ts";
@@ -120,27 +119,16 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			case "EmptyDeck": {
 				log =
 					"<red>ERROR: Could not generate deckcode as your deck is empty. The resulting deckcode would be invalid.</red>";
-
 				break;
 			}
 
 			case "TooManyCopies": {
-				log += util.format(
-					"Too many copies of a card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'</yellow>",
-					game.config.decks.maxOfOneCard,
-					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
-				);
-
+				log += `Too many copies of a card. Maximum: </yellow>${game.config.decks.maxOfOneCard}<yellow>. Offender: </yellow>'{ id: "${error.info?.card?.id}", copies: ${error.info?.amount} }'`;
 				break;
 			}
 
 			case "TooManyLegendaryCopies": {
-				log += util.format(
-					"Too many copies of a Legendary card. Maximum: </yellow>'%s'<yellow>. Offender: </yellow>'%s'</yellow>",
-					game.config.decks.maxOfOneLegendary,
-					`{ Id: "${error.info?.card?.id}", Copies: "${error.info?.amount}" }`,
-				);
-
+				log += `Too many copies of a <yellow>Legendary</yellow> card. Maximum: </yellow>${game.config.decks.maxOfOneLegendary}<yellow>. Offender: </yellow>'{ id: "${error.info?.card?.id}", copies: ${error.info?.amount} }'`;
 				break;
 			}
 
@@ -356,7 +344,7 @@ const commands: CommandList = {
 			add(cards.find((c) => c.id === args[0])!);
 		} else {
 			// This shouldn't ever happen, but oh well
-			console.log("<red>Command '%s' cannot be undoed.</red>", command);
+			console.log(`<red>Command '${command}' cannot be undoed.</red>`);
 			return false;
 		}
 
@@ -462,30 +450,25 @@ const commands: CommandList = {
 		console.log();
 
 		console.log(
-			"Validation: %s",
-			game.translate(
+			`Validation: ${
 				game.config.decks.validate
 					? "<bright:green>ON</bright:green>"
-					: "<red>OFF</red>",
-			),
+					: "<red>OFF</red>"
+			}`,
 		);
 
 		console.log(
-			"\nMinimum Deck Length: <yellow>%s</yellow>",
-			game.config.decks.minLength,
+			`\nMinimum Deck Length: <yellow>${game.config.decks.minLength}</yellow>`,
 		);
 		console.log(
-			"Maximum Deck Length: <yellow>%s</yellow>",
-			game.config.decks.maxLength,
+			`Maximum Deck Length: <yellow>${game.config.decks.maxLength}</yellow>`,
 		);
 
 		console.log(
-			"\nYou can only have: <yellow>%s</yellow> Sheep in a deck.",
-			game.config.decks.maxOfOneCard,
+			`\nYou can only have: <yellow>${game.config.decks.maxOfOneCard}</yellow> Sheep in a deck.`,
 		);
 		console.log(
-			"You can only have: <yellow>%s Brann Bronzebeard</yellow>",
-			game.config.decks.maxOfOneLegendary,
+			`You can only have: <yellow>${game.config.decks.maxOfOneLegendary} Brann Bronzebeard</yellow>`,
 		);
 
 		console.log();

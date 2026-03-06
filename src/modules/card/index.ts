@@ -74,10 +74,7 @@ export const card = {
 
 			// Validation error
 			console.log(
-				"<red>ERROR: Card <bold>'%s'</bold> (%s) is invalid since %s</red>",
-				blueprint.name,
-				blueprint.id,
-				errorMessage,
+				`<red>ERROR: Card <bold>'${blueprint.name}'</bold> (${blueprint.id}) is invalid since ${errorMessage}</red>`,
 			);
 
 			valid = false;
@@ -381,8 +378,7 @@ export const card = {
 			const index = match ? match[1] : "unknown";
 
 			console.log(
-				"Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/%s.ts'.",
-				index,
+				`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${index}.ts'.`,
 			);
 		}
 

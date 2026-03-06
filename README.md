@@ -19,11 +19,11 @@ A console-based recreation of Hearthstone.
 - Make your own decks.
 - A great developer experience!
 - A relatively clean codebase which is easy to mod!
-- 50+ configurable settings to change how the game works!
+- 70+ configurable settings to change how the game works!
 - An AI you can play against!
 - Import cards directly from Hearthstone!
-- Localization support.
 - ~150 pre-built cards. (26 Collectible.)
+- Publish cards online for others to see and use!
 - GPL-3.0 License.
 
 > [!NOTE]

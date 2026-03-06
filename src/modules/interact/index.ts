@@ -120,7 +120,6 @@ export const interact = {
 			return wrapper("");
 		}
 
-		options.message = game.translate(options.message);
 		options.message = parseTags(options.message);
 
 		// Let the game make choices for the user
@@ -143,7 +142,7 @@ export const interact = {
 		}
 
 		const newData = data.map((i: any) =>
-			typeof i === "string" ? parseTags(game.translate(i)) : i,
+			typeof i === "string" ? parseTags(i) : i,
 		);
 
 		callback(...newData);

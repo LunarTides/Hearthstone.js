@@ -136,7 +136,6 @@ export type AiHistory = {
  */
 export type GameConfig = {
 	general: {
-		locale: string;
 		editor: string;
 		maxBoardSpace: number;
 		maxHandLength: number;

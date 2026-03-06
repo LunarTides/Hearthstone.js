@@ -14,52 +14,6 @@ export const config = {
 	},
 
 	/**
-	 * Returns a language map based on the game's locale. Automatically updates it if it's not there.
-	 *
-	 * @param invalidateCache Whether to refresh the cache
-	 * @returns The language map
-	 */
-	async importLanguageMap(
-		invalidateCache = false,
-	): Promise<Record<string, string>> {
-		if (!invalidateCache && game.cache.languageMap) {
-			return game.cache.languageMap;
-		}
-
-		if (
-			!(await game.fs.call(
-				"exists",
-				`/locale/${game.config.general.locale}.json`,
-			))
-		) {
-			return {};
-		}
-
-		const languageMap = JSON.parse(
-			(await game.fs.call(
-				"readFile",
-				`/locale/${game.config.general.locale}.json`,
-				{},
-				{
-					invalidateCache: invalidateCache,
-				},
-			)) as string,
-		);
-
-		game.cache.languageMap = languageMap;
-		return languageMap;
-	},
-
-	/**
-	 * Returns a language map based on the game's locale.
-	 *
-	 * @returns The language map
-	 */
-	getCachedLanguageMap(): Record<string, string> | undefined {
-		return game.cache.languageMap;
-	},
-
-	/**
 	 * Sets the values in `game.time.events` to be accurate.
 	 */
 	setupTimeEvents(currentDate: Date) {

@@ -17,7 +17,7 @@ import {
 	type Target,
 	Type,
 } from "@Game/types.ts";
-import { format } from "node:util";
+
 import _ from "lodash";
 import cardIds from "../cards/ids.ts";
 import { attack } from "./modules/attack.ts";
@@ -300,32 +300,6 @@ export class Game {
 		}
 
 		this.debugLog.push(...data);
-	}
-
-	/**
-	 * Translates the input text to the current locale using the language map, or returns the input text if no translation is found.
-	 *
-	 * @param text The text to be translated
-	 * @returns The translated text or the original text if no translation is found
-	 */
-	translate(text: string, ...args: unknown[]): string {
-		// Ignore starting and ending newlines.
-		let start = "";
-		if (text.startsWith("\n")) {
-			start += "\n";
-			text = text.slice(1);
-		}
-
-		let end = "";
-		if (text.endsWith("\n")) {
-			end += "\n";
-			text = text.slice(0, -1);
-		}
-
-		const newText =
-			start + (this.configuration.getCachedLanguageMap()?.[text] || text) + end;
-
-		return format(newText, ...args);
 	}
 
 	/**
@@ -983,7 +957,6 @@ export async function createGame(registerCards = true) {
 	const player2 = new Player();
 	const game = new Game(player1, player2);
 	await game.configuration.import();
-	await game.configuration.importLanguageMap();
 	game.doConfigAi();
 	if (registerCards) {
 		game.audio.setupPlayback();

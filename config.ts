@@ -2,9 +2,6 @@ import { Ability, Event, type GameConfig } from "@Game/types.ts";
 
 export const config: GameConfig = {
 	general: {
-		// The locale (aka. language) to use. If the specified locale doesn't exist, it will default to 'en_US'.
-		locale: "en_US",
-
 		/*
 		 * The editor that gets launched whenever the game wants to launch an editor.
 		 * This happens after creating a card using the Custom Card Creator, for example.

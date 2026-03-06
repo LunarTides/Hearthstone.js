@@ -69,12 +69,9 @@ export async function main(): Promise<void> {
 		await game.fs.call("writeFile", "/vanillacards.json", JSON.stringify(data));
 
 		const difference = oldLength - data.length;
-		console.log(
-			"Found %s cards!\nFiltered away %s cards!\nSuccessfully imported %s cards!",
-			oldLength,
-			difference,
-			data.length,
-		);
+		console.log(`Found <yellow>${oldLength}</yellow> cards!`);
+		console.log(`Filtered away <yellow>${difference}</yellow> cards!`);
+		console.log(`Successfully imported <yellow>${data.length}</yellow> cards!`);
 
 		if (import.meta.main) {
 			process.exit(0);

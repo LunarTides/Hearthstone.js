@@ -11,7 +11,6 @@ describe("src/game", () => {
 	test.todo("input", async () => {});
 	test.todo("pause", async () => {});
 	test.todo("interest", async () => {});
-	test.todo("translate", async () => {});
 	test.todo("doConfigAi", async () => {});
 	test.todo("isEventActive", async () => {});
 	test.todo("startGame", async () => {});

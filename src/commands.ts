@@ -140,7 +140,7 @@ export const commands: CommandList = {
 			}
 		}
 
-		console.log("<red>%s.</red>", game.translate(error));
+		console.log(`<red>${error}.</red>`);
 		await game.pause();
 		return true;
 	},
@@ -207,13 +207,8 @@ export const commands: CommandList = {
 
 		console.log("Available commands:");
 
-		const columns = helpColumns.map((column) => game.translate(column));
-		const alignedColumns = game.data.alignColumns(columns, "-");
-
-		const debugColumns = helpDebugColumns.map((column) =>
-			game.translate(column),
-		);
-		const debugAlignedColumns = game.data.alignColumns(debugColumns, "-");
+		const alignedColumns = game.data.alignColumns(helpColumns, "-");
+		const debugAlignedColumns = game.data.alignColumns(helpDebugColumns, "-");
 
 		// Normal commands
 		for (const alignedColumn of alignedColumns) {
@@ -740,11 +735,6 @@ export const debugCommands: CommandList = {
 		success &&= await game.interact.withStatus(
 			"Reloading config",
 			async () => await game.configuration.import(),
-		);
-
-		success &&= await game.interact.withStatus(
-			"Reloading language map",
-			async () => Boolean(await game.configuration.importLanguageMap(true)),
 		);
 
 		if (success) {

@@ -119,9 +119,7 @@ ${mainContent}
 		}
 
 		console.log(
-			"\n<red>The game crashed!\nCrash report created in 'logs/%s'\nPlease create a bug report at:\n%s/issues</red>",
-			filename,
-			game.config.general.repositoryUrl,
+			`\n<red>The game crashed!\nCrash report created in 'logs/${filename}'\nPlease create a bug report at:\n${game.config.general.repositoryUrl}/issues</red>`,
 		);
 
 		await game.pause();

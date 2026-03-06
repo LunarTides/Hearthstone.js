@@ -255,18 +255,15 @@ export async function main(debug = false): Promise<void> {
 
 	console.log(
 		// TODO: Use heropower id.
-		"2. Open 'cards/Custom/StartingHeroes/%s/?-heropower.ts' and add logic to the 'cast' function.",
-		game.lodash.startCase(className),
+		`2. Open 'cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/?-heropower.ts' and add logic to the 'cast' function.`,
 	);
 
 	console.log(
-		"3. Now when using the Custom Card Creator, type '%s' into the 'Class' field to use that class.",
-		className,
+		`3. Now when using the Custom Card Creator, type '${className}' into the 'Class' field to use that class.`,
 	);
 
 	console.log(
-		"4. When using the Deck Creator, type '%s' to create a deck with cards from your new class.",
-		className,
+		`4. When using the Deck Creator, type '${className}' to create a deck with cards from your new class.`,
 	);
 
 	console.log("Enjoy!");

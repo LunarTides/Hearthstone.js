@@ -461,8 +461,8 @@ export const blueprint: Blueprint = {
 
 		stopTagParsing();
 
-		console.log("New ID: %s", id);
-		console.log("Would be path: %s", filePath.replaceAll("\\", "/"));
+		console.log(`New ID: ${id}`);
+		console.log(`Would be path: ${filePath.replaceAll("\\", "/")}`);
 		console.log("Content:");
 		console.log(content);
 

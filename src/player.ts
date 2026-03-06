@@ -1422,8 +1422,8 @@ export class Player {
 		await game.event.broadcast(Event.RevealCard, [enemyCard, "Joust"], this);
 
 		console.log("\n--- JOUST ---");
-		console.log("Yours: %s", await friendlyCard.readable());
-		console.log("Opponent: %s", await enemyCard.readable());
+		console.log(`Yours: ${await friendlyCard.readable()}`);
+		console.log(`Opponent: ${await enemyCard.readable()}`);
 		console.log("-------------");
 
 		console.log(win ? "You win!" : "You lose!");

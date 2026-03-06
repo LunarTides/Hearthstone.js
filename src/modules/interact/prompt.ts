@@ -13,7 +13,6 @@ import {
 	Type,
 	UseLocationError,
 } from "@Game/types.ts";
-import { format } from "node:util";
 import { Separator } from "@inquirer/core";
 import { checkbox, confirm, number, select } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
@@ -1370,17 +1369,14 @@ export const prompt = {
 			}
 
 			default: {
-				error = format(
-					"An unknown error occurred. Error code: UnexpectedAttackingResult@%s",
-					errorCode,
-				);
+				error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorCode}`;
 
 				break;
 			}
 		}
 
-		console.log("<red>%s.</red>", game.translate(error));
+		console.log(`<red>${error}.</red>`);
 		await game.pause("");
-		return new Error(game.translate(error));
+		return new Error(error);
 	},
 };

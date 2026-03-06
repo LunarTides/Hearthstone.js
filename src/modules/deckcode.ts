@@ -27,14 +27,12 @@ export const deckcode = {
 		// TODO: Replace this with throwing errors.
 		const panic = async (errorCode: string, cardName?: string) => {
 			console.log(
-				"<red>This deck is not valid!\nError Code: <yellow>%s</yellow red>",
-				errorCode,
+				`<red>This deck is not valid!\nError Code: <yellow>${errorCode}</yellow red>`,
 			);
 
 			if (cardName) {
 				console.log(
-					"<red>Specific Card that caused this error: <yellow>%s</yellow red>",
-					cardName,
+					`<red>Specific Card that caused this error: <yellow>${cardName}</yellow red>`,
 				);
 			}
 
@@ -577,7 +575,7 @@ export const deckcode = {
 				}
 
 				const chosen = await game.prompt.customSelect(
-					"Multiple cards with the name '</yellow>%s<yellow>' detected! Please choose one.",
+					`Multiple cards with the name '</yellow>${matches[0].name}<yellow>' detected! Please choose one.`,
 					matches.map((m) => JSON.stringify(m)),
 					{
 						arrayTransform: undefined,

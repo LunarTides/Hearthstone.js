@@ -1,6 +1,6 @@
 import type { Card } from "@Game/card.ts";
 import type { Player } from "@Game/player.ts";
-import { format } from "node:util";
+
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
 
@@ -79,7 +79,7 @@ const funFacts = [
 	"If you want to disable these fun facts (for some reason), you can do so by changing the 'General > Disable Fun Facts' setting in 'config.ts'.",
 	"Despite the features that Hearthstone.js offers, it has comparatively few cards. This is because maintaining cards is a nightmare with how I constantly add breaking changes.",
 	"Hearthstone.js <i>doesn't</i> support a lot of the new features that Hearthstone has released (2024 and onwards). This is because I have kinda lost interest in the original Hearthstone, and am only working on Hearthstone.js since it's fun.",
-	"Hearthstone.js supports localization. Although there is a <i>lot</i> of text, and it changes constantly.",
+	"Hearthstone.js used to have localization support. It was removed since it wasn't integrated enough to be useful.",
 	"The 'history' command, despite being hard to read, is <i>extremely</i> useful for figuring out what has happened. When learned, it should give you a good oversight of what has happened throughout the <i>entire</i> game.",
 
 	// Other
@@ -153,10 +153,7 @@ export const print = {
 			if (funFact) {
 				seenFunFacts.push(funFact);
 
-				result += format(
-					game.translate("<gray>(Fun Fact: %s)</gray>"),
-					game.translate(funFact),
-				);
+				result += `<gray>(Fun Fact: ${funFact})</gray>`;
 			}
 		}
 
@@ -179,7 +176,7 @@ export const print = {
 
 		const version = `Hearthstone.js V${game.info.versionString(2)} | Copyright (C) 2022 | LunarTides`;
 		console.log("|".repeat(version.length + 8));
-		console.log("||| %s |||", version);
+		console.log(`||| ${version} |||`);
 		console.log(
 			`|||     This program is licensed under the GPL-3.0 license.  ${" ".repeat(branch.length)}|||`,
 		);
@@ -389,7 +386,7 @@ export const print = {
 	 * Prints the hand of the specified player.
 	 */
 	async hand(player: Player, includeCards = true): Promise<void> {
-		console.log("--- %s (%s)'s Hand ---", player.getName(), player.heroClass);
+		console.log(`--- ${player.getName()} (${player.heroClass})'s Hand ---`);
 
 		const debugInfo = game.isDebugSettingEnabled(
 			game.config.debug.additionalInfoInReadable,

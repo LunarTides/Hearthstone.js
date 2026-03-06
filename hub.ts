@@ -51,22 +51,16 @@ export const watermark = (showCards = true) => {
 	);
 
 	console.log(
-		"Version: %s %s",
-		version,
-		game.isEventActive(game.time.events.anniversary) ? "🎂" : "",
+		`Version: ${version} ${game.isEventActive(game.time.events.anniversary) ? "🎂" : ""}`,
 	);
 
 	if (showCards) {
 		console.log(
-			"Custom Cards: <yellow>%s</yellow> (<green>%s</green> Collectible)",
-			customCardsAmount,
-			collectibleCardsAmount,
+			`Custom Cards: <yellow>${customCardsAmount}</yellow> (<green>${collectibleCardsAmount}</green> Collectible)`,
 		);
 
 		console.log(
-			"Vanilla Cards: <blue>%s</blue> (<cyan>%s</cyan> Collectible)",
-			vanillaCardsAmount,
-			collectibleVanillaCardsAmount,
+			`Vanilla Cards: <blue>${vanillaCardsAmount}</blue> (<cyan>${collectibleVanillaCardsAmount}</cyan> Collectible)`,
 		);
 	}
 
