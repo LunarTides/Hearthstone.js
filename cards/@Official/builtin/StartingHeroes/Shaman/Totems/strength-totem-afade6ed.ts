@@ -21,7 +21,7 @@ export const blueprint: Blueprint = {
 	classes: [Class.Shaman],
 	rarity: Rarity.Free,
 	collectible: false,
-	tags: [Tag.Totem],
+	tags: [Tag.BasicTotem],
 	id: "019bc665-4f81-7023-b797-afade6ed482d",
 
 	attack: 0,
