@@ -39,8 +39,6 @@ export class CardError extends Error {
 }
 
 export class Card {
-	// All
-
 	/**
 	 * The name of the card.
 	 *
@@ -371,15 +369,16 @@ export class Card {
 	 * assert.equal(card[0].name, 'The Coin');
 	 */
 	static async allFromName(name: string, refer = true): Promise<Card[]> {
-		// First, check if `name` is actually an id instead of a name.
-		const id = await Card.fromID(name);
-
 		/*
 		 * For some reason, "10 Mana" turns into 10 when passed through `parseInt`.
 		 * So we check if it has a space
 		 */
-		if (id && refer && !name.includes(" ")) {
-			return [id];
+		if (refer && !name.includes(" ")) {
+			// First, check if `name` is actually an id instead of a name.
+			const id = await Card.fromID(name);
+			if (id) {
+				return [id];
+			}
 		}
 
 		return (await Card.all(true)).filter(
@@ -423,7 +422,7 @@ export class Card {
 	}
 
 	/**
-	 * Returns the card with the id of `id`.
+	 * Returns the card with the id of `id`. Use {@link Card.create} instead if you can.
 	 *
 	 * @example
 	 * const card = await Card.fromID(2);
@@ -722,7 +721,6 @@ export class Card {
 		}
 
 		delete this.keywords[keyword];
-
 		return true;
 	}
 
@@ -750,7 +748,6 @@ export class Card {
 		}
 
 		this.keywords[keyword] = info;
-
 		return true;
 	}
 
@@ -762,14 +759,12 @@ export class Card {
 	 */
 	async freeze(): Promise<boolean> {
 		this.addKeyword(Keyword.Frozen);
-
 		await game.event.broadcast(Event.FreezeCard, this, this.owner);
-
 		return true;
 	}
 
 	/**
-	 * Mark a card as having attacked once, and if it runs out of attacks this turn, exhaust it.
+	 * Mark a card as having attacked once.
 	 *
 	 * @returns Success
 	 */
@@ -784,6 +779,7 @@ export class Card {
 
 		this.attackTimes--;
 
+		// This is just in case `exhaust` will do something else in the future.
 		const shouldExhaust = this.attackTimes <= 0;
 		if (shouldExhaust) {
 			this.exhaust();
@@ -804,15 +800,14 @@ export class Card {
 	 */
 	ready(): boolean {
 		/*
-		 * If the card can't attack, prevent it from being ready
-		 * This will show the card as being "Exhausted" when you play it which is not exactly correct, but it's fine for now
+		 * If the card can't attack, prevent it from being ready.
+		 * This will show the card as being "Exhausted" when you play it which is not entirely correct, but it's fine for now.
 		 */
 		if (this.hasKeyword(Keyword.CantAttack)) {
 			return false;
 		}
 
 		this.attackTimes = 1;
-
 		if (this.hasKeyword(Keyword.Windfury)) {
 			this.attackTimes = 2;
 		}
@@ -921,7 +916,6 @@ export class Card {
 		}
 
 		// Restore health
-
 		if (this.maxHealth && this.health > this.maxHealth) {
 			// Too much health
 
@@ -929,15 +923,9 @@ export class Card {
 			await this.trigger(Ability.Overheal);
 
 			this.health = this.maxHealth ?? -1;
+		}
 
-			if (this.health > before) {
-				await game.event.broadcast(
-					Event.HealthRestored,
-					this.maxHealth,
-					this.owner,
-				);
-			}
-		} else if (this.health > before) {
+		if (this.health > before) {
 			await game.event.broadcast(Event.HealthRestored, this.health, this.owner);
 		}
 
@@ -955,7 +943,7 @@ export class Card {
 			return false;
 		}
 
-		await this.setStats(this.attack, this.health - amount);
+		await this.setStats(this.attack, this.health - amount, false);
 		return true;
 	}
 
@@ -975,7 +963,7 @@ export class Card {
 	 *
 	 * Doesn't damage the card if it is a location card, is immune, or has Stealth.
 	 *
-	 * ### Use `game.damage` instead unless you have a good reason not to.
+	 * ### Use {@link game.attack} instead unless you have a good reason not to.
 	 *
 	 * @param amount The amount to damage this card by.
 	 * @returns Success
@@ -1016,11 +1004,7 @@ export class Card {
 	 * @returns If it reset the card's max health.
 	 */
 	resetMaxHealth(check = false): boolean {
-		if (this.health === undefined) {
-			return false;
-		}
-
-		if (!this.maxHealth) {
+		if (this.health === undefined || this.maxHealth === undefined) {
 			return false;
 		}
 
@@ -1032,8 +1016,6 @@ export class Card {
 		return true;
 	}
 
-	// Set other
-
 	/**
 	 * Sets stealth to only last `duration` amount of turns
 	 *
@@ -1042,8 +1024,8 @@ export class Card {
 	 * @returns Success.
 	 */
 	setStealthDuration(duration: number): boolean {
+		// TODO: Should this use `game.turn` or `game.turnCounter()`?
 		this.stealthDuration = game.turn + duration;
-
 		return true;
 	}
 
@@ -1217,7 +1199,7 @@ export class Card {
 	 */
 	async destroy(): Promise<boolean> {
 		await this.setStats(this.attack, 0);
-		await game.killCardsOnBoard();
+		await this.confirmAliveness();
 		return true;
 	}
 
@@ -1297,7 +1279,11 @@ export class Card {
 	 * This will silence the card and destroy it.
 	 */
 	async removeFromPlay(): Promise<void> {
-		await this.silence();
+		// TODO: Add RemoveCardFromPlay event.
+		await game.event.withSuppressed(
+			Event.SilenceCard,
+			async () => await this.silence(),
+		);
 		await this.destroy();
 
 		await this.setLocation(Location.None);
@@ -1418,14 +1404,13 @@ export class Card {
 	async discard(player = this.owner): Promise<boolean> {
 		game.event.newHistoryChild(Event.DiscardCard, this, player);
 
-		const returnValue = game.data.remove(player.hand, this);
-
-		if (returnValue) {
+		const removedFromHand = game.data.remove(player.hand, this);
+		if (removedFromHand) {
 			this.setLocation(Location.None);
 			await game.event.broadcast(Event.DiscardCard, this, player);
 		}
 
-		return returnValue;
+		return removedFromHand;
 	}
 
 	/**
@@ -1473,18 +1458,18 @@ export class Card {
 		}
 
 		if (this.activeEnchantments.length > 1) {
-			this.activeEnchantments.sort((aeA, aeB) => {
-				const priorityA = aeA.enchantment.enchantmentPriority;
+			this.activeEnchantments.sort((enchantmentA, enchantmentB) => {
+				const priorityA = enchantmentA.enchantment.enchantmentPriority;
 				if (priorityA === undefined) {
 					throw new Error(
-						`Enchantment with id '${aeA.enchantment.id}' does not specify a priority.`,
+						`Enchantment with id '${enchantmentA.enchantment.id}' does not specify a priority.`,
 					);
 				}
 
-				const priorityB = aeB.enchantment.enchantmentPriority;
+				const priorityB = enchantmentB.enchantment.enchantmentPriority;
 				if (priorityB === undefined) {
 					throw new Error(
-						`Enchantment with id '${aeB.enchantment.id}' does not specify a priority.`,
+						`Enchantment with id '${enchantmentB.enchantment.id}' does not specify a priority.`,
 					);
 				}
 
@@ -1495,14 +1480,14 @@ export class Card {
 		const callOnActiveEnchantments = async (
 			callback: (
 				enchantment: Card,
-				applied: boolean,
+				hasBeenSetUp: boolean,
 				i: number,
 			) => Promise<unknown>,
 		) => {
 			let i = 0;
 			for (const activeEnchantment of this.activeEnchantments) {
 				// const owner = activeEnchantment.owner;
-				const applied = activeEnchantment.hasBeenSetUp;
+				const hasBeenSetUp = activeEnchantment.hasBeenSetUp;
 				const enchantment = activeEnchantment.enchantment;
 				const priority = enchantment.enchantmentPriority;
 
@@ -1513,14 +1498,14 @@ export class Card {
 					);
 				}
 
-				await callback(enchantment, applied, i);
+				await callback(enchantment, hasBeenSetUp, i);
 				i++;
 			}
 		};
 
 		// Remove ALL enchantment effects.
-		await callOnActiveEnchantments(async (enchantment, applied, i) => {
-			if (applied) {
+		await callOnActiveEnchantments(async (enchantment, hasBeenSetUp, i) => {
+			if (hasBeenSetUp) {
 				await enchantment.trigger(Ability.EnchantmentRemove, this);
 			} else {
 				this.activeEnchantments[i].hasBeenSetUp = true;
@@ -1531,7 +1516,7 @@ export class Card {
 		await inbetweenCallback();
 
 		// Re-add ALL enchantment effects.
-		await callOnActiveEnchantments(async (enchantment, _, i) => {
+		await callOnActiveEnchantments(async (enchantment) => {
 			await enchantment.trigger(Ability.EnchantmentApply, this);
 		});
 
@@ -1546,6 +1531,7 @@ export class Card {
 	 *
 	 * @returns Success
 	 */
+	// TODO: Maybe use `Card` instead of an id here?
 	async addEnchantment(enchantmentId: string, owner: Card): Promise<boolean> {
 		const enchantment = await Card.create(enchantmentId, owner.owner);
 		if (enchantment.type !== Type.Enchantment) {
@@ -1553,7 +1539,7 @@ export class Card {
 		}
 
 		this.activeEnchantments.push({
-			enchantment: await enchantment.imperfectCopy(),
+			enchantment,
 			owner,
 			hasBeenSetUp: false,
 		});
@@ -1618,17 +1604,17 @@ export class Card {
 	 * @returns The unaltered value.
 	 */
 	async getFixedValue<T extends keyof Card>(key: T): Promise<Card[T]> {
-		let ret: Card[T] | "__HJS_UNDEFINED__" = "__HJS_UNDEFINED__";
+		let returnValue: Card[T] | "__HJS_UNDEFINED__" = "__HJS_UNDEFINED__";
 
 		await this.refreshEnchantments(async () => {
-			ret = this[key];
+			returnValue = this[key];
 		});
 
-		if (ret === "__HJS_UNDEFINED__") {
-			throw new Error("Unable to set ret in 'getFixedValue'.");
+		if (returnValue === "__HJS_UNDEFINED__") {
+			throw new Error("Unable to set return value in 'getFixedValue'.");
 		}
 
-		return ret;
+		return returnValue;
 	}
 
 	/**
@@ -1683,10 +1669,10 @@ export class Card {
 					/*
 					 * Replace the key with something else to ignore it.
 					 * This will prevent infinite recursion.
-					 * Later on, if we replace `__hsjs__ignore:` with `{`,
+					 * Later on, if we replace `__hsjs_left_curly_bracket__` with `{`,
 					 * it will restore the original text.
 					 */
-					text = text.replace(reg, `__hsjs__ignore:${key}}`);
+					text = text.replace(reg, `__hsjs_left_curly_bracket__${key}}`);
 					continue;
 				}
 
@@ -1727,7 +1713,7 @@ export class Card {
 			text = text.replace(reg, replacement.toString());
 		}
 
-		return text.replaceAll("__hsjs__ignore:", "{");
+		return text.replaceAll("__hsjs_left_curly_bracket__", "{");
 	}
 
 	/**
@@ -1774,7 +1760,6 @@ export class Card {
 		clone.exhaust();
 		clone.turnCreated = game.turn;
 
-		game.activeCards.push(clone);
 		return clone;
 	}
 
@@ -2002,8 +1987,8 @@ export class Card {
 	 *
 	 * @returns A colored version of the card's UUID.
 	 */
-	coloredUUID(length = 7): string {
-		const uuid = this.uuid.split("-").at(-1)!.slice(0, 6);
+	coloredUUID(length = 6): string {
+		const uuid = this.uuid.split("-").at(-1)!.slice(0, length);
 		return parseTags(`<#${uuid}>${uuid}</#>`);
 	}
 
@@ -2013,10 +1998,8 @@ export class Card {
 	 * @param newOwner The new owner of the card.
 	 */
 	async takeControl(newOwner: Player): Promise<void> {
-		game.data.remove(this.owner.board, this);
-
 		this.owner = newOwner;
-		await newOwner.summon(this);
+		await this.confirmAlignment();
 	}
 
 	/**

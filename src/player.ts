@@ -403,17 +403,15 @@ export class Player {
 	 * ```
 	 *
 	 * @param mana The mana to add
-	 * @param comp The comperison. This defaults to `player.emptyMana`.
+	 * @param limit The mana to limit to. The resulting mana can't go higher than this value. This defaults to `emptyMana`.
 	 *
 	 * @returns Whether or not the mana was capped
 	 */
-	refreshMana(mana: number, comp?: number): boolean {
-		const comperison = comp ?? this.emptyMana;
-
+	refreshMana(mana: number, limit = this.emptyMana): boolean {
 		this.mana += mana;
 
-		if (this.mana > comperison) {
-			this.mana = comperison;
+		if (this.mana > limit) {
+			this.mana = limit;
 			return true;
 		}
 
@@ -539,7 +537,8 @@ export class Player {
 		await this.weapon.trigger(Ability.Deathrattle);
 		this.attack -= this.weapon.attack!;
 
-		await this.weapon.destroy();
+		// NOTE: Can't do `this.weapon.destroy` since that would cause infinite recursion since it calls this function again.
+		await this.weapon.setStats(this.weapon.attack, 0);
 		this.weapon = undefined;
 
 		return true;
@@ -628,7 +627,7 @@ export class Player {
 		if (!this.isAlive()) {
 			await game.event.broadcast(Event.FatalDamage, undefined, this);
 
-			// This is done to allow secrets to prevent death
+			// This is done to allow secrets to prevent death.
 			if (!this.isAlive()) {
 				await game.endGame(this.getOpponent());
 			}
@@ -708,20 +707,18 @@ export class Player {
 	 */
 	async drawCards(amount: number): Promise<Card[]> {
 		const cards: Card[] = [];
-
 		const unsuppress = game.event.suppress(Event.AddCardToHand);
 
 		let drawAmount = amount;
 		for (let i = 0; i < drawAmount; i++) {
-			// We need the `deckLength` variable since pop may change the length of the deck
-			const deckLength = this.deck.length;
 			const card = this.deck.pop();
 
 			// Fatigue
-			if (deckLength <= 0 || !card) {
+			if (!card) {
 				this.fatigue++;
 
-				await this.damage(this.fatigue);
+				// TODO: Add to history child.
+				await game.attack(this.fatigue, this);
 				continue;
 			}
 
@@ -766,7 +763,6 @@ export class Player {
 		}
 
 		unsuppress();
-
 		return cards;
 	}
 
@@ -798,12 +794,13 @@ export class Player {
 	async drawSpecific(card: Card): Promise<Card | undefined> {
 		game.event.newHistoryChild(Event.DrawCard, card, this);
 
-		if (this.deck.length <= 0 || !this.deck.includes(card)) {
+		if (!this.deck.includes(card)) {
 			return undefined;
 		}
 
 		game.data.remove(this.deck, card);
 
+		// Cast on draw.
 		if (
 			card.type === Type.Spell &&
 			card.hasKeyword(Keyword.CastOnDraw) &&
@@ -1215,12 +1212,11 @@ export class Player {
 	 */
 	highlander(): boolean {
 		const deck = this.deck.map((c) => c.id);
-
 		return new Set(deck).size === deck.length;
 	}
 
 	/**
-	 * Progress a quest by a value
+	 * Progress a quest by some amount.
 	 *
 	 * @param uuid The uuid of the quest
 	 * @param value The amount to progress the quest by
@@ -1257,11 +1253,26 @@ export class Player {
 		callback: QuestCallback<E>,
 		next?: string,
 	): Promise<boolean> {
+		const quests = this.quests.filter(
+			(quest) => quest.type === QuestType.Quest,
+		);
+		const sidequests = this.quests.filter(
+			(quest) => quest.type === QuestType.Sidequest,
+		);
+		const secrets = this.quests.filter(
+			(quest) => quest.type === QuestType.Secret,
+		);
+
 		if (
-			(type === QuestType.Quest && this.quests.length > 0) ||
-			((type === QuestType.Secret || type === QuestType.Sidequest) &&
-				(this.quests.length >= 3 ||
-					this.quests.some((s) => s.card.name === card.name)))
+			// Can't have more than 1 quest.
+			(type === QuestType.Quest && quests.length >= 1) ||
+			// Can't have more than 3 sidequests.
+			(type === QuestType.Sidequest &&
+				(sidequests.length >= 3 ||
+					sidequests.some((s) => s.card.name === card.name))) ||
+			// Can't have more than 3 secrets.
+			(type === QuestType.Secret &&
+				(secrets.length >= 3 || secrets.some((s) => s.card.name === card.name)))
 		) {
 			return false;
 		}
@@ -1286,11 +1297,9 @@ export class Player {
 	 */
 	async invoke(): Promise<boolean> {
 		const isCurrentlyGalakrond = this.hero.tags.includes(Tag.Galakrond);
-
 		const hasGalakrondInDeck = this.deck.find((c) =>
 			c.tags.includes(Tag.Galakrond),
 		);
-
 		const hasGalakrondInHand = this.hand.find((c) =>
 			c.tags.includes(Tag.Galakrond),
 		);
@@ -1336,7 +1345,7 @@ export class Player {
 		filterPredicate = (card: Card) => true,
 	): Promise<Card[]> {
 		const recruitList = game.lodash
-			.shuffle([...list])
+			.shuffle(list)
 			.filter((c) => c.type === Type.Minion && filterPredicate(c));
 
 		let times = 0;
@@ -1483,7 +1492,6 @@ export class Player {
 		}
 
 		const list = await Card.allWithTags(Tag.DIY);
-
 		const card = game.lodash.sample(list);
 		if (!card) {
 			return;

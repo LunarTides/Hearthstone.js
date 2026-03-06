@@ -748,8 +748,6 @@ export const prompt = {
 			return await player.ai.yesNoQuestion(prompt);
 		}
 
-		console.log();
-
 		return confirm({
 			message: parseTags(prompt),
 			theme: {
@@ -1235,13 +1233,12 @@ export const prompt = {
 	},
 
 	/**
-	 * DO NOT CALL THIS FUNCTION.
-	 *
 	 * Asks the user to attack a minion or hero. Used in the gameloop.
+	 * I don't recommend using this function.
 	 *
 	 * @returns Cancel | Success
 	 */
-	async gameloopAttack(): Promise<-1 | boolean | Card> {
+	async gameloopAttack() {
 		let attacker: Target | -1 | null;
 		let target: Target | -1 | null;
 
@@ -1269,8 +1266,8 @@ export const prompt = {
 				return -1;
 			}
 
-			if (attacker === null || target === null) {
-				return false;
+			if (!attacker || !target) {
+				return -1;
 			}
 		} else {
 			attacker = await this.target(
@@ -1287,7 +1284,7 @@ export const prompt = {
 			);
 
 			if (!attacker) {
-				return false;
+				return -1;
 			}
 
 			target = await this.target(
@@ -1298,7 +1295,7 @@ export const prompt = {
 			);
 
 			if (!target) {
-				return false;
+				return -1;
 			}
 		}
 
@@ -1306,7 +1303,7 @@ export const prompt = {
 
 		const ignore = [GameAttackReturn.DivineShield];
 		if (errorCode === GameAttackReturn.Success || ignore.includes(errorCode)) {
-			return true;
+			return { attacker, target };
 		}
 
 		let error: string;
@@ -1384,6 +1381,6 @@ export const prompt = {
 
 		console.log("<red>%s.</red>", game.translate(error));
 		await game.pause("");
-		return false;
+		return new Error(game.translate(error));
 	},
 };

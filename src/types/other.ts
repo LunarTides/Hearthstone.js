@@ -138,12 +138,13 @@ export type GameConfig = {
 	general: {
 		locale: string;
 		editor: string;
-		topicBranchWarning: boolean;
 		maxBoardSpace: number;
 		maxHandLength: number;
 		disableEvents: boolean;
 		disableFunFacts: boolean;
+		repositoryUrl: string;
 		registryUrl: string;
+		topicBranchWarning: boolean;
 	};
 
 	decks: {
@@ -253,16 +254,5 @@ export type GameConfig = {
 		noBounceOnCancelAbilities: Ability[];
 		whitelistedHistoryKeys: Event[];
 		hideValueHistoryKeys: Event[];
-	};
-
-	info: {
-		versionText: string;
-
-		stableIntroText: string;
-		betaIntroText: string;
-		alphaIntroText: string;
-		topicIntroText: string;
-
-		githubUrl: string;
 	};
 };

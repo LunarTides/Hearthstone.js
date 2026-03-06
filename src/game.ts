@@ -292,7 +292,6 @@ export class Game {
 			}
 
 			const split = `${string.split("...")[0]}...`;
-
 			if (this.debugLog.includes(split)) {
 				this.debugLog.splice(this.debugLog.indexOf(split), 1, string);
 
@@ -439,7 +438,7 @@ export class Game {
 			if (!success) {
 				// The starting hero for that class doesn't exist
 				throw new Error(
-					`File 'cards/StartingHeroes/${player.heroClass}/?-hero.ts' is either; Missing or Incorrect. Please copy the working 'cards/StartingHeroes/' folder from the github repo to restore a working copy. Error Code: 12`,
+					`No starting hero associated with the class '${player.heroClass}' found. Please create a hero with this class, and give it the 'StartingHero' tag. Error Code: 12`,
 				);
 			}
 
@@ -472,7 +471,7 @@ export class Game {
 
 		/*
 		 * Set the starting mana for the first player.
-		 * The second player will get this when their turn starts
+		 * The second player will get this when their turn starts.
 		 */
 		this.player1.emptyMana = 1;
 		this.player1.mana = 1;
@@ -488,7 +487,6 @@ export class Game {
 		);
 
 		this.turn += 1;
-
 		return true;
 	}
 
@@ -504,20 +502,23 @@ export class Game {
 			return false;
 		}
 
+		// The game has already ended.
+		if (!this.running) {
+			return true;
+		}
+
 		this.interact.print.watermark();
 		console.log();
 
-		// Do this to bypass 'Press enter to continue' prompt when showing history
 		const history = await this.interact.processCommand("history", {
+			// Do this to bypass 'Press enter to continue' prompt when showing history
 			echo: false,
 		});
 
 		console.log(history);
-
 		await this.pause(`${winner.getName()} wins!\n`);
 
 		this.running = false;
-
 		return true;
 	}
 
@@ -598,8 +599,10 @@ export class Game {
 
 				// HACK: If the battlecry use a function that depends on `game.player`
 				this.player = opponent;
+				this.opponent = player;
 				await card.trigger(Ability.Battlecry);
 				this.player = player;
+				this.opponent = opponent;
 
 				continue;
 			}
@@ -630,6 +633,7 @@ export class Game {
 
 		opponent.hasUsedHeroPowerThisTurn = false;
 
+		// Swap the current and opposing players.
 		this.player = opponent;
 		this.opponent = player;
 

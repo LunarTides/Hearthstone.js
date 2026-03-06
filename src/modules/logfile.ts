@@ -82,18 +82,21 @@ ${error.stack}
 			const osRelease = game.os.runCommand("cat /etc/os-release");
 			osName = osRelease.split('PRETTY_NAME="')[1].split('"\n')[0];
 
-			// Also add information from uname
-			const uname = game.os.runCommand("uname -srvmo");
+			// Also add information from unamer
+			// Running this command on my computer returns "x86_64 GNU/Linux"
+			const uname = game.os.runCommand("uname -mo");
 			osName += ` (${uname.trim()})`;
 		} else if (osName === "win32") {
 			osName = `Windows ${os.release()}`;
+		} else {
+			osName = os.release();
 		}
 
 		let content = `Hearthstone.js ${name}
 Date: ${dateString}
 Version: ${game.info.versionString(4)}
 Operating System: ${osName}
-Log File Version: 3
+Log File Version: 1
 
 ${mainContent}
 `;
@@ -118,7 +121,7 @@ ${mainContent}
 		console.log(
 			"\n<red>The game crashed!\nCrash report created in 'logs/%s'\nPlease create a bug report at:\n%s/issues</red>",
 			filename,
-			game.config.info.githubUrl,
+			game.config.general.repositoryUrl,
 		);
 
 		await game.pause();

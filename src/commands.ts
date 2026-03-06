@@ -84,11 +84,13 @@ export const commands: CommandList = {
 		}
 
 		await game.interact.print.gameState(game.player);
+		console.log();
+		console.log(await game.player.hero.heropower?.readable());
+
 		const ask = await game.prompt.yesNo(
-			`<yellow>${game.player.hero.heropower?.text}</yellow> Are you sure you want to use this hero power?`,
+			"Are you sure you want to use this hero power?",
 			game.player,
 		);
-
 		if (!ask) {
 			return false;
 		}
@@ -138,7 +140,7 @@ export const commands: CommandList = {
 			}
 		}
 
-		console.log("<red>%s.</red>", error);
+		console.log("<red>%s.</red>", game.translate(error));
 		await game.pause();
 		return true;
 	},
@@ -180,10 +182,6 @@ export const commands: CommandList = {
 		const ability = titanCards[abilityIndex];
 
 		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
-			await game.event.withSuppressed(Event.DiscardCard, async () =>
-				ability.discard(),
-			);
-
 			return false;
 		}
 
@@ -259,6 +257,7 @@ export const commands: CommandList = {
 
 	async concede(): Promise<boolean> {
 		await game.interact.print.gameState(game.player);
+		console.log();
 
 		const confirmation = await game.prompt.yesNo(
 			"Are you sure you want to concede?",
@@ -273,8 +272,9 @@ export const commands: CommandList = {
 	},
 
 	async license(): Promise<boolean> {
-		game.os.openInBrowser(`${game.config.info.githubUrl}/blob/main/LICENSE`);
-
+		game.os.openInBrowser(
+			`${game.config.general.repositoryUrl}/blob/main/LICENSE`,
+		);
 		return true;
 	},
 
@@ -322,22 +322,26 @@ export const commands: CommandList = {
 
 		switch (branch) {
 			case "topic": {
-				introText = game.config.info.topicIntroText;
+				introText =
+					"This is a topic (feature) branch. This branch exists to add one single feature, can be highly unstable, and will be deleted in the future once the feature is done. I HIGHLY RECOMMEND NOT USING THIS BRANCH FOR ANY REASON.";
 				break;
 			}
 
 			case "alpha": {
-				introText = game.config.info.alphaIntroText;
+				introText =
+					"This is the alpha branch. This is the bleeding edge of Hearthstone.js. I would highly advise against using this branch if you can help it. Expect many bugs and breaking changes.";
 				break;
 			}
 
 			case "beta": {
-				introText = game.config.info.betaIntroText;
+				introText =
+					"This is the beta branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.";
 				break;
 			}
 
 			case "stable": {
-				introText = game.config.info.stableIntroText;
+				introText =
+					"This is the stable branch. This branch is older, but is more stable. I recommend you use this branch.";
 				break;
 			}
 
@@ -348,17 +352,14 @@ export const commands: CommandList = {
 		}
 
 		console.log(introText);
-		if (game.config.info.versionText) {
-			console.log(game.config.info.versionText);
-		}
-
+		console.log();
 		const openIssues = await game.prompt.yesNo(
 			"Do you want to open the todo list in your browser?",
 			game.player,
 		);
 
 		if (openIssues) {
-			game.os.openInBrowser(`${game.config.info.githubUrl}/issues`);
+			game.os.openInBrowser(`${game.config.general.repositoryUrl}/issues`);
 		}
 
 		return true;
@@ -758,18 +759,17 @@ export const debugCommands: CommandList = {
 			return true;
 		}
 
-		console.log();
-		await game.pause(
-			"Some steps failed. The game could not be fully reloaded. Please report this.\nPress enter to continue...",
+		console.log(
+			"\nSome steps failed. The game could not be fully reloaded. Please report this.",
 		);
-
+		await game.pause();
 		return false;
 	},
 
 	async undo(): Promise<boolean> {
 		// Get the last played card
 		const playedCards = game.player.getPlayedCards();
-		if (!game.event.events.PlayCard || playedCards.length <= 0) {
+		if (playedCards.length <= 0) {
 			await game.pause("<red>No cards to undo.</red>\n");
 			return false;
 		}
@@ -781,7 +781,7 @@ export const debugCommands: CommandList = {
 		}
 
 		// Remove the event so you can undo more than the last played card
-		game.event.events.PlayCard[game.player.id].pop();
+		game.event.events.PlayCard?.[game.player.id].pop();
 
 		// If the card can appear on the board, remove it.
 		if (card.canBeOnBoard()) {

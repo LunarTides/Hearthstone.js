@@ -199,6 +199,7 @@ export const playCard = {
 			q = await player.ai.trade(card);
 		} else {
 			await game.interact.print.gameState(player);
+			console.log();
 			q = await game.prompt.yesNo(
 				`Would you like to trade ${card.colorFromRarity()} for a random card in your deck?`,
 				player,
@@ -246,6 +247,7 @@ export const playCard = {
 			q = await player.ai.forge(card);
 		} else {
 			await game.interact.print.gameState(player);
+			console.log();
 			q = await game.prompt.yesNo(
 				`Would you like to forge ${card.colorFromRarity()}?`,
 				player,
@@ -299,6 +301,7 @@ export const playCard = {
 			"<yellow>WARNING: This card's condition is not fulfilled. Are you sure you want to play this card?</yellow>";
 
 		await game.interact.print.gameState(player);
+		console.log();
 		const warn = await game.prompt.yesNo(warnMessage, player);
 
 		if (!warn) {

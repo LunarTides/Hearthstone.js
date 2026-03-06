@@ -25,6 +25,9 @@ export const config: GameConfig = {
 		// you can set this to `true` to disable fun facts. You monster...
 		disableFunFacts: false,
 
+		// The url to this project's repository.
+		repositoryUrl: "https://github.com/LunarTides/Hearthstone.js",
+
 		// The url to the registry. This is so that it can use the registry's API.
 		// Leave this as-is unless you have a reason to change it.
 		registryUrl: "https://hs.lunartides.dev/registry",
@@ -503,24 +506,5 @@ export const config: GameConfig = {
 			Event.CancelCard,
 			Event.PlayCardUnsafe,
 		],
-	},
-
-	info: {
-		// DONT CHANGE ANY OF THESE VALUES UNLESS YOU KNOW WHAT YOU'RE DOING.
-
-		// The text that is displayed along this specific version/branch combination.
-		versionText: "",
-
-		// Some stuff that should really be constants
-		stableIntroText:
-			"This is the stable branch. This branch is older, but is more stable. I recommend you use this branch.",
-		betaIntroText:
-			"This is the beta branch. This has more features, but is less stable. I would advise against using this branch if you can help it. The todo list is not final and can change.",
-		alphaIntroText:
-			"This is the alpha branch. This is the bleeding edge of Hearthstone.js. I would highly advise against using this branch if you can help it. Expect many bugs and breaking changes.",
-		topicIntroText:
-			"This is a topic (feature) branch. This branch exists to add one single feature, can be highly unstable, and will be deleted in the future once the feature is done. I HIGHLY RECOMMEND NOT USING THIS BRANCH FOR ANY REASON.",
-
-		githubUrl: "https://github.com/LunarTides/Hearthstone.js",
 	},
 };

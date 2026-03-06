@@ -238,7 +238,7 @@ describe("src/card", () => {
 		await card.removeStats(1, 1);
 		expect(card.attack).toBe(0);
 		expect(card.health).toBe(0);
-		expect(card.maxHealth).toBe(0);
+		expect(card.maxHealth).toBe(1);
 	});
 
 	test("addHealth", async () => {
@@ -274,13 +274,17 @@ describe("src/card", () => {
 		card.type = Type.Minion;
 
 		expect(await card.removeHealth(1)).toBe(true);
-		await card.addHealth(1);
+		expect(await card.addHealth(1)).toBe(true);
 
-		// Check if keywords actually prevent damage.
+		expect(card.maxHealth).toBe(1);
+		expect(card.health).toBe(0);
+
+		// Check if keywords prevent damage.
 		card.addKeyword(Keyword.Stealth);
 		expect(await card.removeHealth(1)).toBe(true);
-
+		expect(card.health).toBe(-1);
 		card.removeKeyword(Keyword.Stealth);
+
 		expect(await card.removeHealth(1)).toBe(true);
 		expect(card.health).toBe(-2);
 
