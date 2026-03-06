@@ -123,12 +123,12 @@ async function generateDeckcode(parseVanillaOnPseudo = false) {
 			}
 
 			case "TooManyCopies": {
-				log += `Too many copies of a card. Maximum: </yellow>${game.config.decks.maxOfOneCard}<yellow>. Offender: </yellow>'{ id: "${error.info?.card?.id}", copies: ${error.info?.amount} }'`;
+				log += `Too many copies of a card.</yellow> ${error.info?.amount} / ${game.config.decks.maxOfOneCard} copies of ${await error.info?.card?.readable()}`;
 				break;
 			}
 
 			case "TooManyLegendaryCopies": {
-				log += `Too many copies of a <yellow>Legendary</yellow> card. Maximum: </yellow>${game.config.decks.maxOfOneLegendary}<yellow>. Offender: </yellow>'{ id: "${error.info?.card?.id}", copies: ${error.info?.amount} }'`;
+				log += `Too many copies of a Legendary card.</yellow> ${error.info?.amount} / ${game.config.decks.maxOfOneLegendary} copies of ${await error.info?.card?.readable()}`;
 				break;
 			}
 

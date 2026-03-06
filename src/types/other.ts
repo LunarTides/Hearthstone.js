@@ -49,11 +49,11 @@ export enum DeckValidationError {
 /**
  * ExportDeck error return value
  */
-export type FunctionsExportDeckError =
+export type FunctionsExportDeckError<T extends CardLike> =
 	| undefined
 	| {
 			msg: string;
-			info: undefined | { card?: CardLike; amount?: number };
+			info: undefined | { card?: T; amount?: number };
 			recoverable: boolean;
 	  };
 

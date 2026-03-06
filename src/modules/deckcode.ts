@@ -317,13 +317,13 @@ export const deckcode = {
 	 *
 	 * @returns The deckcode, An error message alongside any additional information.
 	 */
-	export(
-		deck: CardLike[],
+	export<T extends CardLike>(
+		deck: T[],
 		heroClass: string,
 		runes: Rune[],
-	): { code: string; error: FunctionsExportDeckError } {
+	): { code: string; error: FunctionsExportDeckError<T> } {
 		// TODO: Throw an error instead maybe?
-		let error: FunctionsExportDeckError;
+		let error: FunctionsExportDeckError<T>;
 
 		if (deck.length < game.config.decks.minLength) {
 			error = {
@@ -360,7 +360,7 @@ export const deckcode = {
 
 		deckcode += "/";
 
-		let cards: Array<[CardLike, number]> = [];
+		let cards: Array<[T, number]> = [];
 
 		for (const card of deck) {
 			const found = cards.find((a) => a[0].id === card.id);
