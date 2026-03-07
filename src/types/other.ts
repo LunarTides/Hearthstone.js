@@ -105,13 +105,21 @@ export enum UseLocationError {
 	Refund = "Refund",
 }
 
-export type CommandList = Record<
-	string,
-	(
-		args: string[],
-		flags?: { echo?: boolean; debug?: boolean },
-	) => Promise<string | boolean>
->;
+export interface Command {
+	name: Lowercase<string>;
+	description: string;
+	debug: boolean;
+
+	run: CommandCallback;
+}
+
+export type CommandList = Record<string, CommandCallback>;
+
+export type CommandCallback = (
+	args: string[],
+	useTUI: boolean,
+	options?: { echo?: boolean; debug?: boolean },
+) => Promise<boolean | string>;
 
 /**
  * A card-like object.

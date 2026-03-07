@@ -317,7 +317,7 @@ async function exportPack(pack?: Pack) {
 		recursive: true,
 	});
 
-	// Copy custom cards over to the pack.
+	// Copy custom resources over to the pack.
 	await game.fs.searchCardsFolder(async (path, content, file) => {
 		if (path.includes("Custom")) {
 			await game.fs.call(

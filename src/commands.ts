@@ -3,6 +3,7 @@ import { Player } from "@Game/player.ts";
 import {
 	Ability,
 	Alignment,
+	type Command,
 	type CommandList,
 	Event,
 	type HistoryObject,
@@ -50,6 +51,26 @@ export const helpDebugColumns = [
 	"undo - Undo the last card played. It gives the card back to your hand, and removes it from where it was. (This does not undo the actions of the card)",
 	"ai - Show a list of the actions the ai(s) have taken this game.",
 ];
+
+export async function addCommand(command: Command) {
+	// Check if this command has already been added.
+	if (
+		Object.hasOwn(commands, command.name) ||
+		Object.hasOwn(debugCommands, command.name)
+	) {
+		return false;
+	}
+
+	if (command.debug) {
+		debugCommands[command.name] = command.run;
+		helpDebugColumns.push(`${command.name} - ${command.description}`);
+	} else {
+		commands[command.name] = command.run;
+		helpColumns.push(`${command.name} - ${command.description}`);
+	}
+
+	return true;
+}
 
 export const commands: CommandList = {
 	async end(): Promise<boolean> {
@@ -360,7 +381,7 @@ export const commands: CommandList = {
 		return true;
 	},
 
-	async history(_, flags): Promise<string> {
+	async history(_args, _useTUI, options): Promise<string> {
 		// History
 		const history = game.event.history;
 		let finished = "";
@@ -454,7 +475,7 @@ export const commands: CommandList = {
 		const getEntry = async (key: Event, value: any, eventPlayer: Player) => {
 			const shouldHide =
 				game.config.advanced.hideValueHistoryKeys.includes(key) &&
-				!flags?.debug;
+				!options?.debug;
 
 			const newValue: unknown[] = [];
 
@@ -489,14 +510,14 @@ export const commands: CommandList = {
 			const { key, value, eventPlayer } = signature;
 
 			if (
-				!flags?.debug &&
+				!options?.debug &&
 				!game.config.advanced.whitelistedHistoryKeys.includes(key)
 			) {
 				return "";
 			}
 
 			// Add signature.
-			const filteredChildren = flags?.debug
+			const filteredChildren = options?.debug
 				? children
 				: children?.filter((child) =>
 						game.config.advanced.whitelistedHistoryKeys.includes(
@@ -579,7 +600,7 @@ export const commands: CommandList = {
 			const turn = Number.parseInt(turnString, 10);
 
 			// Ignore everything that happens on turn 0.
-			if (turn <= 0 && !flags?.debug) {
+			if (turn <= 0 && !options?.debug) {
 				continue;
 			}
 
@@ -596,7 +617,7 @@ export const commands: CommandList = {
 			turnFinished = "";
 		}
 
-		if (flags?.echo === false) {
+		if (options?.echo === false) {
 			// Do nothing
 		} else {
 			console.log(finished);
@@ -699,7 +720,7 @@ export const debugCommands: CommandList = {
 		return true;
 	},
 
-	async rl(_, flags): Promise<boolean> {
+	async rl(_args, _useTUI, options): Promise<boolean> {
 		let success = true;
 
 		success &&= await game.interact.withStatus(
@@ -738,7 +759,7 @@ export const debugCommands: CommandList = {
 		);
 
 		if (success) {
-			if (flags?.debug) {
+			if (options?.debug) {
 				return true;
 			}
 
@@ -800,10 +821,10 @@ export const debugCommands: CommandList = {
 		return true;
 	},
 
-	async ai(_, flags): Promise<string> {
+	async ai(_args, _useTUI, options): Promise<string> {
 		let finished = "";
 
-		if (flags?.echo) {
+		if (options?.echo) {
 			finished += "AI Info:\n\n";
 		}
 
@@ -822,7 +843,7 @@ export const debugCommands: CommandList = {
 			finished += "}\n";
 		}
 
-		if (flags?.echo === false) {
+		if (options?.echo === false) {
 			// Do nothing
 		} else {
 			console.log(finished);
@@ -834,16 +855,17 @@ export const debugCommands: CommandList = {
 		return finished;
 	},
 
-	async history(): Promise<string> {
+	async history(_, useTUI): Promise<string> {
 		return (await game.interact.processCommand("history", {
 			debug: true,
+			useTUI,
 		})) as string;
 	},
 
-	async frl(): Promise<string> {
+	async frl(_, useTUI): Promise<string> {
 		return (await game.interact.processCommand(
 			`${game.config.debug.commandPrefix}rl`,
-			{ debug: true },
+			{ debug: true, useTUI },
 		)) as string;
 	},
 };

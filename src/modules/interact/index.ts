@@ -277,7 +277,7 @@ export const interact = {
 	 */
 	async processCommand(
 		cmd: string,
-		flags?: { echo?: boolean; debug?: boolean },
+		flags?: { echo?: boolean; debug?: boolean; useTUI?: boolean },
 	): Promise<boolean | string | -1> {
 		const args = cmd.split(" ");
 		const name = args.shift()?.toLowerCase();
@@ -301,7 +301,7 @@ export const interact = {
 
 		if (commandName) {
 			const command = commands[commandName];
-			const result = await command(args, flags);
+			const result = await command(args, flags?.useTUI ?? true, flags);
 			return getReturn(result);
 		}
 
@@ -324,7 +324,7 @@ export const interact = {
 			}
 
 			const command = debugCommands[debugCommandName];
-			const result = await command(args, flags);
+			const result = await command(args, flags?.useTUI ?? true, flags);
 			return getReturn(result);
 		}
 
@@ -338,8 +338,11 @@ export const interact = {
 	 *
 	 * @returns The return value of `game.play`
 	 */
-	async _gameloopHandleInput(input: string): Promise<GamePlayCardReturn> {
-		if ((await this.processCommand(input)) !== -1) {
+	async _gameloopHandleInput(
+		input: string,
+		useTUI = true,
+	): Promise<GamePlayCardReturn> {
+		if ((await this.processCommand(input, { useTUI })) !== -1) {
 			return GamePlayCardReturn.Success;
 		}
 
@@ -397,8 +400,11 @@ export const interact = {
 		}
 
 		let user: string = "";
+		let isTUI = true;
 
 		const oldInterface = async () => {
+			isTUI = false;
+
 			await game.interact.print.gameState(game.player);
 			console.log("");
 
@@ -512,7 +518,7 @@ export const interact = {
 			);
 		}
 
-		const returnValue = await this._gameloopHandleInput(user);
+		const returnValue = await this._gameloopHandleInput(user, isTUI);
 
 		// If there were no errors, return true.
 		if (returnValue === GamePlayCardReturn.Success) {

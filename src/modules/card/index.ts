@@ -272,58 +272,64 @@ export const card = {
 		};
 
 		// Collect the cards.
-		await game.fs.searchCardsFolder(async (path, content, file) => {
-			const nameRegex = /name: "(.+)"/;
-			const nameMatch = nameRegex.exec(content);
-			if (!nameMatch) {
-				throw new Error(`No name found in '${path}'.`);
-			}
-
-			const idRegex = /id: "([0-9a-f-]+)"/;
-			const idMatch = idRegex.exec(content);
-			if (!idMatch) {
-				throw new Error(`No id found in '${path}'.`);
-			}
-
-			const name = nameMatch[1];
-			const id = idMatch[1];
-
-			const packMetadata = await game.card.getPackMetadataFromCardPath(path);
-
-			cards.push({
-				name,
-				id,
-				packMetadata,
-			});
-
-			const numberIdentifier = /^\d/.test(name) ? "_" : "";
-			const formattedName = `${numberIdentifier}${game.lodash.snakeCase(name)}`;
-
-			if (packMetadata) {
-				if (!ids[packMetadata.author]) {
-					ids[packMetadata.author] = { [packMetadata.name]: {} };
-				}
-				if (!ids[packMetadata.author][packMetadata.name]) {
-					ids[packMetadata.author][packMetadata.name] = {};
-				}
-				if (!ids[packMetadata.author][packMetadata.name][formattedName]) {
-					ids[packMetadata.author][packMetadata.name][formattedName] = [];
+		await game.fs.searchCardsFolder(
+			async (path, content, file, index, resourceType) => {
+				if (resourceType !== "card") {
+					return;
 				}
 
-				ids[packMetadata.author][packMetadata.name][formattedName].push(id);
+				const nameRegex = /name: "(.+)"/;
+				const nameMatch = nameRegex.exec(content);
+				if (!nameMatch) {
+					throw new Error(`No name found in '${path}'.`);
+				}
 
-				// Sort the ids alphabetically.
-				ids[packMetadata.author][packMetadata.name][formattedName].sort();
+				const idRegex = /id: "([0-9a-f-]+)"/;
+				const idMatch = idRegex.exec(content);
+				if (!idMatch) {
+					throw new Error(`No id found in '${path}'.`);
+				}
 
-				// Sort the cards alphabetically.
-				ids[packMetadata.author][packMetadata.name] = sortObject(
-					ids[packMetadata.author][packMetadata.name],
-				);
+				const name = nameMatch[1];
+				const id = idMatch[1];
 
-				// Sort the packs alphabetically.
-				ids[packMetadata.author] = sortObject(ids[packMetadata.author]);
-			}
-		});
+				const packMetadata = await game.card.getPackMetadataFromCardPath(path);
+
+				cards.push({
+					name,
+					id,
+					packMetadata,
+				});
+
+				const numberIdentifier = /^\d/.test(name) ? "_" : "";
+				const formattedName = `${numberIdentifier}${game.lodash.snakeCase(name)}`;
+
+				if (packMetadata) {
+					if (!ids[packMetadata.author]) {
+						ids[packMetadata.author] = { [packMetadata.name]: {} };
+					}
+					if (!ids[packMetadata.author][packMetadata.name]) {
+						ids[packMetadata.author][packMetadata.name] = {};
+					}
+					if (!ids[packMetadata.author][packMetadata.name][formattedName]) {
+						ids[packMetadata.author][packMetadata.name][formattedName] = [];
+					}
+
+					ids[packMetadata.author][packMetadata.name][formattedName].push(id);
+
+					// Sort the ids alphabetically.
+					ids[packMetadata.author][packMetadata.name][formattedName].sort();
+
+					// Sort the cards alphabetically.
+					ids[packMetadata.author][packMetadata.name] = sortObject(
+						ids[packMetadata.author][packMetadata.name],
+					);
+
+					// Sort the packs alphabetically.
+					ids[packMetadata.author] = sortObject(ids[packMetadata.author]);
+				}
+			},
+		);
 
 		// Sort the authors alphabetically.
 		ids = sortObject(ids);

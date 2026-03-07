@@ -167,7 +167,7 @@ async function handleCmds(cmd: string, addToHistory = true): Promise<boolean> {
 	const args = cmd.split(" ");
 	const name = args.shift()!.toLowerCase();
 
-	await commands[name](args);
+	await commands[name](args, true);
 
 	if (!addToHistory) {
 		return true;

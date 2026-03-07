@@ -5,6 +5,7 @@ import {
 	type Blueprint,
 	type CardBackup,
 	Class,
+	type Command,
 	CostType,
 	DeckValidationError,
 	type EnchantmentDefinition,
@@ -24,6 +25,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
+import { addCommand } from "./commands.ts";
 import { historyTree } from "./modules/event.ts";
 import { PackValidationResult } from "./types/pack.ts";
 
@@ -488,24 +490,41 @@ export class Card {
 	 * @returns Success
 	 */
 	static async registerAll(): Promise<boolean> {
-		await game.fs.searchCardsFolder(async (fullPath) => {
-			// Check if the associated pack is valid.
-			switch (await game.card.validatePackFromPath(fullPath)) {
-				case PackValidationResult.InvalidGameVersion:
-					throw new Error(
-						`The pack associated with '${fullPath}' is made for a different version of the game.`,
-					);
+		await game.fs.searchCardsFolder(
+			async (fullPath, content, file, index, resourceType) => {
+				// Check if the associated pack is valid.
+				switch (await game.card.validatePackFromPath(fullPath)) {
+					case PackValidationResult.InvalidGameVersion:
+						throw new Error(
+							`The pack associated with '${fullPath}' is made for a different version of the game.`,
+						);
 
-				// These are success-codes.
-				case PackValidationResult.NoPack:
-				case PackValidationResult.Success: {
+					// These are success-codes.
+					case PackValidationResult.NoPack:
+					case PackValidationResult.Success: {
+					}
 				}
-			}
 
-			// Import the card.
-			const blueprint = (await import(fullPath)).blueprint as Blueprint;
-			game.blueprints.push(blueprint);
-		});
+				switch (resourceType) {
+					case "card": {
+						// Import the card.
+						const blueprint = (await import(fullPath)).blueprint as Blueprint;
+						game.blueprints.push(blueprint);
+						break;
+					}
+					case "command": {
+						const command = (await import(fullPath)).command as Command;
+						await addCommand(command);
+						break;
+					}
+					default: {
+						throw new Error(
+							`Resource type '${resourceType}' cannot be handled.`,
+						);
+					}
+				}
+			},
+		);
 
 		// Remove falsy values
 		game.blueprints = game.blueprints.filter(Boolean);

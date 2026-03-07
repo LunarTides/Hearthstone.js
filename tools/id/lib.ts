@@ -22,16 +22,22 @@ export async function validate(
 ): Promise<number> {
 	const ids: [[string, string]] = [["", ""]];
 
-	await game.fs.searchCardsFolder(async (path, content) => {
-		const idMatch = idRegex.exec(content);
-		if (!idMatch) {
-			console.error(`No id found in ${path}`);
-			return;
-		}
+	await game.fs.searchCardsFolder(
+		async (path, content, file, index, resourceType) => {
+			if (resourceType !== "card") {
+				return;
+			}
 
-		const id = idMatch[1];
-		ids.push([id, path]);
-	});
+			const idMatch = idRegex.exec(content);
+			if (!idMatch) {
+				console.error(`No id found in ${path}`);
+				return;
+			}
+
+			const id = idMatch[1];
+			ids.push([id, path]);
+		},
+	);
 
 	ids.sort((a, b) => a[0].toString().localeCompare(b[0].toString()));
 

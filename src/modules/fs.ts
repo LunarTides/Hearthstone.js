@@ -139,6 +139,7 @@ export const fileSystem = {
 			content: string,
 			file: Dirent<string>,
 			index: number,
+			resourceType: string,
 		) => Promise<void>,
 		path = "/cards",
 		extension = ".ts",
@@ -152,7 +153,18 @@ export const fileSystem = {
 					file.name.endsWith(extension) &&
 					!file.name.startsWith("ids")
 				) {
-					return await callback(fullPath, fileContent, file, index);
+					let resourceType = "card";
+					if (new RegExp(`\\..*\\${extension}$`).test(file.name)) {
+						resourceType = file.name.split(".").at(-2)!;
+					}
+
+					return await callback(
+						fullPath,
+						fileContent,
+						file,
+						index,
+						resourceType,
+					);
 				}
 			},
 		);
