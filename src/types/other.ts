@@ -1,4 +1,5 @@
 import type { Card } from "@Game/card.ts";
+import type { WaveOptions } from "@Game/modules/audio.ts";
 import type { Player } from "@Game/player.ts";
 import type { Ability, Blueprint, Event } from "@Game/types.ts";
 
@@ -120,6 +121,14 @@ export type CommandCallback = (
 	useTUI: boolean,
 	options?: { echo?: boolean; debug?: boolean },
 ) => Promise<boolean | string>;
+
+export interface SFX {
+	name: string;
+
+	play: SFXCallback;
+}
+
+export type SFXCallback = (info: any, options: WaveOptions) => Promise<void>;
 
 /**
  * A card-like object.

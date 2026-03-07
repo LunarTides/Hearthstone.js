@@ -14,6 +14,8 @@ export const command: Command = {
 			return false;
 		}
 
+		game.audio.playCustomSFX("@Official/examples/discombobulate");
+
 		await card.setStats(card.attack, -99);
 		await card.bounce();
 		return true;

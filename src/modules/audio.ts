@@ -1,3 +1,5 @@
+import type { Metadata } from "@Game/types/pack.ts";
+import type { SFX } from "@Game/types.ts";
 import sdl from "@kmamal/sdl";
 
 const TWO_PI = 2 * Math.PI;
@@ -153,6 +155,7 @@ export const octaves = {
 		B: 7902.13,
 	},
 };
+
 export const sfx = {
 	"ui.delve": async (info: any, options: WaveOptions) => {
 		await game.audio.playWave("sine", 440, 50, 0.3, 0, options);
@@ -395,6 +398,11 @@ export const sfx = {
 	},
 };
 
+export async function addSFX(newSFX: SFX, pack: Metadata) {
+	sfx[`@${pack.author}/${pack.name}/${newSFX.name}` as keyof typeof sfx] =
+		newSFX.play;
+}
+
 // TODO: Use better, more accurate,
 const waveTypeFunctions = {
 	sine: (phase: number) => Math.sin(phase),
@@ -461,6 +469,26 @@ export const audio = {
 
 		await sfx[key](options.info, options.options);
 		return true;
+	},
+
+	/**
+	 * The same as {@link game.audio.playSFX}, but this allows playing custom sound effects included in packs.
+	 *
+	 * @param key The key has to be formatted something like this: "@Official/examples/name-of-sfx".
+	 * @param info Some information to pass to the sound effect. Some sound effects might be different depending on this information.
+	 * @param rawOptions Some options when playing the sound effect.
+	 *
+	 * @returns If the sound effect was successfully played.
+	 */
+	async playCustomSFX(
+		key: `@${string}/${string}/${string}`,
+		rawOptions?: Partial<{
+			info: any;
+			options: Partial<WaveOptions>;
+			playAgainstUserWishes: boolean;
+		}>,
+	) {
+		return this.playSFX(key as any, rawOptions);
 	},
 
 	/**

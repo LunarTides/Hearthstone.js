@@ -18,6 +18,7 @@ import {
 	Rarity,
 	RemoveReason,
 	type Rune,
+	type SFX,
 	type SpellSchool,
 	type Tag,
 	type Target,
@@ -26,6 +27,7 @@ import {
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 import { addCommand } from "./commands.ts";
+import { addSFX } from "./modules/audio.ts";
 import { historyTree } from "./modules/event.ts";
 import { PackValidationResult } from "./types/pack.ts";
 
@@ -490,6 +492,7 @@ export class Card {
 	 * @returns Success
 	 */
 	static async registerAll(): Promise<boolean> {
+		// TODO: Move this code.
 		await game.fs.searchCardsFolder(
 			async (fullPath, content, file, index, resourceType) => {
 				// Check if the associated pack is valid.
@@ -515,6 +518,15 @@ export class Card {
 					case "command": {
 						const command = (await import(fullPath)).command as Command;
 						await addCommand(command);
+						break;
+					}
+					case "sfx": {
+						const pack = (await game.card.getPackMetadataFromCardPath(
+							fullPath,
+						))!;
+
+						const sfx = (await import(fullPath)).sfx as SFX;
+						await addSFX(sfx, pack);
 						break;
 					}
 					default: {
