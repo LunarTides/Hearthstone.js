@@ -543,7 +543,9 @@ export const audio = {
 	 */
 	// TODO: Make a function to parse this: "triangle(c2 volume:0.3):1000 triangle(d2):1000" (2 seperate notes played sequentially.)
 	async playWave(
-		shape: keyof typeof waveTypeFunctions,
+		shape:
+			| keyof typeof waveTypeFunctions
+			| ((phase: number, dutyCycle?: number) => number),
 		hz: number,
 		durationMs: number,
 		volume: number = 0.3,
@@ -553,6 +555,9 @@ export const audio = {
 		if (game.config.audio.disable) {
 			return;
 		}
+
+		const waveGenerator =
+			typeof shape === "string" ? waveTypeFunctions[shape] : shape;
 
 		// Multiply
 		if (options.multiply) {
@@ -577,8 +582,7 @@ export const audio = {
 			const phase = (time / period) * TWO_PI;
 
 			const sample =
-				zeroSampleValue +
-				waveTypeFunctions[shape](phase, dutyCycle) * amplitude;
+				zeroSampleValue + waveGenerator(phase, dutyCycle) * amplitude;
 
 			for (let j = 0; j < channels; j++) {
 				offset = playback.writeSample(buffer, sample, offset);
@@ -600,7 +604,9 @@ export const audio = {
 	 * @param dutyCycle If you chose to play a square wave, this will be the duty cycle of the wave. You usually want `0.5` or `0.1`.
 	 */
 	async playSlidingWave(
-		shape: keyof typeof waveTypeFunctions,
+		shape:
+			| keyof typeof waveTypeFunctions
+			| ((phase: number, dutyCycle?: number) => number),
 		startHz: number,
 		endHz: number,
 		durationMs: number,
@@ -611,6 +617,9 @@ export const audio = {
 		if (game.config.audio.disable) {
 			return;
 		}
+
+		const waveGenerator =
+			typeof shape === "string" ? waveTypeFunctions[shape] : shape;
 
 		// Multiply
 		if (options.multiply) {
@@ -638,8 +647,7 @@ export const audio = {
 			const phase = (time / period) * TWO_PI;
 
 			const sample =
-				zeroSampleValue +
-				waveTypeFunctions[shape](phase, dutyCycle) * amplitude;
+				zeroSampleValue + waveGenerator(phase, dutyCycle) * amplitude;
 
 			for (let j = 0; j < channels; j++) {
 				offset = playback.writeSample(buffer, sample, offset);
