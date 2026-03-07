@@ -427,94 +427,100 @@ export const interact = {
 						await game.interact.print.gameState(game.player, false);
 					},
 				},
-				...cards.map((readable) => ({
-					name: readable,
-					defaultSound: false,
-					callback: async (answer: number) => {
-						user = answer.toString();
-						return false;
-					},
-				})),
-				cards.length > 0 && new Separator(),
-				{
-					name: "Commands",
-					callback: async () => {
-						const debugCommandsDisabled = !game.isDebugSettingEnabled(
-							game.config.debug.commands,
-						);
+				async () => [
+					...cards.map((readable) => ({
+						name: readable,
+						defaultSound: false,
+						callback: async (answer: number) => {
+							user = answer.toString();
+							return false;
+						},
+					})),
+					cards.length > 0 && new Separator(),
+					{
+						name: "Commands",
+						callback: async () => {
+							const debugCommandsDisabled = !game.isDebugSettingEnabled(
+								game.config.debug.commands,
+							);
 
-						// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
-						const cmds = game.data.alignColumns(
-							helpColumns
-								.filter((c) => !c.startsWith("(name)"))
-								.map((c) => c[0].toUpperCase() + c.slice(1)),
-							"-",
-						);
-						const debugCmds = game.data.alignColumns(
-							helpDebugColumns
-								.filter((c) => !c.startsWith("(name)"))
-								.map((c) => c[0].toUpperCase() + c.slice(1)),
-							"-",
-						);
+							// TODO: Disable hero power if the player can't use their hero power. Do this to use, titan.
+							const cmds = game.data.alignColumns(
+								helpColumns
+									.filter((c) => !c.startsWith("(name)"))
+									.map((c) => c[0].toUpperCase() + c.slice(1)),
+								"-",
+							);
+							const debugCmds = game.data.alignColumns(
+								helpDebugColumns
+									.filter((c) => !c.startsWith("(name)"))
+									.map((c) => c[0].toUpperCase() + c.slice(1)),
+								"-",
+							);
 
-						await game.prompt.createUILoop(
-							{
-								message: "Which command do you want to run?",
-							},
-							...cmds.map((c) => ({
-								name: c,
-								callback: async (answer: number) => {
-									user = cmds[answer].toLowerCase();
-									return false;
+							await game.prompt.createUILoop(
+								{
+									message: "Which command do you want to run?",
 								},
-							})),
-							new Separator(),
-							...debugCmds.map((c) => ({
-								name: c,
-								disabled: debugCommandsDisabled,
-								callback: async (answer: number) => {
-									// Account for the other choices.
-									answer -= cmds.length + 1;
+								async () => [
+									...cmds.map((c) => ({
+										name: c,
+										callback: async (answer: number) => {
+											user = cmds[answer].toLowerCase();
+											return false;
+										},
+									})),
+									new Separator(),
+									...debugCmds.map((c) => ({
+										name: c,
+										disabled: debugCommandsDisabled,
+										callback: async (answer: number) => {
+											// Account for the other choices.
+											answer -= cmds.length + 1;
 
-									const command = debugCmds[answer].split(" ")[0].toLowerCase();
-									user = game.config.debug.commandPrefix + command;
+											const command = debugCmds[answer]
+												.split(" ")[0]
+												.toLowerCase();
+											user = game.config.debug.commandPrefix + command;
 
-									// Handle commands with arguments.
-									// TODO: Use `search` for give.
-									if (["give", "eval"].includes(command)) {
-										await game.interact.print.gameState(game.player);
-										console.log();
+											// Handle commands with arguments.
+											// TODO: Use `search` for give.
+											if (["give", "eval"].includes(command)) {
+												await game.interact.print.gameState(game.player);
+												console.log();
 
-										const args = await game.input({
-											message: user,
-										});
+												const args = await game.input({
+													message: user,
+												});
 
-										user += ` ${args}`;
-										return false;
-									}
+												user += ` ${args}`;
+												return false;
+											}
 
-									return false;
-								},
-							})),
-						);
+											return false;
+										},
+									})),
+								],
+							);
 
-						// If the user hasn't chosen anything, keep going.
-						if (!user) {
-							return true;
-						}
+							// If the user hasn't chosen anything, keep going.
+							if (!user) {
+								return true;
+							}
 
-						return false;
+							return false;
+						},
 					},
-				},
-				{
-					name: "Type in",
-					description:
-						"Type in the command instead of using the interface. (Old behavior)",
-					callback: async () => {
-						await oldInterface();
-						return false;
+					{
+						name: "Type in",
+						description:
+							"Type in the command instead of using the interface. (Old behavior)",
+						callback: async () => {
+							await oldInterface();
+							return false;
+						},
 					},
-				},
+				],
 			);
 		}
 

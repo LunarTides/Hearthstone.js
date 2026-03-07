@@ -19,10 +19,14 @@ import { parseTags } from "chalk-tags";
 
 export const UILoopDefaultOptions = {
 	callbackBefore: (() => Promise.resolve()) as () => Promise<void>,
+	callbackAfter: (() => Promise.resolve()) as (
+		result?: boolean,
+	) => Promise<void>,
 	message: "Options" as string,
 	seperatorBeforeBackButton: true as boolean,
 	backButtonText: "Back" as string,
 	default: undefined as number | undefined,
+	dynamicChoices: false as boolean,
 };
 
 const selectValues: Record<string, any> = {};
@@ -164,27 +168,38 @@ export const prompt = {
 
 	async createUILoop(
 		rawOptions: Partial<typeof UILoopDefaultOptions> = UILoopDefaultOptions,
-		...choices: (
-			| Separator
-			| {
-					name: string;
-					description?: string;
-					disabled?: boolean;
-					defaultSound?: boolean;
-					callback?: (value: number) => Promise<boolean>;
-			  }
-			| false
-		)[]
+		choicesGenerator: () => Promise<
+			(
+				| Separator
+				| {
+						name: string;
+						description?: string;
+						disabled?: boolean;
+						defaultSound?: boolean;
+						callback?: (value: number) => Promise<boolean>;
+				  }
+				| false
+			)[]
+		>,
 	) {
 		const options = {
 			...UILoopDefaultOptions,
 			...rawOptions,
 		};
 
+		let choices = await choicesGenerator();
+
 		// Filter out invalid choices.
 		choices = choices.filter((choice) => choice !== false);
 
 		while (true) {
+			if (options.dynamicChoices) {
+				choices = await choicesGenerator();
+
+				// Filter out invalid choices.
+				choices = choices.filter((choice) => choice !== false);
+			}
+
 			if (options.callbackBefore) {
 				await options.callbackBefore();
 			}
@@ -240,6 +255,11 @@ export const prompt = {
 			}
 
 			const result = await choice.callback?.(parsed);
+
+			if (options.callbackAfter) {
+				await options.callbackAfter(result);
+			}
+
 			if (result === false) {
 				break;
 			}
@@ -262,49 +282,52 @@ export const prompt = {
 			{
 				message: "Configure Array",
 				backButtonText: "Done",
+				dynamicChoices: true,
 				callbackBefore: async () => {
 					await onLoop?.();
 					console.log(JSON.stringify(array, null, 4));
 					console.log();
 				},
 			},
-			...array.map((element, i) => ({
-				name: `Element ${i}`,
-				callback: async (answer: number) => {
-					const newValue = await game.input({
-						message: "What will you change this value to?",
-						default: array[answer],
-					});
+			async () => [
+				...array.map((element, i) => ({
+					name: `Element ${i}`,
+					callback: async (answer: number) => {
+						const newValue = await game.input({
+							message: "What will you change this value to?",
+							default: array[answer],
+						});
 
-					array[answer] = newValue;
-					dirty = true;
-					return true;
-				},
-			})),
-			new Separator(),
-			{
-				name: "New",
-				callback: async () => {
-					const value = await game.input({
-						message: "Value.",
-					});
+						array[answer] = newValue;
+						dirty = true;
+						return true;
+					},
+				})),
+				new Separator(),
+				{
+					name: "New",
+					callback: async () => {
+						const value = await game.input({
+							message: "Value.",
+						});
 
-					array.push(value);
-					dirty = true;
-					return true;
+						array.push(value);
+						dirty = true;
+						return true;
+					},
 				},
-			},
-			{
-				name: "Delete",
-				defaultSound: false,
-				callback: async () => {
-					game.audio.playSFX("ui.delete");
+				{
+					name: "Delete",
+					defaultSound: false,
+					callback: async () => {
+						game.audio.playSFX("ui.delete");
 
-					array.pop();
-					dirty = true;
-					return true;
+						array.pop();
+						dirty = true;
+						return true;
+					},
 				},
-			},
+			],
 		);
 
 		return dirty;
@@ -338,6 +361,7 @@ export const prompt = {
 			{
 				message: "Configure Array",
 				backButtonText: "Done",
+				dynamicChoices: true,
 				callbackBefore: async () => {
 					await onLoop?.();
 					console.log(JSON.stringify(array, null, 4));
@@ -350,89 +374,93 @@ export const prompt = {
 					allowNew = allowEdit && array.length < (options?.maxSize ?? Infinity);
 				},
 			},
-			...array.map((element, i) => ({
-				name: `Element ${i}`,
-				callback: async (answer: number) => {
-					if (!allowEdit) {
-						return true;
-					}
+			async () => [
+				...array.map((element, i) => ({
+					name: `Element ${i}`,
+					callback: async (answer: number) => {
+						if (!allowEdit) {
+							return true;
+						}
 
-					const value = await game.prompt.customSelect(
-						"Value",
-						Object.keys(enumType).filter(
+						const value = await game.prompt.customSelect(
+							"Value",
+							Object.keys(enumType).filter(
+								(c) => options?.allowDuplicates || !array.includes(c),
+							),
+							{
+								arrayTransform: async (i, element) => ({
+									name: element,
+									value: element,
+								}),
+								hideBack: false,
+							},
+						);
+
+						if (value === "Back") {
+							return true;
+						}
+
+						(array as unknown[])[answer] = value;
+						dirty = true;
+						return true;
+					},
+				})),
+				new Separator(),
+				{
+					name: "New",
+					disabled: !allowNew,
+					defaultSound: false,
+					callback: async () => {
+						if (!allowNew) {
+							game.audio.playSFX("error");
+							return true;
+						}
+
+						game.audio.playSFX("ui.delve");
+
+						let filtered: any = Object.keys(enumType).filter(
 							(c) => options?.allowDuplicates || !array.includes(c),
-						),
-						{
-							arrayTransform: async (i, element) => ({
-								name: element,
-								value: element,
-							}),
-							hideBack: false,
-						},
-					);
+						);
 
-					if (value === "Back") {
-						return true;
-					}
-
-					(array as unknown[])[answer] = value;
-					dirty = true;
-					return true;
-				},
-			})),
-			new Separator(),
-			{
-				name: "New",
-				disabled: !allowNew,
-				defaultSound: false,
-				callback: async () => {
-					if (!allowNew) {
-						game.audio.playSFX("error");
-						return true;
-					}
-
-					game.audio.playSFX("ui.delve");
-
-					let filtered: any = Object.keys(enumType).filter(
-						(c) => options?.allowDuplicates || !array.includes(c),
-					);
-
-					await game.prompt.createUILoop(
-						{
-							message: "Value",
-							callbackBefore: async () => {
-								// Re-filter the array.
-								filtered = Object.keys(enumType).filter(
-									(c) => options?.allowDuplicates || !array.includes(c),
-								);
+						await game.prompt.createUILoop(
+							{
+								message: "Value",
+								callbackBefore: async () => {
+									// Re-filter the array.
+									filtered = Object.keys(enumType).filter(
+										(c) => options?.allowDuplicates || !array.includes(c),
+									);
+								},
 							},
-						},
-						...filtered.map((element: any) => ({
-							name: element,
-							callback: async (answer: number) => {
-								const value = filtered[answer];
+							async () => [
+								...filtered.map((element: any) => ({
+									name: element,
+									callback: async (answer: number) => {
+										const value = filtered[answer];
 
-								(array as unknown[]).push(value);
-								dirty = true;
-								return false;
-							},
-						})),
-					);
+										(array as unknown[]).push(value);
+										dirty = true;
+										return false;
+									},
+								})),
+							],
+						);
 
-					return true;
+						return true;
+					},
 				},
-			},
-			{
-				name: "Delete",
-				defaultSound: false,
-				callback: async () => {
-					game.audio.playSFX("ui.delete");
+				{
+					name: "Delete",
+					defaultSound: false,
+					callback: async () => {
+						game.audio.playSFX("ui.delete");
 
-					array.pop();
-					dirty = true;
-					return true;
+						array.pop();
+						dirty = true;
+						return true;
+					},
 				},
-			},
+			],
 		);
 
 		return dirty;
@@ -449,114 +477,131 @@ export const prompt = {
 	 * @returns If the object was changed. Use this as a dirty flag.
 	 */
 	async configureObject(
-		object: any,
+		rawObject: any,
 		allowAddingAndDeleting = true,
 		onLoop?: () => Promise<void>,
 	) {
 		let dirty = false;
 
+		let object = rawObject;
+		if (rawObject instanceof Function) {
+			object = await rawObject();
+		}
+
 		await game.prompt.createUILoop(
 			{
 				message: "Configure Object",
 				backButtonText: "Done",
+				dynamicChoices: true,
 				callbackBefore: async () => {
 					await onLoop?.();
 					console.log(JSON.stringify(object, null, 4));
 					console.log();
 				},
+				callbackAfter: async () => {
+					if (rawObject instanceof Function) {
+						object = await rawObject();
+					}
+
+					await onLoop?.();
+					console.log(JSON.stringify(object, null, 4));
+					console.log();
+				},
 			},
-			...Object.keys(object).map((element) => ({
-				name: element,
-				callback: async (answer: number) => {
-					const key = Object.keys(object)[answer];
-					const value = object[key];
+			async () => [
+				...Object.keys(object).map((element) => ({
+					name: element,
+					callback: async (answer: number) => {
+						const key = Object.keys(object)[answer];
+						const value = object[key];
 
-					if (Array.isArray(value)) {
-						const changed = await game.prompt.configureArray(value, onLoop);
+						if (Array.isArray(value)) {
+							const changed = await game.prompt.configureArray(value, onLoop);
 
-						// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
-						// Learned that the hard way...
-						dirty ||= changed;
-						return true;
-					} else if (game.lodash.isBoolean(value)) {
-						const newValue = await game.prompt.customSelect(
-							"What will you change this value to?",
-							["True", "False"],
-							{
-								arrayTransform: async (i, element) => ({
-									name: element,
-									value: element.toLowerCase(),
-								}),
-								hideBack: false,
-							},
-						);
+							// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+							// Learned that the hard way...
+							dirty ||= changed;
+							return true;
+						} else if (game.lodash.isBoolean(value)) {
+							const newValue = await game.prompt.customSelect(
+								"What will you change this value to?",
+								["True", "False"],
+								{
+									arrayTransform: async (i, element) => ({
+										name: element,
+										value: element.toLowerCase(),
+									}),
+									hideBack: false,
+								},
+							);
 
-						object[key] = newValue === "true";
-						dirty = true;
-						return true;
-					} else if (!Number.isNaN(parseInt(value, 10))) {
-						const newValue = await number({
+							object[key] = newValue === "true";
+							dirty = true;
+							return true;
+						} else if (!Number.isNaN(parseInt(value, 10))) {
+							const newValue = await number({
+								message: "What will you change this value to?",
+								default: value,
+								step: "any",
+							});
+
+							object[key] = newValue;
+							dirty = true;
+							return true;
+						} else if (game.lodash.isObject(value)) {
+							const changed = await game.prompt.configureObject(
+								value,
+								allowAddingAndDeleting,
+								onLoop,
+							);
+
+							// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+							// Learned that the hard way...
+							dirty ||= changed;
+							return true;
+						}
+
+						const newValue = await game.input({
 							message: "What will you change this value to?",
 							default: value,
-							step: "any",
 						});
 
 						object[key] = newValue;
 						dirty = true;
 						return true;
-					} else if (game.lodash.isObject(value)) {
-						const changed = await game.prompt.configureObject(
-							value,
-							allowAddingAndDeleting,
-							onLoop,
-						);
+					},
+				})),
+				allowAddingAndDeleting && new Separator(),
+				allowAddingAndDeleting && {
+					name: "New",
+					callback: async () => {
+						const key = await game.input({
+							message: "Key.",
+						});
+						const value = await game.input({
+							message: "Value.",
+						});
 
-						// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
-						// Learned that the hard way...
-						dirty ||= changed;
+						object[key] = value;
+						dirty = true;
 						return true;
-					}
-
-					const newValue = await game.input({
-						message: "What will you change this value to?",
-						default: value,
-					});
-
-					object[key] = newValue;
-					dirty = true;
-					return true;
+					},
 				},
-			})),
-			allowAddingAndDeleting && new Separator(),
-			allowAddingAndDeleting && {
-				name: "New",
-				callback: async () => {
-					const key = await game.input({
-						message: "Key.",
-					});
-					const value = await game.input({
-						message: "Value.",
-					});
+				allowAddingAndDeleting && {
+					name: "Delete",
+					callback: async () => {
+						const key = await game.input({
+							message: "Key.",
+						});
 
-					object[key] = value;
-					dirty = true;
-					return true;
+						game.audio.playSFX("ui.delete");
+
+						delete object[key];
+						dirty = true;
+						return true;
+					},
 				},
-			},
-			allowAddingAndDeleting && {
-				name: "Delete",
-				callback: async () => {
-					const key = await game.input({
-						message: "Key.",
-					});
-
-					game.audio.playSFX("ui.delete");
-
-					delete object[key];
-					dirty = true;
-					return true;
-				},
-			},
+			],
 		);
 
 		return dirty;

@@ -5,11 +5,9 @@ import { Card } from "@Game/card.ts";
 import { UILoopDefaultOptions } from "@Game/modules/interact/prompt.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import * as src from "./src/index.ts"; // Source Code
-import * as clc from "./tools/cardcreator/class.ts"; // Class Creator
-import * as ccc from "./tools/cardcreator/custom.ts"; // Custom Card Creator
-import * as vcc from "./tools/cardcreator/vanilla.ts"; // Vanilla Card Creator
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 import * as pkgr from "./tools/pack/packager.ts"; // Packager
+import * as rm from "./tools/resource-manager/index.ts"; // Resource Manager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as soundTest from "./tools/test/sound.ts"; // Sound Test
@@ -69,62 +67,25 @@ export const watermark = (showCards = true) => {
 
 export async function createUILoop(
 	rawOptions: Partial<typeof UILoopDefaultOptions> = UILoopDefaultOptions,
-	...choices: (
-		| Separator
-		| {
-				name: string;
-				description?: string;
-				disabled?: boolean;
-				defaultSound?: boolean;
-				callback?: (value: number) => Promise<boolean>;
-		  }
-	)[]
+	choicesGenerator: () => Promise<
+		(
+			| Separator
+			| {
+					name: string;
+					description?: string;
+					disabled?: boolean;
+					defaultSound?: boolean;
+					callback?: (value: number) => Promise<boolean>;
+			  }
+		)[]
+	>,
 ) {
 	return await game.prompt.createUILoop(
 		{
 			callbackBefore: async () => watermark(true),
 			...rawOptions,
 		},
-		...choices,
-	);
-}
-
-/**
- * Asks the user which card creator variant they want to use.
- */
-export async function cardCreator() {
-	await createUILoop(
-		{
-			message: "Create a Card",
-		},
-		{
-			name: "Create a Custom Card",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Custom Card Creator...");
-				await ccc.main({});
-				game.interest("Starting Custom Card Creator...OK");
-
-				return true;
-			},
-		},
-		{
-			name: "Create a Vanilla Card",
-			defaultSound: false,
-			callback: async () => {
-				// This is to throw an error if it can't find the vanilla cards
-				await game.card.vanilla.getAll();
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Vanilla Card Creator...");
-				await vcc.main();
-				game.interest("Starting Vanilla Card Creator...OK");
-
-				return true;
-			},
-		},
+		choicesGenerator,
 	);
 }
 
@@ -136,103 +97,92 @@ export async function devmode() {
 		{
 			message: "Developer Options",
 		},
-		{
-			name: "Create a Card",
-			callback: async () => {
-				game.interest("Loading Card Creator options...");
-				await cardCreator();
-				game.interest("Loading Card Creator options...OK");
+		async () => [
+			{
+				name: "Manage Resources",
+				callback: async () => {
+					game.interest("Loading Resource Manager...");
+					await rm.main();
+					game.interest("Loading Resource Manager...OK");
 
-				return true;
-			},
-		},
-		{
-			name: "Create a Class",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Class Creator...");
-				await clc.main();
-				game.interest("Starting Class Creator...OK");
-
-				return true;
-			},
-		},
-		new Separator(),
-		{
-			name: "Test Cards",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Card Test...");
-				await cardTest.main();
-				game.interest("Starting Card Test...OK");
-
-				return true;
-			},
-		},
-		{
-			name: "Test Crash",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Crash Test...");
-				await crashTest.main();
-				game.interest("Starting Crash Test...OK");
-
-				return true;
-			},
-		},
-		{
-			name: "Test Sounds",
-			// NOTE: The user should be able to choose this option and see the resulting error,
-			// therefore, the following line is commented out.
-			// disabled: game.config.audio.disable,
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Starting Sound Test...");
-				await soundTest.main();
-				game.interest("Starting Sound Test...OK");
-
-				return true;
-			},
-		},
-		{
-			name: "Generate Vanilla Cards",
-			callback: async () => {
-				// TODO: Move this to the tool.
-				if (!game.config.networking.allow.game) {
-					console.error(
-						"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
-					);
-					console.error();
-					await game.pause();
 					return true;
-				}
-
-				const sure = await confirm({
-					message:
-						"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
-					default: false,
-				});
-				if (!sure) {
-					return true;
-				}
-
-				game.audio.playSFX("ui.leaveLoop");
-
-				game.interest("Generating vanilla cards...");
-				await generateVanilla.main();
-				game.interest("Generating vanilla cards...OK");
-
-				return true;
+				},
 			},
-		},
+			new Separator(),
+			{
+				name: "Test Cards",
+				defaultSound: false,
+				callback: async () => {
+					game.audio.playSFX("ui.leaveLoop");
+
+					game.interest("Starting Card Test...");
+					await cardTest.main();
+					game.interest("Starting Card Test...OK");
+
+					return true;
+				},
+			},
+			{
+				name: "Test Crash",
+				defaultSound: false,
+				callback: async () => {
+					game.audio.playSFX("ui.leaveLoop");
+
+					game.interest("Starting Crash Test...");
+					await crashTest.main();
+					game.interest("Starting Crash Test...OK");
+
+					return true;
+				},
+			},
+			{
+				name: "Test Sounds",
+				// NOTE: The user should be able to choose this option and see the resulting error,
+				// therefore, the following line is commented out.
+				// disabled: game.config.audio.disable,
+				defaultSound: false,
+				callback: async () => {
+					game.audio.playSFX("ui.leaveLoop");
+
+					game.interest("Starting Sound Test...");
+					await soundTest.main();
+					game.interest("Starting Sound Test...OK");
+
+					return true;
+				},
+			},
+			{
+				name: "Generate Vanilla Cards",
+				callback: async () => {
+					// TODO: Move this to the tool.
+					if (!game.config.networking.allow.game) {
+						console.error(
+							"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
+						);
+						console.error();
+						await game.pause();
+						return true;
+					}
+
+					const sure = await confirm({
+						message:
+							"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
+						default: false,
+					});
+					if (!sure) {
+						return true;
+					}
+
+					game.audio.playSFX("ui.leaveLoop");
+
+					game.interest("Generating vanilla cards...");
+					await generateVanilla.main();
+					game.interest("Generating vanilla cards...OK");
+
+					return true;
+				},
+			},
+		],
 	);
 }
 
@@ -242,56 +192,58 @@ export async function main() {
 			message: "Options",
 			backButtonText: "Exit",
 		},
-		{
-			name: "Play",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
+		async () => [
+			{
+				name: "Play",
+				defaultSound: false,
+				callback: async () => {
+					game.audio.playSFX("ui.leaveLoop");
 
-				game.interest("Starting Game...");
-				await src.main();
+					game.interest("Starting Game...");
+					await src.main();
 
-				/*
-				 * This line will never be seen in the log file, since the log file gets generated before this line.
-				 * All the other similar lines are fine, since only the game generates log files for now.
-				 */
-				game.interest("Starting Game...OK");
-				return true;
+					/*
+					 * This line will never be seen in the log file, since the log file gets generated before this line.
+					 * All the other similar lines are fine, since only the game generates log files for now.
+					 */
+					game.interest("Starting Game...OK");
+					return true;
+				},
 			},
-		},
-		{
-			name: "Create a Deck",
-			defaultSound: false,
-			callback: async () => {
-				game.audio.playSFX("ui.leaveLoop");
+			{
+				name: "Create a Deck",
+				defaultSound: false,
+				callback: async () => {
+					game.audio.playSFX("ui.leaveLoop");
 
-				game.interest("Starting Deck Creator...");
-				await dc.main();
-				game.interest("Starting Deck Creator...OK");
+					game.interest("Starting Deck Creator...");
+					await dc.main();
+					game.interest("Starting Deck Creator...OK");
 
-				return true;
+					return true;
+				},
 			},
-		},
-		new Separator(),
-		{
-			name: "Pack Options",
-			callback: async () => {
-				game.interest("Starting Packager...");
-				await pkgr.main();
-				game.interest("Starting Packager...OK");
+			new Separator(),
+			{
+				name: "Pack Options",
+				callback: async () => {
+					game.interest("Starting Packager...");
+					await pkgr.main();
+					game.interest("Starting Packager...OK");
 
-				return true;
+					return true;
+				},
 			},
-		},
-		{
-			name: "Developer Options",
-			callback: async () => {
-				game.interest("Loading Developer Mode options...");
-				await devmode();
-				game.interest("Loading Developer Mode options...OK");
+			{
+				name: "Developer Options",
+				callback: async () => {
+					game.interest("Loading Developer Mode options...");
+					await devmode();
+					game.interest("Loading Developer Mode options...OK");
 
-				return true;
+					return true;
+				},
 			},
-		},
+		],
 	);
 }

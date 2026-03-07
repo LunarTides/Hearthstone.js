@@ -11,7 +11,7 @@ import {
 } from "@Game/types.ts";
 import { number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import * as hub from "../../hub.ts";
+import * as hub from "../../../hub.ts";
 import * as lib from "./lib.ts";
 
 if (import.meta.main) {

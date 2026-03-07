@@ -16,7 +16,7 @@ import {
 import { confirm, Separator } from "@inquirer/prompts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
-import * as hub from "../../hub.ts";
+import * as hub from "../../../hub.ts";
 import * as lib from "./lib.ts";
 
 // FIXME: Some tools don't work when run directly.
@@ -169,6 +169,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 		console.log(await card.readable());
 		console.log();
 
+		// TODO: Extract this functionality.
 		const answer = await game.prompt.customSelect(
 			"Configure Card",
 			Object.keys(blueprint).filter(

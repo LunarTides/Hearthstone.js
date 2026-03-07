@@ -96,7 +96,7 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	// Create a path to put the card in.
 
 	// DO NOT CHANGE THIS
-	const staticPath = `${game.fs.dirname()}/cards/`;
+	const staticPath = `${game.fs.dirname()}/cards/Custom`;
 
 	// You can change everything below this comment
 	const classesString = blueprint.classes.join("/");
@@ -124,7 +124,7 @@ function generateCardPath(blueprint: BlueprintWithOptional): string {
 	 * By default, this is `cards/Classes/{class name}/{Collectible | Uncollectible}/{type}s/{mana cost} Cost/{card name}.ts`;
 	 * This path can be overridden by passing `overridePath` in the create function.
 	 */
-	const dynamicPath = `Custom/Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
+	const dynamicPath = `/Classes/${classesString}/${collectibleString}/${typeString}s/${blueprint.cost}-Cost/`;
 
 	return staticPath + dynamicPath;
 }
@@ -314,6 +314,8 @@ export async function create(
 		filename = `${id}-${overrideFilename}`;
 	}
 
+	const filePath = path + filename;
+
 	let usesTags = false;
 
 	/*
@@ -445,9 +447,6 @@ export const blueprint: Blueprint = {
 \t${abilitiesTexts.join("\n\n\t")}
 };
 `;
-
-	// The path is now "./cardcreator/../cards/...", replace this with "./cards/..."
-	const filePath = path + filename;
 
 	if (debugMode) {
 		/*
