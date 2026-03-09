@@ -15,3 +15,7 @@ export const groupSchema = z.object({
 	type: z.literal("Group"),
 	aboutMe: z.string().optional(),
 });
+
+export const uploadAvatarSchema = z.object({
+	file: z.file(),
+});

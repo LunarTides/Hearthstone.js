@@ -48,6 +48,7 @@ export async function getCategorySettings<C extends string, K extends string>(
 export async function generateDefaultSettings() {
 	// TODO: Move default values to a settings.ts file.
 	await db.insert(table.setting).values([
+		// Pack upload
 		{
 			key: "upload.maxFileSize",
 			value: 100 * 1024 * 1024,
@@ -68,6 +69,24 @@ export async function generateDefaultSettings() {
 			key: "upload.requireApproval",
 			value: true,
 			description: "If packs require an approval by a Moderator to be listed.",
+		},
+		// Users
+		{
+			key: "user.avatarMaxFileSizeRaw",
+			value: 100 * 1024 * 1024,
+			description:
+				"The maximum size of packs allowed in uploaded avatars. The actual saved avatar will be compressed to a smaller size.",
+		},
+		{
+			key: "user.avatarQuality",
+			value: 30,
+			description:
+				"The quality for avatars. Lower = higher quality, larger file sizes. A value of 23 will look visually lossless.",
+		},
+		{
+			key: "user.avatarSize",
+			value: 64,
+			description: "The size for avatars. At 64, the image will be 64x64.",
 		},
 		{
 			key: "api.pageSize",

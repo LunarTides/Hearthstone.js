@@ -55,7 +55,6 @@ export async function GET(event) {
 	);
 }
 
-// TODO: Make this work for groups.
 export async function PUT(event) {
 	const clientUser = event.locals.user;
 	if (!clientUser) {
@@ -63,6 +62,7 @@ export async function PUT(event) {
 		return json({ message: "Please log in." }, { status: 401 });
 	}
 
+	// TODO: Add support for groups.
 	if (!hasGradualPermission(event.locals.token?.permissions, "user.edit")) {
 		return json({ message: "This request is outside the scope of this token." }, { status: 403 });
 	}
