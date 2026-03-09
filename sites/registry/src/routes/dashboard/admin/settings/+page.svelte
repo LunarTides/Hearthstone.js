@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from "$app/forms";
+	import Section from "$lib/components/section.svelte";
 	import { Cog } from "lucide-svelte";
 
 	const { data } = $props();
@@ -112,8 +113,8 @@
 		</button>
 	</form>
 
-	<div class="p-2 bg-header mt-4 rounded-md">
+	<Section class="mt-4">
 		<p class="font-bold text-2xl">Raw</p>
 		<pre>{JSON.stringify(settings, null, 4)}</pre>
-	</div>
+	</Section>
 {/await}

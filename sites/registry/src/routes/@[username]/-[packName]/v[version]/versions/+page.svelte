@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import Section from "$lib/components/section.svelte";
 
 	let { data } = $props();
 </script>
@@ -8,7 +9,7 @@
 	<p>Loading...</p>
 {:then packs}
 	<!-- Versions -->
-	<div class="m-1 p-2 bg-header rounded-md">
+	<Section>
 		<div class="m-1 flex flex-col gap-2">
 			<a
 				id="version-latest"
@@ -37,5 +38,5 @@
 				</a>
 			{/each}
 		</div>
-	</div>
+	</Section>
 {/await}

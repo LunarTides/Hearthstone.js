@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Section from "$lib/components/section.svelte";
 	import { dateFormat } from "$lib/date.js";
 	import { RefreshCw, Trash2 } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
@@ -21,7 +22,7 @@
 
 <p>2-Factor Auth</p>
 
-<div class="flex flex-col gap-1 m-1 p-2 bg-header">
+<Section class="flex flex-col gap-2">
 	<h2>Gradual Tokens</h2>
 
 	{#each data.tokens as token (token.name)}
@@ -89,4 +90,4 @@
 
 		<button class="custom-button p-2 rounded-none">Save</button>
 	</form>
-</div>
+</Section>

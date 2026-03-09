@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
+	import Section from "$lib/components/section.svelte";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data } = $props();
@@ -35,7 +36,7 @@
 		{#if $errors.ownerName}<span class="text-red-500">{$errors.ownerName}</span>{/if}
 		{#if $errors.packName}<span class="text-red-500">{$errors.packName}</span>{/if}
 
-		<div class="flex bg-header p-2 w-fit gap-1 *:self-center">
+		<Section class="flex gap-1 w-fit mx-0 my-0 *:self-center">
 			<p class="text-2xl">@</p>
 			<select
 				name="ownerName"
@@ -59,17 +60,17 @@
 				aria-invalid={$errors.packName ? "true" : undefined}
 				{...$constraints.packName}
 			/>
-		</div>
+		</Section>
 	</div>
 
-	<div class="p-2 mx-1 bg-header w-fit rounded-md">
+	<Section class="w-fit my-0 mx-0">
 		<div class="flex gap-1">
 			<p>Want to upload a pack?</p>
 			<a href={resolve("/upload/rules")} class="underline">Check out the rules.</a>
 		</div>
 
 		<p>Dont worry, they are easily understandable :)</p>
-	</div>
+	</Section>
 
 	<button type="submit" class="custom-button w-fit p-2">Upload</button>
 </form>

@@ -3,6 +3,7 @@
 	import { page } from "$app/state";
 	import Comment from "$lib/components/comment.svelte";
 	import FileTree from "$lib/components/file-tree.svelte";
+	import Section from "$lib/components/section.svelte";
 	import { HighlightAuto, LineNumbers } from "svelte-highlight";
 	import { superForm } from "sveltekit-superforms";
 
@@ -13,10 +14,10 @@
 {#await data.relevantFile}
 	<p>Loading...</p>
 {:then fileInfo}
-	<div class="m-1 p-2 bg-header rounded-md">
+	<Section>
 		<p class="mb-2">Files ({fileInfo.tree?.children?.length ?? 0})</p>
 		<FileTree files={fileInfo.tree?.children} />
-	</div>
+	</Section>
 
 	{#if fileInfo.file.type === "file"}
 		<div class="">
@@ -32,7 +33,7 @@
 {/await}
 
 <!-- Comments -->
-<div class="flex flex-col gap-2 m-1 p-2 bg-header rounded-md">
+<Section class="flex flex-col gap-2">
 	{#await data.commentsObject}
 		<h3>Comments</h3>
 
@@ -87,4 +88,4 @@
 			{/each}
 		</div>
 	{/await}
-</div>
+</Section>

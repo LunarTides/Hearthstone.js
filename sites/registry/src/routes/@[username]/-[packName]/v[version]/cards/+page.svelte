@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CardSmall from "$lib/components/card-small.svelte";
+	import Section from "$lib/components/section.svelte";
 
 	let { data } = $props();
 </script>
@@ -10,12 +11,12 @@
 	{#await data.cards}
 		<p>Loading...</p>
 	{:then cards}
-		<div class="m-1 p-2 bg-header rounded-md">
+		<Section>
 			<div class="flex flex-wrap gap-1">
 				{#each cards as card (card.id)}
 					<CardSmall {card} pack={versions.current} />
 				{/each}
 			</div>
-		</div>
+		</Section>
 	{/await}
 {/await}

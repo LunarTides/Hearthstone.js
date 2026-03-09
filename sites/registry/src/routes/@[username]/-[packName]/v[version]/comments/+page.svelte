@@ -4,6 +4,7 @@
 	import Avatar from "$lib/components/avatar.svelte";
 	import Badge from "$lib/components/badge.svelte";
 	import Comment from "$lib/components/comment.svelte";
+	import Section from "$lib/components/section.svelte";
 	import { satisfiesRole } from "$lib/user";
 	import { Cog } from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
@@ -29,63 +30,58 @@
 	<p>Loading...</p>
 {:then versions}
 	<!-- Messages -->
-	<div class="m-1 p-2 bg-header rounded-md">
-		<details bind:open={messagesOpen}>
-			<summary>Messages ({versions.current.messages.length})</summary>
-
+	<Section details open={messagesOpen} summary={`Messages (${versions.current.messages.length})`}>
+		<div class="flex flex-col gap-1">
 			<!-- TODO: Add posting messages as Moderator+ -->
-
-			<div class="flex flex-col gap-1">
-				{#each versions.current.messages as message (message.id)}
-					<div
-						id={`message-${message.id}`}
-						class="flex flex-col gap-2 p-2 bg-background rounded-xl text-white target:outline"
-					>
-						<div>
-							<div class="flex gap-2">
-								{#if message.author}
-									<a
-										href={resolve("/@[username]", { username: message.author.username })}
-										class="flex gap-2"
-									>
-										<Avatar username={message.author.username} classNoAvatar="p-4" />
-										<p class="text-lg self-center mt-1 font-mono">{message.author.username}</p>
-									</a>
-									<div class="flex gap-1">
-										{#if message.username === data.user?.username}
-											<Badge class="bg-indigo-300 h-fit self-center text-black">You</Badge>
-										{/if}
-										{#if satisfiesRole(message.author, "Moderator")}
-											<Badge class="bg-blue-200 h-fit self-center text-black">
-												{message.author.role}
-											</Badge>
-										{/if}
-									</div>
-									{#if message.type !== "public"}
-										<p class="text-lg self-center font-mono bg-background py-0.5 px-2 rounded-full">
-											{message.type[0].toUpperCase() + message.type.slice(1)}
-										</p>
+			{#each versions.current.messages as message (message.id)}
+				<div
+					id={`message-${message.id}`}
+					class="flex flex-col gap-2 p-2 bg-background rounded-xl text-white target:outline"
+				>
+					<div>
+						<div class="flex gap-2">
+							{#if message.author}
+								<a
+									href={resolve("/@[username]", { username: message.author.username })}
+									class="flex gap-2"
+								>
+									<Avatar username={message.author.username} classNoAvatar="p-4" />
+									<p class="text-lg self-center mt-1 font-mono">{message.author.username}</p>
+								</a>
+								<div class="flex gap-1">
+									{#if message.username === data.user?.username}
+										<Badge class="bg-indigo-300 h-fit self-center text-black">You</Badge>
 									{/if}
-								{:else}
-									<div class="flex gap-2">
-										<Cog class="size-7" />
-										<p class="text-lg self-center font-mono">System</p>
-									</div>
-									<Badge class="bg-indigo-400 h-fit self-center text-black">System</Badge>
+									{#if satisfiesRole(message.author, "Moderator")}
+										<Badge class="bg-blue-200 h-fit self-center text-black">
+											{message.author.role}
+										</Badge>
+									{/if}
+								</div>
+								{#if message.type !== "public"}
+									<p class="text-lg self-center font-mono bg-background py-0.5 px-2 rounded-full">
+										{message.type[0].toUpperCase() + message.type.slice(1)}
+									</p>
 								{/if}
-							</div>
+							{:else}
+								<div class="flex gap-2">
+									<Cog class="size-7" />
+									<p class="text-lg self-center font-mono">System</p>
+								</div>
+								<Badge class="bg-indigo-400 h-fit self-center text-black">System</Badge>
+							{/if}
 						</div>
-
-						<pre class="font-sans">{message.text}</pre>
-						<p class="text-gray-600">{dateFormat.format(new Date(message.creationDate))}</p>
 					</div>
-				{/each}
-			</div>
-		</details>
-	</div>
+
+					<pre class="font-sans">{message.text}</pre>
+					<p class="text-gray-600">{dateFormat.format(new Date(message.creationDate))}</p>
+				</div>
+			{/each}
+		</div>
+	</Section>
 
 	<!-- Comments -->
-	<div class="flex flex-col gap-2 m-1 p-2 bg-header rounded-md">
+	<Section>
 		{#await data.commentsObject}
 			<h3>Comments</h3>
 
@@ -128,5 +124,5 @@
 				{/each}
 			</div>
 		{/await}
-	</div>
+	</Section>
 {/await}
