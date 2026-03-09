@@ -4,6 +4,7 @@
 	import type { ClientUser } from "$lib/server/auth";
 	import { satisfiesRole } from "$lib/user";
 	import { Medal } from "lucide-svelte";
+	import Avatar from "./avatar.svelte";
 
 	let {
 		group,
@@ -12,8 +13,6 @@
 		group: GroupAndProfile;
 		clientUser: ClientUser;
 	} = $props();
-
-	const avatarPromise = import(`$lib/../../static/avatars/${group.username}.avif`).catch(() => {});
 </script>
 
 <div class="max-w-77.5">
@@ -21,11 +20,7 @@
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-2">
-					{#await avatarPromise}
-						<div class="p-6 bg-white rounded-full size-12"></div>
-					{:then avatar}
-						<img alt="Avatar" class="size-12" src={avatar.default.split("/static")[1]} />
-					{/await}
+					<Avatar username={group.username} />
 
 					<div>
 						<p class="text-xl self-center">{group.username}</p>

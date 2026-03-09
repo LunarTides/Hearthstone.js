@@ -5,6 +5,7 @@
 	import Badge from "./badge.svelte";
 	import type { GroupMemberWithExtras } from "$lib/db/schema";
 	import type { ClientUser } from "$lib/server/auth";
+	import Avatar from "./avatar.svelte";
 
 	let {
 		member,
@@ -15,8 +16,6 @@
 		clientUser: ClientUser;
 		navigateToUser?: boolean;
 	} = $props();
-
-	const avatarPromise = import(`$lib/../../static/avatars/${member.username}.avif`).catch(() => {});
 </script>
 
 <div class="max-w-77.5">
@@ -31,11 +30,7 @@
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">
 				<div class="flex flex-wrap sm:flex-nowrap gap-2">
-					{#await avatarPromise}
-						<div class="p-6 bg-white rounded-full size-12"></div>
-					{:then avatar}
-						<img alt="Avatar" class="size-12" src={avatar.default.split("/static")[1]} />
-					{/await}
+					<Avatar username={member.username} />
 
 					<p class="text-xl self-center">{member.username}</p>
 

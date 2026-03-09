@@ -2,6 +2,7 @@
 	import { satisfiesRole, type UserAndProfile } from "$lib/user";
 	import Badge from "./badge.svelte";
 	import type { ClientUser } from "$lib/server/auth";
+	import Avatar from "./avatar.svelte";
 
 	let {
 		user,
@@ -10,8 +11,6 @@
 		user: UserAndProfile;
 		clientUser: ClientUser;
 	} = $props();
-
-	const avatarPromise = import(`$lib/../../static/avatars/${user.username}.avif`).catch(() => {});
 </script>
 
 <!-- TODO: Add external links -->
@@ -19,11 +18,7 @@
 	<div class="p-3 bg-header text-white w-full rounded-lg">
 		<div class="flex flex-col gap-1">
 			<div class="flex flex-wrap sm:flex-nowrap gap-2">
-				{#await avatarPromise}
-					<div class="p-6 bg-white rounded-full size-12"></div>
-				{:then avatar}
-					<img alt="Avatar" class="size-12" src={avatar.default.split("/static")[1]} />
-				{/await}
+				<Avatar username={user.username} />
 
 				<p class="text-xl self-center">{user.username}</p>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import { page } from "$app/state";
+	import Avatar from "$lib/components/avatar.svelte";
 	import Badge from "$lib/components/badge.svelte";
 	import Comment from "$lib/components/comment.svelte";
 	import { satisfiesRole } from "$lib/user";
@@ -47,9 +48,8 @@
 										href={resolve("/@[username]", { username: message.author.username })}
 										class="flex gap-2"
 									>
-										<!-- TODO: Add avatar -->
-										<div class="p-4 bg-white rounded-full"></div>
-										<p class="text-lg self-center font-mono">{message.author.username}</p>
+										<Avatar username={message.author.username} classNoAvatar="p-4" />
+										<p class="text-lg self-center mt-1 font-mono">{message.author.username}</p>
 									</a>
 									<div class="flex gap-1">
 										{#if message.username === data.user?.username}

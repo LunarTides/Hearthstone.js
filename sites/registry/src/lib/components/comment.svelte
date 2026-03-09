@@ -8,6 +8,7 @@
 	import type { CommentWithExtras } from "$lib/db/schema";
 	import type { ClientUser } from "$lib/server/auth";
 	import { dateFormat } from "$lib/date";
+	import Avatar from "./avatar.svelte";
 
 	let {
 		comment,
@@ -60,9 +61,8 @@
 		<div class="flex flex-wrap sm:flex-nowrap gap-2">
 			{#if comment.author}
 				<a href={resolve("/@[username]", { username: comment.author.username })} class="flex gap-2">
-					<!-- TODO: Add avatar -->
-					<div class="p-4 bg-white rounded-full"></div>
-					<p class="text-lg self-center font-mono">{comment.author.username}</p>
+					<Avatar username={comment.author.username} classNoAvatar="p-4" />
+					<p class="text-lg self-center mt-1 font-mono">{comment.author.username}</p>
 				</a>
 				<div class="flex gap-1">
 					{#if comment.username === clientUser?.username}
@@ -76,9 +76,8 @@
 				</div>
 			{:else}
 				<div class="flex gap-2">
-					<!-- TODO: Add avatar -->
-					<div class="p-4 bg-red-400 rounded-full"></div>
-					<p class="text-lg self-center font-mono">(Deleted)</p>
+					<Avatar username="" classNoAvatar="p-4" />
+					<p class="text-lg self-center mt-1 font-mono">(Deleted)</p>
 				</div>
 				<Badge class="bg-red-400 h-fit self-center text-black">Deleted User</Badge>
 			{/if}
@@ -148,8 +147,11 @@
 						class="flex hover:cursor-pointer"
 						title={`Hearted by ${comment.heartedBy.username} <3`}
 					>
-						<!-- TODO: Add avatar. -->
-						<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
+						<Avatar
+							username={comment.heartedBy.username}
+							classNoAvatar="p-3.5 h-min -mt-1"
+							classAvatar="size-7.5 h-min -mt-1"
+						/>
 						<Heart class="-ml-4.5 mt-1 fill-rose-400" />
 					</button>
 				</form>
@@ -173,8 +175,11 @@
 			{/if}
 		{:else if comment.heartedBy}
 			<div class="flex" title={`Hearted by ${comment.heartedBy.username} <3`}>
-				<!-- TODO: Add avatar. -->
-				<div class="p-3.5 bg-white rounded-full h-min -mt-1"></div>
+				<Avatar
+					username={comment.heartedBy.username}
+					classNoAvatar="p-3.5 h-min -mt-1"
+					classAvatar="size-7.5 h-min -mt-1"
+				/>
 				<Heart class="-ml-4.5 mt-1 fill-rose-400" />
 			</div>
 		{/if}

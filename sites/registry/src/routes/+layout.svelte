@@ -11,6 +11,7 @@
 	import { page } from "$app/state";
 	import { slide } from "svelte/transition";
 	import { scrollY } from "svelte/reactivity/window";
+	import Avatar from "$lib/components/avatar.svelte";
 
 	let { children, data } = $props();
 
@@ -20,10 +21,6 @@
 	let searchQuery = $state("");
 
 	let menuOpen = $state(false);
-
-	const avatarPromise = import(`$lib/../../static/avatars/${data.user?.username}.avif`).catch(
-		() => {},
-	);
 
 	// Keep scroll state between navigations.
 	let scroll = $state(0);
@@ -177,11 +174,7 @@
 				</a>
 
 				<a href={resolve("/@[username]", { username: data.user.username })} title="Profile">
-					{#await avatarPromise}
-						<div class="p-5 bg-white rounded-full"></div>
-					{:then avatar}
-						<img alt="Avatar" class="size-10" src={avatar.default.split("/static")[1]} />
-					{/await}
+					<Avatar username={data.user.username} />
 				</a>
 			{/if}
 
