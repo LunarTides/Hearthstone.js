@@ -8,14 +8,14 @@ import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import { postSchema } from "../../comments/schema.js";
 
-const getComments = async (event: ServerLoadEvent) => {
+const getComments = async (event: ServerLoadEvent, filePath: string) => {
 	// TODO: Support pagination.
 	const response = await requestAPI<CommentWithExtras[]>(
 		event,
 		resolve("/api/next/@[username]/-[packName]/comments", {
 			username: event.params.username!,
 			packName: event.params.packName!,
-		}) + `?cardUUID=${event.params.uuid}`,
+		}) + `?filePath=${filePath}`,
 	);
 
 	if (response.error) {
@@ -89,7 +89,7 @@ export const load = async (event) => {
 	// TODO: Make this proper async.
 	const form = await superValidate(zod4(postSchema));
 	const relevantCards = await getCards(event);
-	const commentsObject = await getComments(event);
+	const commentsObject = await getComments(event, relevantCards.current.filePath);
 
 	return {
 		form,

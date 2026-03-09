@@ -3,7 +3,7 @@ import type { LayoutParams } from "$app/types";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "./schema";
 import type { FileTree } from "$lib/api/types";
-import type { Card } from "$lib/db/schema";
+import type { Card, PackWithExtras } from "$lib/db/schema";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -36,7 +36,7 @@ export const load = async (event) => {
 	const { username, packName, version } = event.params;
 
 	// TODO: Stream like in `routes/+layout.server.ts`.
-	const packResponse = await requestAPI<{ latest: CensoredPack; outdated: CensoredPack[] }>(
+	const packResponse = await requestAPI<{ latest: PackWithExtras; outdated: PackWithExtras[] }>(
 		event,
 		resolve("/api/next/@[username]/-[packName]", { username, packName }),
 	);

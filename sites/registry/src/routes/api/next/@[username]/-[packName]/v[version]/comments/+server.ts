@@ -31,7 +31,13 @@ export async function POST(event) {
 		);
 	}
 
-	const { text, cardUUID } = form.data;
+	const { text } = form.data;
+	let { filePath } = form.data;
+
+	// Add leading slash to filepath.
+	if (filePath !== null && !filePath.startsWith("/")) {
+		filePath = `/${filePath}`;
+	}
 
 	const pack = (
 		await db
@@ -58,7 +64,7 @@ export async function POST(event) {
 		packId: pack.id,
 		username: clientUser.username,
 		text,
-		cardUUID,
+		filePath,
 	});
 
 	return json({}, { status: 200 });

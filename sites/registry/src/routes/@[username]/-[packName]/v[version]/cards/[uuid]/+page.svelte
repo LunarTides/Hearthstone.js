@@ -108,7 +108,7 @@
 				></textarea>
 				{#if $errors.text}<span class="text-red-500">{$errors.text}</span>{/if}
 
-				<input name="cardUUID" type="hidden" value={page.params.uuid} />
+				<input name="filePath" type="hidden" value={data.relevantCards.current.filePath} />
 
 				<button
 					type="submit"

@@ -193,7 +193,7 @@ export const comment = pgTable("comment", {
 		onDelete: "no action",
 	}),
 
-	cardUUID: uuid("card_uuid"),
+	filePath: text("file_path"),
 });
 
 export const commentLike = pgTable("commentLike", {

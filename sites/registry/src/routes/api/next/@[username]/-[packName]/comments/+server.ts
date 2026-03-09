@@ -13,7 +13,10 @@ export async function GET(event) {
 		return json({ message: "Please specify a valid page." }, { status: 400 });
 	}
 
-	const cardUUID = event.url.searchParams.get("cardUUID");
+	let filePath = event.url.searchParams.get("filePath");
+	if (filePath !== null && !filePath?.startsWith("/")) {
+		filePath = `/${filePath}`;
+	}
 
 	const clientUser = event.locals.user;
 
@@ -42,7 +45,7 @@ export async function GET(event) {
 			.from(table.comment)
 			.where(
 				and(
-					cardUUID ? eq(table.comment.cardUUID, cardUUID) : isNull(table.comment.cardUUID),
+					filePath ? eq(table.comment.filePath, filePath) : isNull(table.comment.filePath),
 					inArray(
 						table.comment.packId,
 						packs.map((p) => p.id),
@@ -59,7 +62,7 @@ export async function GET(event) {
 		.from(table.comment)
 		.where(
 			and(
-				cardUUID ? eq(table.comment.cardUUID, cardUUID) : isNull(table.comment.cardUUID),
+				filePath ? eq(table.comment.filePath, filePath) : isNull(table.comment.filePath),
 				inArray(
 					table.comment.packId,
 					packs.map((p) => p.id),
