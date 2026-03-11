@@ -118,10 +118,7 @@ export async function POST(event) {
 			autorun: true,
 		});
 
-		console.log(finalPath);
-
-		const result = await ffmpeg.done();
-		console.log(result);
+		await ffmpeg.done();
 	} catch (error) {
 		console.error(error);
 		return json({ message: "Could not compress file." }, { status: 500 });

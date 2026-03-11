@@ -80,7 +80,6 @@ export const actions = {
 		const file = uploadAvatarForm.data.file;
 
 		const buffer = await file.arrayBuffer();
-		console.log(buffer);
 		const response = await requestAPI(
 			event,
 			resolve("/api/next/@[username]/avatar", { username: event.params.username }),
