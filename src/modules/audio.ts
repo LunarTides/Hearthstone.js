@@ -441,6 +441,7 @@ const waveTypeFunctions = {
 	square: (phase: number, dutyCycle: number) =>
 		Math.cos(2 * phase) - Math.cos(PI * dutyCycle) >= 0 ? 1 : 0,
 	saw: (phase: number) => 2 * (phase / PI - Math.floor(0.5 + phase / PI)),
+	noise: (phase: number) => Math.cos(phase * Math.random()),
 };
 
 export interface WaveOptions {
