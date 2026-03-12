@@ -167,6 +167,7 @@ export const sfx = {
 			"sine",
 			220,
 			110,
+			"linear",
 			50,
 			0.3,
 			0,
@@ -177,6 +178,7 @@ export const sfx = {
 			"sine",
 			110,
 			220,
+			"linear",
 			50,
 			0.3,
 			0,
@@ -190,6 +192,7 @@ export const sfx = {
 			"sine",
 			440,
 			220,
+			"linear",
 			100,
 			0.3,
 			10,
@@ -200,6 +203,7 @@ export const sfx = {
 			"sine",
 			220,
 			440,
+			"linear",
 			100,
 			0.3,
 			0,
@@ -214,6 +218,7 @@ export const sfx = {
 			"sine",
 			540,
 			440,
+			"linear",
 			100,
 			0.3,
 			0,
@@ -282,6 +287,7 @@ export const sfx = {
 			"triangle",
 			octaves[3].A,
 			octaves[3].C,
+			"linear",
 			150,
 			0.3,
 			10,
@@ -491,6 +497,7 @@ export const sfx = {
 			"sine",
 			octaves[6].C,
 			octaves[7].C,
+			"linear",
 			500,
 			0.3,
 			10,
@@ -501,6 +508,7 @@ export const sfx = {
 			"saw",
 			octaves[2].C,
 			octaves[3].C,
+			"linear",
 			500,
 			0.3,
 			10,
@@ -511,6 +519,7 @@ export const sfx = {
 			"triangle",
 			octaves[2].C,
 			octaves[3].C,
+			"linear",
 			500,
 			0.3,
 			10,
@@ -521,6 +530,7 @@ export const sfx = {
 			"square",
 			octaves[3].C,
 			octaves[4].C,
+			"linear",
 			500,
 			0.3,
 			10,
@@ -531,6 +541,7 @@ export const sfx = {
 			"square",
 			octaves[4].C,
 			octaves[2].C,
+			"linear",
 			500,
 			0.3,
 			10,
@@ -541,6 +552,7 @@ export const sfx = {
 			"square",
 			octaves[6].C,
 			octaves[1].C,
+			"linear",
 			1000,
 			0.3,
 			10,
@@ -551,6 +563,7 @@ export const sfx = {
 			"square",
 			octaves[8].C,
 			octaves[0].C,
+			"linear",
 			5000,
 			0.3,
 			10,
@@ -769,6 +782,137 @@ export async function addSFX(newSFX: SFX, pack: Metadata) {
 		newSFX.play;
 }
 
+// https://easings.net/
+const easingFunctions = {
+	linear: (x: number) => x,
+
+	// Sine
+	sineIn: (x: number) => 1 - Math.cos((x * Math.PI) / 2),
+	sineOut: (x: number) => Math.sin((x * Math.PI) / 2),
+	sineInOut: (x: number) => -(Math.cos(Math.PI * x) - 1) / 2,
+
+	// Quad
+	quadIn: (x: number) => x * x,
+	quadOut: (x: number) => 1 - (1 - x) * (1 - x),
+	quadInOut: (x: number) => (x < 0.5 ? 2 * x * x : 1 - (-2 * x + 2) ** 2 / 2),
+
+	// Cubic
+	cubicIn: (x: number) => x * x * x,
+	cubicOut: (x: number) => 1 - (1 - x) ** 3,
+	cubicInOut: (x: number) =>
+		x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2,
+
+	// Quart
+	quartIn: (x: number) => x * x * x * x,
+	quartOut: (x: number) => 1 - (1 - x) ** 4,
+	quartInOut: (x: number) =>
+		x < 0.5 ? 8 * x * x * x * x : 1 - (-2 * x + 2) ** 4 / 2,
+
+	// Quint
+	quintIn: (x: number) => x * x * x * x * x,
+	quintOut: (x: number) => 1 - (1 - x) ** 5,
+	quintInOut: (x: number) =>
+		x < 0.5 ? 16 * x * x * x * x * x : 1 - (-2 * x + 2) ** 5 / 2,
+
+	// Expo
+	expoIn: (x: number) => (x === 0 ? 0 : 2 ** (10 * x - 10)),
+	expoOut: (x: number) => (x === 1 ? 1 : 1 - 2 ** (-10 * x)),
+	expoInOut: (x: number) =>
+		x === 0
+			? 0
+			: x === 1
+				? 1
+				: x < 0.5
+					? 2 ** (20 * x - 10) / 2
+					: (2 - 2 ** (-20 * x + 10)) / 2,
+
+	// Circ
+	circIn: (x: number) => 1 - Math.sqrt(1 - x ** 2),
+	circOut: (x: number) => Math.sqrt(1 - (x - 1) ** 2),
+	circInOut: (x: number) =>
+		x < 0.5
+			? (1 - Math.sqrt(1 - (2 * x) ** 2)) / 2
+			: (Math.sqrt(1 - (-2 * x + 2) ** 2) + 1) / 2,
+
+	// Back
+	backIn: (x: number) => {
+		const c1 = 1.70158;
+		const c3 = c1 + 1;
+
+		return c3 * x * x * x - c1 * x * x;
+	},
+	backOut: (x: number) => {
+		const c1 = 1.70158;
+		const c3 = c1 + 1;
+
+		return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2;
+	},
+	backInOut: (x: number) => {
+		const c1 = 1.70158;
+		const c2 = c1 * 1.525;
+
+		return x < 0.5
+			? ((2 * x) ** 2 * ((c2 + 1) * 2 * x - c2)) / 2
+			: ((2 * x - 2) ** 2 * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+	},
+
+	// Elastic
+	elasticIn: (x: number) => {
+		const c4 = (2 * Math.PI) / 3;
+
+		return x === 0
+			? 0
+			: x === 1
+				? 1
+				: -(2 ** (10 * x - 10)) * Math.sin((x * 10 - 10.75) * c4);
+	},
+	elasticOut: (x: number) => {
+		const c4 = (2 * Math.PI) / 3;
+
+		return x === 0
+			? 0
+			: x === 1
+				? 1
+				: 2 ** (-10 * x) * Math.sin((x * 10 - 0.75) * c4) + 1;
+	},
+	elasticInOut: (x: number) => {
+		const c5 = (2 * Math.PI) / 4.5;
+
+		return x === 0
+			? 0
+			: x === 1
+				? 1
+				: x < 0.5
+					? -(2 ** (20 * x - 10) * Math.sin((20 * x - 11.125) * c5)) / 2
+					: (2 ** (-20 * x + 10) * Math.sin((20 * x - 11.125) * c5)) / 2 + 1;
+	},
+
+	// Bounce
+	bounceIn: (x: number) => 1 - easingFunctions.bounceOut(1 - x),
+	bounceOut: (x: number) => {
+		const n1 = 7.5625;
+		const d1 = 2.75;
+
+		if (x < 1 / d1) {
+			return n1 * x * x;
+		} else if (x < 2 / d1) {
+			x -= 1.5;
+			return n1 * (x / d1) * x + 0.75;
+		} else if (x < 2.5 / d1) {
+			x -= 2.25;
+			return n1 * (x / d1) * x + 0.9375;
+		} else {
+			x -= 2.625;
+			return n1 * (x / d1) * x + 0.984375;
+		}
+	},
+	bounceInOut: (x: number) => {
+		return x < 0.5
+			? (1 - easingFunctions.bounceOut(1 - 2 * x)) / 2
+			: (1 + easingFunctions.bounceOut(2 * x - 1)) / 2;
+	},
+};
+
 // https://en.wikipedia.org/wiki/List_of_periodic_functions
 const waveTypeFunctions = {
 	sine: (phase: number) => Math.sin(phase),
@@ -896,6 +1040,7 @@ export const audio = {
 	 * @param dutyCycle If you chose to play a square wave, this will be the duty cycle of the wave. You usually want `0.5` or `0.1`.
 	 */
 	// TODO: Make a function to parse this: "triangle(c2 volume:0.3):1000 triangle(d2):1000" (2 seperate notes played sequentially.)
+	// TODO: Add easing functions to volume and dutyCycle.
 	async playWave(
 		shape:
 			| keyof typeof waveTypeFunctions
@@ -907,9 +1052,7 @@ export const audio = {
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
 	): Promise<void> {
-		// NOTE: `game.config` can be undefined here since this gets called before the config file is loaded
-		// for some reason.
-		if (game.config?.audio.disable) {
+		if (game.config.audio.disable) {
 			return;
 		}
 
@@ -988,20 +1131,21 @@ export const audio = {
 			| ((phase: number, dutyCycle?: number) => number),
 		startHz: number,
 		endHz: number,
+		easing: keyof typeof easingFunctions | ((x: number) => number) = "linear",
 		durationMs: number,
 		volume: number = 0.3,
 		delayAfterMs: number = 0,
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
 	): Promise<void> {
-		// NOTE: `game.config` can be undefined here since this gets called before the config file is loaded
-		// for some reason.
-		if (game.config?.audio.disable) {
+		if (game.config.audio.disable) {
 			return;
 		}
 
 		const waveGenerator =
 			typeof shape === "string" ? waveTypeFunctions[shape] : shape;
+		const easingFunction =
+			typeof easing === "string" ? easingFunctions[easing] : easing;
 
 		// Multiply
 		if (options.multiply) {
@@ -1026,7 +1170,10 @@ export const audio = {
 			let hz = startHz;
 			let offset = 0;
 			for (let i = 0; i < numFrames; i++) {
-				hz -= (startHz - endHz) / numFrames / 2;
+				// Reduce hz over time
+				const easingSample = easingFunction(i / numFrames) / numFrames;
+				hz -= (startHz - endHz) * easingSample;
+
 				const period = 1 / hz;
 				const time = i / sampleRate;
 				const phase = (time / period) * TWO_PI;
