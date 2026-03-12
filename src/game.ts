@@ -959,7 +959,6 @@ export async function createGame(registerCards = true) {
 	await game.configuration.import();
 	game.doConfigAi();
 	if (registerCards) {
-		game.audio.setupPlayback();
 		await Card.registerAll();
 	}
 

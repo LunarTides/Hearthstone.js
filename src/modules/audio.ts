@@ -1,16 +1,11 @@
 import type { Metadata } from "@Game/types/pack.ts";
 import type { SFX } from "@Game/types.ts";
-import sdl from "@kmamal/sdl";
+import Speaker from "speaker";
 
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
-let playback: sdl.Sdl.Audio.AudioPlaybackInstance;
-let channels = 0,
-	frequency = 0,
-	bytesPerSample = 0,
-	minSampleValue = 0,
-	maxSampleValue = 0,
-	zeroSampleValue = 0;
+const sampleRate = 48000;
+let speaker: Speaker;
 
 // https://muted.io/note-frequencies/
 export enum Note {
@@ -159,220 +154,406 @@ export const octaves = {
 
 export const sfx = {
 	"ui.delve": async (info: any, options: WaveOptions) => {
-		await game.audio.playWave("sine", 440, 50, 0.3, 0, options);
+		await game.audio.playWave("sine", 440, 50, 0.3, 0, 0, options);
 	},
 
 	"ui.back": async (info: any, options: WaveOptions) => {
-		await game.audio.playWave("sine", 220, 50, 0.3, 0, options);
+		await game.audio.playWave("sine", 220, 50, 0.3, 0, 0, options);
 	},
 
 	"ui.delete": async (info: any, options: WaveOptions) => {
 		// FIXME: Remove popping in-between.
-		game.audio.playSlidingWave("sine", 220, 110, 50, 0.3, 0.0, options);
-		game.audio.playSlidingWave("sine", 110, 220, 50, 0.3, 0.0, options);
+		await game.audio.playSlidingWave(
+			"sine",
+			220,
+			110,
+			50,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
+		await game.audio.playSlidingWave(
+			"sine",
+			110,
+			220,
+			50,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	"ui.leaveLoop": async (info: any, options: WaveOptions) => {
-		await game.audio.playSlidingWave("sine", 440, 220, 100, 0.3, 0.0, options);
-		await game.audio.playSlidingWave("sine", 220, 440, 100, 0.3, 0.0, options);
+		await game.audio.playSlidingWave(
+			"sine",
+			440,
+			220,
+			100,
+			0.3,
+			10,
+			0.0,
+			options,
+		);
+		await game.audio.playSlidingWave(
+			"sine",
+			220,
+			440,
+			100,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	"ui.action1": async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", 440, 50, 0.3, 0.0, options);
-		await game.audio.playSlidingWave("sine", 540, 440, 100, 0.3, 0.0, options);
+		await game.audio.playWave("sine", 440, 50, 0.3, 10, 0.0, options);
+		await game.audio.playSlidingWave(
+			"sine",
+			540,
+			440,
+			100,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	"input.type": async (info: any, options: WaveOptions) => {
-		game.audio.playWave(
+		await game.audio.playWave(
 			"sine",
 			440 + game.lodash.random(-50, 50),
 			10,
 			0.3,
+			0,
 			0.0,
 			options,
 		);
 	},
 
 	"input.backspace": async (info: any, options: WaveOptions) => {
-		game.audio.playWave(
+		await game.audio.playWave(
 			"sine",
 			220 + game.lodash.random(-50, 50),
 			10,
 			0.3,
+			0,
 			0.0,
 			options,
 		);
 	},
 
 	"input.tab": async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", 440, 10, 0.3, 0.0, options);
-		game.audio.wait(10, options);
-		game.audio.playWave("sine", 500, 10, 0.3, 0.0, options);
-		game.audio.wait(10, options);
-		game.audio.playWave("sine", 550, 10, 0.3, 0.0, options);
+		await game.audio.playWave("sine", 440, 10, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", 500, 10, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", 550, 10, 0.3, 0, 0.0, options);
 	},
 
 	"input.arrow.up": async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", octaves[5].A, 10, 0.3, 0.0, options);
-		game.audio.wait(50, options);
-		game.audio.playWave("sine", octaves[5].A, 10, 0.3, 0.0, options);
+		await game.audio.playWave("sine", octaves[5].A, 10, 0.3, 50, 0.0, options);
+		await game.audio.playWave("sine", octaves[5].A, 10, 0.3, 0, 0.0, options);
 	},
 
 	"input.arrow.down": async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", octaves[4].A, 10, 0.3, 0.0, options);
-		game.audio.wait(50, options);
-		game.audio.playWave("sine", octaves[4].A, 10, 0.3, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].A, 10, 0.3, 50, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].A, 10, 0.3, 0, 0.0, options);
 	},
 
 	"input.enter": async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", 880, 10, 0.3, 0.0, options);
+		await game.audio.playWave("sine", 880, 10, 0.3, 0, 0.0, options);
 	},
 
 	"game.playCard": async (info: any, options: WaveOptions) => {
 		// TODO: Make less obnoxious.
-		game.audio.playWave("triangle", octaves[3].A, 150, 0.3, 0.0, options);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			150,
+			0.3,
+			10,
+			0.0,
+			options,
+		);
 
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"triangle",
 			octaves[3].A,
 			octaves[3].C,
 			150,
 			0.3,
+			10,
 			0.0,
 			options,
 		);
 
-		game.audio.playWave("triangle", octaves[3].C, 50, 0.3, 0.0, options);
-		game.audio.playWave("triangle", octaves[3].C_SHARP, 50, 0.3, 0.0, options);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].C,
+			50,
+			0.3,
+			10,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].C_SHARP,
+			50,
+			0.3,
+			10,
+			0.0,
+			options,
+		);
 
-		game.audio.playWave("triangle", octaves[3].A, 150, 0.3, 0.0, options);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			150,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	"game.endTurn": async (info: any, options: WaveOptions) => {
 		// Echo effect.
-		game.audio.playWave("sine", octaves[4].A, 200, 0.2, 0.0, options);
-		game.audio.playWave("sine", octaves[4].A, 200, 0.1, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].A, 200, 0.2, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].A, 200, 0.1, 50, 0.0, options);
 
-		game.audio.wait(50, options);
+		await game.audio.playWave("sine", octaves[4].A, 200, 0.1, 10, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[4].A,
+			200,
+			0.05,
+			50,
+			0.0,
+			options,
+		);
 
-		game.audio.playWave("sine", octaves[4].A, 200, 0.1, 0.0, options);
-		game.audio.playWave("sine", octaves[4].A, 200, 0.05, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[4].A,
+			200,
+			0.05,
+			10,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"sine",
+			octaves[4].A,
+			200,
+			0.025,
+			50,
+			0.0,
+			options,
+		);
 
-		game.audio.wait(50, options);
-
-		game.audio.playWave("sine", octaves[4].A, 200, 0.05, 0.0, options);
-		game.audio.playWave("sine", octaves[4].A, 200, 0.025, 0.0, options);
-
-		game.audio.wait(50, options);
-
-		game.audio.playWave("sine", octaves[4].A, 200, 0.025, 0.0, options);
-		game.audio.playWave("sine", octaves[4].A, 200, 0.0125, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[4].A,
+			200,
+			0.025,
+			10,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"sine",
+			octaves[4].A,
+			200,
+			0.0125,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	error: async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", 220, 50, 0.3, 0.0, options);
-		game.audio.wait(50, options);
-		game.audio.playWave("sine", 110, 100, 0.3, 0.0, options);
+		await game.audio.playWave("sine", 220, 50, 0.3, 50, 0.0, options);
+		await game.audio.playWave("sine", 110, 100, 0.3, 0, 0.0, options);
 	},
 
 	unnamed1: async (info: any, options: WaveOptions) => {
-		game.audio.playWave("sine", octaves[5].A, 100, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[6].C_SHARP, 200, 0.3, 0.0, options);
+		await game.audio.playWave("sine", octaves[5].A, 100, 0.3, 10, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[6].C_SHARP,
+			200,
+			0.3,
+			50,
+			0.0,
+			options,
+		);
 
-		game.audio.wait(25, options);
-
-		game.audio.playWave("sine", octaves[5].G_SHARP, 50, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[5].A, 50, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[6].C_SHARP, 200, 0.3, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[5].G_SHARP,
+			50,
+			0.3,
+			10,
+			0.0,
+			options,
+		);
+		await game.audio.playWave("sine", octaves[5].A, 50, 0.3, 10, 0.0, options);
+		await game.audio.playWave(
+			"sine",
+			octaves[6].C_SHARP,
+			200,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 	},
 
 	soundTest: async (info: any, options: WaveOptions) => {
 		// C-Major Scale
-		game.audio.playWave("sine", octaves[4].C, 200, 2, 0.0, options);
-		game.audio.playWave("sine", octaves[4].D, 200, 1, 0.0, options);
-		game.audio.playWave("sine", octaves[4].E, 200, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[4].F, 200, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[4].G, 200, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[4].A, 200, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[4].B, 200, 0.3, 0.0, options);
-		game.audio.playWave("sine", octaves[5].C, 200, 0.3, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].C, 200, 2, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].D, 200, 1, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].E, 200, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].F, 200, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].G, 200, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].A, 200, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[4].B, 200, 0.3, 10, 0.0, options);
+		await game.audio.playWave("sine", octaves[5].C, 200, 0.3, 10, 0.0, options);
 
 		// Square Test
-		game.audio.playWave("square", octaves[0].C, 500, 0.3, 0.9, options);
-		game.audio.playWave("square", octaves[1].C, 500, 0.3, 0.75, options);
-		game.audio.playWave("square", octaves[2].C, 1000, 0.3, 0.5, options);
-		game.audio.playWave("square", octaves[3].C, 500, 0.3, 0.25, options);
-		game.audio.playWave("square", octaves[4].C, 500, 0.3, 0.1, options);
-		game.audio.playWave("square", octaves[5].C, 500, 0.3, 0.1, options);
+		await game.audio.playWave(
+			"square",
+			octaves[0].C,
+			500,
+			0.3,
+			10,
+			0.9,
+			options,
+		);
+		await game.audio.playWave(
+			"square",
+			octaves[1].C,
+			500,
+			0.3,
+			10,
+			0.75,
+			options,
+		);
+		await game.audio.playWave(
+			"square",
+			octaves[2].C,
+			1000,
+			0.3,
+			10,
+			0.5,
+			options,
+		);
+		await game.audio.playWave(
+			"square",
+			octaves[3].C,
+			500,
+			0.3,
+			10,
+			0.25,
+			options,
+		);
+		await game.audio.playWave(
+			"square",
+			octaves[4].C,
+			500,
+			0.3,
+			10,
+			0.1,
+			options,
+		);
+		await game.audio.playWave(
+			"square",
+			octaves[5].C,
+			500,
+			0.3,
+			10,
+			0.1,
+			options,
+		);
 
 		// Saw Test
-		game.audio.playWave("saw", octaves[0].C, 500, 0.3, 0.0, options);
-		game.audio.playWave("saw", octaves[1].C, 500, 0.3, 0.0, options);
-		game.audio.playWave("saw", octaves[2].C, 1000, 0.3, 0.0, options);
-		game.audio.playWave("saw", octaves[3].C, 500, 0.3, 0.0, options);
-		game.audio.playWave("saw", octaves[4].C, 500, 0.3, 0.0, options);
-		game.audio.playWave("saw", octaves[5].C, 500, 0.3, 0.0, options);
+		await game.audio.playWave("saw", octaves[0].C, 500, 0.3, 10, 0.0, options);
+		await game.audio.playWave("saw", octaves[1].C, 500, 0.3, 10, 0.0, options);
+		await game.audio.playWave("saw", octaves[2].C, 1000, 0.3, 10, 0.0, options);
+		await game.audio.playWave("saw", octaves[3].C, 500, 0.3, 10, 0.0, options);
+		await game.audio.playWave("saw", octaves[4].C, 500, 0.3, 10, 0.0, options);
+		await game.audio.playWave("saw", octaves[5].C, 500, 0.3, 10, 0.0, options);
 
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"sine",
 			octaves[6].C,
 			octaves[7].C,
 			500,
 			0.3,
+			10,
 			0.0,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"saw",
 			octaves[2].C,
 			octaves[3].C,
 			500,
 			0.3,
+			10,
 			0.0,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"triangle",
 			octaves[2].C,
 			octaves[3].C,
 			500,
 			0.3,
+			10,
 			0.0,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"square",
 			octaves[3].C,
 			octaves[4].C,
 			500,
 			0.3,
+			10,
 			0.9,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"square",
 			octaves[4].C,
 			octaves[2].C,
 			500,
 			0.3,
+			10,
 			0.9,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"square",
 			octaves[6].C,
 			octaves[1].C,
 			1000,
 			0.3,
+			10,
 			0.1,
 			options,
 		);
-		game.audio.playSlidingWave(
+		await game.audio.playSlidingWave(
 			"square",
 			octaves[8].C,
 			octaves[0].C,
 			5000,
 			0.3,
+			10,
 			0.1,
 			options,
 		);
@@ -380,49 +561,204 @@ export const sfx = {
 		// Test Song
 		options.multiply.duration /= 2;
 
-		game.audio.playWave("triangle", octaves[3].C, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].D, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].E, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].F, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].G, 1000, 0.3, 0.0, options);
-		game.audio.wait(100, options);
-		game.audio.playWave("triangle", octaves[3].G, 1000, 0.3, 0.0, options);
-		game.audio.wait(100, options);
-		game.audio.playWave("triangle", octaves[3].A, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].A, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].A, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].A, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].G, 1000, 0.3, 0.0, options);
-		game.audio.wait(1000, options);
-		game.audio.playWave("triangle", octaves[3].F, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].F, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].F, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].F, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].E, 1000, 0.3, 0.0, options);
-		game.audio.wait(100, options);
-		game.audio.playWave("triangle", octaves[3].E, 1000, 0.3, 0.0, options);
-		game.audio.wait(100, options);
-		game.audio.playWave("triangle", octaves[3].D, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].D, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].D, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].D, 500, 0.3, 0.0, options);
-		game.audio.wait(25, options);
-		game.audio.playWave("triangle", octaves[3].C, 1000, 0.3, 0.0, options);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].C,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].D,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].E,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].F,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].G,
+			1000,
+			0.3,
+			100,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].G,
+			1000,
+			0.3,
+			100,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].A,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].G,
+			1000,
+			0.3,
+			1000,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].F,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].F,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].F,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].F,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].E,
+			1000,
+			0.3,
+			100,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].E,
+			1000,
+			0.3,
+			100,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].D,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].D,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].D,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].D,
+			500,
+			0.3,
+			25,
+			0.0,
+			options,
+		);
+		await game.audio.playWave(
+			"triangle",
+			octaves[3].C,
+			1000,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
 
 		options.multiply.duration *= 2;
 	},
@@ -441,7 +777,7 @@ const waveTypeFunctions = {
 	square: (phase: number, dutyCycle: number) =>
 		Math.cos(2 * phase) - Math.cos(PI * dutyCycle) >= 0 ? 1 : 0,
 	saw: (phase: number) => 2 * (phase / PI - Math.floor(0.5 + phase / PI)),
-	noise: (phase: number) => Math.cos(phase * Math.random()),
+	noise: (phase: number) => Math.random(),
 };
 
 export interface WaveOptions {
@@ -450,6 +786,7 @@ export interface WaveOptions {
 		hz: number;
 		volume: number;
 	};
+	sequential: boolean;
 }
 
 export const audio = {
@@ -483,6 +820,7 @@ export const audio = {
 					...rawOptions?.options?.multiply,
 				},
 
+				sequential: true,
 				...rawOptions?.options,
 			},
 		};
@@ -524,70 +862,28 @@ export const audio = {
 	/**
 	 * Setup the game to play sounds. Don't worry about this :)
 	 */
-	setupPlayback() {
+	createSpeaker() {
 		if (game.config.audio.disable) {
 			return;
 		}
 
-		this.close();
+		if (speaker) {
+			return speaker;
+		}
 
 		try {
-			playback = sdl.audio.openDevice({ type: "playback" });
+			speaker = new Speaker({
+				sampleRate,
+				channels: 2,
+				bitDepth: 16,
+			});
 		} catch {
 			// No audio device. It's fine...
 			game.interest("Opening audio device failed.");
 			return;
 		}
 
-		channels = playback.channels;
-		frequency = playback.frequency;
-		bytesPerSample = playback.bytesPerSample;
-		minSampleValue = playback.minSampleValue;
-		maxSampleValue = playback.maxSampleValue;
-		zeroSampleValue = playback.zeroSampleValue;
-	},
-
-	/**
-	 * Close the audio channel.
-	 */
-	close() {
-		if (game.config.audio.disable || !playback) {
-			return;
-		}
-
-		playback.close();
-	},
-
-	/**
-	 * Adds a pause to the audio stream.
-	 *
-	 * @param durationMs How many milliseconds to pause for.
-	 */
-	async wait(durationMs: number, options: Partial<WaveOptions>) {
-		if (game.config.audio.disable) {
-			return;
-		}
-
-		// Multiply
-		if (options.multiply) {
-			durationMs *= options.multiply.duration;
-		}
-
-		// Write empty bytes to the channel.
-		const numFrames = (durationMs / 1000) * frequency;
-		const numSamples = numFrames * channels;
-		const numBytes = numSamples * bytesPerSample;
-		const buffer = Buffer.alloc(numBytes);
-
-		let offset = 0;
-		for (let i = 0; i < numFrames; i++) {
-			for (let j = 0; j < channels; j++) {
-				offset = playback.writeSample(buffer, zeroSampleValue, offset);
-			}
-		}
-
-		playback.enqueue(buffer);
-		playback.play();
+		return speaker;
 	},
 
 	/**
@@ -607,12 +903,18 @@ export const audio = {
 		hz: number,
 		durationMs: number,
 		volume: number = 0.3,
+		delayAfterMs: number = 0,
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
-	) {
+	): Promise<void> {
 		// NOTE: `game.config` can be undefined here since this gets called before the config file is loaded
 		// for some reason.
 		if (game.config?.audio.disable) {
+			return;
+		}
+
+		const speaker = this.createSpeaker();
+		if (!speaker) {
 			return;
 		}
 
@@ -623,34 +925,51 @@ export const audio = {
 		if (options.multiply) {
 			hz *= options.multiply.hz;
 			durationMs *= options.multiply.duration;
+			delayAfterMs *= options.multiply.duration;
 			volume *= options.multiply.volume;
 		}
 
-		const range = maxSampleValue - minSampleValue;
-
-		const amplitude = (range / 2) * volume;
 		const period = 1 / hz;
 
-		const numFrames = (durationMs / 1000) * frequency;
-		const numSamples = numFrames * channels;
-		const numBytes = numSamples * bytesPerSample;
+		const numFrames = Math.floor((durationMs / 1000) * sampleRate);
+		const numSamples = numFrames * 2;
+		const numBytes = numSamples * 2; // 16 bits = 2 bytes
 		const buffer = Buffer.alloc(numBytes);
 
-		let offset = 0;
-		for (let i = 0; i < numFrames; i++) {
-			const time = i / frequency;
-			const phase = (time / period) * TWO_PI;
+		return new Promise((resolve, reject) => {
+			let offset = 0;
+			for (let i = 0; i < numFrames; i++) {
+				const time = i / sampleRate;
+				const phase = (time / period) * TWO_PI;
 
-			const sample =
-				zeroSampleValue + waveGenerator(phase, dutyCycle) * amplitude;
+				let sample = waveGenerator(phase, dutyCycle) * volume;
+				sample = Math.max(-1, Math.min(1, sample));
+				sample = Math.round(sample * 32767);
 
-			for (let j = 0; j < channels; j++) {
-				offset = playback.writeSample(buffer, sample, offset);
+				// Write to both channels (stereo)
+				buffer.writeInt16LE(sample, offset);
+				buffer.writeInt16LE(sample, offset + 2);
+				offset += 4;
 			}
-		}
 
-		playback.enqueue(buffer);
-		playback.play();
+			if (options.sequential) {
+				const onDrain = () => {
+					speaker.removeListener("drain", onDrain);
+
+					if (delayAfterMs > 0) {
+						setTimeout(() => resolve(), delayAfterMs);
+					} else {
+						resolve();
+					}
+				};
+
+				speaker.once("drain", onDrain);
+				speaker.write(buffer);
+			} else {
+				speaker.write(buffer);
+				resolve();
+			}
+		});
 	},
 
 	/**
@@ -671,9 +990,10 @@ export const audio = {
 		endHz: number,
 		durationMs: number,
 		volume: number = 0.3,
+		delayAfterMs: number = 0,
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
-	) {
+	): Promise<void> {
 		// NOTE: `game.config` can be undefined here since this gets called before the config file is loaded
 		// for some reason.
 		if (game.config?.audio.disable) {
@@ -688,35 +1008,56 @@ export const audio = {
 			startHz *= options.multiply.hz;
 			endHz *= options.multiply.hz;
 			durationMs *= options.multiply.duration;
+			delayAfterMs *= options.multiply.duration;
 			volume *= options.multiply.volume;
 		}
 
-		const range = maxSampleValue - minSampleValue;
-
-		const amplitude = (range / 2) * volume;
-
-		const numFrames = (durationMs / 1000) * frequency;
-		const numSamples = numFrames * channels;
-		const numBytes = numSamples * bytesPerSample;
+		const numFrames = Math.floor((durationMs / 1000) * sampleRate);
+		const numSamples = numFrames * 2; // 16 bits = 2 bytes
+		const numBytes = numSamples * 2;
 		const buffer = Buffer.alloc(numBytes);
 
-		let hz = startHz;
-		let offset = 0;
-		for (let i = 0; i < numFrames; i++) {
-			hz -= (startHz - endHz) / numFrames / 2;
-			const period = 1 / hz;
-			const time = i / frequency;
-			const phase = (time / period) * TWO_PI;
-
-			const sample =
-				zeroSampleValue + waveGenerator(phase, dutyCycle) * amplitude;
-
-			for (let j = 0; j < channels; j++) {
-				offset = playback.writeSample(buffer, sample, offset);
-			}
+		const speaker = this.createSpeaker();
+		if (!speaker) {
+			return;
 		}
 
-		playback.enqueue(buffer);
-		playback.play();
+		return new Promise((resolve, reject) => {
+			let hz = startHz;
+			let offset = 0;
+			for (let i = 0; i < numFrames; i++) {
+				hz -= (startHz - endHz) / numFrames / 2;
+				const period = 1 / hz;
+				const time = i / sampleRate;
+				const phase = (time / period) * TWO_PI;
+
+				let sample = waveGenerator(phase, dutyCycle) * volume;
+				sample = Math.max(-1, Math.min(1, sample));
+				sample = Math.round(sample * 32767);
+
+				// Write to both channels (stereo)
+				buffer.writeInt16LE(sample, offset);
+				buffer.writeInt16LE(sample, offset + 2);
+				offset += 4;
+			}
+
+			if (options.sequential) {
+				const onDrain = () => {
+					speaker.removeListener("drain", onDrain);
+
+					if (delayAfterMs > 0) {
+						setTimeout(() => resolve(), delayAfterMs);
+					} else {
+						resolve();
+					}
+				};
+
+				speaker.once("drain", onDrain);
+				speaker.write(buffer);
+			} else {
+				speaker.write(buffer);
+				resolve();
+			}
+		});
 	},
 };

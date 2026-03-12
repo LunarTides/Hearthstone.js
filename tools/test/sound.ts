@@ -22,6 +22,7 @@ export async function main() {
 			hz: 1,
 			volume: 1,
 		},
+		sequential: true,
 	};
 	let lastPlayed = "";
 
