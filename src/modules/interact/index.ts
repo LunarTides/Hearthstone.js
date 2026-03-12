@@ -33,7 +33,13 @@ console.error = (...data) => {
 // Exit on ctrl+c
 process.on("uncaughtException", (error) => {
 	if (error instanceof Error && error.name === "ExitPromptError") {
+		// Close audio so that the user doesn't have to wait until the audio is done playing.
+		game.audio.close();
 	} else {
+		if (error.message === "write() failed: 0") {
+			return;
+		}
+
 		rawConsole.error(error.stack);
 		throw error;
 	}

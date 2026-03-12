@@ -1,5 +1,5 @@
 import { createGame } from "@Game/game.ts";
-import { sfx } from "@Game/modules/audio.ts";
+import { sfx } from "@Game/modules/audio/sfx.ts";
 import { Separator, search } from "@inquirer/prompts";
 import * as hub from "../../hub.ts";
 

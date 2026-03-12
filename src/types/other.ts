@@ -1,5 +1,5 @@
 import type { Card } from "@Game/card.ts";
-import type { WaveOptions } from "@Game/modules/audio.ts";
+import type { WaveOptions } from "@Game/modules/audio/audio.ts";
 import type { Player } from "@Game/player.ts";
 import type { Ability, Blueprint, Event } from "@Game/types.ts";
 

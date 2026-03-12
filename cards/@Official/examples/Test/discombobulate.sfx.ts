@@ -1,4 +1,4 @@
-import { octaves } from "@Game/modules/audio.ts";
+import { octaves } from "@Game/modules/audio/audio.ts";
 import type { SFX } from "@Game/types.ts";
 
 export const sfx: SFX = {

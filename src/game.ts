@@ -21,7 +21,7 @@ import {
 import _ from "lodash";
 import cardIds from "../cards/ids.ts";
 import { attack } from "./modules/attack.ts";
-import { audio } from "./modules/audio.ts";
+import { audio } from "./modules/audio/audio.ts";
 import { card } from "./modules/card/index.ts";
 import { playCard } from "./modules/card/play.ts";
 import { color } from "./modules/color.ts";

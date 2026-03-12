@@ -27,7 +27,7 @@ import {
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
 import { addCommand } from "./commands.ts";
-import { addSFX } from "./modules/audio.ts";
+import { addSFX } from "./modules/audio/sfx.ts";
 import { historyTree } from "./modules/event.ts";
 import { PackValidationResult } from "./types/pack.ts";
 
