@@ -11,7 +11,11 @@ import {
 	getPermissions,
 	importPack,
 } from "./packager.ts";
-import type { RegBot } from "./regbot.ts";
+import {
+	getAPITokensFromEnv,
+	type RegBot,
+	saveAPITokensToDotEnv,
+} from "./regbot.ts";
 
 // This will be set to true after changing a metadata configuration value.
 let dirty = false;
@@ -437,7 +441,17 @@ export async function configureMetadata(metadata: Metadata) {
 	return success;
 }
 
-export async function promptForAPIToken(regbot: RegBot) {
+export async function requireAPIToken(regbot: RegBot) {
+	let currentToken: string | undefined;
+	try {
+		({ currentToken } = await getAPITokensFromEnv());
+	} catch {}
+
+	if (currentToken) {
+		regbot.useOptions({ token: currentToken });
+		return true;
+	}
+
 	if (regbot.getOptions().token) {
 		return true;
 	}
@@ -454,32 +468,15 @@ export async function promptForAPIToken(regbot: RegBot) {
 	);
 	console.log("4. Give it the scope 'packs.upload' at minimum.");
 	console.log(
-		"5. After creation, you will see the token. You <i>cannot</i> see the token again after this point. Copy and paste that token here.",
+		"5. After creation, you will see the token. You <i>cannot</i> see the token again after this point.",
+	);
+	console.log(
+		"6. Click enter, then go to 'API Tokens'. Select 'New', then type in the required details.",
 	);
 	console.log();
 
-	const token = await game.input({
-		message: "Token:",
-	});
-
-	if (!token) {
-		return false;
-	}
-
-	let dotenvContent = "";
-	if (await game.fs.call("exists", "/.env")) {
-		dotenvContent = (await game.fs.call("readFile", "/.env")) as string;
-		dotenvContent += "\n";
-	}
-
-	const tokenEnvEntry = `REGISTRY_API_TOKEN='${token}'`;
-	await game.fs.call("writeFile", "/.env", `${dotenvContent}${tokenEnvEntry}`);
-
-	regbot.useOptions({
-		token,
-	});
-
-	return true;
+	await game.pause();
+	return false;
 }
 
 export const registry = {
@@ -515,11 +512,79 @@ export const registry = {
 				new Separator(),
 				{
 					name: "API Tokens",
-					disabled: true,
 					callback: async () => {
-						await registry.upload.prompt(regbot);
+						await registry.apiTokens(regbot);
 						return true;
 					},
+				},
+			],
+		);
+	},
+
+	apiTokens: async (regbot: RegBot) => {
+		let tokens: Dict<string> = {};
+		let currentToken: string | undefined;
+
+		try {
+			({ tokens, currentToken } = await getAPITokensFromEnv());
+		} catch {
+			// No saved tokens, that's fine.
+		}
+
+		await hub.createUILoop(
+			{
+				message: "Registry Options > API Tokens",
+				seperatorBeforeBackButton: false,
+				dynamicChoices: true,
+				default: async () =>
+					currentToken ? Object.values(tokens).indexOf(currentToken) : 0,
+				callbackBefore: async () => {
+					hub.watermark(false);
+					dirty = false;
+
+					try {
+						({ tokens, currentToken } = await getAPITokensFromEnv());
+					} catch {
+						// No saved tokens, that's fine.
+					}
+				},
+			},
+			async () => [
+				...Object.entries(tokens).map(([key, value]) => ({
+					name: value === currentToken ? `<green>${key}</green>` : key,
+					callback: async (answer: number) => {
+						regbot.useOptions({ token: value });
+						await saveAPITokensToDotEnv(tokens, key);
+						return true;
+					},
+				})),
+				{
+					name: "New",
+					callback: async () => {
+						const name = await game.input({
+							message: "Name (can be anything): ",
+						});
+						if (!name) {
+							return true;
+						}
+
+						const token = await game.input({
+							message: "Token: ",
+						});
+						if (!token) {
+							return true;
+						}
+
+						tokens[name] = token;
+						await saveAPITokensToDotEnv(tokens, name);
+
+						regbot.useOptions({ token });
+						return true;
+					},
+				},
+				new Separator(),
+				{
+					name: "Refresh",
 				},
 			],
 		);
@@ -640,7 +705,7 @@ export const registry = {
 			hub.watermark(false);
 			console.log("<cyan>?</cyan> <b>Registry Options > Upload</b>");
 
-			if (!(await promptForAPIToken(regbot))) {
+			if (!(await requireAPIToken(regbot))) {
 				return;
 			}
 
@@ -682,7 +747,11 @@ export const registry = {
 								game.audio.playSFX("error");
 								console.log(`<red>ERROR: ${error.message} (${error.status})`);
 
-								if (
+								if (error.message === "Please log in.") {
+									console.log(
+										`<yellow>HINT: The token is invalid. Has it been deleted?</yellow>`,
+									);
+								} else if (
 									error.message ===
 									"This request is outside the scope of this token."
 								) {

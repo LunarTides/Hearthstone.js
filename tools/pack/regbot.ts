@@ -35,18 +35,8 @@ export class RegBot {
 
 	constructor(options: Partial<RegBotOptions>) {
 		// Load dotenv file.
-		try {
-			process.loadEnvFile("../../.env");
-		} catch {}
-
-		let token = "";
-		if (process.env.REGISTRY_API_TOKEN) {
-			token = process.env.REGISTRY_API_TOKEN;
-		}
-
 		this.#options = {
 			...defaultOptions,
-			token,
 			...options,
 		};
 
@@ -265,3 +255,83 @@ class User extends PackOwner {
 }
 
 class Group extends PackOwner {}
+
+async function loadEnvFile() {
+	if (!(await game.fs.call("exists", "/.env"))) {
+		return;
+	}
+
+	const content = (await game.fs.call("readFile", "/.env", "utf8", {
+		invalidateCache: true,
+	})) as string;
+	const entries = content
+		.trim()
+		.split("\n")
+		.map((e) => {
+			// Make sure that only the first '=' is split. Otherwise it interferes with base64.
+			const split = e.split("=");
+			return [split[0], split.slice(1).join("=")];
+		});
+
+	for (const entry of entries) {
+		process.env[entry[0]] =
+			// Remove leading and trailing ' and "
+			entry[1].startsWith("'") || entry[1].startsWith('"')
+				? entry[1].substring(1, entry[1].length - 1)
+				: entry[1];
+	}
+}
+
+export async function getAPITokensFromEnv(): Promise<{
+	tokens: Dict<string>;
+	currentToken: string | undefined;
+}> {
+	await loadEnvFile();
+
+	const tokensEntry = process.env.REGISTRY_API_TOKENS;
+	if (!tokensEntry) {
+		throw new Error("Could not get 'REGISTRY_API_TOKENS' env value.");
+	}
+
+	const currentTokenEntry = process.env.REGISTRY_API_CURRENT_TOKEN;
+
+	const tokens = JSON.parse(tokensEntry);
+	const currentToken = currentTokenEntry && tokens[currentTokenEntry];
+
+	return { tokens, currentToken };
+}
+
+export async function saveAPITokensToDotEnv(
+	tokens: Dict<string>,
+	currentToken?: string,
+) {
+	let dotenvContent = "";
+	if (await game.fs.call("exists", "/.env")) {
+		dotenvContent = (await game.fs.call("readFile", "/.env")) as string;
+
+		// Replace existing entry.
+		dotenvContent = dotenvContent.replace(/REGISTRY_API_TOKENS.*/, "");
+		if (currentToken !== undefined) {
+			dotenvContent = dotenvContent.replace(/REGISTRY_API_CURRENT_TOKEN.*/, "");
+		}
+
+		// Add trailing newline if neccessary.
+		dotenvContent = dotenvContent.trim();
+		if (dotenvContent) {
+			dotenvContent += "\n";
+		}
+	}
+
+	const newContent = [];
+	const encodedTokens = JSON.stringify(tokens);
+	newContent.push(`REGISTRY_API_TOKENS='${encodedTokens}'`);
+
+	if (currentToken !== undefined) {
+		newContent.push(`REGISTRY_API_CURRENT_TOKEN='${currentToken}'`);
+	}
+
+	await Bun.write(
+		game.fs.restrictPath("/.env"),
+		`${dotenvContent}${newContent.join("\n")}`,
+	);
+}

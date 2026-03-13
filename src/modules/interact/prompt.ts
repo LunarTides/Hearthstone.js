@@ -25,7 +25,7 @@ export const UILoopDefaultOptions = {
 	message: "Options" as string,
 	seperatorBeforeBackButton: true as boolean,
 	backButtonText: "Back" as string,
-	default: undefined as number | undefined,
+	default: undefined as number | (() => Promise<number>) | undefined,
 	dynamicChoices: false as boolean,
 };
 
@@ -218,7 +218,10 @@ export const prompt = {
 				{
 					hideBack: true,
 					arrayTransform: undefined,
-					default: options.default ? options.default.toString() : undefined,
+					default:
+						typeof options.default === "number"
+							? options.default.toString()
+							: ((await options.default?.())?.toString() ?? undefined),
 				},
 				...choices.map((choice, i) => ({
 					...choice,
