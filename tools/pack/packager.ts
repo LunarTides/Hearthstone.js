@@ -136,11 +136,7 @@ async function importPack(
 ) {
 	const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 	if (pack.compressed) {
-		const archive = new Bun.Archive(pack.bytes);
-		await game.fs.call("mkdir", folderPath);
-		await archive.extract(folderPath);
-		await game.fs.call("rm", pack.path);
-
+		await extractPack(pack.path);
 		pack.path = folderPath;
 		pack.compressed = false;
 	}
@@ -255,11 +251,7 @@ async function exportPack(pack?: Pack) {
 	if (pack) {
 		const folderPath = `${pack.parentPath}/${pack.ownerName}+${pack.name}`;
 		if (pack.compressed) {
-			const archive = new Bun.Archive(pack.bytes);
-			await game.fs.call("mkdir", folderPath);
-			await archive.extract(folderPath);
-			await game.fs.call("rm", pack.path);
-
+			await extractPack(pack.path);
 			pack.path = folderPath;
 			pack.compressed = false;
 		}
@@ -339,14 +331,7 @@ async function exportPack(pack?: Pack) {
 	);
 
 	await game.pause(
-		`<green>Done.</green>\n\nNext steps:\n1. Check the cards in '/packs/${author}+${name}'. Add / remove the cards you want in the pack.\n2. Press enter to compress...`,
-	);
-
-	// Add files to archive.
-	await compressPack(`/packs/${author}+${name}`);
-
-	await game.pause(
-		`<green>Done.</green> Send the compressed file to whoever you'd like.\n`,
+		`<green>Done.</green>\n\nNext steps:\n1. Check out '/packs/${author}+${name}'. Add / remove the files you want in the pack.\n2. Choose 'Compress' then send the file to whoever you want, alternatively, upload to the registry using 'Registry > Upload'.`,
 	);
 
 	return true;
@@ -380,12 +365,28 @@ async function compressPack(path: string) {
 	});
 }
 
-async function promptExportPack() {
+async function extractPack(path: string) {
+	const stats = await game.fs.call("stat", path);
+	if (!stats.isFile()) {
+		return;
+	}
+
+	const bytes = (await fs.readFile(path)) as Buffer<ArrayBuffer>;
+
+	const folderPath = path.replace(".tar.gz", "");
+
+	const archive = new Bun.Archive(bytes);
+	await game.fs.call("mkdir", folderPath);
+	await archive.extract(folderPath);
+	await game.fs.call("rm", path, { recursive: true });
+}
+
+async function promptEditPack() {
 	let packs = await getPacks();
 
 	await hub.createUILoop(
 		{
-			message: "Export a Pack",
+			message: "Create / Edit",
 			backButtonText: "Done",
 			seperatorBeforeBackButton: false,
 			dynamicChoices: true,
@@ -414,6 +415,60 @@ async function promptExportPack() {
 					return true;
 				},
 			},
+			new Separator(),
+			{
+				name: "Refresh",
+			},
+		],
+	);
+}
+
+async function promptCompressPack() {
+	let packs = await getPacks();
+
+	await hub.createUILoop(
+		{
+			message: "Compress",
+			backButtonText: "Done",
+			seperatorBeforeBackButton: false,
+			dynamicChoices: true,
+			callbackBefore: async () => {
+				hub.watermark(false);
+				console.log("The pack are stored in the '/packs' folder.");
+				console.log("Compressed packs have the extension '.tar.gz'.");
+				console.log(
+					"<red>Red</red> = Compressed, <green>Green</green> = Extracted",
+				);
+				console.log();
+
+				dirty = false;
+				packs = await getPacks();
+			},
+		},
+		async () => [
+			...packs.map((p) => ({
+				name: parseTags(
+					p.path.endsWith(".tar.gz")
+						? `<red>@${p.ownerName}/${p.name}</red>`
+						: `<green>@${p.ownerName}/${p.name}</green>`,
+				),
+				defaultAudio: false,
+				callback: async (answer: number) => {
+					const pack = packs.at(answer);
+					if (!pack) {
+						return true;
+					}
+
+					game.audio.playSFX("ui.action1");
+
+					if (p.path.endsWith(".tar.gz")) {
+						await extractPack(pack.path);
+					} else {
+						await compressPack(pack.path);
+					}
+					return true;
+				},
+			})),
 			new Separator(),
 			{
 				name: "Refresh",
@@ -786,6 +841,15 @@ const registry = {
 						return true;
 					},
 				},
+				new Separator(),
+				{
+					name: "API Tokens",
+					disabled: true,
+					callback: async () => {
+						await registry.upload.prompt();
+						return true;
+					},
+				},
 			],
 		);
 	},
@@ -980,16 +1044,23 @@ export async function main() {
 		},
 		async () => [
 			{
-				name: "Export a Pack",
+				name: "Create / Edit",
 				callback: async () => {
-					await promptExportPack();
+					await promptEditPack();
 					return true;
 				},
 			},
 			{
-				name: "Import a Pack",
+				name: "Import Locally",
 				callback: async () => {
 					await promptImportPack();
+					return true;
+				},
+			},
+			{
+				name: "Compress / Extract",
+				callback: async () => {
+					await promptCompressPack();
 					return true;
 				},
 			},

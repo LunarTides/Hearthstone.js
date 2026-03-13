@@ -193,15 +193,15 @@ export const prompt = {
 		choices = choices.filter((choice) => choice !== false);
 
 		while (true) {
+			if (options.callbackBefore) {
+				await options.callbackBefore();
+			}
+
 			if (options.dynamicChoices) {
 				choices = await choicesGenerator();
 
 				// Filter out invalid choices.
 				choices = choices.filter((choice) => choice !== false);
-			}
-
-			if (options.callbackBefore) {
-				await options.callbackBefore();
 			}
 
 			// Find an existing back option.
