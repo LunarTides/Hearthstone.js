@@ -22,7 +22,7 @@
 		"@inquirer/prompts": "^8.2.0",
 		"axios": "^1.13.5",
 		"boxen": "^8.0.1",
-		"bun": "^1.3.9",
+		"bun": "^1.3.10",
 		"chalk-tags": "^1.1.3",
 		"commander": "^14.0.3",
 		"date-and-time": "^4.1.0",
@@ -33,7 +33,7 @@
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.5",
 		"@hearthstonejs/vanillatypes": "^5.3.0",
-		"@types/bun": "^1.3.9",
+		"@types/bun": "^1.3.10",
 		"@types/lodash": "^4.17.21"
 	},
 	"trustedDependencies": [
