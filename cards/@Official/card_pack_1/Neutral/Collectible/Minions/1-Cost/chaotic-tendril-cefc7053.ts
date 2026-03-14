@@ -28,15 +28,12 @@ export const blueprint: Blueprint = {
 
 	async battlecry(self, owner) {
 		// Cast a random 1-Cost spell. Improve your future Chaotic Tendrils.
-		const pool = (await Card.all()).filter(
-			(card) => card.type === Type.Spell && card.cost === 1,
-		);
-
-		const spell = await game.lodash.sample(pool)?.imperfectCopy();
-
-		if (spell) {
-			await spell.trigger(Ability.Cast);
+		const { card } = await Card.pool({}, ["cost1", "spells"]);
+		if (!card) {
+			return;
 		}
+
+		await card.trigger(Ability.Cast);
 
 		// TODO: Improve your future Chaotic Tendrils. #372
 	},

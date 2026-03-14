@@ -22,7 +22,7 @@ import {
 	type SpellSchool,
 	type Tag,
 	type Target,
-	type Tribe,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
@@ -41,6 +41,30 @@ export class CardError extends Error {
 		this.name = "CardError";
 	}
 }
+
+const poolFilters = {
+	all: (card: Card) => true,
+
+	cost0: (card: Card) => card.cost === 0,
+	cost1: (card: Card) => card.cost === 1,
+	cost2: (card: Card) => card.cost === 2,
+	cost3: (card: Card) => card.cost === 3,
+	cost4: (card: Card) => card.cost === 4,
+	cost5: (card: Card) => card.cost === 5,
+	cost6: (card: Card) => card.cost === 6,
+	cost7: (card: Card) => card.cost === 7,
+	cost8: (card: Card) => card.cost === 8,
+	cost9: (card: Card) => card.cost === 9,
+	cost10: (card: Card) => card.cost === 10,
+
+	minions: (card: Card) => card.type === Type.Minion,
+	spells: (card: Card) => card.type === Type.Spell,
+
+	demon: (card: Card) =>
+		card.tribes !== undefined && game.card.matchTribe(card.tribes, Tribe.Demon),
+
+	priest: (card: Card) => game.card.validateClasses(card.classes, Class.Priest),
+};
 
 export class Card {
 	/**
@@ -474,6 +498,74 @@ export class Card {
 		return (await Card.all(true)).filter((c) =>
 			tags.every((tag) => c.tags.includes(tag)),
 		);
+	}
+
+	/**
+	 * Create a pool of all cards that match the filters.
+	 *
+	 * # Example
+	 * ```ts
+	 * // Get a pool of all cards that are spells OR (cards that are demons AND minions) OR cards that are heroes.
+	 * const { pool, card } = await Card.pool({}, "spell", ["demon", "minions"], "heroes");
+	 *
+	 * // The random card is already ready to be used.
+	 * game.summon(card, game.player);
+	 * ```
+	 *
+	 * @param param0 Some options
+	 * @param filters The filters the cards have to match to be included in the pool.
+	 * @returns The pool, a random card, and if the `amount` option is more than 1, the `cards` value is the random cards.
+	 */
+	static async pool(
+		{ includeUncollectible = false, amount = 1 },
+		...filters: (
+			| keyof typeof poolFilters
+			| ((card: Card) => boolean)
+			| (keyof typeof poolFilters | ((card: Card) => boolean))[]
+		)[]
+	): Promise<{ pool: Card[]; card?: Card; cards?: Card[] }> {
+		const pool = (await Card.all(includeUncollectible)).filter((card) => {
+			let keep = false;
+
+			for (const filter of filters) {
+				if (Array.isArray(filter)) {
+					let combinedKeep = true;
+
+					for (const f of filter) {
+						const filterFunction = typeof f === "string" ? poolFilters[f] : f;
+						combinedKeep &&= filterFunction(card);
+					}
+
+					keep ||= combinedKeep;
+					continue;
+				}
+
+				const filterFunction =
+					typeof filter === "string" ? poolFilters[filter] : filter;
+				keep ||= filterFunction(card);
+			}
+
+			return keep;
+		});
+
+		const card = await game.lodash.sample(pool)?.imperfectCopy();
+		if (card) {
+			card.owner = game.player;
+		}
+
+		let cards: Card[] | undefined;
+		if (amount > 1) {
+			cards = game.lodash.sampleSize(pool, amount);
+			for (const [i, c] of cards.entries()) {
+				// Replace the card with a copy.
+				const copy = await c.imperfectCopy();
+				copy.owner = game.player;
+
+				cards.splice(i, 1, copy);
+			}
+		}
+
+		return { pool, card, cards };
 	}
 
 	/**

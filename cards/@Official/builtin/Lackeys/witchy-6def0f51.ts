@@ -48,25 +48,20 @@ export const blueprint: Blueprint = {
 			return Card.REFUND;
 		}
 
-		// Filter minions that cost (1) more than the target
-		const minions = (await Card.all()).filter(
-			(card) => card.type === Type.Minion && card.cost === target.cost + 1,
-		);
-
-		// Choose a random minion from the filtered list.
-		const random = game.lodash.sample(minions);
-		if (!random) {
+		// Get random card.
+		const { card } = await Card.pool({}, [
+			(card) => card.cost === target.cost + 1,
+			"minions",
+		]);
+		if (!card) {
 			return Card.REFUND;
 		}
-
-		// Create the card
-		const minion = await Card.create(random.id, owner);
 
 		// Destroy the target and summon the new minion in order to get the illusion that the card was transformed
 		await target.removeFromPlay();
 
 		// Summon the card to the player's side of the board
-		await owner.summon(minion);
+		await owner.summon(card);
 		return true;
 	},
 
@@ -82,11 +77,11 @@ export const blueprint: Blueprint = {
 		assert(!existsMinionWithCost(sheep.cost + 1));
 
 		// If there doesn't exist any 2-Cost minions, pass the test
-		if (
-			!(await Card.all()).some(
-				(card) => card.cost === sheep.cost + 1 && card.type === Type.Minion,
-			)
-		) {
+		const { card } = await Card.pool({}, [
+			(card) => card.cost === sheep.cost + 1,
+			"minions",
+		]);
+		if (!card) {
 			return;
 		}
 

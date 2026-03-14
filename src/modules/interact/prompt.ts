@@ -137,7 +137,10 @@ export const prompt = {
 			pageSize: 15,
 		});
 
-		if (["back", "done", "cancel"].includes(answer.toLowerCase())) {
+		if (
+			typeof answer === "string" &&
+			["back", "done", "cancel"].includes(answer.toLowerCase())
+		) {
 			// Go back to the first option. The next time.
 			selectValues[message] =
 				typeof choices?.[0] === "string" ? choices[0] : otherChoices[0];

@@ -51,11 +51,6 @@ export const blueprint: Blueprint = {
 
 		game.event.newHistoryChild(Event.CardEvent, [self, choice], owner);
 
-		const pool = await Card.all();
-
-		const minionPool = pool.filter((card) => card.type === Type.Minion);
-		const spellPool = pool.filter((card) => card.type === Type.Spell);
-
 		switch (choice) {
 			case "Curse of Flesh": {
 				// Fill the board with random minions, then give yours Rush.
@@ -66,12 +61,12 @@ export const blueprint: Blueprint = {
 					const remaining =
 						player.getRemainingBoardSpace() - (player === owner ? 1 : 0);
 
-					for (let index = 0; index < remaining; index++) {
-						const card = await game.lodash.sample(minionPool)?.imperfectCopy();
-						if (!card) {
-							continue;
-						}
+					const { cards } = await Card.pool({ amount: remaining }, "minions");
+					if (!cards) {
+						break;
+					}
 
+					for (const card of cards) {
 						card.owner = player;
 						if (player === owner) {
 							card.addKeyword(Keyword.Rush);
@@ -104,12 +99,12 @@ export const blueprint: Blueprint = {
 				// Fill your hand with random spells. They cost (0) this turn.
 				const remaining = owner.getRemainingHandSpace();
 
-				for (let index = 0; index < remaining; index++) {
-					const card = await game.lodash.sample(spellPool)?.imperfectCopy();
-					if (!card) {
-						continue;
-					}
+				const { cards } = await Card.pool({ amount: remaining }, "spells");
+				if (!cards) {
+					break;
+				}
 
+				for (const card of cards) {
 					await card.addEnchantment(
 						game.ids.Official.card_pack_1.fates_blessing[0],
 						self,

@@ -29,28 +29,18 @@ export const blueprint: Blueprint = {
 
 	async battlecry(self, owner) {
 		// Summon a random 2-Cost minion.
-
-		// filter out all cards that aren't 2-cost minions
-		const minions = (await Card.all()).filter(
-			(card) => card.type === Type.Minion && card.cost === 2,
-		);
-
-		// Choose a random minion
-		const random = game.lodash.sample(minions);
-		if (!random) {
+		const { card } = await Card.pool({}, ["cost2", "minions"]);
+		if (!card) {
 			return;
 		}
-		// Summon the minion
-		await owner.summon(await random.imperfectCopy());
+		// Summon the minion.
+		await owner.summon(card);
 	},
 
 	async test(self, owner) {
 		// If there doesn't exist any 2-Cost minions, pass the test
-		if (
-			!(await Card.all()).some(
-				(card) => card.cost === 2 && card.type === Type.Minion,
-			)
-		) {
+		const { card } = await Card.pool({}, ["cost2", "minions"]);
+		if (!card) {
 			return;
 		}
 

@@ -29,9 +29,7 @@ export const blueprint: Blueprint = {
 
 	async battlecry(self, owner) {
 		// Discover a spell.
-
-		// Filter out all cards that aren't spells
-		const pool = (await Card.all()).filter((c) => c.type === Type.Spell);
+		const { pool } = await Card.pool({}, "spells");
 		if (pool.length <= 0) {
 			return;
 		}
@@ -49,13 +47,8 @@ export const blueprint: Blueprint = {
 
 	async test(self, owner) {
 		// If there are no spells, pass the test
-		if (
-			(await Card.all()).filter(
-				(c) =>
-					c.type === Type.Spell &&
-					game.card.validateClasses(self.classes, owner.heroClass),
-			).length <= 0
-		) {
+		const { pool } = await Card.pool({}, "spells");
+		if (pool.length <= 0) {
 			return;
 		}
 

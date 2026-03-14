@@ -11,7 +11,7 @@ import {
 
 export const blueprint: Blueprint = {
 	name: "Galakrond, the Unspeakable",
-	text: "<b>Battlecry:</b> Destroy {amount} random enemy minion{plural}.",
+	text: "<b>Battlecry:</b> Destroy {amount} random enemy {target}.",
 	cost: 7,
 	type: Type.Hero,
 	classes: [Class.Priest],
@@ -25,9 +25,10 @@ export const blueprint: Blueprint = {
 
 	async battlecry(self, owner) {
 		// Destroy 1 random enemy minion.
-		const amount = game.card.galakrondFormula(
-			self.getStorage(self.uuid, "invokeCount") as number,
-		);
+		const invokeCount = self.getStorage(self.uuid, "invokeCount") as
+			| number
+			| undefined;
+		const amount = !invokeCount ? 0 : game.card.galakrondFormula(invokeCount);
 
 		for (let i = 0; i < amount; i++) {
 			// Get a random minion from the opponent's board.
@@ -48,17 +49,19 @@ export const blueprint: Blueprint = {
 	},
 
 	async placeholders(self, owner) {
-		const invokeCount = self.getStorage(self.uuid, "invokeCount");
+		const invokeCount = self.getStorage(self.uuid, "invokeCount") as
+			| number
+			| undefined;
 		if (!invokeCount) {
-			return { amount: 0, plural: "s", plural2: "They" };
+			return { amount: 0, target: "minions" };
 		}
 
 		const amount = game.card.galakrondFormula(invokeCount);
 
-		const multiple = amount > 1;
-		const plural = multiple ? "s" : "";
+		const multiple = amount !== 1;
+		const target = multiple ? "minions" : "minion";
 
-		return { amount, plural };
+		return { amount, target };
 	},
 
 	async test(self, owner) {

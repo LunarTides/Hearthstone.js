@@ -32,11 +32,8 @@ export const blueprint: Blueprint = {
 		 * This list will act like a pool of cards.
 		 */
 
-		// This gets every card from the game, excluding uncollectible cards.
-		let pool = await Card.all();
-
-		// Filter the pool to only include spells.
-		pool = pool.filter((c) => c.type === Type.Spell);
+		// This gets every spell from the game, excluding uncollectible cards.
+		const { pool } = await Card.pool({}, "spells");
 
 		// discover(prompt, pool, ifItShouldFilterAwayCardsThatAreNotThePlayersClass = true, amountOfCardsToChooseFrom = 3)
 		const spell = await game.prompt.discover("Discover a spell.", pool);

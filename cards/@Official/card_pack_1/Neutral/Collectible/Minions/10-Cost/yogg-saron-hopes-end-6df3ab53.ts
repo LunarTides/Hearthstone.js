@@ -35,15 +35,12 @@ export const blueprint: Blueprint = {
 			return;
 		}
 
-		const pool = (await Card.all()).filter((card) => card.type === Type.Spell);
+		const { cards } = await Card.pool({ amount }, "spells");
+		if (!cards) {
+			return;
+		}
 
-		for (let i = 0; i < amount; i++) {
-			const card = await game.lodash.sample(pool)?.imperfectCopy();
-
-			if (!card) {
-				continue;
-			}
-
+		for (const card of cards) {
 			card.owner = owner;
 			await card.trigger(Ability.Cast);
 		}

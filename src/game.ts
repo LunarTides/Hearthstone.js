@@ -132,20 +132,18 @@ export class Game {
 	 *
 	 * Look in the `config` folder.
 	 */
-	config: GameConfig;
-
-	/**
+	config: GameConfig; /**
 	 * All of the blueprints cards that have been implemented so far.
 	 * Don't use this if you don't know what you're doing.
 	 *
-	 * Use `Card.all()` instead.
+	 * Use `Card.all()` or `Card.pool()` instead.
 	 */
 	blueprints: Blueprint[] = [];
 
 	/**
 	 * All of the cards that have been implemented so far.
 	 *
-	 * Use `Card.all()` instead.
+	 * Use `Card.all()` or `Card.pool()` instead.
 	 */
 	cards: Card[] = [];
 

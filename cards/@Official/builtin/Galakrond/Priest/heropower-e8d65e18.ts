@@ -21,23 +21,10 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-701f-861c-e8d65e18c517",
 
 	async heropower(self, owner) {
-		// Add a random Priest minion to your hand.
-		const possibleCards = (await Card.all()).filter(
-			(c) =>
-				c.type === Type.Minion &&
-				game.card.validateClasses(c.classes, Class.Priest),
-		);
-
-		if (possibleCards.length <= 0) {
-			return;
-		}
-
-		let card = game.lodash.sample(possibleCards);
+		const { card } = await Card.pool({}, ["priest", "minions"]);
 		if (!card) {
 			return;
 		}
-
-		card = await Card.create(card.id, owner);
 
 		await owner.addToHand(card);
 	},

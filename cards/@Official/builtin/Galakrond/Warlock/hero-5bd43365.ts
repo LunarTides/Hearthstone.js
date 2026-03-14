@@ -7,7 +7,6 @@ import {
 	EventListenerMessage,
 	Rarity,
 	Tag,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -31,28 +30,14 @@ export const blueprint: Blueprint = {
 			self.getStorage(self.uuid, "invokeCount") as number,
 		);
 
-		const testDemoness = (card: Card) => {
-			if (!card.tribes) {
-				return false;
-			}
-
-			return game.card.matchTribe(card.tribes, Tribe.Demon);
-		};
-
 		for (let i = 0; i < amount; i++) {
-			// Find all demons
-			const possibleCards = (await Card.all()).filter(
-				(c) => c.type === Type.Minion && testDemoness(c),
-			);
-
-			// Choose a random one
-			let card = game.lodash.sample(possibleCards);
+			// Get a random demon.
+			const { card } = await Card.pool({}, ["demon", "minions"]);
 			if (!card) {
-				break;
+				continue;
 			}
 
 			// Summon it
-			card = await Card.create(card.id, owner);
 			await owner.summon(card);
 		}
 	},
