@@ -107,7 +107,7 @@ export async function promptCompressPack() {
 
 	await hub.createUILoop(
 		{
-			message: "Compress",
+			message: "Compress / Extract",
 			backButtonText: "Done",
 			seperatorBeforeBackButton: false,
 			dynamicChoices: true,

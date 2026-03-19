@@ -49,15 +49,15 @@ export async function create(
 
 	// Imports
 	const imports = {
-		"@Game/modules/audio.ts": "{ octaves }",
+		"@Game/modules/audio/audio.ts": "{ octaves }",
 		"@Game/types.ts": "{ SFX }",
 	};
 
 	// Add play ability
 	const abilitiesTexts = [
 		`async play(info, options) {
-		// Play a sine wave at A4 for 1000ms at 0.3 volume.
-    game.audio.playWave("sine", octaves[4].A, 1000, 0.3, 0, options);
+		// Play a sine wave at A4 for 1000ms, with 0 delay after the wave, at 0.3 volume.
+		game.audio.playWave("sine", octaves[4].A, 1000, 0.3, 0, 0, options);
   },`,
 	];
 

@@ -232,7 +232,7 @@ export const audio = {
 	 * @returns If the sound effect was successfully played.
 	 */
 	async playCustomSFX(
-		key: `@${string}/${string}/${string}`,
+		key: `@${string}/${string}/${string}` | `Custom/${string}`,
 		rawOptions?: Partial<{
 			info: any;
 			options: Partial<WaveOptions>;

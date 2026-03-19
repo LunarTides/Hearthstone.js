@@ -2,9 +2,13 @@ import type { Metadata } from "@Game/types/pack.ts";
 import type { SFX } from "@Game/types.ts";
 import { octaves, type WaveOptions } from "./audio.ts";
 
-export async function addSFX(newSFX: SFX, pack: Metadata) {
-	sfx[`@${pack.author}/${pack.name}/${newSFX.name}` as keyof typeof sfx] =
-		newSFX.play;
+export async function addSFX(newSFX: SFX, pack?: Metadata) {
+	if (pack) {
+		sfx[`@${pack.author}/${pack.name}/${newSFX.name}` as keyof typeof sfx] =
+			newSFX.play;
+	} else {
+		sfx[`Custom/${newSFX.name}` as keyof typeof sfx] = newSFX.play;
+	}
 }
 
 export const sfx = {
