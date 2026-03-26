@@ -7,10 +7,15 @@ declare global {
 			session: import("$lib/server/auth").SessionValidationResult["session"];
 			token: import("$lib/server/auth").GradualTokenValidationResult["token"];
 		}
-	} // interface Error {}
+	}
+
+	const __COMMIT_HASH__: string;
+	const __LAST_MODIFIED__: string;
+
+	// interface Error {}
 	// interface Locals {}
 } // interface PageData {}
 // interface PageState {}
-
 // interface Platform {}
+
 export {};

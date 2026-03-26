@@ -20,7 +20,7 @@
 		<div class="p-4 rounded-xl transition-all bg-header hover:scale-105 hover:drop-shadow-2xl">
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-2">
-					<Avatar username={group.username} />
+					<Avatar username={group.username} classNoAvatar="size-6" />
 
 					<div>
 						<p class="text-xl self-center">{group.username}</p>
