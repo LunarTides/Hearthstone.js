@@ -7,8 +7,23 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/db/schema";
 import * as auth from "$lib/server/auth";
 import { count, ilike } from "drizzle-orm";
+import { dev } from "$app/environment";
+import { env } from "$env/dynamic/private";
 
 export async function POST(event) {
+	// TODO: Remove when no longer relevant.
+	if (!dev) {
+		if (event.cookies.get("Registry-Allow-Signup") !== env.REGISTRY_SIGNUP_BYPASS) {
+			return json(
+				{
+					message:
+						"Creating accounts has been disabled. This feature will be enabled when the registry is closer to completion. Sorry about that...",
+				},
+				{ status: 403 },
+			);
+		}
+	}
+
 	const j = await event.request.json();
 
 	const form = await superValidate(j, zod4(schema));
