@@ -39,7 +39,9 @@
 
 			<p class="font-bold">{token.name}</p>
 			<p class="font-mono">{token.permissions.toSorted((a, b) => a.localeCompare(b)).join(", ")}</p>
-			<p class="text-gray-500 italic">Created {dateFormat.format(new Date(token.creationDate))}</p>
+			<p class="text-gray-500 italic">
+				Created {dateFormat.format(new Date(token.creationDate)).replace("at", "@")}
+			</p>
 		</div>
 	{/each}
 

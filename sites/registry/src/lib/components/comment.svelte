@@ -88,7 +88,9 @@
 
 	<pre class="font-sans text-wrap">{comment.text}</pre>
 	<!-- TODO: `comment.creationDate` is a string for some reason? -->
-	<p class="text-gray-600">{dateFormat.format(new Date(comment.creationDate))}</p>
+	<p class="text-gray-600">
+		{dateFormat.format(new Date(comment.creationDate)).replace("at", "@")}
+	</p>
 
 	<!-- TODO: Get the form message here. -->
 	<!-- {#if form?.message}<p class="text-red-500">{form.message}</p>{/if} -->
