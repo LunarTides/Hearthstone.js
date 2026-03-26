@@ -149,7 +149,7 @@
 					>
 						<Avatar
 							username={comment.heartedBy.username}
-							classNoAvatar="p-3.5 h-min -mt-1"
+							classNoAvatar="p-4 h-min -mt-1"
 							classAvatar="size-7.5 h-min -mt-1"
 						/>
 						<Heart class="-ml-4.5 mt-1 fill-rose-400" />
@@ -177,7 +177,7 @@
 			<div class="flex" title={`Hearted by ${comment.heartedBy.username} <3`}>
 				<Avatar
 					username={comment.heartedBy.username}
-					classNoAvatar="p-3.5 h-min -mt-1"
+					classNoAvatar="p-4 h-min -mt-1"
 					classAvatar="size-7.5 h-min -mt-1"
 				/>
 				<Heart class="-ml-4.5 mt-1 fill-rose-400" />

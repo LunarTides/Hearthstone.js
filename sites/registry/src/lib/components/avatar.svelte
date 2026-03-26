@@ -12,6 +12,6 @@
 	class={`rounded-full ${classAvatar ? classAvatar : "size-10"}`}
 	src={`/registry/avatars/${username}.avif`}
 	onerror={(event) => {
-		event.currentTarget.outerHTML = `<div class="p-5 bg-white rounded-full ${classNoAvatar}"></div>`;
+		event.currentTarget.outerHTML = `<div class="${!classNoAvatar?.includes("p-") && "p-5"} bg-white rounded-full ${classNoAvatar}"></div>`;
 	}}
 />
