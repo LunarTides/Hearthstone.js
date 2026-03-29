@@ -19,6 +19,7 @@ import {
 } from "@Game/types.ts";
 
 import _ from "lodash";
+import { register } from "universe/emergence/register/lib.ts";
 import cardIds from "../cards/ids.ts";
 import { attack } from "./modules/attack.ts";
 import { audio } from "./modules/audio/audio.ts";
@@ -946,18 +947,18 @@ export class Game {
 /**
  * Creates a new game instance, initializes players, sets up the game, imports all cards, and configures AI.
  *
- * @param [registerCards=true] Whether to register all cards. Disable for optimization purposes.
+ * @param [registerResources=true] Whether to register all resources. Disable for optimization purposes.
  *
  * @returns An object containing the game instance, player 1, and player 2.
  */
-export async function createGame(registerCards = true) {
+export async function createGame(registerResources = true) {
 	const player1 = new Player();
 	const player2 = new Player();
 	const game = new Game(player1, player2);
 	await game.configuration.import();
 	game.doConfigAi();
-	if (registerCards) {
-		await Card.registerAll();
+	if (registerResources) {
+		await register();
 	}
 
 	return { game, player1, player2 };

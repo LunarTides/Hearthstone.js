@@ -5,7 +5,6 @@ import {
 	type Blueprint,
 	type CardBackup,
 	Class,
-	type Command,
 	CostType,
 	DeckValidationError,
 	type EnchantmentDefinition,
@@ -18,7 +17,6 @@ import {
 	Rarity,
 	RemoveReason,
 	type Rune,
-	type SFX,
 	type SpellSchool,
 	type Tag,
 	type Target,
@@ -26,10 +24,7 @@ import {
 	Type,
 } from "@Game/types.ts";
 import { parseTags } from "chalk-tags";
-import { addCommand } from "./commands.ts";
-import { addSFX } from "./modules/audio/sfx.ts";
 import { historyTree } from "./modules/event.ts";
-import { PackValidationResult } from "./types/pack.ts";
 
 /**
  * Use this error type when throwing an error in a card
@@ -577,87 +572,6 @@ export class Card {
 	 */
 	static fromUUID(uuid: string): Card | undefined {
 		return game.activeCards.find((card) => card.uuid.startsWith(uuid));
-	}
-
-	/**
-	 * Imports and registers all cards from the "cards" folder
-	 *
-	 * @returns Success
-	 */
-	static async registerAll(): Promise<boolean> {
-		// TODO: Move this code.
-		await game.fs.searchCardsFolder(
-			async (fullPath, content, file, index, resourceType) => {
-				// Check if the associated pack is valid.
-				switch (await game.card.validatePackFromPath(fullPath)) {
-					case PackValidationResult.InvalidGameVersion:
-						throw new Error(
-							`The pack associated with '${fullPath}' is made for a different version of the game.`,
-						);
-
-					// These are success-codes.
-					case PackValidationResult.NoPack:
-					case PackValidationResult.Success: {
-					}
-				}
-
-				switch (resourceType) {
-					case "card": {
-						// Import the card.
-						const blueprint = (await import(fullPath)).blueprint as Blueprint;
-						game.blueprints.push(blueprint);
-						break;
-					}
-					case "command": {
-						const command = (await import(fullPath)).command as Command;
-						await addCommand(command);
-						break;
-					}
-					case "sfx": {
-						const pack = (await game.card.getPackMetadataFromCardPath(
-							fullPath,
-						))!;
-
-						const sfx = (await import(fullPath)).sfx as SFX;
-						await addSFX(sfx, pack);
-						break;
-					}
-					default: {
-						throw new Error(
-							`Resource type '${resourceType}' cannot be handled.`,
-						);
-					}
-				}
-			},
-		);
-
-		// Remove falsy values
-		game.blueprints = game.blueprints.filter(Boolean);
-
-		if (!game.card.runBlueprintValidator()) {
-			throw new Error(
-				"Some cards are invalid. Please fix these issues before playing.",
-			);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Reloads all cards
-	 *
-	 * @returns Success
-	 */
-	static async reloadAll(): Promise<boolean> {
-		game.blueprints = [];
-
-		for (const key of Object.keys(require.cache)) {
-			if (key.includes("/cards/") || key.includes("\\cards\\")) {
-				delete require.cache[key];
-			}
-		}
-
-		return await Card.registerAll();
 	}
 
 	/**

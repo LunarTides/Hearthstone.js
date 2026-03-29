@@ -13,6 +13,7 @@ import {
 } from "@Game/types.ts";
 import boxen from "boxen";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { reload } from "universe/emergence/reload/lib.ts";
 import { readableHistory } from "./modules/event.ts";
 
 /*
@@ -723,35 +724,44 @@ export const debugCommands: CommandList = {
 	async rl(_args, _useTUI, options): Promise<boolean> {
 		let success = true;
 
+		// Reload resources.
+		success &&= await game.interact.withStatus("Reloading cards", async () => {
+			await reload("card");
+			return true;
+		});
 		success &&= await game.interact.withStatus(
-			"Reloading cards",
-			async () => await Card.reloadAll(),
-		);
-
-		// Go through all the cards and reload them
-		success &&= await game.interact.withStatus(
-			"Applying changes to existing cards",
+			"Reloading commands",
 			async () => {
-				const uuids: string[] = [];
-
-				for (const card of game.activeCards) {
-					/*
-					 * For some reason, without this, the game gets stuck on the `Frozen Test` card.
-					 * It just loops over and over again on the same card with the same uuid,
-					 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
-					 * Very vexing...
-					 */
-					if (uuids.includes(card.uuid)) {
-						continue;
-					}
-
-					uuids.push(card.uuid);
-					await card.reload();
-				}
-
+				await reload("command");
 				return true;
 			},
 		);
+		success &&= await game.interact.withStatus("Reloading sfx", async () => {
+			await reload("sfx");
+			return true;
+		});
+
+		// Go through all the cards and apply changes
+		success &&= await game.interact.withStatus("Applying changes", async () => {
+			const uuids: string[] = [];
+
+			for (const card of game.activeCards) {
+				/*
+				 * For some reason, without this, the game gets stuck on the `Frozen Test` card.
+				 * It just loops over and over again on the same card with the same uuid,
+				 * even if it reports that there are only 2 `Frozen Test` cards in `activeCards`.
+				 * Very vexing...
+				 */
+				if (uuids.includes(card.uuid)) {
+					continue;
+				}
+
+				uuids.push(card.uuid);
+				await card.reload();
+			}
+
+			return true;
+		});
 
 		success &&= await game.interact.withStatus(
 			"Reloading config",
@@ -765,7 +775,7 @@ export const debugCommands: CommandList = {
 
 			console.log();
 			await game.pause(
-				"The cards have been reloaded.\nPress enter to continue...",
+				"The resources have been reloaded.\nPress enter to continue...",
 			);
 			return true;
 		}
