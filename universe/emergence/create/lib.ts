@@ -122,11 +122,6 @@ const resourceTypeHooks = {
 					jsonValue !== "[]" &&
 					enumMapping
 				) {
-					// Don't do `tribes: [Tribe.None]`. That's just stupid.
-					if (value === "None") {
-						continue;
-					}
-
 					if (jsonValue.startsWith("[")) {
 						// Handle array mappings.
 						jsonValue =

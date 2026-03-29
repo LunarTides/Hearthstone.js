@@ -39,8 +39,8 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
 
 		attack: 1,
 		health: 1,
-		tribes: [Tribe.None],
-		spellSchools: [SpellSchool.None],
+		tribes: [],
+		spellSchools: [],
 		armor: 5,
 		heropowerId: game.ids.Official.builtin.sheep[0],
 		durability: 2,
