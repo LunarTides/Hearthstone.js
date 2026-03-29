@@ -209,7 +209,8 @@ export const audio = {
 		};
 
 		if (
-			game.config.audio.disable ||
+			// NOTE: This could be called before the config file is loaded.
+			game.config?.audio.disable ||
 			(!options.playAgainstUserWishes &&
 				(!game.config.audio.sfx.enable ||
 					game.config.audio.sfx.blacklist.includes(key))) ||
@@ -246,7 +247,7 @@ export const audio = {
 	 * Setup the game to play sounds. Don't worry about this :)
 	 */
 	createSpeaker() {
-		if (game.config.audio.disable) {
+		if (game.config?.audio.disable) {
 			return;
 		}
 
@@ -304,7 +305,7 @@ export const audio = {
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
 	): Promise<void> {
-		if (game.config.audio.disable) {
+		if (game.config?.audio.disable) {
 			return;
 		}
 
@@ -394,7 +395,7 @@ export const audio = {
 		dutyCycle = 0.5,
 		options: Partial<WaveOptions>,
 	): Promise<void> {
-		if (game.config.audio.disable) {
+		if (game.config?.audio.disable) {
 			return;
 		}
 

@@ -42,6 +42,7 @@ export class CardError extends Error {
 	}
 }
 
+// TODO: Add more filters.
 const poolFilters = {
 	all: (card: Card) => true,
 
