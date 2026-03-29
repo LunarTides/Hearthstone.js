@@ -16,8 +16,8 @@ import {
 import { confirm, Separator } from "@inquirer/prompts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
+import { create } from "universe/emergence/create/lib.ts";
 import * as hub from "../../../hub.ts";
-import * as lib from "./lib.ts";
 
 // FIXME: Some tools don't work when run directly.
 if (import.meta.main) {
@@ -391,6 +391,7 @@ async function configure(): Promise<BlueprintWithOptional | undefined> {
  * @returns The path to the file
  */
 export async function main({
+	// TODO: Remove
 	debug = false,
 }: {
 	debug?: boolean;
@@ -402,16 +403,14 @@ export async function main({
 
 	// Actually create the card
 	console.log("Creating file...");
-	const filePath = await lib.create(
-		lib.CCType.Custom,
-		card,
-		undefined,
-		undefined,
-		debug,
-	);
+	const result = await create("card", card);
+
+	if (card.text) {
+		game.os.runCommand(`${game.config.general.editor} "${result.path}"`);
+	}
 
 	await game.pause();
-	return filePath;
+	return result.path;
 }
 
 if (import.meta.main) {

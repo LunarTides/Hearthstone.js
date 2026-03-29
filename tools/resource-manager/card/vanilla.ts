@@ -11,8 +11,8 @@ import {
 } from "@Game/types.ts";
 import { number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
+import { create as createResource } from "universe/emergence/create/lib.ts";
 import * as hub from "../../../hub.ts";
-import * as lib from "./lib.ts";
 
 if (import.meta.main) {
 	await createGame();
@@ -24,11 +24,7 @@ if (import.meta.main) {
  * @param card The vanilla card
  * @param debug If it should use debug mode
  */
-export async function create(
-	card: VanillaCard,
-	debug: boolean,
-	overrideType?: lib.CCType,
-): Promise<void> {
+export async function create(card: VanillaCard, debug: boolean): Promise<void> {
 	// Harvest info
 	let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as Class;
 	const collectible = card.collectible ?? false;
@@ -93,7 +89,7 @@ export async function create(
 			throw new Error("No hero power found");
 		}
 
-		await create(heroPower, debug, overrideType);
+		await create(heroPower, debug);
 	}
 
 	let blueprint: Blueprint = {
@@ -169,12 +165,11 @@ export async function create(
 		}
 	}
 
-	let cctype: lib.CCType = lib.CCType.Vanilla;
-	if (overrideType) {
-		cctype = overrideType;
-	}
+	const result = await createResource("card", blueprint);
 
-	await lib.create(cctype, blueprint, undefined, undefined, debug);
+	if (card.text) {
+		game.os.runCommand(`${game.config.general.editor} "${result.path}"`);
+	}
 }
 
 /**
@@ -182,10 +177,7 @@ export async function create(
  *
  * @returns If a card was created
  */
-export async function main(
-	debug = false,
-	overrideType?: lib.CCType,
-): Promise<boolean> {
+export async function main(debug = false): Promise<boolean> {
 	const vanillaCards = await game.card.vanilla.getAll();
 
 	while (true) {
@@ -272,7 +264,7 @@ export async function main(
 		}
 
 		const card = vanillaCards.find((c) => c.dbfId === dbfId)!;
-		await create(card, debug, overrideType);
+		await create(card, debug);
 		break;
 	}
 

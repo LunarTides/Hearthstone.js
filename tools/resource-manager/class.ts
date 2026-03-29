@@ -3,8 +3,8 @@ import { createGame } from "@Game/game.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import { confirm, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
+import { create } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
-import * as lib from "./card/lib.ts";
 
 if (import.meta.main) {
 	await createGame();
@@ -230,22 +230,8 @@ export async function main(debug = false): Promise<void> {
 
 	const className = heroBlueprint.classes[0];
 
-	const cctype: lib.CCType = lib.CCType.Class;
-	await lib.create(
-		cctype,
-		heroBlueprint,
-		`/cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/`,
-		"hero.ts",
-		debug,
-	);
-
-	await lib.create(
-		cctype,
-		heropowerBlueprint,
-		`/cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/`,
-		"heropower.ts",
-		debug,
-	);
+	await create("card", heroBlueprint);
+	await create("card", heropowerBlueprint);
 
 	// TODO: Automate actually adding the class. See #466
 

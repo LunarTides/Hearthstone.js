@@ -1,136 +1,9 @@
 // TODO: De-duplicate this file and `sfx.ts`.
 import type { Command } from "@Game/types.ts";
 import { confirm, Separator } from "@inquirer/prompts";
-import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
+import { parseTags } from "chalk-tags";
+import { create } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
-
-// If this is set to true, this will force debug mode.
-const mainDebugSwitch = false;
-
-/**
- * Generates a path for a command based on its classes and type.
- *
- * @returns The generated command path
- */
-function generatePath(): string {
-	// Create a path to put the command in.
-
-	// DO NOT CHANGE THIS
-	const staticPath = `${game.fs.dirname()}/cards/Custom`;
-
-	/*
-	 * This can be anything since the game ignores subfolders.
-	 * This path can be overridden by passing `overridePath` in the create function.
-	 */
-	const dynamicPath = `/Commands/`;
-
-	return staticPath + dynamicPath;
-}
-
-/**
- * Generates a new command based on the provided arguments and saves it to a file.
- *
- * @param command The command to save.
- * @param overridePath The override path for the command.
- * @param overrideFilename The override filename for the command.
- * @param debug If true, doesn't save the command, just prints out details about it.
- *
- * @returns The path of the created file.
- */
-export async function create(
-	command: Command,
-	overridePath?: string,
-	overrideFilename?: string,
-	debug?: boolean,
-): Promise<string> {
-	command = game.lodash.clone(command);
-
-	const debugMode = debug || mainDebugSwitch;
-
-	const cleanedDescription = game.color.stripTags(command.description);
-
-	// Imports
-	const imports = { "@Game/types.ts": "{ Command }" };
-
-	// Add run ability
-	const abilitiesTexts = [
-		`async run(args, useTUI) {
-    // ${cleanedDescription}
-    return true;
-  },`,
-	];
-
-	// Create a path to put the command in.
-	let path = generatePath().replaceAll("\\", "/");
-
-	// If this function was passed in a path, use that instead.
-	if (overridePath) {
-		path = game.fs.dirname() + overridePath;
-	}
-
-	// Create a filename. Example: "Test Command" -> "test-command.command.ts"
-	let filename = `${command.name.toLowerCase().replaceAll(" ", "-")}.command.ts`;
-
-	// If this function was passed in a filename, use that instead.
-	if (overrideFilename) {
-		filename = overrideFilename;
-	}
-
-	const filePath = path + filename;
-
-	// Add the content
-	const content = `// Created by the Resource Manager
-
-${Object.entries(imports)
-	.map(([key, value]) => `import ${value} from "${key}";`)
-	.join("\n")}
-
-export const command: Command = {
-\tname: "${command.name}",
-\tdescription: "${command.description}",
-\tdebug: ${command.debug},
-
-\t${abilitiesTexts.join("\n\n\t")}
-};
-`;
-
-	if (debugMode) {
-		/*
-		 * If debug mode is enabled, just show some information about the command.
-		 */
-		console.log();
-
-		if (mainDebugSwitch) {
-			console.warn("<yellow>Main Debug Switch is enabled.</yellow>");
-		}
-
-		stopTagParsing();
-
-		console.log(`Would be path: ${filePath.replaceAll("\\", "/")}`);
-		console.log("Content:");
-		console.log(content);
-
-		resumeTagParsing();
-		await game.pause();
-	} else {
-		// If debug mode is disabled, write the command to disk.
-		if (!(await game.fs.call("exists", path))) {
-			await game.fs.call("mkdir", path, { recursive: true });
-		}
-
-		// Write the file to the path
-		await game.fs.call("writeFile", filePath, content);
-
-		console.log(`File created at: "${filePath}"`);
-	}
-
-	// Open the defined editor on that command.
-	if (!debugMode) {
-		game.os.runCommand(`${game.config.general.editor} "${filePath}"`);
-	}
-
-	return filePath;
-}
 
 async function configure() {
 	const command: Command = {
@@ -270,6 +143,7 @@ async function configure() {
  * @returns The path to the file
  */
 export async function main({
+	// TODO: Remove
 	debug = false,
 }: {
 	debug?: boolean;
@@ -281,10 +155,11 @@ export async function main({
 
 	// Actually create the command.
 	console.log("Creating file...");
-	const filePath = await create(command, undefined, undefined, debug);
+	const result = await create("command", command);
+	game.os.runCommand(`${game.config.general.editor} "${result.path}"`);
 
 	await game.pause();
-	return filePath;
+	return result.path;
 }
 
 if (import.meta.main) {
