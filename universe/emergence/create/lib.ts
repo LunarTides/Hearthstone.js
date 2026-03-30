@@ -25,12 +25,12 @@ const resourceTypeHooks = {
 		path: async (resource: BlueprintWithOptional) => {
 			const filename = `${resource.name
 				.toLowerCase()
-				.replaceAll(" ", "-")
-				// Remove non-alphanummeric characters.
+				.replaceAll(" ", "_")
 				.replaceAll(
-					/[^a-z\d-]/g,
+					// Remove non-alphanummeric characters.
+					/[^a-z\d_]/g,
 					"",
-				)}-${resource.id.split("-").at(-1)!.slice(0, 8)}.ts`;
+				)}_${resource.id.split("_").at(-1)!.slice(0, 8)}.ts`;
 
 			return `/packs/${resource.type.toLowerCase()}/${filename}`;
 		},
@@ -275,7 +275,7 @@ const resourceTypeHooks = {
 	},
 	command: {
 		path: async (resource: Command) =>
-			`/commands/${resource.name.toLowerCase().replaceAll(" ", "-")}.command.ts`,
+			`/commands/${resource.name.toLowerCase().replaceAll(" ", "_")}.command.ts`,
 		imports: async (resource: Command) => {
 			addImport("@Game/types.ts", { key: "Command", type: true });
 		},
@@ -302,7 +302,7 @@ const resourceTypeHooks = {
 	},
 	sfx: {
 		path: async (resource: SFX) =>
-			`/sfx/${resource.name.toLowerCase().replaceAll(" ", "-")}.sfx.ts`,
+			`/sfx/${resource.name.toLowerCase().replaceAll(" ", "_")}.sfx.ts`,
 		imports: async (resource: SFX) => {
 			addImport("@Game/types.ts", { key: "SFX", type: true });
 			addImport("@Game/modules/audio/audio.ts", { key: "octaves" });
