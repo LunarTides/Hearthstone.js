@@ -11,11 +11,11 @@
     "prod": "docker compose up"
   },
   "dependencies": {
-    "@astrojs/starlight": "0.37.7",
-    "astro": "5.18.0",
+    "@astrojs/starlight": "0.38.2",
+    "astro": "6.1.1",
     "sharp": "^0.34.2",
-    "starlight-blog": "^0.25.2",
-    "starlight-kbd": "^0.3.0",
-    "starlight-versions": "^0.5.6"
+    "starlight-blog": "^0.26.1",
+    "starlight-kbd": "^0.4.0",
+    "starlight-versions": "^0.8.1"
   }
 }
