@@ -16,7 +16,7 @@ import {
 import { confirm, Separator } from "@inquirer/prompts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
-import { create } from "universe/emergence/create/lib.ts";
+import { create, postCreate } from "universe/emergence/create/lib.ts";
 import * as hub from "../../../hub.ts";
 
 // FIXME: Some tools don't work when run directly.
@@ -404,6 +404,7 @@ export async function main({
 	// Actually create the card
 	console.log("Creating file...");
 	const result = await create("card", card);
+	await postCreate("card", card);
 
 	if (card.text) {
 		game.os.runCommand(`${game.config.general.editor} "${result.path}"`);

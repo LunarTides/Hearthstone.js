@@ -11,7 +11,10 @@ import {
 } from "@Game/types.ts";
 import { number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { create as createResource } from "universe/emergence/create/lib.ts";
+import {
+	create as createResource,
+	postCreate,
+} from "universe/emergence/create/lib.ts";
 import * as hub from "../../../hub.ts";
 
 if (import.meta.main) {
@@ -166,6 +169,7 @@ export async function create(card: VanillaCard, debug: boolean): Promise<void> {
 	}
 
 	const result = await createResource("card", blueprint);
+	await postCreate("card", blueprint);
 
 	if (card.text) {
 		game.os.runCommand(`${game.config.general.editor} "${result.path}"`);

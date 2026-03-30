@@ -2,7 +2,7 @@
 import type { Command } from "@Game/types.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { create } from "universe/emergence/create/lib.ts";
+import { create, postCreate } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
 
 async function configure() {
@@ -156,6 +156,8 @@ export async function main({
 	// Actually create the command.
 	console.log("Creating file...");
 	const result = await create("command", command);
+	await postCreate("command", command);
+
 	game.os.runCommand(`${game.config.general.editor} "${result.path}"`);
 
 	await game.pause();

@@ -2,7 +2,7 @@
 import type { SFX } from "@Game/types.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { create } from "universe/emergence/create/lib.ts";
+import { create, postCreate } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
 
 async function configure() {
@@ -127,6 +127,8 @@ export async function main({
 	// Actually create the sfx.
 	console.log("Creating file...");
 	const result = await create("sfx", sfx);
+	await postCreate("sfx", sfx);
+
 	game.os.runCommand(`${game.config.general.editor} "${result.path}"`);
 
 	await game.pause();

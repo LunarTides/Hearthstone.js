@@ -3,7 +3,7 @@ import { createGame } from "@Game/game.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import { confirm, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { create } from "universe/emergence/create/lib.ts";
+import { create, postCreate } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
 
 if (import.meta.main) {
@@ -231,7 +231,10 @@ export async function main(debug = false): Promise<void> {
 	const className = heroBlueprint.classes[0];
 
 	await create("card", heroBlueprint);
+	await postCreate("card", heroBlueprint);
+
 	await create("card", heropowerBlueprint);
+	await postCreate("card", heropowerBlueprint);
 
 	// TODO: Automate actually adding the class. See #466
 

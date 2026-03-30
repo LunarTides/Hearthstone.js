@@ -1,4 +1,5 @@
 import { color } from "@Game/modules/color.ts";
+import { data } from "@Game/modules/data.ts";
 import { fileSystem } from "@Game/modules/fs.ts";
 import {
 	Ability,
@@ -34,62 +35,11 @@ const resourceTypeHooks = {
 			return `/cards/${resource.type.toLowerCase()}/${filename}`;
 		},
 		imports: async (resource: BlueprintWithOptional) => {
+			// NOTE: The other imports are added in `fields`.
 			addImport("@Game/types.ts", { key: "Blueprint", type: true });
-			addImport("@Game/types.ts", { key: "Class" });
-
-			if (resource.text) {
-				// If the card has a description, it will have a test ability.
-				addImport("@Game/types.ts", { key: "EventListenerMessage" });
-				addImport("node:assert", { key: "assert", direct: true });
-			}
-			if ((resource.keywords?.length ?? 0) > 0) {
-				addImport("@Game/types.ts", { key: "Keyword" });
-			}
-
-			addImport("@Game/types.ts", { key: "Rarity" });
-
-			if ((resource.runes?.length ?? 0) > 0) {
-				addImport("@Game/types.ts", { key: "Rune" });
-			}
-
-			switch (resource.type) {
-				case Type.Minion: {
-					addImport("@Game/types.ts", { key: "Tribe" });
-					break;
-				}
-				case Type.Spell: {
-					addImport("@Game/types.ts", { key: "SpellSchool" });
-					break;
-				}
-				case Type.Weapon: {
-					break;
-				}
-				case Type.Location: {
-					break;
-				}
-				case Type.Hero: {
-					break;
-				}
-				case Type.HeroPower: {
-					break;
-				}
-				case Type.Enchantment: {
-					addImport("@Game/types.ts", { key: "EnchantmentPriority" });
-					break;
-				}
-				default:
-					throw new Error(`Cannot handle card type '${resource.type}'.`);
-			}
-
-			if (resource.tags.length > 0) {
-				addImport("@Game/types.ts", { key: "Tag" });
-			}
-
-			// NOTE: Biome places this type after everything else.
-			addImport("@Game/types.ts", { key: "Type" });
 		},
 		export: async (resource: BlueprintWithOptional) =>
-			`export const blueprint: Blueprint`,
+			`const blueprint: Blueprint`,
 		fields: async (resource: BlueprintWithOptional) => {
 			// A list of fields that should use enums instead of strings.
 			const enumMappings = {
@@ -122,6 +72,9 @@ const resourceTypeHooks = {
 					jsonValue !== "[]" &&
 					enumMapping
 				) {
+					// Dynamically import the enum when required. This is pretty cool!
+					addImport("@Game/types.ts", { key: enumMapping });
+
 					if (jsonValue.startsWith("[")) {
 						// Handle array mappings.
 						jsonValue =
@@ -149,6 +102,7 @@ const resourceTypeHooks = {
 			}
 		},
 		methods: async (resource: BlueprintWithOptional) => {
+			// TODO: Detect placeholders in the card's text.
 			const cleanedDescription = color.stripTags(resource.text);
 			const abilities: string[] = [];
 
@@ -222,13 +176,32 @@ const resourceTypeHooks = {
 				}
 			}
 
+			// If there is a passive ability, add the create ability to the start.
+			if (abilities.includes("passive") && !abilities.includes("create")) {
+				abilities.unshift("create");
+			}
+
 			if (abilities.length > 0) {
 				abilities.push("test");
+			}
+
+			// Enchantments shouldn't have the `create` ability.
+			// They should use `enchantmentCreate` instead.
+			if (resource.type === Type.Enchantment) {
+				data.remove(abilities, "create");
 			}
 
 			return abilities.map((ability) => {
 				// Create
 				if (ability === "create") {
+					// Add the Keyword / Rune imports if needed.
+					if (resource.keywords?.length) {
+						addImport("@Game/types.ts", { key: "Keyword" });
+					}
+					if (resource.runes?.length) {
+						addImport("@Game/types.ts", { key: "Rune" });
+					}
+
 					return {
 						name: ability,
 						args: ["self", "owner"],
@@ -269,6 +242,9 @@ const resourceTypeHooks = {
 
 				// Test
 				if (ability === "test") {
+					addImport("@Game/types.ts", { key: "EventListenerMessage" });
+					addImport("node:assert", { key: "assert", direct: true });
+
 					return {
 						name: ability,
 						args: ["self", "owner"],
@@ -288,6 +264,14 @@ const resourceTypeHooks = {
 				};
 			});
 		},
+		postCreate: async (resource: BlueprintWithOptional) => {
+			if (!game) {
+				return;
+			}
+
+			game.blueprints.push(resource);
+			await game.card.generateIdsFile();
+		},
 	},
 	command: {
 		path: async (resource: Command) =>
@@ -295,7 +279,7 @@ const resourceTypeHooks = {
 		imports: async (resource: Command) => {
 			addImport("@Game/types.ts", { key: "Command", type: true });
 		},
-		export: async (resource: Command) => `export const command: Command`,
+		export: async (resource: Command) => `const command: Command`,
 		fields: async (resource: Command) => {
 			for (const [key, value] of Object.entries(resource)) {
 				addLine(`\t${key}: ${JSON.stringify(value).replaceAll(",", ", ")},`);
@@ -314,6 +298,7 @@ const resourceTypeHooks = {
 				},
 			];
 		},
+		postCreate: async (resource: Command) => {},
 	},
 	sfx: {
 		path: async (resource: SFX) =>
@@ -322,7 +307,7 @@ const resourceTypeHooks = {
 			addImport("@Game/types.ts", { key: "SFX", type: true });
 			addImport("@Game/modules/audio/audio.ts", { key: "octaves" });
 		},
-		export: async (resource: SFX) => `export const sfx: SFX`,
+		export: async (resource: SFX) => `const sfx: SFX`,
 		fields: async (resource: SFX) => {
 			for (const [key, value] of Object.entries(resource)) {
 				addLine(`\t${key}: ${JSON.stringify(value).replaceAll(",", ", ")},`);
@@ -342,6 +327,7 @@ const resourceTypeHooks = {
 				},
 			];
 		},
+		postCreate: async (resource: SFX) => {},
 	},
 };
 
@@ -363,6 +349,11 @@ const addImport = (file: string, obj: Partial<typeof defaultImportObject>) => {
 
 	if (!Object.hasOwn(imports, file)) {
 		imports[file] = [importObject];
+		return;
+	}
+
+	// Check if this key is already imported.
+	if (imports[file].some((obj) => obj.key === importObject.key)) {
 		return;
 	}
 
@@ -432,7 +423,7 @@ export async function createFileContent<
 
 	// Main Content
 	const resourceExport = await hooks.export(resource as any);
-	addLine(`${resourceExport} = {`);
+	addLine(`export ${resourceExport} = {`);
 	// {
 	// Fields
 	await hooks.fields(resource as any);
@@ -448,7 +439,9 @@ export async function createFileContent<
 			addLine(`\t\t// ${method.comment}`);
 		}
 		if (method.lines.length > 0) {
-			addLine(`\t\t${method.lines.join("\n\t\t")}`);
+			addLine(
+				`\t\t${method.lines.filter((line) => typeof line === "string").join("\n\t\t")}`,
+			);
 		}
 		if (method.newline !== false) {
 			addLine("\t\t");
@@ -481,4 +474,12 @@ export async function create<T extends keyof typeof resourceTypeHooks>(
 		content,
 		bytes,
 	};
+}
+
+export async function postCreate<T extends keyof typeof resourceTypeHooks>(
+	resourceType: T,
+	resource: ResourceObject<T>,
+) {
+	const hooks = resourceTypeHooks[resourceType];
+	await hooks.postCreate(resource as any);
 }
