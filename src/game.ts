@@ -20,7 +20,7 @@ import {
 
 import _ from "lodash";
 import { register } from "universe/emergence/register/lib.ts";
-import cardIds from "../cards/ids.ts";
+import cardIds from "../packs/cards.ts";
 import { attack } from "./modules/attack.ts";
 import { audio } from "./modules/audio/audio.ts";
 import { card } from "./modules/card/index.ts";

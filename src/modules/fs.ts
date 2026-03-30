@@ -141,7 +141,7 @@ export const fileSystem = {
 			index: number,
 			resourceType: string,
 		) => Promise<void>,
-		path = "/cards",
+		path = "/packs",
 		extension = ".ts",
 	): Promise<void> {
 		await this.searchFolder(
@@ -151,7 +151,8 @@ export const fileSystem = {
 					fileContent &&
 					file.isFile() &&
 					file.name.endsWith(extension) &&
-					!file.name.startsWith("ids")
+					!fullPath.includes("vacuum") &&
+					!file.name.startsWith("cards.ts")
 				) {
 					let resourceType = "card";
 					if (new RegExp(`\\..*\\${extension}$`).test(file.name)) {
@@ -196,8 +197,8 @@ export const fileSystem = {
 	 *
 	 * # Example
 	 * ```ts
-	 * // Outputs: "(path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/the_coin.ts"
-	 * console.log(dirname() + "/cards/the_coin.ts");
+	 * // Outputs: "(path to the folder where hearthstone.js is stored)/Hearthstone.js/packs/@Official/builtin/cards/the_coin.ts"
+	 * console.log(dirname() + "/packs/@Official/builtin/cards/the_coin.ts");
 	 * ```
 	 *
 	 * @returns The directory name.

@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 			// Remember to use the right ones.
 			// Right: left_arm[0]
 			// Wrong: left_arm[1]
-			// Look in the `ids.ts` file if you're unsure.
+			// Look in the `/packs/cards.ts` file if you're unsure.
 			game.ids.Official.examples.left_arm[0],
 			game.ids.null,
 			game.ids.Official.examples.right_arm[0],

@@ -38,7 +38,7 @@ const funFacts = [
 
 	// Cards
 	"If you want to make your own cards, you can totally do so! Just enable developer mode in the HUB, and follow the instructions! A little coding knowledge is required though.",
-	"There are example cards that show you how to make cards properly. They are found under the 'cards/Examples' folder.",
+	"There are example cards that show you how to make cards properly. They are found under the 'packs/@Official/examples' folder.",
 	"The cards uses the exact same API that the game uses, and the game has many hooks. This allows cards near complete control over the game. If there is anything you <i>can't</i> do with cards, open an issue on GitHub, and I'll see what I can do!",
 	"There are a lot of niche functions in the game API. Maybe there exists a function that allows you to do something easier?",
 

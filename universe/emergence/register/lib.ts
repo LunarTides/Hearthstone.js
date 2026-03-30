@@ -6,16 +6,27 @@ import type { Blueprint, Command, SFX } from "@Game/types.ts";
 const resourceTypeFunctions = {
 	card: async (path: string) => {
 		const blueprint = (await import(path)).blueprint as Blueprint;
+		if (!blueprint) {
+			return;
+		}
+
 		game.blueprints.push(blueprint);
 	},
 	command: async (path: string) => {
 		const command = (await import(path)).command as Command;
+		if (!command) {
+			return;
+		}
+
 		await addCommand(command);
 	},
 	sfx: async (path: string) => {
 		const pack = (await game.card.getPackMetadataFromCardPath(path))!;
-
 		const sfx = (await import(path)).sfx as SFX;
+		if (!sfx) {
+			return;
+		}
+
 		await addSFX(sfx, pack);
 	},
 };

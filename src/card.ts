@@ -462,7 +462,7 @@ export class Card {
 	 * Returns all cards added to Hearthstone.js from the "cards" folder.
 	 *
 	 * @param includeUncollectible If it should include all uncollectible cards
-	 * @param generateIds If it should generate the 'ids.ts' file. It only does this if this is the first time this function has been called this game.
+	 * @param generateIds If it should generate the 'cards.ts' file. It only does this if this is the first time this function has been called this game.
 	 */
 	static async all(
 		includeUncollectible = false,

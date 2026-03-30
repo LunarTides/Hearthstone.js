@@ -247,7 +247,7 @@ export async function main(debug = false): Promise<void> {
 
 	console.log(
 		// TODO: Use heropower id.
-		`2. Open 'cards/Custom/StartingHeroes/${game.lodash.startCase(className)}/?-heropower.ts' and add logic to the 'cast' function.`,
+		`2. Open 'packs/custom/heropower/${heropowerBlueprint.name}.ts' and add logic to the 'cast' function.`,
 	);
 
 	console.log(

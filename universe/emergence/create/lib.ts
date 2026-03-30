@@ -32,7 +32,7 @@ const resourceTypeHooks = {
 					"",
 				)}-${resource.id.split("-").at(-1)!.slice(0, 8)}.ts`;
 
-			return `/cards/${resource.type.toLowerCase()}/${filename}`;
+			return `/packs/${resource.type.toLowerCase()}/${filename}`;
 		},
 		imports: async (resource: BlueprintWithOptional) => {
 			// NOTE: The other imports are added in `fields`.
@@ -465,7 +465,7 @@ export async function create<T extends keyof typeof resourceTypeHooks>(
 	const path = await hooks.path(resource as any);
 
 	const actualPath = fileSystem.restrictPath(
-		`/cards/custom/${path.replace(/^\//, "")}`,
+		`/packs/custom/${path.replace(/^\//, "")}`,
 	);
 	const bytes = await Bun.write(actualPath, content);
 

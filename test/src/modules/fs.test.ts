@@ -8,35 +8,35 @@ describe("src/modules/fs", () => {
 
 	test("restrictPath", async () => {
 		const match = (path: string) => {
-			expect(fs.restrictPath(path)).toEqual(`${fs.dirname()}/cards/`);
+			expect(fs.restrictPath(path)).toEqual(`${fs.dirname()}/packs/`);
 		};
 
-		// All of these should resolve to "(Path to the folder where hearthstone.js is stored)/Hearthstone.js/cards/"
-		match("/cards/");
-		match("~/cards/");
-		match("./cards/");
-		match("cards/");
-		match(`${fs.dirname()}/cards/`);
+		// All of these should resolve to "(Path to the folder where hearthstone.js is stored)/Hearthstone.js/packs/"
+		match("/packs/");
+		match("~/packs/");
+		match("./packs/");
+		match("packs/");
+		match(`${fs.dirname()}/packs/`);
 
 		// Try to escape the directory, shouldn't work
-		match("../cards/");
+		match("../packs/");
 
 		/*
 		 * Try different exploits.
 		 * If it removes the first instance of "../",
-		 * it should become "../cards/"
+		 * it should become "../packs/"
 		 *
 		 * This shouldn't work though
 		 */
-		match("..././cards/");
+		match("..././packs/");
 
 		/**
 		 * If it removes the first instance of "..", and then "../",
-		 * it should become "../cards/"
+		 * it should become "../packs/"
 		 *
 		 * This also shouldn't work, since it removes all instances of ".." and "../"
 		 */
-		match("....././cards/");
+		match("....././packs/");
 	});
 
 	test.todo("dirname", async () => {});

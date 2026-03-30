@@ -33,7 +33,7 @@ export async function promptImportPack() {
 				hub.watermark(false);
 
 				console.log(
-					"Download a pack, then drag the extracted folder into '/packs/'.\n",
+					"Download a pack, then drag the extracted folder into '/packs/vacuum/'.\n",
 				);
 
 				packs = await getPacks();
@@ -113,7 +113,7 @@ export async function promptCompressPack() {
 			dynamicChoices: true,
 			callbackBefore: async () => {
 				hub.watermark(false);
-				console.log("The pack are stored in the '/packs' folder.");
+				console.log("The pack are stored in the '/packs/vacuum/' folder.");
 				console.log("Compressed packs have the extension '.tar.gz'.");
 				console.log(
 					"<red>Red</red> = Compressed, <green>Green</green> = Extracted",
@@ -661,7 +661,9 @@ export const registry = {
 							// TODO: Add progress bar.
 							console.log("Downloading...");
 							try {
-								await pack.downloadToPath(game.fs.restrictPath("/packs"));
+								await pack.downloadToPath(
+									game.fs.restrictPath("/packs/vacuum"),
+								);
 							} catch (error) {
 								game.audio.playSFX("error");
 

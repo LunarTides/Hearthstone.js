@@ -1,12 +1,10 @@
 node_modules/
-packs/**/*
-packs/*.tar.gz
+packs/vacuum/**/*
+!packs/vacuum/README.md
+packs/**/*.tar.gz
 logs/
-dist/
 .vscode/
 .*\.swp
 *~
-\.ignore.*
-*-output\.txt
 vanillacards.json
 **/.env

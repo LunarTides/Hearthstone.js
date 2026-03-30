@@ -242,7 +242,7 @@ export const card = {
 	},
 
 	/**
-	 * Generates an ids file in `cards/ids.ts`. This is used in `game.ids`.
+	 * Generates an ids file in `packs/cards.ts`. This is used in `game.ids`.
 	 *
 	 * Don't use this function manually unless you know what you're doing.
 	 */
@@ -358,7 +358,7 @@ export const card = {
 
 		idsContent += "\n\t},\n};\n";
 
-		game.fs.call("writeFile", "/cards/ids.ts", idsContent);
+		game.fs.call("writeFile", "/packs/cards.ts", idsContent);
 	},
 
 	/**
@@ -384,7 +384,7 @@ export const card = {
 			const index = match ? match[1] : "unknown";
 
 			console.log(
-				`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './cards/Examples/DIY/${index}.ts'.`,
+				`Hm. This card doesn't seem to do what it's supposed to do... Maybe you should try to fix it? The card is in: './packs/@Official/examples/diy/${index}.ts'.`,
 			);
 		}
 

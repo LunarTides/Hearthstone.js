@@ -34,10 +34,10 @@ export async function getPacks() {
 	}[] = [];
 
 	await game.fs.searchFolder(
-		"/packs",
+		"/packs/vacuum",
 		async (index, path, file) => {
 			if (
-				!file.parentPath.endsWith("packs") ||
+				!file.parentPath.endsWith("vacuum") ||
 				!(
 					(file.isFile() && file.name.endsWith(".tar.gz")) ||
 					(file.isDirectory() &&
@@ -78,7 +78,7 @@ export async function getPacks() {
 }
 
 export async function parseMetadataFile(pack: string) {
-	if (!(await game.fs.call("exists", `/packs/${pack}/pack.json5`))) {
+	if (!(await game.fs.call("exists", `/packs/vacuum/${pack}/pack.json5`))) {
 		await game.pause(
 			"<red>Invalid pack. This pack doesn't include a 'pack.json5' file.</red>\n",
 		);
@@ -86,9 +86,14 @@ export async function parseMetadataFile(pack: string) {
 	}
 
 	const metadata: Metadata = Bun.JSON5.parse(
-		(await game.fs.call("readFile", `/packs/${pack}/pack.json5`, "utf8", {
-			invalidateCache: true,
-		})) as string,
+		(await game.fs.call(
+			"readFile",
+			`/packs/vacuum/${pack}/pack.json5`,
+			"utf8",
+			{
+				invalidateCache: true,
+			},
+		)) as string,
 	) as Metadata;
 
 	// Metadata version
@@ -163,7 +168,7 @@ export async function importPack(
 	await game.fs.call(
 		"cp",
 		pack.path,
-		game.fs.restrictPath(`/cards/@${pack.ownerName}/${pack.name}`),
+		game.fs.restrictPath(`/packs/@${pack.ownerName}/${pack.name}`),
 		{ recursive: true },
 	);
 
@@ -171,7 +176,7 @@ export async function importPack(
 	await game.card.generateIdsFile();
 
 	console.log(
-		`<green>The pack has been imported into '/cards/@${pack.ownerName}/${pack.name}'.</green>\n`,
+		`<green>The pack has been imported into '/packs/@${pack.ownerName}/${pack.name}'.</green>\n`,
 	);
 
 	if (options.forceDelete) {
@@ -181,7 +186,7 @@ export async function importPack(
 		});
 	} else {
 		const deleteConfirm = await confirm({
-			message: `Do you want to delete '/packs/${pack.ownerName}+${pack.name}'?`,
+			message: `Do you want to delete '/packs/vacuum/${pack.ownerName}+${pack.name}'?`,
 		});
 		if (deleteConfirm) {
 			await game.fs.call("rm", pack.path, {
@@ -263,7 +268,7 @@ export async function exportPack(pack?: Pack) {
 	const author = metadata.author || "You";
 	const name = metadata.name || (pack?.name ?? Bun.randomUUIDv7());
 
-	await game.fs.call("mkdir", `/packs/${author}+${name}`, {
+	await game.fs.call("mkdir", `/packs/vacuum/${author}+${name}`, {
 		recursive: true,
 	});
 
@@ -273,7 +278,7 @@ export async function exportPack(pack?: Pack) {
 			await game.fs.call(
 				"cp",
 				path,
-				game.fs.restrictPath(`/packs/${author}+${name}/${file.name}`),
+				game.fs.restrictPath(`/packs/vacuum/${author}+${name}/${file.name}`),
 			);
 		}
 	});
@@ -281,12 +286,12 @@ export async function exportPack(pack?: Pack) {
 	// Write metadata file.
 	await game.fs.call(
 		"writeFile",
-		`/packs/${author}+${name}/pack.json5`,
+		`/packs/vacuum/${author}+${name}/pack.json5`,
 		Bun.JSON5.stringify(metadata, null, 4)!,
 	);
 
 	console.log(
-		`<green>Done.</green>\n\nNext steps:\n1. Check out '/packs/${author}+${name}'. Add / remove the files you want in the pack.\n2. Choose 'Compress' then send the file to whoever you want, alternatively, upload to the registry using 'Registry > Upload'.`,
+		`<green>Done.</green>\n\nNext steps:\n1. Check out '/packs/vacuum/${author}+${name}'. Add / remove the files you want in the pack.\n2. Choose 'Compress' then send the file to whoever you want, alternatively, upload to the registry using 'Registry > Upload'.`,
 	);
 	await game.pause();
 

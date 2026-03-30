@@ -16,6 +16,6 @@
 		}
 	},
 	"files": {
-		"includes": ["**", "!vanillacards.json", "!cards/ids.ts", "!**/sites"]
+		"includes": ["**", "!vanillacards.json", "!packs/cards.ts", "!**/sites"]
 	}
 }

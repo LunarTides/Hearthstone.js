@@ -33,7 +33,7 @@ export async function reload(
 	}
 
 	for (const key of Object.keys(require.cache)) {
-		if (key.includes("/cards/") || key.includes("\\cards\\")) {
+		if (key.includes("/packs/") || key.includes("\\packs\\")) {
 			delete require.cache[key];
 		}
 	}

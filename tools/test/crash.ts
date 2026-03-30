@@ -50,7 +50,7 @@ export async function main(): Promise<void> {
 		game.noInput = true;
 		game.noOutput = true;
 
-		// NOTE: This generates `game.cards` without generating an `ids.ts` file. (Very expensive operation.)
+		// NOTE: This generates `game.cards` without generating an `cards.ts` file. (Very expensive operation.)
 		// This decreases execution time quite a bit. (More noticeable in the cards test.)
 		await Card.all(false, false);
 

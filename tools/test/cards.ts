@@ -55,7 +55,7 @@ export async function main(): Promise<void> {
 		game.player = player1;
 		game.opponent = player2;
 
-		// NOTE: This generates `game.cards` without generating an `ids.ts` file. (Very expensive operation.)
+		// NOTE: This generates `game.cards` without generating an `cards.ts` file. (Very expensive operation.)
 		// This decreases the execution time of this script from ~7.4s -> ~1.2 on my system.
 		await Card.all(false, false);
 
