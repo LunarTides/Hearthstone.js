@@ -14,5 +14,5 @@ This is important since the card files won't explain a concept if it has already
 3. This is where you will write more actual code. (It can get overwhelming quick, sorry.)
 4. These are the most advanced concepts so far.
 
-DIY: These are cards that have a description but no functionality by default. You have to write the code yourself, and play the card in-game to verify your solution.  
-Test: These are cards that are used for unit tests, but they also contain some more niche topics. This stage assumes you have read all numbered stages.
+diy: These are cards that have a description but no functionality by default. You have to write the code yourself, and play the card in-game to verify your solution.  
+test: These are cards that are used for unit tests, but they also contain some more niche topics. This stage assumes you have read all numbered stages.
