@@ -4,12 +4,19 @@ import { fileSystem } from "@Game/modules/fs.ts";
 import {
 	Ability,
 	type BlueprintWithOptional,
+	Class,
 	type Command,
+	EnchantmentPriority,
+	Keyword,
+	Rarity,
+	Rune,
 	type SFX,
+	SpellSchool,
+	Tag,
+	Tribe,
 	Type,
 } from "@Game/types.ts";
-
-const EMERGENCE_VERSION = "0.1.0";
+import { EMERGENCE_VERSION } from "../lib.ts";
 
 let lines: string[] = [];
 let imports: Record<string, (typeof defaultImportObject)[]> = {};
@@ -20,7 +27,7 @@ const defaultImportObject = {
 	direct: false,
 };
 
-const resourceTypeHooks = {
+export const resourceTypeHooks = {
 	card: {
 		path: async (resource: BlueprintWithOptional) => {
 			const filename = `${resource.name
@@ -42,16 +49,7 @@ const resourceTypeHooks = {
 			`const blueprint: Blueprint`,
 		fields: async (resource: BlueprintWithOptional) => {
 			// A list of fields that should use enums instead of strings.
-			const enumMappings = {
-				type: "Type",
-				classes: "Class",
-				rarity: "Rarity",
-				tags: "Tag",
-
-				tribes: "Tribe",
-				spellSchools: "SpellSchool",
-				enchantmentPriority: "EnchantmentPriority",
-			};
+			const enumMappings = await resourceTypeHooks.card.enumMappings();
 
 			// A list of fields that won't be included.
 			const blacklist = ["keywords", "runes", "id"];
@@ -61,9 +59,8 @@ const resourceTypeHooks = {
 					continue;
 				}
 
-				const enumMapping = enumMappings[key as keyof typeof enumMappings] as
-					| string
-					| undefined;
+				const enumMapping = enumMappings[key as keyof typeof enumMappings]
+					?.name as string | undefined;
 
 				let jsonValue = JSON.stringify(value).replaceAll(",", ", ");
 				if (
@@ -264,6 +261,22 @@ const resourceTypeHooks = {
 				};
 			});
 		},
+		enumMappings: async () => ({
+			type: { name: "Type", enum: Type },
+			classes: { name: "Class", enum: Class },
+			rarity: { name: "Rarity", enum: Rarity },
+			tags: { name: "Tag", enum: Tag },
+
+			tribes: { name: "Tribe", enum: Tribe },
+			spellSchools: { name: "SpellSchool", enum: SpellSchool },
+			enchantmentPriority: {
+				name: "EnchantmentPriority",
+				enum: EnchantmentPriority,
+			},
+
+			keywords: { name: "Keyword", enum: Keyword },
+			runes: { name: "Rune", enum: Rune },
+		}),
 		postCreate: async (resource: BlueprintWithOptional) => {
 			if (!game) {
 				return;
@@ -298,6 +311,7 @@ const resourceTypeHooks = {
 				},
 			];
 		},
+		enumMappings: async () => ({}),
 		postCreate: async (resource: Command) => {},
 	},
 	sfx: {
@@ -327,6 +341,7 @@ const resourceTypeHooks = {
 				},
 			];
 		},
+		enumMappings: async () => ({}),
 		postCreate: async (resource: SFX) => {},
 	},
 };
@@ -397,7 +412,8 @@ const finish = () => {
 	return result;
 };
 
-type ResourceObject<T extends keyof typeof resourceTypeHooks> = T extends "card"
+export type Resource = keyof typeof resourceTypeHooks;
+export type ResourceObject<T extends Resource> = T extends "card"
 	? BlueprintWithOptional
 	: T extends "command"
 		? Command
@@ -405,9 +421,10 @@ type ResourceObject<T extends keyof typeof resourceTypeHooks> = T extends "card"
 			? SFX
 			: undefined;
 
-export async function createFileContent<
-	T extends keyof typeof resourceTypeHooks,
->(resourceType: T, resource: ResourceObject<T>) {
+export async function createFileContent<T extends Resource>(
+	resourceType: T,
+	resource: ResourceObject<T>,
+) {
 	lines = [];
 	imports = {};
 
@@ -455,7 +472,7 @@ export async function createFileContent<
 	return finish();
 }
 
-export async function create<T extends keyof typeof resourceTypeHooks>(
+export async function create<T extends Resource>(
 	resourceType: T,
 	resource: ResourceObject<T>,
 ) {
@@ -476,7 +493,7 @@ export async function create<T extends keyof typeof resourceTypeHooks>(
 	};
 }
 
-export async function postCreate<T extends keyof typeof resourceTypeHooks>(
+export async function postCreate<T extends Resource>(
 	resourceType: T,
 	resource: ResourceObject<T>,
 ) {

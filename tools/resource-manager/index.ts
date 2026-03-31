@@ -1,10 +1,7 @@
 import { createGame } from "@Game/game.ts";
 import * as hub from "../../hub.ts";
-import * as ccc from "./card/custom.ts";
 import * as vcc from "./card/vanilla.ts";
 import * as classCreator from "./class.ts";
-import * as commandCreator from "./command.ts";
-import * as sfxCreator from "./sfx.ts";
 
 // FIXME: Some tools don't work when run directly.
 if (import.meta.main) {
@@ -32,7 +29,9 @@ async function promptCardCardGenerator() {
 					const generator = cardGenerators[answer];
 					switch (generator) {
 						case "Custom": {
-							await ccc.main({});
+							await game.pause(
+								"See <b>Universe > [emergence] > create</b> instead for the new frontend.",
+							);
 							break;
 						}
 						case "Vanilla": {
@@ -77,13 +76,15 @@ export async function create() {
 							break;
 						}
 						case "Command": {
-							game.audio.playSFX("ui.leaveLoop");
-							await commandCreator.main({});
+							await game.pause(
+								"See <b>Universe > [emergence] > create</b> instead for the new frontend.",
+							);
 							break;
 						}
 						case "SFX": {
-							game.audio.playSFX("ui.leaveLoop");
-							await sfxCreator.main({});
+							await game.pause(
+								"See <b>Universe > [emergence] > create</b> instead for the new frontend.",
+							);
 							break;
 						}
 						default: {

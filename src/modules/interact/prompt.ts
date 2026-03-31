@@ -29,6 +29,24 @@ export const UILoopDefaultOptions = {
 	dynamicChoices: false as boolean,
 };
 
+export const ConfigureObjectV2DefaultOptions = {
+	message: "Configure Object" as string,
+	backButtonText: "Done" as string,
+	callbackBefore: (object: any) => Promise.resolve(),
+	callbackAfter: (object: any) => Promise.resolve(),
+	disableCancelling: false,
+	confirmWhenCancellingIfDirty: true,
+	confirmWhenDone: true,
+	entryOptions: async (object: any) => ({
+		exclude: [] as string[],
+		split: [] as { key: string; relativePosition: number }[],
+		enums: {
+			exclude: [] as string[],
+		},
+	}),
+	enumMappings: {} as Record<string, { name: string; enum: any }>,
+};
+
 const selectValues: Record<string, any> = {};
 
 export const prompt = {
@@ -214,6 +232,16 @@ export const prompt = {
 					choice !== false &&
 					choice.name === options.backButtonText,
 			);
+
+			// Remove multiple consecutive seperators.
+			let lastChoice: (typeof choices)[0] | undefined;
+			for (const choice of choices) {
+				if (choice instanceof Separator && lastChoice instanceof Separator) {
+					game.data.remove(choices, choice);
+				}
+
+				lastChoice = choice;
+			}
 
 			const answer = await game.prompt.customSelect(
 				options.message,
@@ -611,6 +639,271 @@ export const prompt = {
 		);
 
 		return dirty;
+	},
+
+	async _configureObjectV2HandleEntry(
+		object: any,
+		key: string,
+		value: any,
+		options: typeof ConfigureObjectV2DefaultOptions,
+		onLoop: () => Promise<void>,
+		dirty: boolean,
+	) {
+		const enumMapping = Object.entries(options.enumMappings).find(
+			([mappingKey]) => mappingKey === key,
+		)?.[1];
+
+		const entryOptions = await options.entryOptions(object);
+
+		switch (typeof value) {
+			case "string": {
+				// Handle single enums.
+				if (enumMapping) {
+					let newValue: string | undefined;
+
+					await game.prompt.createUILoop(
+						{
+							message: key,
+						},
+						async () =>
+							Object.keys(enumMapping.enum)
+								.filter((key) => !entryOptions.enums.exclude.includes(key))
+								.map((enumKey) => ({
+									name: enumKey,
+									callback: async (option) => {
+										newValue = Object.values(enumMapping.enum)[
+											option
+										] as string;
+										return false;
+									},
+								})),
+					);
+
+					return { newValue, dirty };
+				}
+
+				// Handle regular strings.
+				const newValue = await game.input({
+					message: "What will you change this value to?",
+					default: value,
+				});
+
+				return { newValue, dirty };
+			}
+			case "number": {
+				const newValue = await game.input({
+					message: "What will you change this value to?",
+					default: value.toString(),
+					pattern: /\d+/,
+					patternError: "Please enter a valid number",
+				});
+
+				return { newValue: parseInt(newValue, 10), dirty };
+			}
+			case "boolean": {
+				let newValue: boolean | undefined;
+
+				await game.prompt.createUILoop(
+					{
+						message: key,
+					},
+					async () => [
+						{
+							name: "True",
+							callback: async () => {
+								newValue = true;
+								return false;
+							},
+						},
+						{
+							name: "False",
+							callback: async () => {
+								newValue = false;
+								return false;
+							},
+						},
+					],
+				);
+
+				return { newValue, dirty };
+			}
+		}
+
+		// Handle arrays.
+		if (Array.isArray(value)) {
+			let changed = false;
+
+			if (enumMapping) {
+				// TODO: Pass `entryOptions.enums.exclude` in here.
+				changed = await game.prompt.configureArrayEnum(
+					value,
+					enumMapping.enum,
+					undefined,
+					onLoop,
+				);
+			} else {
+				changed = await game.prompt.configureArray(value, onLoop);
+			}
+
+			// NOTE: I can't do `dirty ||= await game.prompt...` since if dirty is true, it won't evaluate the right side of the expression.
+			// Learned that the hard way...
+			dirty ||= changed;
+
+			return { newValue: undefined, dirty };
+		} else {
+			// It's an object.
+			const newValue = await game.prompt.configureObjectV2(value, {
+				...options,
+				disableCancelling: true,
+				confirmWhenDone: false,
+			});
+			dirty ||= !game.lodash.isEqual(object, newValue);
+
+			return { newValue, dirty };
+		}
+	},
+
+	/**
+	 * Prompt the user to configure an object. Does not modify the object.
+	 *
+	 * This is used by the [emergence] frontend for creating resources. Replacement for `configureObject`.
+	 *
+	 * @param object The object to configure.
+	 * @param rawOptions Some options that will modify the behaviour of this function.
+	 *
+	 * @returns The modified object, or `undefined` if cancelled.
+	 */
+	async configureObjectV2<T extends {}>(
+		object: T,
+		rawOptions: Partial<typeof ConfigureObjectV2DefaultOptions>,
+	): Promise<T | undefined> {
+		// TODO: Add ability to add and delete fields.
+		const options = {
+			...ConfigureObjectV2DefaultOptions,
+			...rawOptions,
+		} as typeof ConfigureObjectV2DefaultOptions;
+
+		const resource = game.lodash.cloneDeep(object);
+		let dirty = false;
+		let cancelled = false;
+
+		const entryGenerator = async () => {
+			const entryOptions = await options.entryOptions(resource);
+
+			// TypeScript, what an interesting programming language...
+			const entries: Awaited<
+				ReturnType<Parameters<typeof game.prompt.createUILoop>[1]>
+			> = Object.entries(resource)
+				// Don't include excluded entries.
+				.filter(([key, value]) => !entryOptions.exclude.includes(key))
+				.map(([key, value]) => ({
+					name: `${key}: ${JSON.stringify(value).replaceAll('","', '", "')}`,
+					callback: async () => {
+						const result = await game.prompt._configureObjectV2HandleEntry(
+							object,
+							key,
+							value,
+							options,
+							async () => {
+								await options.callbackBefore(resource);
+								// TODO: Is this a good idea?
+								await options.callbackAfter(resource);
+							},
+							dirty,
+						);
+						if (result.newValue !== undefined) {
+							const oldValue = value;
+							resource[key as keyof typeof resource] = result.newValue as any;
+
+							if (resource[key as keyof typeof resource] !== oldValue) {
+								dirty = true;
+							}
+						}
+
+						dirty ||= result.dirty;
+						return true;
+					},
+				}));
+
+			// Add seperators.
+			for (const split of entryOptions.split) {
+				const index = entries.findIndex(
+					(entry) =>
+						entry !== false &&
+						!(entry instanceof Separator) &&
+						(entry as any).name.startsWith(split.key),
+				);
+				if (index === -1) {
+					// TODO: Crash maybe?
+					continue;
+				}
+
+				// This is so that setting `relativePosition` to -1 has the intended effect.
+				if (split.relativePosition < 0) {
+					split.relativePosition++;
+				}
+
+				entries.splice(index + split.relativePosition, 0, new Separator());
+			}
+
+			return [
+				...entries,
+				new Separator(),
+				{
+					name: "Cancel",
+					disabled: options.disableCancelling,
+					callback: async () => {
+						// Check if dirty.
+						if (dirty && options.confirmWhenCancellingIfDirty) {
+							const sure = await confirm({
+								message:
+									"Are you sure you want to cancel configuring this resource? Your changes will be lost.",
+								default: false,
+							});
+
+							if (!sure) {
+								return true;
+							}
+						}
+
+						cancelled = true;
+						return false;
+					},
+				},
+				{
+					name: "Done",
+					callback: async () => {
+						if (options.confirmWhenDone) {
+							const sure = await confirm({
+								message: "Are you sure you're done configuring this resource?",
+								default: false,
+							});
+
+							return !sure;
+						}
+
+						return false;
+					},
+				},
+			];
+		};
+
+		await game.prompt.createUILoop(
+			{
+				...options,
+				callbackBefore: async () => {
+					await options.callbackBefore(resource);
+				},
+				callbackAfter: async () => {
+					await options.callbackAfter(resource);
+				},
+				seperatorBeforeBackButton: false,
+				dynamicChoices: true,
+			},
+			entryGenerator,
+		);
+
+		return cancelled ? undefined : resource;
 	},
 
 	/**

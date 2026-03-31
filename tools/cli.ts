@@ -3,7 +3,6 @@ import { type ErrorOptions, program } from "commander";
 import * as dc from "./deckcreator.ts"; // Deck Creator
 //import * as src from "../src/index.ts"; // Source Code
 //import * as clc from "./resource-manager/card/class.ts"; // Class Creator
-import * as ccc from "./resource-manager/card/custom.ts"; // Custom Card Creator
 import * as vcc from "./resource-manager/card/vanilla.ts"; // Vanilla Card Creator
 
 //import * as pkgr from "./pack/packager.ts"; // Packager
@@ -42,6 +41,7 @@ deck
 // Card
 const card = program.command("card").description("manage cards");
 
+// TODO: Replace with universe options.
 // - Create
 const cardCreate = card.command("create").description("create a card");
 
@@ -53,7 +53,10 @@ cardCreate
 	.action(async (options) => {
 		const interactive = options.interactive;
 		if (interactive) {
-			await ccc.main({});
+			// TODO: Support the new frontend.
+			error(
+				"<red>This option does not yet support the new frontend. The old frontend has been removed and cannot be called.</red>",
+			);
 			return;
 		}
 

@@ -193,6 +193,7 @@ async function configure(
  * This is not meant to be a library. Running this function will temporarily give control to this function.
  */
 export async function main(debug = false): Promise<void> {
+	// TODO: Use `game.prompt.configureObjectV2`
 	const heroBlueprint: Blueprint = {
 		name: "CHANGE ME",
 		text: `Change me starting hero`,

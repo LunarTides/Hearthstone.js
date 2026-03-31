@@ -12,6 +12,7 @@ import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as soundTest from "./tools/test/sound.ts"; // Sound Test
 import * as generateVanilla from "./tools/vanilla/generate.ts";
+import * as universe from "./universe/hub.ts";
 
 // These are here so we don't have to recalculate them every watermark call.
 const version = game.info.versionString(4);
@@ -230,6 +231,16 @@ export async function main() {
 					game.interest("Starting Packager...");
 					await pkgr.main();
 					game.interest("Starting Packager...OK");
+
+					return true;
+				},
+			},
+			{
+				name: "Universe",
+				callback: async () => {
+					game.interest("Starting [universe] takeover...");
+					await universe.takeover();
+					game.interest("Starting [universe] takeover...OK");
 
 					return true;
 				},
