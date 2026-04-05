@@ -155,7 +155,7 @@ const resourceTypeHooks = {
 			console.log();
 		},
 		done: async (resource: BlueprintWithOptional) => {
-			// Delete unwated type-specific entries.
+			// Delete unwanted type-specific entries.
 			const wantedEntries = Object.entries(cardTypeSpecific)
 				.filter(([key, value]) => key === resource.type)
 				.flatMap(([key, value]) => value);

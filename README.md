@@ -1,10 +1,3 @@
-<!--
-Maybe this is a little too much.
-<a href="https://buymeacoffee.com/lunartides" alt="Buy me a coffee">
-    <img src="https://img.shields.io/badge/buy_me_a_coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" />
-</a>
--->
-
 # Hearthstone.js
 
 <img width="1547" height="560" alt="Game faded from bottom to top" src="https://github.com/user-attachments/assets/e287e012-0bd7-4a2f-abef-6591f2fa7c37" />
@@ -46,6 +39,7 @@ You need to have [Node](https://nodejs.org) and [Bun](https://bun.sh) installed.
 - If you are on Windows, open `setup.bat`, then `run.bat`.
 - Otherwise, open a console / terminal, then run `bun install`, and `bun .`
   (This works on all platforms.)
+- If you're on Linux, you can run the `install.sh` script. This will allow you to run the game through the new `hs` command.
 
 ## Images
 
