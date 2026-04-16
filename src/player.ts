@@ -699,7 +699,7 @@ export class Player {
 	}
 
 	/**
-	 * Removes and returns the last `amount` cards from the deck.
+	 * Removes and pushes the last `amount` cards from the deck to this player's hand.
 	 * Broadcasts the `DrawCard` event for each card drawn
 	 *
 	 * @param amount The amount of cards to draw

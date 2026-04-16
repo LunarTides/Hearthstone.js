@@ -39,7 +39,7 @@ export const resourceTypeHooks = {
 					"",
 				)}_${resource.id.split("_").at(-1)!.slice(0, 8)}.ts`;
 
-			return `/packs/${resource.type.toLowerCase()}/${filename}`;
+			return `/cards/${resource.type.toLowerCase()}/${filename}`;
 		},
 		imports: async (resource: BlueprintWithOptional) => {
 			// NOTE: The other imports are added in `fields`.
