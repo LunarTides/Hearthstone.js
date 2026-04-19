@@ -1,14 +1,6 @@
-import { Card } from "@Game/card.ts";
+import type { Card } from "@Game/card.ts";
 import { type Metadata, PackValidationResult } from "@Game/types/pack.ts";
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Event,
-	Tag,
-	Tribe,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Tribe, Type } from "@Game/types.ts";
 import { resolve } from "node:path";
 import { parseTags } from "chalk-tags";
 import { vanilla } from "./vanilla.ts";
@@ -86,19 +78,8 @@ export const card = {
 	/**
 	 * Returns the name of all classes in the game
 	 */
-	// TODO: Replace this with `Object.values(Class)`
 	async getClasses(): Promise<string[]> {
-		const cards = await Promise.all(
-			(await Card.allWithTags(Tag.StartingHero)).map(async (hero) => {
-				const unsuppress = game.event.suppress(Event.CreateCard);
-				const card = await hero.imperfectCopy();
-				unsuppress();
-
-				return card;
-			}),
-		);
-
-		return cards.map((card) => card.classes[0]);
+		return Object.values(Class);
 	},
 
 	/**

@@ -644,7 +644,7 @@ export const debugCommands: CommandList = {
 		if (cards.length <= 0) {
 			// Check to see if there are ids starting with the input.
 			const id = cardName.replace(/^#/, "");
-			cards = game.cards.filter(
+			cards = (await Card.all()).filter(
 				(c) =>
 					c.name.toLowerCase().startsWith(cardName.toLowerCase()) ||
 					c.id.startsWith(id) ||
