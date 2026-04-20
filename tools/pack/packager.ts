@@ -274,11 +274,13 @@ export async function exportPack(pack?: Pack) {
 
 	// Copy custom resources over to the pack.
 	await game.fs.searchCardsFolder(async (path, content, file) => {
-		if (path.includes("Custom")) {
+		if (path.includes("custom")) {
 			await game.fs.call(
 				"cp",
 				path,
-				game.fs.restrictPath(`/packs/vacuum/${author}+${name}/${file.name}`),
+				game.fs.restrictPath(
+					`/packs/vacuum/${author}+${name}/${path.split("custom")[1]}`,
+				),
 			);
 		}
 	});
