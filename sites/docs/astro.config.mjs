@@ -15,9 +15,12 @@ export default defineConfig({
 			logo: {
 				src: './src/assets/logo.webp',
 			},
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/LunarTides/Hearthstone.js' }],
+			social: [
+     	  { icon: 'seti:git', label: 'Source Code', href: 'https://git.lunartides.dev/LunarTides/Hearthstone.js' },
+			  { icon: 'github', label: 'GitHub (Mirror)', href: 'https://github.com/LunarTides/Hearthstone.js' }
+			],
 			editLink: {
-				baseUrl: 'https://github.com/LunarTides/Hearthstone.js/edit/main/sites/docs/',
+				baseUrl: 'https://git.lunartides.dev/LunarTides/Hearthstone.js/edit/main/sites/docs/',
 			},
       customCss: [
         "./src/styles/global.css",

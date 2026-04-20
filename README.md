@@ -27,7 +27,7 @@ A console-based recreation of Hearthstone.
 > so don't expect constant updates.
 >
 > If you notice any issues, or want to request a new feature, open an
-> [issue](https://github.com/LunarTides/Hearthstone.js/issues). I'll try to
+> [issue](https://git.lunartides.dev/LunarTides/Hearthstone.js/issues). I'll try to
 > respond as soon as I'm able. You're free to open pull requests, but I can't
 > guarantee that they'll be merged.
 

@@ -9,7 +9,7 @@
     author: 'Official',
     license: 'GPL-3.0',
     links: {
-        Github: 'https://github.com/LunarTides/Hearthstone.js',
+        repository: 'https://git.lunartides.dev/LunarTides/Hearthstone.js',
     },
     permissions: {
         network: false,

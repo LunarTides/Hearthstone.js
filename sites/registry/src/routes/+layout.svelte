@@ -298,7 +298,7 @@
 				<label for="commitHash" class="font-bold">Version</label>
 				<a
 					id="commitHash"
-					href={`https://github.com/LunarTides/Hearthstone.js/commit/${__COMMIT_HASH__}`}
+					href={`https://git.lunartides.dev/LunarTides/Hearthstone.js/commit/${__COMMIT_HASH__}`}
 					class="underline"
 				>
 					{__COMMIT_HASH__}
@@ -316,10 +316,10 @@
 				<label for="sourceCode" class="font-bold">Source</label>
 				<a
 					id="sourceCode"
-					href={`https://github.com/LunarTides/Hearthstone.js/blob/${__COMMIT_HASH__}/sites/registry`}
+					href={`https://git.lunartides.dev/LunarTides/Hearthstone.js/src/commit/${__COMMIT_HASH__}/sites/registry`}
 					class="underline"
 				>
-					GitHub
+					Forgejo
 				</a>
 			</div>
 
@@ -328,7 +328,7 @@
 				<label for="license" class="font-bold">License</label>
 				<a
 					id="license"
-					href="https://github.com/LunarTides/Hearthstone.js/blob/main/LICENSE"
+					href="https://git.lunartides.dev/LunarTides/Hearthstone.js/src/branch/main/LICENSE"
 					class="underline"
 				>
 					GPL-3.0

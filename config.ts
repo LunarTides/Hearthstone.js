@@ -5,7 +5,7 @@ export const config: GameConfig = {
 		/*
 		 * The editor that gets launched whenever the game wants to launch an editor.
 		 * This happens after creating a card using the Custom Card Creator, for example.
-		 * You can set this to any path you want. (e.g. /usr/bin/code or vim)
+		 * You can set this to any path you want. (e.g. /usr/bin/code or vim or $EDITOR)
 		 */
 		editor: "code",
 
@@ -23,7 +23,7 @@ export const config: GameConfig = {
 		disableFunFacts: false,
 
 		// The url to this project's repository.
-		repositoryUrl: "https://github.com/LunarTides/Hearthstone.js",
+		repositoryUrl: "https://git.lunartides.dev/LunarTides/Hearthstone.js",
 
 		// The url to the registry. This is so that it can use the registry's API.
 		// Leave this as-is unless you have a reason to change it.
