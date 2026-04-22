@@ -2,6 +2,7 @@ node_modules/
 packs/vacuum/**/*
 !packs/vacuum/README.md
 packs/**/*.tar.gz
+universe/universe.json
 logs/
 .vscode/
 .*\.swp
