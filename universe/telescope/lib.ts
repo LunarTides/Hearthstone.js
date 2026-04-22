@@ -1,9 +1,10 @@
 import { createGame } from "@Game/game.ts";
 import pathUtils from "node:path";
+import { type ErrorLabel, parseSync, Severity } from "oxc-parser";
 import type { Resource } from "universe/emergence/create/lib.ts";
 
 // TODO: Remove.
-await createGame();
+await createGame(false);
 
 // Root
 class Universe {
@@ -132,7 +133,8 @@ class Star {
 // Pack
 class Planet {
 	name: string;
-	suspiciousness: number = 0;
+	baseSuspiciousness: number = 0;
+	combinedSuspiciousness: number = 0;
 	moons: Moon[];
 
 	solarSystem: SolarSystem | undefined;
@@ -181,6 +183,13 @@ class Planet {
 	}
 }
 
+const defaultImportObject = {
+	key: "",
+	// NOTE: Don't include in the json file if false. This reduces how much space is used.
+	isType: undefined as true | undefined,
+	isDefault: undefined as true | undefined,
+};
+
 // Pack Resource
 class Moon {
 	name: string;
@@ -188,6 +197,10 @@ class Moon {
 
 	bytes: number;
 	suspiciousness: number = 0;
+	imports: Record<string, (typeof defaultImportObject)[]> = {};
+	// TODO: Get dependencies.
+	dependencies: { cardIds: string[] };
+	errors: { message: string; labels: ErrorLabel[] }[] = [];
 
 	planet: Planet;
 
@@ -220,15 +233,75 @@ class Moon {
 	}
 
 	async scan(path: string) {
-		this.name = pathUtils.basename(path);
+		this.name = pathUtils.basename(path).split(".")[0];
 
 		// Get resource type.
-		this.type = (this.name.split(".").slice(1).at(-2) as Resource) || "card";
+		this.type =
+			(pathUtils.basename(path).split(".").slice(1).at(-2) as Resource) ||
+			"card";
 
 		const content = (await game.fs.call("readFile", path, "utf8", {
 			invalidateCache: true,
 		})) as string;
 		this.bytes = Buffer.from(content, "utf8").byteLength;
+
+		// Parse file using oxc.
+		const result = parseSync(pathUtils.basename(path), content);
+
+		// Check if an error was found.
+		for (const error of result.errors) {
+			if (error.severity === Severity.Error) {
+				this.errors.push({ message: error.message, labels: error.labels });
+			}
+		}
+
+		for (const stmt of result.program.body) {
+			// Get imports.
+			if (stmt.type === "ImportDeclaration") {
+				// The source of the import.
+				const source = stmt.source.value;
+
+				for (const spec of stmt.specifiers) {
+					// Get information about the import.
+					const value = spec.local.name;
+					const isType =
+						stmt.importKind === "type" ||
+						(spec.type === "ImportSpecifier" && spec.importKind === "type");
+					const isDefault = spec.type === "ImportDefaultSpecifier";
+
+					this.addImport(source, {
+						key: value,
+						isType: isType || undefined,
+						isDefault: isDefault || undefined,
+					});
+				}
+			}
+		}
+	}
+
+	async addImport(file: string, obj: Partial<typeof defaultImportObject>) {
+		const importObject = {
+			...defaultImportObject,
+			...obj,
+		};
+
+		if (!importObject.key) {
+			throw new Error(
+				`The import '${JSON.stringify(obj, null, 4)}' does not have a key.`,
+			);
+		}
+
+		if (!Object.hasOwn(this.imports, file)) {
+			this.imports[file] = [importObject];
+			return;
+		}
+
+		// Check if this key is already imported.
+		if (this.imports[file].some((obj) => obj.key === importObject.key)) {
+			return;
+		}
+
+		this.imports[file].push(importObject);
 	}
 }
 
