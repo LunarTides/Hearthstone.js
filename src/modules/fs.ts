@@ -1,7 +1,7 @@
 import type { Dirent } from "node:fs";
 // It only confines these functions to the Hearthstone.js directory. Look in the fs wrapper functions in this file to confirm.
 import fs from "node:fs/promises";
-import { dirname as pathDirname, resolve } from "node:path";
+import pathUtils, { dirname as pathDirname, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
@@ -190,7 +190,7 @@ export const fileSystem = {
 		// The path doesn't begin with a "/", so we add one in
 		newPath = `${this.dirname()}/${newPath}`;
 
-		return newPath;
+		return pathUtils.normalize(newPath);
 	},
 
 	/**

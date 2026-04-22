@@ -18,7 +18,7 @@ class Universe {
 
 	async export(
 		path: string = "/universe/universe.json",
-	): Promise<{ json: string; bytes: number }> {
+	): Promise<{ json: string; bytes: number; path: string }> {
 		const seen: any[] = [];
 
 		// Stringify json, ignoring cyclic structures.
@@ -37,7 +37,7 @@ class Universe {
 		);
 
 		const bytes = await Bun.write(game.fs.restrictPath(path), json);
-		return { json, bytes };
+		return { json, bytes, path: game.fs.restrictPath(path) };
 	}
 }
 
@@ -305,6 +305,9 @@ class Moon {
 	}
 }
 
+console.log("Discovering universe...");
 const universe = await Universe.discover();
+console.log("Exporting universe...");
 const result = await universe.export();
-console.log(result.json);
+//console.log(result.json);
+console.log(`Exported universe to '${result.path}'`);
