@@ -1,14 +1,5 @@
 import { createGame } from "@Game/game.ts";
-import {
-	type Blueprint,
-	Class,
-	EnchantmentPriority,
-	Rarity,
-	SpellSchool,
-	type Tribe,
-	Type,
-	type VanillaCard,
-} from "@Game/types.ts";
+import { Type, type VanillaCard } from "@Game/types.ts";
 import { number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
 import {
@@ -28,59 +19,11 @@ if (import.meta.main) {
  * @param debug If it should use debug mode
  */
 export async function create(card: VanillaCard, debug: boolean): Promise<void> {
-	// Harvest info
-	let cardClass = game.lodash.capitalize(card.cardClass ?? "Neutral") as Class;
-	const collectible = card.collectible ?? false;
-	const cost = card.cost ?? 0;
-	const name = card.name;
-	let rarity = Rarity.Free;
-	if (card.rarity) {
-		rarity = game.lodash.capitalize(card.rarity) as Rarity;
-	}
+	const blueprint = await game.card.vanilla.fromVanilla(card, {
+		userInput: true,
+	});
 
-	let text = card.text ?? "";
-	let typeString = game.lodash.capitalize(card.type);
-	if (typeString === "Hero_power") {
-		typeString = "HeroPower" as typeof typeString;
-	}
-
-	const type = typeString as Type;
-
-	// Minion info
-	const attack = card.attack ?? -1;
-	const health = card.health ?? -1;
-	let races: Tribe[] = [];
-	if (card.races) {
-		races = card.races.map((r) => game.lodash.startCase(r) as Tribe);
-	}
-
-	// Spell info
-	let spellSchools = [SpellSchool.None];
-	if (card.spellSchool) {
-		spellSchools = [game.lodash.startCase(card.spellSchool) as SpellSchool];
-	}
-
-	// Weapon Info
-	const durability = card.durability ?? -1;
-
-	// Modify the text
-	text = text.replaceAll("\n", " ");
-	text = text.replaceAll("[x]", "");
-
-	const classes = (await game.card.getClasses()) as Class[];
-	classes.push(Class.Neutral);
-
-	while (!classes.includes(cardClass)) {
-		cardClass = game.lodash.startCase(
-			await game.input({
-				message: parseTags(
-					"<red>Was not able to find the class of this card.\nWhat is the class of this card? </red>",
-				),
-			}),
-		) as Class;
-	}
-
-	if (type === Type.Hero) {
+	if (blueprint.type === Type.Hero) {
 		// Add the hero power
 		console.log("<green>Adding the hero power</green>");
 
@@ -93,79 +36,6 @@ export async function create(card: VanillaCard, debug: boolean): Promise<void> {
 		}
 
 		await create(heroPower, debug);
-	}
-
-	let blueprint: Blueprint = {
-		name,
-		text,
-		cost,
-		type,
-		classes: [cardClass],
-		rarity,
-		collectible,
-		tags: [],
-		id: game.ids.null,
-	};
-
-	switch (type) {
-		case Type.Minion: {
-			blueprint = Object.assign(blueprint, {
-				attack,
-				health,
-				tribes: races,
-			});
-
-			break;
-		}
-
-		case Type.Spell: {
-			blueprint = Object.assign(blueprint, {
-				spellSchools,
-			});
-
-			break;
-		}
-
-		case Type.Weapon: {
-			blueprint = Object.assign(blueprint, {
-				attack,
-				health: durability,
-			});
-
-			break;
-		}
-
-		case Type.Hero: {
-			blueprint = Object.assign(blueprint, {
-				armor: card.armor,
-				// TODO: Get heropower id.
-				heropowerId: game.ids.null,
-			});
-
-			break;
-		}
-
-		case Type.Location: {
-			blueprint = Object.assign(blueprint, {
-				durability: health,
-				cooldown: 2,
-			});
-
-			break;
-		}
-
-		case Type.Enchantment: {
-			blueprint = Object.assign(blueprint, {
-				enchantmentPriority: EnchantmentPriority.Normal,
-			});
-
-			break;
-		}
-
-		case Type.HeroPower:
-		case Type.Undefined: {
-			break;
-		}
 	}
 
 	const result = await createResource("card", blueprint);
