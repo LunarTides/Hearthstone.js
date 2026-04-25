@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f82-7001-b57a-1322e201596c",
 
 	armor: 0,
-	heropowerId: game.ids.Official.builtin.ghoul_charge[0],
+	heropowerId: game.ids.Official.builtin.card.ghoul_charge[0],
 };

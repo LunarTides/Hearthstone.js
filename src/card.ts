@@ -103,10 +103,10 @@ export class Card {
 	 * This differentiates cards from each other, but not cards with the same blueprint, use {@link uuid} for that.
 	 *
 	 * @example
-	 * const sheep = game.createCard(game.ids.Official.builtin.sheep[0], player);
-	 * const anotherSheep = game.createCard(game.ids.Official.builtin.sheep[0], player);
+	 * const sheep = game.createCard(game.sheep, player);
+	 * const anotherSheep = game.createCard(game.sheep, player);
 	 *
-	 * const theCoin = game.createCard(game.ids.Official.builtin.the_coin[0], player);
+	 * const theCoin = game.createCard(game.ids.Official.builtin.card.the_coin[0], player);
 	 *
 	 * assert.equal(sheep.id, anotherSheep.id);
 	 * assert.notEqual(sheep.id, theCoin.id);
@@ -462,7 +462,7 @@ export class Card {
 	 * Returns all cards added to Hearthstone.js from the "cards" folder.
 	 *
 	 * @param includeUncollectible If it should include all uncollectible cards
-	 * @param generateIds If it should generate the 'cards.ts' file. It only does this if this is the first time this function has been called this game.
+	 * @param generateIds If it should generate the 'ids.ts' file. It only does this if this is the first time this function has been called this game.
 	 */
 	static async all(
 		includeUncollectible = false,
@@ -1920,10 +1920,10 @@ export class Card {
 			case "Living Spores": {
 				this.addAbility(Ability.Deathrattle, async (_, owner) => {
 					owner.summon(
-						await Card.create(game.ids.Official.builtin.plant[0], owner),
+						await Card.create(game.ids.Official.builtin.card.plant[0], owner),
 					);
 					owner.summon(
-						await Card.create(game.ids.Official.builtin.plant[0], owner),
+						await Card.create(game.ids.Official.builtin.card.plant[0], owner),
 					);
 				});
 				break;

@@ -41,17 +41,14 @@ export const blueprint: Blueprint = {
 
 		// Give the enchantment.
 		await target.addEnchantment(
-			game.ids.Official.examples.enchantment_test[0],
+			game.ids.Official.examples.card.enchantment_test[0],
 			self,
 		);
 		return true;
 	},
 
 	async test(self, owner) {
-		await game.summon(
-			await Card.create(game.ids.Official.builtin.sheep[0], owner),
-			owner,
-		);
+		await game.summon(await Card.create(game.sheep, owner), owner);
 
 		const target = game.randomTargetRelative(
 			false,

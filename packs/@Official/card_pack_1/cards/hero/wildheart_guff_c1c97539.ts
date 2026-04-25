@@ -15,7 +15,7 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f82-7005-befd-c1c97539b73f",
 
 	armor: 5,
-	heropowerId: game.ids.Official.card_pack_1.nurture[0],
+	heropowerId: game.ids.Official.card_pack_1.card.nurture[0],
 
 	async battlecry(self, owner) {
 		// Set your maximum Mana to 20. Gain an empty Mana Crystal. Draw a card.

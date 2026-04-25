@@ -133,6 +133,7 @@ export const fileSystem = {
 	 * @param path By default, this is the cards folder (not in dist)
 	 * @param extension The extension to look for in cards. By default, this is ".ts"
 	 */
+	// TODO: Rename to `searchPacksFolder`
 	async searchCardsFolder(
 		callback: (
 			path: string,
@@ -152,7 +153,7 @@ export const fileSystem = {
 					file.isFile() &&
 					file.name.endsWith(extension) &&
 					!fullPath.includes("vacuum") &&
-					!file.name.startsWith("cards.ts")
+					!file.name.startsWith("ids.ts")
 				) {
 					let resourceType = "card";
 					if (new RegExp(`\\..*\\${extension}$`).test(file.name)) {

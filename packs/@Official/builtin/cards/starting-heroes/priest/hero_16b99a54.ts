@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-7010-81c7-16b99a54e840",
 
 	armor: 0,
-	heropowerId: game.ids.Official.builtin.lesser_heal[0],
+	heropowerId: game.ids.Official.builtin.card.lesser_heal[0],
 };

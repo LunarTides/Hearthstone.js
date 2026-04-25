@@ -106,7 +106,7 @@ export const blueprint: Blueprint = {
 
 				for (const card of cards) {
 					await card.addEnchantment(
-						game.ids.Official.card_pack_1.fates_blessing[0],
+						game.ids.Official.card_pack_1.card.fates_blessing[0],
 						self,
 					);
 					await owner.addToHand(card);
@@ -115,7 +115,7 @@ export const blueprint: Blueprint = {
 				game.event.addListener(Event.EndTurn, async () => {
 					for (const card of owner.hand) {
 						await card.removeEnchantment(
-							game.ids.Official.card_pack_1.fates_blessing[0],
+							game.ids.Official.card_pack_1.card.fates_blessing[0],
 							self,
 						);
 					}
@@ -145,7 +145,7 @@ export const blueprint: Blueprint = {
 			case "Mysterybox": {
 				// Cast a random spell for every spell you've cast this game (targets chosen randomly).
 				const oldYogg = await Card.create(
-					game.ids.Official.card_pack_1.yogg_saron_hopes_end[0],
+					game.ids.Official.card_pack_1.card.yogg_saron_hopes_end[0],
 					owner,
 				);
 				await oldYogg.trigger(Ability.Battlecry);
@@ -156,7 +156,7 @@ export const blueprint: Blueprint = {
 			case "Rod of Roasting": {
 				// Cast 'Pyroblast' randomly until a hero dies.
 				const rod = await Card.create(
-					game.ids.Official.card_pack_1.pyroblast[0],
+					game.ids.Official.card_pack_1.card.pyroblast[0],
 					owner,
 				);
 

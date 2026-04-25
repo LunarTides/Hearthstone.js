@@ -38,7 +38,7 @@ export const blueprint: Blueprint = {
 		// 1 await owner.summon(self);
 
 		/*
-		 * 2 const sheep = game.newCard(game.ids.Official.builtin.sheep[0], owner.getOpponent());
+		 * 2 const sheep = game.newCard(game.sheep, owner.getOpponent());
 		 * 3 await owner.getOpponent().summon(sheep);
 		 */
 

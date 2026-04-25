@@ -668,7 +668,7 @@ export class Player {
 	 * ```
 	 * assert.equal(player.deck.length, 30);
 	 *
-	 * const card = game.createCard(game.ids.Official.builtin.sheep[0], player);
+	 * const card = game.createCard(game.sheep, player);
 	 * await player.shuffleIntoDeck(card);
 	 *
 	 * assert.equal(player.deck.length, 31);
@@ -1136,7 +1136,7 @@ export class Player {
 			// The Coin card shouldn't be mulligan'd
 			if (
 				!this.hand.includes(card) ||
-				card.id === game.ids.Official.builtin.the_coin[0]
+				card.id === game.ids.Official.builtin.card.the_coin[0]
 			) {
 				continue;
 			}
@@ -1171,7 +1171,7 @@ export class Player {
 		const cost = count < 10 ? count : 10;
 
 		const jade = await Card.create(
-			game.ids.Official.builtin.jade_golem[0],
+			game.ids.Official.builtin.card.jade_golem[0],
 			this,
 		);
 		await jade.setStats(count, count);

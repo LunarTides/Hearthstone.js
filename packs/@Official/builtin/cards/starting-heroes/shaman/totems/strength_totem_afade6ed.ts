@@ -57,7 +57,7 @@ export const blueprint: Blueprint = {
 		// Summon 5 Sheep with 2 max health.
 		// for (let i = 0; i < 5; i++) {
 		// 	const card = await Card.create(
-		// 		game.ids.Official.builtin.sheep[0],
+		// 		game.sheep,
 		// 		owner,
 		// 	);
 		// 	await owner.summon(card);
@@ -67,7 +67,7 @@ export const blueprint: Blueprint = {
 		// 	owner.board
 		// 		.filter(
 		// 			(card) =>
-		// 				card.id === game.ids.Official.builtin.sheep[0],
+		// 				card.id === game.sheep,
 		// 		)
 		// 		.some(
 		// 			(card) =>

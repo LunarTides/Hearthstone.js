@@ -38,10 +38,10 @@ export const blueprint: Blueprint = {
 			// Remember to use the right ones.
 			// Right: left_arm[0]
 			// Wrong: left_arm[1]
-			// Look in the `/packs/cards.ts` file if you're unsure.
-			game.ids.Official.examples.left_arm[0],
+			// Look in the `/packs/ids.ts` file if you're unsure.
+			game.ids.Official.examples.card.left_arm[0],
 			game.ids.null,
-			game.ids.Official.examples.right_arm[0],
+			game.ids.Official.examples.card.right_arm[0],
 		]);
 	},
 
@@ -51,11 +51,15 @@ export const blueprint: Blueprint = {
 		const board = owner.board;
 
 		assert.ok(
-			board.some((card) => card.id === game.ids.Official.examples.left_arm[0]),
+			board.some(
+				(card) => card.id === game.ids.Official.examples.card.left_arm[0],
+			),
 		);
 		assert.ok(board.some((card) => card.id === self.id));
 		assert.ok(
-			board.some((card) => card.id === game.ids.Official.examples.right_arm[0]),
+			board.some(
+				(card) => card.id === game.ids.Official.examples.card.right_arm[0],
+			),
 		);
 	},
 };

@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f80-7022-9775-5bd433657c8d",
 
 	armor: 5,
-	heropowerId: game.ids.Official.builtin.galakronds_malice[0],
+	heropowerId: game.ids.Official.builtin.card.galakronds_malice[0],
 
 	async battlecry(self, owner) {
 		// Summon 1 random Demon.

@@ -12,10 +12,7 @@ describe("src/modules/card/play", () => {
 
 		await createGame();
 
-		const sheep = await Card.create(
-			game.ids.Official.builtin.sheep[0],
-			game.player,
-		);
+		const sheep = await Card.create(game.sheep, game.player);
 		const play = async (player = game.player) => {
 			const card = await sheep.imperfectCopy();
 			await player.addToHand(card);

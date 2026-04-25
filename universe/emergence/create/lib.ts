@@ -428,11 +428,9 @@ export async function createFileContent<T extends Resource>(
 	lines = [];
 	imports = {};
 
-	if (resourceType === "card") {
-		// Generate random id.
-		const id = Bun.randomUUIDv7();
-		(resource as BlueprintWithOptional).id = id;
-	}
+	// Generate random id.
+	const id = Bun.randomUUIDv7();
+	resource.id = id;
 
 	const hooks = resourceTypeHooks[resourceType];
 	// HACK: as any usage. Idk how to properly narrow the type here, but this should be safe.

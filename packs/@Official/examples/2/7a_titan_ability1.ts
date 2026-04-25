@@ -51,10 +51,7 @@ export const blueprint: Blueprint = {
 		const opponent = owner.getOpponent();
 
 		// Create a sheep and summon it on the opponent's side of the board
-		const sheep = await Card.create(
-			game.ids.Official.builtin.sheep[0],
-			opponent,
-		);
+		const sheep = await Card.create(game.sheep, opponent);
 		await opponent.summon(sheep);
 
 		// Kill the sheep

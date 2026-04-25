@@ -23,7 +23,7 @@ export const blueprint: Blueprint = {
 	async heropower(self, owner) {
 		// Summon a 2/1 Elemental with Rush.
 		const card = await Card.create(
-			game.ids.Official.builtin.windswept_elemental[0],
+			game.ids.Official.builtin.card.windswept_elemental[0],
 			owner,
 		);
 		if (!card) {

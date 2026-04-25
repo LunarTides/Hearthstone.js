@@ -55,19 +55,13 @@ export async function main(): Promise<void> {
 		game.player = player1;
 		game.opponent = player2;
 
-		// NOTE: This generates `game.cards` without generating an `cards.ts` file. (Very expensive operation.)
+		// NOTE: This generates `game.cards` without generating an `ids.ts` file. (Very expensive operation.)
 		// This decreases the execution time of this script from ~7.4s -> ~1.2 on my system.
 		await Card.all(false, false);
 
 		for (let i = 0; i < 30; i++) {
-			const sheep1 = await Card.create(
-				game.ids.Official.builtin.sheep[0],
-				game.player1,
-			);
-			const sheep2 = await Card.create(
-				game.ids.Official.builtin.sheep[0],
-				game.player2,
-			);
+			const sheep1 = await Card.create(game.sheep, game.player1);
+			const sheep2 = await Card.create(game.sheep, game.player2);
 			game.player1.deck.push(sheep1);
 			game.player2.deck.push(sheep2);
 		}

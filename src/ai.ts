@@ -890,7 +890,7 @@ export class SentimentAI {
 		let scores = "(";
 
 		for (const card of this.player.hand) {
-			if (card.id === game.ids.Official.builtin.the_coin[0]) {
+			if (card.id === game.ids.Official.builtin.card.the_coin[0]) {
 				continue;
 			}
 

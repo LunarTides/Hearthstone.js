@@ -17,14 +17,8 @@ async function configure(
 	let dirty = false;
 	let result = true;
 
-	const hero = await Card.create(
-		game.ids.Official.builtin.sheep[0],
-		game.player,
-	);
-	const heropower = await Card.create(
-		game.ids.Official.builtin.sheep[0],
-		game.player,
-	);
+	const hero = await Card.create(game.sheep, game.player);
+	const heropower = await Card.create(game.sheep, game.player);
 
 	await game.prompt.createUILoop(
 		{

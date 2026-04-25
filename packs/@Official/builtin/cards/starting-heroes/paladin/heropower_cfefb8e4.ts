@@ -20,7 +20,7 @@ export const blueprint: Blueprint = {
 
 		// Create the Silver Hand Recruit card.
 		const card = await Card.create(
-			game.ids.Official.builtin.silver_hand_recruit[0],
+			game.ids.Official.builtin.card.silver_hand_recruit[0],
 			owner,
 		);
 
@@ -31,7 +31,8 @@ export const blueprint: Blueprint = {
 	async test(self, owner) {
 		const checkIfMinionExists = () =>
 			owner.board.some(
-				(card) => card.id === game.ids.Official.builtin.silver_hand_recruit[0],
+				(card) =>
+					card.id === game.ids.Official.builtin.card.silver_hand_recruit[0],
 			);
 
 		// The minion should not exist

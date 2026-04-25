@@ -3,6 +3,7 @@ import type { SFX } from "@Game/types.ts";
 
 export const sfx: SFX = {
 	name: "discombobulate",
+	id: "019dc4f5-da95-7481-b31a-2623bd71665c",
 
 	async play(info, options) {
 		await game.audio.playWave("noise", octaves[0].A, 400, 0.4, 0, 0, options);

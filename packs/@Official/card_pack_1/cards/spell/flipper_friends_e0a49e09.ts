@@ -33,7 +33,7 @@ export const blueprint: Blueprint = {
 				async () => {
 					// Summon a 6/6 Orca with Taunt
 					const orca = await Card.create(
-						game.ids.Official.card_pack_1.orca[0],
+						game.ids.Official.card_pack_1.card.orca[0],
 						owner,
 					);
 					await owner.summon(orca);
@@ -45,7 +45,7 @@ export const blueprint: Blueprint = {
 					// Summon six 1/1 Otters with Rush
 					for (let index = 0; index < 6; index++) {
 						const otter = await Card.create(
-							game.ids.Official.card_pack_1.otter[0],
+							game.ids.Official.card_pack_1.card.otter[0],
 							owner,
 						);
 						await owner.summon(otter);
@@ -63,7 +63,7 @@ export const blueprint: Blueprint = {
 		// There should be 1 Orca on the board
 		assert.equal(
 			owner.board.filter(
-				(card) => card.id === game.ids.Official.card_pack_1.orca[0],
+				(card) => card.id === game.ids.Official.card_pack_1.card.orca[0],
 			).length,
 			1,
 		);
@@ -78,7 +78,7 @@ export const blueprint: Blueprint = {
 		// There should be 6 Otters on the board
 		assert.equal(
 			owner.board.filter(
-				(card) => card.id === game.ids.Official.card_pack_1.otter[0],
+				(card) => card.id === game.ids.Official.card_pack_1.card.otter[0],
 			).length,
 			6,
 		);

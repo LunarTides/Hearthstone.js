@@ -21,13 +21,12 @@ const resourceTypeFunctions = {
 		await addCommand(command);
 	},
 	sfx: async (path: string) => {
-		const pack = (await game.card.getPackMetadataFromCardPath(path))!;
 		const sfx = (await import(path)).sfx as SFX;
 		if (!sfx) {
 			return;
 		}
 
-		await addSFX(sfx, pack);
+		await addSFX(sfx);
 	},
 };
 

@@ -175,6 +175,7 @@ export const card = {
 	 * @param filePath The path to the card. Should end in ".ts"
 	 * @returns The metadata, or null if no metadata was found. In this case, the card should be treated as not belonging to any pack.
 	 */
+	// TODO: Rename to `getPackMetadataFromResourcePath` and move to emergence.
 	async getPackMetadataFromCardPath(
 		filePath: string,
 	): Promise<Metadata | null> {
@@ -223,20 +224,27 @@ export const card = {
 	},
 
 	/**
-	 * Generates an ids file in `packs/cards.ts`. This is used in `game.ids`.
+	 * Generates an ids file in `packs/ids.ts`. This is used in `game.ids`.
 	 *
 	 * Don't use this function manually unless you know what you're doing.
 	 */
+	// TODO: Move to emergence.
 	async generateIdsFile(): Promise<void> {
 		let idsContent =
 			"// This file has been automatically generated. Do not change this file.\n\n";
 		idsContent += "export default {\n";
 		idsContent += '\tnull: "00000000-0000-0000-0000-000000000000",';
 
-		const cards: { name: string; id: string; packMetadata: Metadata | null }[] =
-			[];
+		const resources: {
+			name: string;
+			id: string;
+			packMetadata: Metadata | null;
+		}[] = [];
 
-		let ids: Record<string, Record<string, Record<string, string[]>>> = {};
+		let ids: Record<
+			string,
+			Record<string, Record<string, Record<string, string[]>>>
+		> = {};
 
 		const sortObject = (object: any) => {
 			// Sort the cards alphabetically.
@@ -255,10 +263,6 @@ export const card = {
 		// Collect the cards.
 		await game.fs.searchCardsFolder(
 			async (path, content, file, index, resourceType) => {
-				if (resourceType !== "card") {
-					return;
-				}
-
 				const nameRegex = /name: "(.+)"/;
 				const nameMatch = nameRegex.exec(content);
 				if (!nameMatch) {
@@ -276,7 +280,7 @@ export const card = {
 
 				const packMetadata = await game.card.getPackMetadataFromCardPath(path);
 
-				cards.push({
+				resources.push({
 					name,
 					id,
 					packMetadata,
@@ -286,22 +290,42 @@ export const card = {
 				const formattedName = `${numberIdentifier}${game.lodash.snakeCase(name)}`;
 
 				if (packMetadata) {
+					// FIXME: Oh god...
 					if (!ids[packMetadata.author]) {
 						ids[packMetadata.author] = { [packMetadata.name]: {} };
 					}
 					if (!ids[packMetadata.author][packMetadata.name]) {
 						ids[packMetadata.author][packMetadata.name] = {};
 					}
-					if (!ids[packMetadata.author][packMetadata.name][formattedName]) {
-						ids[packMetadata.author][packMetadata.name][formattedName] = [];
+					if (!ids[packMetadata.author][packMetadata.name][resourceType]) {
+						ids[packMetadata.author][packMetadata.name][resourceType] = {};
+					}
+					if (
+						!ids[packMetadata.author][packMetadata.name][resourceType][
+							formattedName
+						]
+					) {
+						ids[packMetadata.author][packMetadata.name][resourceType][
+							formattedName
+						] = [];
 					}
 
-					ids[packMetadata.author][packMetadata.name][formattedName].push(id);
+					ids[packMetadata.author][packMetadata.name][resourceType][
+						formattedName
+					].push(id);
 
 					// Sort the ids alphabetically.
-					ids[packMetadata.author][packMetadata.name][formattedName].sort();
+					ids[packMetadata.author][packMetadata.name][resourceType][
+						formattedName
+					].sort();
 
-					// Sort the cards alphabetically.
+					// Sort the resource types alphabetically.
+					ids[packMetadata.author][packMetadata.name][resourceType] =
+						sortObject(
+							ids[packMetadata.author][packMetadata.name][resourceType],
+						);
+
+					// Sort the resources alphabetically.
 					ids[packMetadata.author][packMetadata.name] = sortObject(
 						ids[packMetadata.author][packMetadata.name],
 					);
@@ -319,10 +343,14 @@ export const card = {
 
 		for (const [author, packs] of Object.entries(ids)) {
 			idsContent += `\t${author}: {\n`;
-			for (const [pack, cards] of Object.entries(packs)) {
+			for (const [pack, resourceTypes] of Object.entries(packs)) {
 				idsContent += `\t\t${pack}: {\n`;
-				for (const [card, cardIds] of Object.entries(cards)) {
-					idsContent += `\t\t\t${card}: ["${cardIds.join('", "')}"],\n`;
+				for (const [resourceType, resources] of Object.entries(resourceTypes)) {
+					idsContent += `\t\t\t${resourceType}: {\n`;
+					for (const [resource, resourceIds] of Object.entries(resources)) {
+						idsContent += `\t\t\t\t${resource}: ["${resourceIds.join('", "')}"],\n`;
+					}
+					idsContent += "\t\t\t},\n";
 				}
 				idsContent += "\t\t},\n";
 			}
@@ -332,14 +360,14 @@ export const card = {
 		// Add the "all" section.
 		idsContent += "\tall: {";
 
-		for (const card of cards.sort((a, b) => a.id.localeCompare(b.id))) {
-			const numberIdentifier = /^\d/.test(card.name) ? "n" : "";
-			idsContent += `\n\t\t${numberIdentifier}${game.lodash.snakeCase(card.name)}_${card.id.replaceAll("-", "_")}: "${card.id}",`;
+		for (const resource of resources.sort((a, b) => a.id.localeCompare(b.id))) {
+			const numberIdentifier = /^\d/.test(resource.name) ? "n" : "";
+			idsContent += `\n\t\t${numberIdentifier}${game.lodash.snakeCase(resource.name)}_${resource.id.replaceAll("-", "_")}: "${resource.id}",`;
 		}
 
 		idsContent += "\n\t},\n};\n";
 
-		game.fs.call("writeFile", "/packs/cards.ts", idsContent);
+		game.fs.call("writeFile", "/packs/ids.ts", idsContent);
 	},
 
 	/**

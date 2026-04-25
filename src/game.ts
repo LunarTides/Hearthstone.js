@@ -20,7 +20,7 @@ import {
 
 import _ from "lodash";
 import { register } from "universe/emergence/register/lib.ts";
-import cardIds from "../packs/cards.ts";
+import ids from "../packs/ids.ts";
 import { attack } from "./modules/attack.ts";
 import { audio } from "./modules/audio/audio.ts";
 import { card } from "./modules/card/index.ts";
@@ -216,7 +216,12 @@ export class Game {
 	};
 
 	lodash = _;
-	ids = cardIds;
+	ids = ids;
+
+	/**
+	 * Shortcut to `game.ids.Official.builtin.card.sheep[0]`
+	 */
+	sheep = ids.Official.builtin.card.sheep[0];
 
 	/**
 	 * Sets up the game by assigning players and initializing game state.
@@ -451,7 +456,7 @@ export class Game {
 
 		// Give the coin to the second player
 		const coin = await Card.create(
-			this.ids.Official.builtin.the_coin[0],
+			this.ids.Official.builtin.card.the_coin[0],
 			this.player2,
 		);
 
@@ -786,7 +791,7 @@ export class Game {
 		if (colossalMinionIds && colossal) {
 			/*
 			 * Minion.colossal is an id array.
-			 * example: [game.ids.Official.examples.left_arm[0], game.ids.null, game.ids.Official.examples.right_arm[0]]
+			 * example: [game.ids.Official.examples.card.left_arm[0], game.ids.null, game.ids.Official.examples.card.right_arm[0]]
 			 * the `null` gets replaced with the main minion
 			 */
 

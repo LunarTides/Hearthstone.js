@@ -148,7 +148,7 @@ describe("src/player", () => {
 		expect(player.weapon).toBeUndefined();
 
 		const weapon = await Card.create(
-			game.ids.Official.builtin.wicked_knife[0],
+			game.ids.Official.builtin.card.wicked_knife[0],
 			player,
 		);
 		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
@@ -182,7 +182,7 @@ describe("src/player", () => {
 		expect(await player.destroyWeapon()).toBe(false);
 
 		const weapon = await Card.create(
-			game.ids.Official.builtin.wicked_knife[0],
+			game.ids.Official.builtin.card.wicked_knife[0],
 			player,
 		);
 		weapon.addAbility(Ability.Deathrattle, async (self, owner) => {
@@ -304,7 +304,7 @@ describe("src/player", () => {
 		const player = new Player();
 		expect(player.deck.length).toBe(0);
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		await player.addToDeck(sheep);
 
 		expect(player.deck.length).toBe(1);
@@ -330,7 +330,7 @@ describe("src/player", () => {
 		expect(player.deck.length).toBe(0);
 
 		// Add 10 Sheep to the deck.
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		for (let i = 0; i < 10; i++) {
 			const sheepCopy = await sheep.imperfectCopy();
 			sheepCopy.name = i.toString();
@@ -351,7 +351,7 @@ describe("src/player", () => {
 		expect(player.deck.length).toBe(0);
 
 		// Add 10 Sheep to the deck.
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		for (let i = 0; i < 10; i++) {
 			const sheepCopy = await sheep.imperfectCopy();
 			sheepCopy.name = i.toString();
@@ -385,7 +385,7 @@ describe("src/player", () => {
 	test("addToBottomOfDeck", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		await player.addToDeck(sheep);
 
 		const sheep2 = await sheep.imperfectCopy();
@@ -398,7 +398,7 @@ describe("src/player", () => {
 
 	test("drawCards", async () => {
 		const player = new Player();
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 
 		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
@@ -439,7 +439,7 @@ describe("src/player", () => {
 
 	test("drawSpecific", async () => {
 		const player = new Player();
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 
 		// Add 10 Sheep to the deck.
 		for (let i = 0; i < 10; i++) {
@@ -464,7 +464,7 @@ describe("src/player", () => {
 	test("addToHand", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		expect(await player.addToHand(sheep)).toBe(true);
 		expect(player.hand.length).toBe(1);
 		expect(player.hand[0]).toBe(sheep);
@@ -480,7 +480,7 @@ describe("src/player", () => {
 	test("popFromHand", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		expect(await player.addToHand(sheep)).toBe(true);
 
 		expect(await player.popFromHand()).toBe(sheep);
@@ -499,7 +499,7 @@ describe("src/player", () => {
 		const player = new Player();
 
 		const hero = await Card.create(
-			game.ids.Official.builtin.jaina_proudmoore[0],
+			game.ids.Official.builtin.card.jaina_proudmoore[0],
 			player,
 		);
 		hero.armor = 5;
@@ -517,7 +517,7 @@ describe("src/player", () => {
 		const player = new Player();
 
 		const hero = await Card.create(
-			game.ids.Official.builtin.jaina_proudmoore[0],
+			game.ids.Official.builtin.card.jaina_proudmoore[0],
 			player,
 		);
 		hero.id = game.ids.null;
@@ -530,7 +530,9 @@ describe("src/player", () => {
 		expect(await player.setToStartingHero()).toBe(true);
 
 		expect(player.hero).not.toBe(hero);
-		expect(player.hero.id).toBe(game.ids.Official.builtin.jaina_proudmoore[0]);
+		expect(player.hero.id).toBe(
+			game.ids.Official.builtin.card.jaina_proudmoore[0],
+		);
 	});
 
 	test("heroPower", async () => {
@@ -543,7 +545,7 @@ describe("src/player", () => {
 
 		await player.setToStartingHero();
 		expect(player.hero.heropower?.id).toBe(
-			game.ids.Official.builtin.fireblast[0],
+			game.ids.Official.builtin.card.fireblast[0],
 		);
 		expect(opponent.health).toBe(opponent.maxHealth);
 
@@ -639,7 +641,7 @@ describe("src/player", () => {
 	test("canUseHeroPower", async () => {
 		const player = new Player();
 		player.hero = await Card.create(
-			game.ids.Official.builtin.jaina_proudmoore[0],
+			game.ids.Official.builtin.card.jaina_proudmoore[0],
 			player,
 		);
 
@@ -672,9 +674,7 @@ describe("src/player", () => {
 		);
 
 		for (let i = 0; i < 5; i++) {
-			player.summon(
-				await Card.create(game.ids.Official.builtin.sheep[0], player),
-			);
+			player.summon(await Card.create(game.sheep, player));
 			expect(player.getRemainingBoardSpace()).toBe(
 				game.config.general.maxBoardSpace - player.board.length,
 			);
@@ -689,9 +689,7 @@ describe("src/player", () => {
 		);
 
 		for (let i = 0; i < 5; i++) {
-			player.addToHand(
-				await Card.create(game.ids.Official.builtin.sheep[0], player),
-			);
+			player.addToHand(await Card.create(game.sheep, player));
 			expect(player.getRemainingHandSpace()).toBe(
 				game.config.general.maxHandLength - player.hand.length,
 			);
@@ -699,10 +697,7 @@ describe("src/player", () => {
 	});
 
 	test("getPlayedCards", async () => {
-		const sheep = await Card.create(
-			game.ids.Official.builtin.sheep[0],
-			game.player,
-		);
+		const sheep = await Card.create(game.sheep, game.player);
 
 		expect(game.player.getPlayedCards()).not.toContain(sheep);
 		expect(await game.play(sheep, game.player)).toEqual(
@@ -776,7 +771,7 @@ describe("src/player", () => {
 	test("discard", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		await player.addToHand(sheep);
 
 		expect(player.hand.length).toBe(1);
@@ -792,9 +787,7 @@ describe("src/player", () => {
 		const player = new Player();
 
 		for (let i = 0; i < 5; i++) {
-			player.summon(
-				await Card.create(game.ids.Official.builtin.sheep[0], player),
-			);
+			player.summon(await Card.create(game.sheep, player));
 		}
 
 		const targets: Target[] = [];
@@ -812,7 +805,7 @@ describe("src/player", () => {
 	test("highlander", async () => {
 		const player = new Player();
 
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], player);
+		const sheep = await Card.create(game.sheep, player);
 		await player.addToDeck(sheep);
 		expect(player.highlander()).toBe(true);
 

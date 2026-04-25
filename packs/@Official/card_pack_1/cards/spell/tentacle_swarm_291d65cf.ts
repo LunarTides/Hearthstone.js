@@ -32,7 +32,7 @@ export const blueprint: Blueprint = {
 
 		for (let index = 0; index < remaining; index++) {
 			const card = await Card.create(
-				game.ids.Official.card_pack_1.chaotic_tendril[0],
+				game.ids.Official.card_pack_1.card.chaotic_tendril[0],
 				owner,
 			);
 			await owner.addToHand(card);
@@ -47,7 +47,8 @@ export const blueprint: Blueprint = {
 		const amountOfCards = owner.hand.length - handSize;
 		assert.equal(
 			owner.hand.filter(
-				(card) => card.id === game.ids.Official.card_pack_1.chaotic_tendril[0],
+				(card) =>
+					card.id === game.ids.Official.card_pack_1.card.chaotic_tendril[0],
 			).length,
 			amountOfCards,
 		);

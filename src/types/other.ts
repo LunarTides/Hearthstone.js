@@ -110,6 +110,7 @@ export interface Command {
 	name: Lowercase<string>;
 	description: string;
 	debug: boolean;
+	id: string;
 
 	run: CommandCallback;
 }
@@ -124,6 +125,7 @@ export type CommandCallback = (
 
 export interface SFX {
 	name: string;
+	id: string;
 
 	play: SFXCallback;
 }

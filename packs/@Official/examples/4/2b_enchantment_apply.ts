@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 		// addEnchantment broadcasts the CreateCard event. Return here to avoid an infinite loop.
 		if (
 			game.event.is(key, value, Event.CreateCard) &&
-			value.id === game.ids.Official.examples.enchantment_example[0]
+			value.id === game.ids.Official.examples.card.enchantment_example[0]
 		) {
 			return;
 		}
@@ -49,7 +49,7 @@ export const blueprint: Blueprint = {
 			// If the card was already given the enchantment from this card, ignore it.
 			if (
 				card.enchantmentExists(
-					game.ids.Official.examples.enchantment_example[0],
+					game.ids.Official.examples.card.enchantment_example[0],
 					self,
 				)
 			) {
@@ -58,7 +58,7 @@ export const blueprint: Blueprint = {
 
 			// Give the card the enchantment.
 			await card.addEnchantment(
-				game.ids.Official.examples.enchantment_example[0],
+				game.ids.Official.examples.card.enchantment_example[0],
 				self,
 			);
 		}
@@ -74,7 +74,7 @@ export const blueprint: Blueprint = {
 		for (const card of owner.hand) {
 			// Only remove the enchantment given by this card.
 			await card.removeEnchantment(
-				game.ids.Official.examples.enchantment_example[0],
+				game.ids.Official.examples.card.enchantment_example[0],
 				self,
 			);
 		}

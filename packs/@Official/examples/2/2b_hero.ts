@@ -35,7 +35,7 @@ export const blueprint: Blueprint = {
 	 * The `ids` object will be refreshed when you run the game.
 	 * So if you get an error here, try relaunching the game and see if it fixes it.
 	 */
-	heropowerId: game.ids.Official.examples.heropower_example[0],
+	heropowerId: game.ids.Official.examples.card.heropower_example[0],
 
 	async battlecry(self, owner) {
 		// Restore your hero to full health.

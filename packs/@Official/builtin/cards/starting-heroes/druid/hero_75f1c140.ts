@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-702a-8f9c-75f1c14058d5",
 
 	armor: 0,
-	heropowerId: game.ids.Official.builtin.shapeshift[0],
+	heropowerId: game.ids.Official.builtin.card.shapeshift[0],
 };

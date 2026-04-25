@@ -70,7 +70,7 @@ export const blueprint: Blueprint = {
 			owner.board.some((card) => card.cost === cost);
 
 		// Summon a sheep
-		const sheep = await Card.create(game.ids.Official.builtin.sheep[0], owner);
+		const sheep = await Card.create(game.sheep, owner);
 		await owner.summon(sheep);
 
 		// There shouldn't exist a minion with 1 more cost than the sheep.

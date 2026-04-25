@@ -22,7 +22,7 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-700b-8ff5-07c9242e3140",
 
 	armor: 5,
-	heropowerId: game.ids.Official.builtin.galakronds_fury[0],
+	heropowerId: game.ids.Official.builtin.card.galakronds_fury[0],
 
 	async battlecry(self, owner) {
 		// Summon two 1/1 Storms with Rush. (Equip a 5/2 Claw.)
@@ -37,7 +37,7 @@ export const blueprint: Blueprint = {
 		// Summon the two minions
 		for (let i = 0; i < 2; i++) {
 			const minion = await Card.create(
-				game.ids.Official.builtin.brewing_storm[0],
+				game.ids.Official.builtin.card.brewing_storm[0],
 				owner,
 			);
 			if (!minion) {
@@ -54,7 +54,7 @@ export const blueprint: Blueprint = {
 
 		// Give the weapon
 		const weapon = await Card.create(
-			game.ids.Official.builtin.dragon_claw[0],
+			game.ids.Official.builtin.card.dragon_claw[0],
 			owner,
 		);
 		await owner.setWeapon(weapon);

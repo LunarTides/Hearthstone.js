@@ -226,14 +226,14 @@ export const audio = {
 	/**
 	 * The same as {@link game.audio.playSFX}, but this allows playing custom sound effects included in packs.
 	 *
-	 * @param key The key has to be formatted something like this: "@Official/examples/name-of-sfx".
+	 * @param key Use `game.ids`. E.g. `game.ids.Official.examples.sfx.discombobulate[0]`
 	 * @param info Some information to pass to the sound effect. Some sound effects might be different depending on this information.
 	 * @param rawOptions Some options when playing the sound effect.
 	 *
 	 * @returns If the sound effect was successfully played.
 	 */
 	async playCustomSFX(
-		key: `@${string}/${string}/${string}` | `Custom/${string}`,
+		key: string,
 		rawOptions?: Partial<{
 			info: any;
 			options: Partial<WaveOptions>;

@@ -14,5 +14,5 @@ export const blueprint: Blueprint = {
 	id: "019bc665-4f81-700e-a08e-3ac70bfbdc2a",
 
 	armor: 0,
-	heropowerId: game.ids.Official.builtin.dagger_mastery[0],
+	heropowerId: game.ids.Official.builtin.card.dagger_mastery[0],
 };

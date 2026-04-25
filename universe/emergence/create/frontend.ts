@@ -97,10 +97,7 @@ const resourceTypeHooks = {
 		},
 		onloop: async (resource: BlueprintWithOptional) => {
 			// Make the preview
-			const card = await Card.create(
-				game.ids.Official.builtin.sheep[0],
-				game.player,
-			);
+			const card = await Card.create(game.sheep, game.player);
 
 			// The game wasn't made for this. Oh well!
 			card.blueprint = resource;
@@ -113,16 +110,13 @@ const resourceTypeHooks = {
 			{
 				const ai = new SentimentAI(game.player1);
 
-				const sheep = await Card.create(
-					game.ids.Official.builtin.sheep[0],
-					game.player1,
-				);
+				const sheep = await Card.create(game.sheep, game.player1);
 				const coin = await Card.create(
-					game.ids.Official.builtin.the_coin[0],
+					game.ids.Official.builtin.card.the_coin[0],
 					game.player1,
 				);
 				const armorUp = await Card.create(
-					game.ids.Official.builtin.armor_up[0],
+					game.ids.Official.builtin.card.armor_up[0],
 					game.player1,
 				);
 
@@ -176,11 +170,13 @@ const resourceTypeHooks = {
 				name: "command",
 				description: "",
 				debug: false,
+				// Will be filled in by the lib.
+				id: "",
 			} as Command;
 		},
 		entries: async (resource: Command) => {
 			return {
-				exclude: [],
+				exclude: ["id"],
 				split: [],
 				enums: {
 					exclude: [],
@@ -194,11 +190,13 @@ const resourceTypeHooks = {
 		init: async () => {
 			return {
 				name: "sfx",
+				// Will be filled in by the lib.
+				id: "",
 			} as SFX;
 		},
 		entries: async (resource: SFX) => {
 			return {
-				exclude: [],
+				exclude: ["id"],
 				split: [],
 				enums: {
 					exclude: [],
