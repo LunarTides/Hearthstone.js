@@ -1,6 +1,11 @@
 import { createGame } from "@Game/game.ts";
 import pathUtils from "node:path";
-import { type ErrorLabel, parseSync, Severity } from "oxc-parser";
+import {
+	type ErrorLabel,
+	type ParseResult,
+	parseSync,
+	Severity,
+} from "oxc-parser";
 import type { Resource } from "universe/emergence/create/lib.ts";
 
 // TODO: Remove.
@@ -34,7 +39,7 @@ class Universe {
 				return val;
 			},
 			4,
-		);
+		).replaceAll("    ", "\t");
 
 		const bytes = await Bun.write(game.fs.restrictPath(path), json);
 		return { json, bytes, path: game.fs.restrictPath(path) };
@@ -201,6 +206,15 @@ class Moon {
 	// TODO: Get dependencies.
 	dependencies: { cardIds: string[] };
 	errors: { message: string; labels: ErrorLabel[] }[] = [];
+	// TODO: Make predictions.
+	predictions = {
+		networking: {
+			using: undefined as true | undefined,
+		},
+		fileSystem: {
+			using: undefined as true | undefined,
+		},
+	};
 
 	planet: Planet;
 
@@ -255,6 +269,13 @@ class Moon {
 			}
 		}
 
+		// Handle imports.
+		await this.scanImports(result);
+
+		// TODO: Make predictions.
+	}
+
+	async scanImports(result: ParseResult) {
 		for (const stmt of result.program.body) {
 			// Get imports.
 			if (stmt.type === "ImportDeclaration") {
@@ -275,6 +296,79 @@ class Moon {
 						isDefault: isDefault || undefined,
 					});
 				}
+			}
+		}
+
+		// Increase suspiciousness based on certain imports.
+		const importRecords = [
+			{
+				condition: {
+					sources: ["fs", "node:fs"],
+				},
+				// TODO: Is this an okay amount of suspiciousness?
+				suspiciousness: +3,
+				// TODO: Handle.
+				set: ["predictions.fileSystem.uses=true"],
+				activateOn: "success",
+			},
+			// TODO: Remove
+			{
+				condition: {
+					keys: ["Keyword"],
+				},
+				suspiciousness: -2,
+				activateOn: "failure",
+			},
+			{
+				condition: {
+					sources: ["assert", "node:assert"],
+				},
+				suspiciousness: 1,
+				activateOn: "success",
+			},
+		];
+
+		const handleImportRecord = (
+			record: (typeof importRecords)[0],
+			result: boolean,
+		) => {
+			if (
+				(record.activateOn === "success" && !result) ||
+				(record.activateOn === "failure" && result)
+			) {
+				return;
+			}
+
+			if (Object.hasOwn(record, "suspiciousness")) {
+				this.suspiciousness += (record as any).suspiciousness;
+			}
+
+			applied.push(record);
+		};
+
+		const applied: (typeof importRecords)[0][] = [];
+		for (const [source, _objects] of Object.entries(this.imports)) {
+			for (const record of importRecords) {
+				if (applied.includes(record)) {
+					// The record has already been applied.
+					continue;
+				}
+
+				let includesKey = false;
+				// PERF: Oof.
+				for (const [_, objects] of Object.entries(this.imports)) {
+					for (const obj of objects) {
+						if (record.condition.keys?.includes(obj.key)) {
+							includesKey = true;
+							break;
+						}
+					}
+				}
+
+				handleImportRecord(
+					record,
+					record.condition.sources?.includes(source) || includesKey,
+				);
 			}
 		}
 	}
