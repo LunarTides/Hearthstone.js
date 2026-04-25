@@ -2,8 +2,8 @@ import { parseTags } from "chalk-tags";
 import { type ErrorOptions, program } from "commander";
 import * as dc from "./deckcreator.ts"; // Deck Creator
 //import * as src from "../src/index.ts"; // Source Code
-//import * as clc from "./resource-manager/card/class.ts"; // Class Creator
-import * as vcc from "./resource-manager/card/vanilla.ts"; // Vanilla Card Creator
+//import * as clc from "./resource_manager/card/class.ts"; // Class Creator
+import * as vcc from "./resource_manager/vanilla_card.ts"; // Vanilla Card Creator
 
 //import * as pkgr from "./pack/packager.ts"; // Packager
 //import * as cardTest from "./test/cards.ts"; // Card Test

@@ -7,7 +7,7 @@ import { confirm, Separator } from "@inquirer/prompts";
 import * as src from "./src/index.ts"; // Source Code
 import * as dc from "./tools/deckcreator.ts"; // Deck Creator
 import * as pkgr from "./tools/pack/packager.ts"; // Packager
-import * as rm from "./tools/resource-manager/index.ts"; // Resource Manager
+import * as rm from "./tools/resource_manager/index.ts"; // Resource Manager
 import * as cardTest from "./tools/test/cards.ts"; // Card Test
 import * as crashTest from "./tools/test/crash.ts"; // Crash Test
 import * as soundTest from "./tools/test/sound.ts"; // Sound Test

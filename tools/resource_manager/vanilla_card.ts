@@ -15,7 +15,7 @@ import {
 	create as createResource,
 	postCreate,
 } from "universe/emergence/create/lib.ts";
-import * as hub from "../../../hub.ts";
+import * as hub from "../../hub.ts";
 
 if (import.meta.main) {
 	await createGame();
