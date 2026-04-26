@@ -206,7 +206,6 @@ class Moon {
 	// TODO: Get dependencies.
 	dependencies: { cardIds: string[] };
 	errors: { message: string; labels: ErrorLabel[] }[] = [];
-	// TODO: Make predictions.
 	predictions = {
 		networking: {
 			using: undefined as true | undefined,
@@ -270,12 +269,12 @@ class Moon {
 		}
 
 		// Handle imports.
-		await this.scanImports(result);
-
-		// TODO: Make predictions.
+		await this.scanImports(result, content);
+		await this.getDependencies(result, content);
+		await this.makePredictions(result, content);
 	}
 
-	async scanImports(result: ParseResult) {
+	async scanImports(result: ParseResult, content: string) {
 		for (const stmt of result.program.body) {
 			// Get imports.
 			if (stmt.type === "ImportDeclaration") {
@@ -303,12 +302,22 @@ class Moon {
 		const importRecords = [
 			{
 				condition: {
+					// TODO: Check that this can't be bypassed by doing something like `import "f"+"s";`
+					// or `import String.fromCharCode(0x66) + String.fromCharCode(0x73);` or something like that.
 					sources: ["fs", "node:fs"],
 				},
 				// TODO: Is this an okay amount of suspiciousness?
 				suspiciousness: +3,
-				// TODO: Handle.
-				set: ["predictions.fileSystem.uses=true"],
+				set: ["predictions.fileSystem.using=true"],
+				activateOn: "success",
+			},
+			{
+				condition: {
+					sources: ["https", "node:https", "axios"],
+				},
+				// TODO: Is this an okay amount of suspiciousness?
+				suspiciousness: +5,
+				set: ["predictions.networking.using=true"],
 				activateOn: "success",
 			},
 			// TODO: Remove
@@ -319,6 +328,7 @@ class Moon {
 				suspiciousness: -2,
 				activateOn: "failure",
 			},
+			// TODO: Remove
 			{
 				condition: {
 					sources: ["assert", "node:assert"],
@@ -341,6 +351,16 @@ class Moon {
 
 			if (Object.hasOwn(record, "suspiciousness")) {
 				this.suspiciousness += (record as any).suspiciousness;
+			}
+			if (Object.hasOwn(record, "set")) {
+				const set: string[] = (record as any).set;
+				const sets = set.map((set) => set.split("="));
+
+				// biome-ignore lint/correctness/noUnusedVariables: Used in eval below.
+				for (const [key, value] of sets) {
+					// biome-ignore lint/security/noGlobalEval: The key is hardcoded in the code, it's fine.
+					eval(`this.${key} = JSON.parse(value);`);
+				}
 			}
 
 			applied.push(record);
@@ -397,11 +417,29 @@ class Moon {
 
 		this.imports[file].push(importObject);
 	}
+
+	async getDependencies(result: ParseResult, content: string) {
+		// TODO: Check `game.ids` references and find the actual id from the `ids.ts` file.
+	}
+
+	async makePredictions(result: ParseResult, content: string) {
+		const lower = content.toLowerCase();
+
+		// File system operations.
+		if (lower.includes("game.fs.call") || lower.includes("game.fs.search")) {
+			if (!this.predictions.fileSystem.using) {
+				// If we haven't detected file system usage before, add to suspiciousness.
+				// This is so we don't double the suspiciousness accidentally.
+				this.suspiciousness += 3;
+			}
+
+			this.predictions.fileSystem.using = true;
+		}
+	}
 }
 
 console.log("Discovering universe...");
 const universe = await Universe.discover();
 console.log("Exporting universe...");
 const result = await universe.export();
-//console.log(result.json);
 console.log(`Exported universe to '${result.path}'`);
