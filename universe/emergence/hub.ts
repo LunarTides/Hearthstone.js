@@ -14,7 +14,7 @@ export async function takeover() {
 		async () => [
 			{
 				name: "create",
-				callback: async () => {
+				onSelect: async () => {
 					await create.takeover();
 					return true;
 				},
@@ -22,14 +22,14 @@ export async function takeover() {
 			{
 				name: "edit",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},
 			{
 				name: "delete",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},
@@ -37,14 +37,14 @@ export async function takeover() {
 			{
 				name: "register",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},
 			{
 				name: "reload",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},

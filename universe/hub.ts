@@ -12,7 +12,7 @@ export async function takeover() {
 		async () => [
 			{
 				name: "[emergence]",
-				callback: async () => {
+				onSelect: async () => {
 					await emergence.takeover();
 					return true;
 				},
@@ -20,14 +20,14 @@ export async function takeover() {
 			{
 				name: "[observatory]",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},
 			{
 				name: "[telescope]",
 				disabled: true,
-				callback: async () => {
+				onSelect: async () => {
 					return true;
 				},
 			},

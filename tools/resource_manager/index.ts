@@ -24,7 +24,7 @@ export async function main() {
 			{
 				name: "Import a Vanilla Card",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 					await vcc.main();
 					return true;
@@ -33,7 +33,7 @@ export async function main() {
 			{
 				name: "Create a Class",
 				defaultSound: false,
-				callback: async (answer: number) => {
+				onSelect: async (answer: number) => {
 					game.audio.playSFX("ui.leaveLoop");
 					await classCreator.main();
 					return true;

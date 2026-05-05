@@ -445,7 +445,7 @@ export const interact = {
 					cards.length > 0 && new Separator(),
 					{
 						name: "Commands",
-						callback: async () => {
+						onSelect: async () => {
 							const debugCommandsDisabled = !game.isDebugSettingEnabled(
 								game.config.debug.commands,
 							);
@@ -521,7 +521,7 @@ export const interact = {
 						name: "Type in",
 						description:
 							"Type in the command instead of using the interface. (Old behavior)",
-						callback: async () => {
+						onSelect: async () => {
 							await oldInterface();
 							return false;
 						},

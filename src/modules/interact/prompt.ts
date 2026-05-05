@@ -197,7 +197,7 @@ export const prompt = {
 						description?: string;
 						disabled?: boolean;
 						defaultSound?: boolean;
-						callback?: (value: number) => Promise<boolean>;
+						onSelect?: (value: number) => Promise<boolean>;
 				  }
 				| false
 			)[]
@@ -288,7 +288,7 @@ export const prompt = {
 				}
 			}
 
-			const result = await choice.callback?.(parsed);
+			const result = await choice.onSelect?.(parsed);
 
 			if (options.callbackAfter) {
 				await options.callbackAfter(result);
@@ -340,7 +340,7 @@ export const prompt = {
 				new Separator(),
 				{
 					name: "New",
-					callback: async () => {
+					onSelect: async () => {
 						const value = await game.input({
 							message: "Value.",
 						});
@@ -353,7 +353,7 @@ export const prompt = {
 				{
 					name: "Delete",
 					defaultSound: false,
-					callback: async () => {
+					onSelect: async () => {
 						game.audio.playSFX("ui.delete");
 
 						array.pop();
@@ -444,7 +444,7 @@ export const prompt = {
 					name: "New",
 					disabled: !allowNew,
 					defaultSound: false,
-					callback: async () => {
+					onSelect: async () => {
 						if (!allowNew) {
 							game.audio.playSFX("error");
 							return true;
@@ -486,7 +486,7 @@ export const prompt = {
 				{
 					name: "Delete",
 					defaultSound: false,
-					callback: async () => {
+					onSelect: async () => {
 						game.audio.playSFX("ui.delete");
 
 						array.pop();
@@ -608,7 +608,7 @@ export const prompt = {
 				allowAddingAndDeleting && new Separator(),
 				allowAddingAndDeleting && {
 					name: "New",
-					callback: async () => {
+					onSelect: async () => {
 						const key = await game.input({
 							message: "Key.",
 						});
@@ -623,7 +623,7 @@ export const prompt = {
 				},
 				allowAddingAndDeleting && {
 					name: "Delete",
-					callback: async () => {
+					onSelect: async () => {
 						const key = await game.input({
 							message: "Key.",
 						});
@@ -710,14 +710,14 @@ export const prompt = {
 					async () => [
 						{
 							name: "True",
-							callback: async () => {
+							onSelect: async () => {
 								newValue = true;
 								return false;
 							},
 						},
 						{
 							name: "False",
-							callback: async () => {
+							onSelect: async () => {
 								newValue = false;
 								return false;
 							},

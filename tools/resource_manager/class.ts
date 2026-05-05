@@ -49,7 +49,7 @@ async function configure(
 			{
 				name: "Class Name",
 				description: "The name of the class. Example: GnomeHunter",
-				callback: async () => {
+				onSelect: async () => {
 					const className = (await game.input({
 						message: "Set the name of the class.",
 						default: heroBlueprint.classes.at(0) ?? "ChangeMe",
@@ -73,7 +73,7 @@ async function configure(
 				name: "Hero Name",
 				description:
 					"The name of the default hero. Example: Hunter Gnomingstein",
-				callback: async () => {
+				onSelect: async () => {
 					heroBlueprint.name = await game.input({
 						message: "Set the name of the default hero.",
 						default: heroBlueprint.name,
@@ -88,7 +88,7 @@ async function configure(
 				name: "Heropower Name",
 				description:
 					"The name of the default hero's heropower. Example: Hunt Gnome",
-				callback: async () => {
+				onSelect: async () => {
 					heropowerBlueprint.name = await game.input({
 						message: "Set the name of the default hero's heropower.",
 						default: heropowerBlueprint.name,
@@ -102,7 +102,7 @@ async function configure(
 				name: "Heropower Description",
 				description:
 					"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
-				callback: async () => {
+				onSelect: async () => {
 					heropowerBlueprint.text = await game.input({
 						message: "Set the description of the default hero's heropower.",
 						default: heropowerBlueprint.text,
@@ -115,7 +115,7 @@ async function configure(
 			{
 				name: "Heropower Cost",
 				description: "The cost of the default hero's heropower. Default: 2",
-				callback: async () => {
+				onSelect: async () => {
 					// TODO: Use `game.input` instead of `number`.
 					heropowerBlueprint.cost = await number({
 						message: "Set the cost of the default hero's heropower.",
@@ -131,7 +131,7 @@ async function configure(
 			{
 				name: "Cancel",
 				description: "Cancel changes to the class.",
-				callback: async () => {
+				onSelect: async () => {
 					if (!dirty) {
 						// No changes have been made.
 						result = false;
@@ -155,7 +155,7 @@ async function configure(
 			{
 				name: "Done",
 				description: "Done configuring class.",
-				callback: async () => {
+				onSelect: async () => {
 					let message = "Are you sure you are done configuring the class?";
 
 					if (heroBlueprint.classes[0] === ("ChangeMe" as Class)) {
