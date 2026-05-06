@@ -42,7 +42,7 @@ export async function promptImportPack() {
 		async () => [
 			...packs.map((p) => ({
 				name: `@${p.ownerName}/${p.name}`,
-				callback: async (answer: number) => {
+				onSelect: async (answer: number) => {
 					const pack = packs[answer];
 					const success = await importPack(pack);
 					if (success) {
@@ -79,7 +79,7 @@ export async function promptEditPack() {
 		async () => [
 			...packs.map((p) => ({
 				name: `@${p.ownerName}/${p.name}`,
-				callback: async (answer: number) => {
+				onSelect: async (answer: number) => {
 					const pack = packs.at(answer);
 					await exportPack(pack);
 
@@ -88,7 +88,7 @@ export async function promptEditPack() {
 			})),
 			{
 				name: "New",
-				callback: async () => {
+				onSelect: async () => {
 					await exportPack();
 
 					return true;
@@ -132,7 +132,7 @@ export async function promptCompressPack() {
 						: `<green>@${p.ownerName}/${p.name}</green>`,
 				),
 				defaultAudio: false,
-				callback: async (answer: number) => {
+				onSelect: async (answer: number) => {
 					const pack = packs.at(answer);
 					if (!pack) {
 						return true;
@@ -174,7 +174,7 @@ export async function configureMetadata(metadata: Metadata) {
 			{
 				name: "Version",
 				description: "The version of the pack. Uses semver.",
-				callback: async () => {
+				onSelect: async () => {
 					// TODO: Use `game.input` instead.
 					metadata.versions.pack = await game.input({
 						message: "Set the version of the pack.",
@@ -190,7 +190,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "Name",
 				description:
 					"The name of the pack. This must be unique for the author.",
-				callback: async () => {
+				onSelect: async () => {
 					metadata.name = await game.input({
 						message: "Set the name of the pack. This must be unique.",
 						default: metadata.name,
@@ -203,7 +203,7 @@ export async function configureMetadata(metadata: Metadata) {
 			{
 				name: "Description",
 				description: "The description of the pack.",
-				callback: async () => {
+				onSelect: async () => {
 					metadata.description = await game.input({
 						message: "Set the description of the pack.",
 						default: metadata.description,
@@ -217,7 +217,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "Author",
 				description:
 					"The author of the pack. Can be a username or a group name. Must be set when uploading to a registry.",
-				callback: async () => {
+				onSelect: async () => {
 					metadata.author = await game.input({
 						message: "Author.",
 						default: metadata.author,
@@ -231,7 +231,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "License",
 				description:
 					"The license that the pack is under. For example, 'GPL-3.0', 'MIT', 'Apache-2.0', etc...",
-				callback: async () => {
+				onSelect: async () => {
 					const select = async (answer: number) => {
 						const license = licenses[answer];
 						if (license instanceof Separator) {
@@ -248,39 +248,39 @@ export async function configureMetadata(metadata: Metadata) {
 							name: "Proprietary",
 							description:
 								"Complete copyright. Others can't use this pack. You cannot upload this pack to the registry.",
-							callback: select,
+							onSelect: select,
 						},
 						new Separator(),
 						{
 							name: "GPL-2.0",
 							description: "GNU General Public License Version 2.0",
-							callback: select,
+							onSelect: select,
 						},
 						{
 							name: "GPL-3.0",
 							description: "GNU General Public License Version 3.0",
-							callback: select,
+							onSelect: select,
 						},
 						{
 							name: "AGPL-3.0",
 							description: "GNU Affero General Public License Version 3.0",
-							callback: select,
+							onSelect: select,
 						},
 						{
 							name: "MIT",
 							description: "MIT License",
-							callback: select,
+							onSelect: select,
 						},
 						{
 							name: "Apache-2.0",
 							description: "Apache License Version 2.0",
-							callback: select,
+							onSelect: select,
 						},
 						new Separator(),
 						{
 							name: "Other",
 							description: "Specify another license.",
-							callback: async () => {
+							onSelect: async () => {
 								metadata.license = await game.input({ message: "License." });
 								dirty = true;
 
@@ -318,7 +318,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "Links",
 				description:
 					"Any links. These links can lead anywhere. Don't link to any dangerous websites.",
-				callback: async () => {
+				onSelect: async () => {
 					const changed = await game.prompt.configureObject(
 						metadata.links,
 						true,
@@ -335,7 +335,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "Permissions",
 				description:
 					"Resources that the pack needs to function. Check this out before exporting.",
-				callback: async () => {
+				onSelect: async () => {
 					const changed = await game.prompt.configureObject(
 						metadata.permissions,
 						false,
@@ -349,7 +349,7 @@ export async function configureMetadata(metadata: Metadata) {
 			{
 				name: "Requires",
 				description: "Pack dependencies.",
-				callback: async () => {
+				onSelect: async () => {
 					// TODO: Capitalize the choices.
 					const changed = await game.prompt.configureObject(
 						metadata.requires,
@@ -366,7 +366,7 @@ export async function configureMetadata(metadata: Metadata) {
 				name: "Cancel",
 				description: "Cancel changes to the metadata.",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					if (!dirty) {
 						// No changes have been made.
 						game.audio.playSFX("ui.back");
@@ -394,7 +394,7 @@ export async function configureMetadata(metadata: Metadata) {
 			{
 				name: "Done",
 				description: "Done configuring the metadata.",
-				callback: async () => {
+				onSelect: async () => {
 					if (metadata.license === "Proprietary") {
 						const licenseConfirm = await confirm({
 							message: parseTags(
@@ -497,14 +497,14 @@ export const registry = {
 			async () => [
 				{
 					name: "Download",
-					callback: async () => {
+					onSelect: async () => {
 						await registry.download.prompt(regbot);
 						return true;
 					},
 				},
 				{
 					name: "Upload",
-					callback: async () => {
+					onSelect: async () => {
 						await registry.upload.prompt(regbot);
 						return true;
 					},
@@ -512,7 +512,7 @@ export const registry = {
 				new Separator(),
 				{
 					name: "API Tokens",
-					callback: async () => {
+					onSelect: async () => {
 						await registry.apiTokens(regbot);
 						return true;
 					},
@@ -552,7 +552,7 @@ export const registry = {
 			async () => [
 				...Object.entries(tokens).map(([key, value]) => ({
 					name: value === currentToken ? `<green>${key}</green>` : key,
-					callback: async (answer: number) => {
+					onSelect: async (answer: number) => {
 						regbot.useOptions({ token: value });
 						await saveAPITokensToDotEnv(tokens, key);
 						return true;
@@ -560,7 +560,7 @@ export const registry = {
 				})),
 				{
 					name: "New",
-					callback: async () => {
+					onSelect: async () => {
 						const name = await game.input({
 							message: "Name (can be anything): ",
 						});
@@ -599,7 +599,7 @@ export const registry = {
 				async () => [
 					{
 						name: "Pack",
-						callback: async () => {
+						onSelect: async () => {
 							await registry.download.pack(regbot);
 							return true;
 						},
@@ -652,7 +652,7 @@ export const registry = {
 					...packs.map((pack) => ({
 						name: `@${pack.ownerName}/${pack.name}`,
 						description: pack.display(),
-						callback: async (answer: number) => {
+						onSelect: async (answer: number) => {
 							const pack = packs[answer];
 
 							// TODO: Allow selecting the version to download.
@@ -732,7 +732,7 @@ export const registry = {
 				async () => [
 					...packs.map((p) => ({
 						name: `@${p.ownerName}/${p.name}`,
-						callback: async (answer: number) => {
+						onSelect: async (answer: number) => {
 							const packInfo = packs[answer];
 							const pack = new regbot.Pack(packInfo);
 
@@ -787,21 +787,21 @@ export async function main(regbot: RegBot) {
 		async () => [
 			{
 				name: "Create / Edit",
-				callback: async () => {
+				onSelect: async () => {
 					await promptEditPack();
 					return true;
 				},
 			},
 			{
 				name: "Import Locally",
-				callback: async () => {
+				onSelect: async () => {
 					await promptImportPack();
 					return true;
 				},
 			},
 			{
 				name: "Compress / Extract",
-				callback: async () => {
+				onSelect: async () => {
 					await promptCompressPack();
 					return true;
 				},
@@ -809,7 +809,7 @@ export async function main(regbot: RegBot) {
 			new Separator(),
 			{
 				name: "Registry",
-				callback: async () => {
+				onSelect: async () => {
 					await registry.prompt(regbot);
 					return true;
 				},

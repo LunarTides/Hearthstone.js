@@ -15,7 +15,7 @@ export async function takeover() {
 		async () =>
 			Object.keys(lib.resourceTypeHooks).map((resourceType) => ({
 				name: `${resourceType}`,
-				callback: async () => {
+				onSelect: async () => {
 					// Ask the user to configure the resource.
 					const resource = await frontend.configure(
 						resourceType as keyof typeof lib.resourceTypeHooks,

@@ -326,7 +326,7 @@ export const prompt = {
 			async () => [
 				...array.map((element, i) => ({
 					name: `Element ${i}`,
-					callback: async (answer: number) => {
+					onSelect: async (answer: number) => {
 						const newValue = await game.input({
 							message: "What will you change this value to?",
 							default: array[answer],
@@ -411,7 +411,7 @@ export const prompt = {
 			async () => [
 				...array.map((element, i) => ({
 					name: `Element ${i}`,
-					callback: async (answer: number) => {
+					onSelect: async (answer: number) => {
 						if (!allowEdit) {
 							return true;
 						}
@@ -469,7 +469,7 @@ export const prompt = {
 							async () => [
 								...filtered.map((element: any) => ({
 									name: element,
-									callback: async (answer: number) => {
+									onSelect: async (answer: number) => {
 										const value = filtered[answer];
 
 										(array as unknown[]).push(value);
@@ -545,7 +545,7 @@ export const prompt = {
 			async () => [
 				...Object.keys(object).map((element) => ({
 					name: element,
-					callback: async (answer: number) => {
+					onSelect: async (answer: number) => {
 						const key = Object.keys(object)[answer];
 						const value = object[key];
 
@@ -670,7 +670,7 @@ export const prompt = {
 								.filter((key) => !entryOptions.enums.exclude.includes(key))
 								.map((enumKey) => ({
 									name: enumKey,
-									callback: async (option) => {
+									onSelect: async (option) => {
 										newValue = Object.values(enumMapping.enum)[
 											option
 										] as string;
@@ -798,7 +798,7 @@ export const prompt = {
 				.filter(([key, value]) => !entryOptions.exclude.includes(key))
 				.map(([key, value]) => ({
 					name: `${key}: ${JSON.stringify(value).replaceAll('","', '", "')}`,
-					callback: async () => {
+					onSelect: async () => {
 						const result = await game.prompt._configureObjectV2HandleEntry(
 							object,
 							key,
@@ -852,7 +852,7 @@ export const prompt = {
 				{
 					name: "Cancel",
 					disabled: options.disableCancelling,
-					callback: async () => {
+					onSelect: async () => {
 						// Check if dirty.
 						if (dirty && options.confirmWhenCancellingIfDirty) {
 							const sure = await confirm({
@@ -872,7 +872,7 @@ export const prompt = {
 				},
 				{
 					name: "Done",
-					callback: async () => {
+					onSelect: async () => {
 						if (options.confirmWhenDone) {
 							const sure = await confirm({
 								message: "Are you sure you're done configuring this resource?",

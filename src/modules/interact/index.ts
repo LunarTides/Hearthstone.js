@@ -437,7 +437,7 @@ export const interact = {
 					...cards.map((readable) => ({
 						name: readable,
 						defaultSound: false,
-						callback: async (answer: number) => {
+						onSelect: async (answer: number) => {
 							user = answer.toString();
 							return false;
 						},
@@ -471,7 +471,7 @@ export const interact = {
 								async () => [
 									...cmds.map((c) => ({
 										name: c,
-										callback: async (answer: number) => {
+										onSelect: async (answer: number) => {
 											user = cmds[answer].toLowerCase();
 											return false;
 										},
@@ -480,7 +480,7 @@ export const interact = {
 									...debugCmds.map((c) => ({
 										name: c,
 										disabled: debugCommandsDisabled,
-										callback: async (answer: number) => {
+										onSelect: async (answer: number) => {
 											// Account for the other choices.
 											answer -= cmds.length + 1;
 

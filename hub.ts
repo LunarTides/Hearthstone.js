@@ -76,7 +76,7 @@ export async function createUILoop(
 					description?: string;
 					disabled?: boolean;
 					defaultSound?: boolean;
-					callback?: (value: number) => Promise<boolean>;
+					onSelect?: (value: number) => Promise<boolean>;
 			  }
 		)[]
 	>,
@@ -101,7 +101,7 @@ export async function devmode() {
 		async () => [
 			{
 				name: "Manage Resources",
-				callback: async () => {
+				onSelect: async () => {
 					game.interest("Loading Resource Manager...");
 					await rm.main();
 					game.interest("Loading Resource Manager...OK");
@@ -113,7 +113,7 @@ export async function devmode() {
 			{
 				name: "Test Cards",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 
 					game.interest("Starting Card Test...");
@@ -126,7 +126,7 @@ export async function devmode() {
 			{
 				name: "Test Crash",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 
 					game.interest("Starting Crash Test...");
@@ -142,7 +142,7 @@ export async function devmode() {
 				// therefore, the following line is commented out.
 				// disabled: game.config.audio.disable,
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 
 					game.interest("Starting Sound Test...");
@@ -154,7 +154,7 @@ export async function devmode() {
 			},
 			{
 				name: "Generate Vanilla Cards",
-				callback: async () => {
+				onSelect: async () => {
 					// TODO: Move this to the tool.
 					if (!game.config.networking.allow.game) {
 						console.error(
@@ -197,7 +197,7 @@ export async function main() {
 			{
 				name: "Play",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 
 					game.interest("Starting Game...");
@@ -214,7 +214,7 @@ export async function main() {
 			{
 				name: "Create a Deck",
 				defaultSound: false,
-				callback: async () => {
+				onSelect: async () => {
 					game.audio.playSFX("ui.leaveLoop");
 
 					game.interest("Starting Deck Creator...");
@@ -227,7 +227,7 @@ export async function main() {
 			new Separator(),
 			{
 				name: "Pack Options",
-				callback: async () => {
+				onSelect: async () => {
 					game.interest("Starting Packager...");
 					await pkgr.main();
 					game.interest("Starting Packager...OK");
@@ -237,7 +237,7 @@ export async function main() {
 			},
 			{
 				name: "Universe",
-				callback: async () => {
+				onSelect: async () => {
 					game.interest("Starting [universe] takeover...");
 					await universe.takeover();
 					game.interest("Starting [universe] takeover...OK");
@@ -247,7 +247,7 @@ export async function main() {
 			},
 			{
 				name: "Developer Options",
-				callback: async () => {
+				onSelect: async () => {
 					game.interest("Loading Developer Mode options...");
 					await devmode();
 					game.interest("Loading Developer Mode options...OK");
