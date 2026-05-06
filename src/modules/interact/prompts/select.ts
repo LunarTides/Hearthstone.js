@@ -78,7 +78,10 @@ type NormalizedChoice<Value> = {
 type SelectConfig<Value> = {
 	message: string;
 	choices: {
-		tab: number;
+		tab: {
+			index: number;
+			name?: string;
+		};
 		items: ReadonlyArray<Value | Choice<Value> | Separator>;
 	}[];
 	pageSize?: number;
@@ -175,9 +178,13 @@ export default createPrompt(
 
 		// NOTE: For debugging. Places a third tab.
 		config.choices.push({
-			tab: 3,
+			tab: {
+				index: 3,
+				name: "Other",
+			},
 			items: [
 				config.choices[0].items[0],
+				new Separator(),
 				{
 					value: "Test" as any,
 					disabled: true,
@@ -189,8 +196,8 @@ export default createPrompt(
 		const maxTab = useMemo(
 			() =>
 				config.choices.reduce((prev, item) => {
-					if (item.tab > prev) {
-						return item.tab;
+					if (item.tab.index > prev) {
+						return item.tab.index;
 					}
 
 					return prev;
@@ -199,7 +206,7 @@ export default createPrompt(
 		);
 
 		let items = normalizeChoices(
-			config.choices.find((t) => t.tab - 1 === tab)?.items ?? [],
+			config.choices.find((t) => t.tab.index - 1 === tab)?.items ?? [],
 		);
 
 		if (items.filter((item) => !Separator.isSeparator(item)).length <= 0) {
@@ -396,12 +403,17 @@ export default createPrompt(
 		let tabLine = "";
 		if (maxTab > 1) {
 			for (let i = 0; i <= maxTab; i++) {
+				const tabInfo = config.choices.find(
+					(choice) => choice.tab.index - 1 === i,
+				)?.tab;
+				const name = tabInfo?.name ?? i + 1;
+
 				if (i === tab) {
-					tabLine += parseTags(`<black bg:white>${i + 1}</> `);
+					tabLine += parseTags(`<black bg:white>${name}</> `);
 					continue;
 				}
 
-				tabLine += `${i + 1} `;
+				tabLine += `${name} `;
 			}
 		}
 
@@ -453,9 +465,9 @@ export default createPrompt(
 			page,
 			" ",
 			description ? theme.style.description(description) : "",
-			description && tabLine ? " " : "", // If there is a description and tab switcher, add a space between them.
-			tabLine,
 			errorMsg ? theme.style.error(errorMsg) : "",
+			tabLine && (description || errorMsg) && tabLine ? " " : "", // If there is a description / error message and tab switcher, add a space between them.
+			tabLine,
 			helpLine,
 		]
 			.filter(Boolean)

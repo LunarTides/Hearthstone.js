@@ -150,7 +150,10 @@ export const prompt = {
 			message,
 			choices: [
 				{
-					tab: 1,
+					tab: {
+						index: 1,
+						name: message,
+					},
 					items: choices,
 				},
 			],
