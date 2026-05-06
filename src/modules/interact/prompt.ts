@@ -148,7 +148,12 @@ export const prompt = {
 
 		const answer = await select({
 			message,
-			choices,
+			choices: [
+				{
+					tab: 1,
+					items: choices,
+				},
+			],
 			default:
 				options?.default ??
 				(options?.resetCursor ? undefined : selectValues[message]),

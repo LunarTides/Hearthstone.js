@@ -73,12 +73,14 @@ type NormalizedChoice<Value> = {
 	description?: string;
 	short: string;
 	disabled: boolean | string;
-	tab: number;
 };
 
 type SelectConfig<Value> = {
 	message: string;
-	choices: ReadonlyArray<Value | Choice<Value> | Separator>;
+	choices: {
+		tab: number;
+		items: ReadonlyArray<Value | Choice<Value> | Separator>;
+	}[];
 	pageSize?: number;
 	loop?: boolean;
 	default?: NoInfer<Value>;
@@ -115,7 +117,6 @@ function normalizeChoices<Value>(
 				name,
 				short: name,
 				disabled: false,
-				tab: 0,
 			};
 		}
 
@@ -125,7 +126,6 @@ function normalizeChoices<Value>(
 			name,
 			short: choice.short ?? name,
 			disabled: choice.disabled ?? false,
-			tab: choice.tab ?? 0,
 		};
 
 		if (choice.description) {
@@ -173,31 +173,35 @@ export default createPrompt(
 		// so search must be disabled when vim bindings are enabled
 		const searchEnabled = !keybindings.includes("vim");
 
-		// Puts the first item on tab 3 (zero-based), for debugging purposes.
-		config.choices[0].tab = 2;
+		// NOTE: For debugging. Places a third tab.
+		config.choices.push({
+			tab: 3,
+			items: [
+				config.choices[0].items[0],
+				{
+					value: "Test" as any,
+					disabled: true,
+				},
+			],
+		});
 
 		// Get the highest tab count from the items.
 		const maxTab = useMemo(
 			() =>
 				config.choices.reduce((prev, item) => {
-					if (
-						!Separator.isSeparator(item) &&
-						!isRawValue<Value>(item) &&
-						(item.tab ?? 0) > prev
-					) {
-						return item.tab ?? 0;
+					if (item.tab > prev) {
+						return item.tab;
 					}
 
 					return prev;
-				}, 0),
+				}, 0) - 1,
 			[config.choices],
 		);
 
-		let items = normalizeChoices(config.choices).filter(
-			(choice) => Separator.isSeparator(choice) || choice.tab === tab,
+		let items = normalizeChoices(
+			config.choices.find((t) => t.tab - 1 === tab)?.items ?? [],
 		);
 
-		// TODO: Make tabs apply to the whole `config.choices` object rather than the choices themselves. This is neccessary for the separators to only show up in their tabs.
 		if (items.filter((item) => !Separator.isSeparator(item)).length <= 0) {
 			items = normalizeChoices([
 				{
@@ -206,7 +210,6 @@ export default createPrompt(
 					short: "Empty",
 					description: "There are no items on this tab.",
 					disabled: true,
-					tab,
 				},
 			]);
 		}
@@ -283,7 +286,6 @@ export default createPrompt(
 					setActive(next);
 				} else {
 					// Hit boundary.
-					// TODO: Make a new SFX for this.
 					game.audio.playSFX("input.select.hit_boundary");
 				}
 			} else if (isRight || isLeft || isTab) {
@@ -310,22 +312,29 @@ export default createPrompt(
 					game.audio.playSFX("input.select.tab.switch");
 					setActive(bounds.first);
 				} else {
-					// TODO: Maybe add a less obstructive `input.error`.
-					game.audio.playSFX("error");
+					game.audio.playSFX("input.select.hit_boundary");
 				}
 
 				setTab(newTab);
 			} else if (isNumberKey(key) && key.shift) {
 				// FIXME: This no workie!!!!
-				const newTab = Number(rl.line);
+				const newTab = Number(rl.line) - 1;
 
-				if (newTab > 0 && newTab <= maxTab) {
+				if (newTab >= 0 && newTab <= maxTab) {
 					game.audio.playSFX("input.select.tab.switch");
 					setTab(newTab);
 				} else {
 					// TODO: Maybe add a less obstructive `input.error`.
 					game.audio.playSFX("error");
 				}
+
+				// add timeout when we have 10 or more items.
+				// this is so the user has time to type multiple numbers.
+				const timeout = maxTab < 10 ? 0 : 700;
+
+				searchTimeoutRef.current = setTimeout(() => {
+					rl.clearLine(0);
+				}, timeout);
 			} else if (isNumberKey(key) && !Number.isNaN(Number(rl.line))) {
 				const selectedIndex = Number(rl.line) - 1;
 
@@ -344,8 +353,8 @@ export default createPrompt(
 					setActive(position);
 				}
 
-				// Add timeout when we have 10 or more items.
-				// This is so the user has time to type multiple numbers.
+				// add timeout when we have 10 or more items.
+				// this is so the user has time to type multiple numbers.
 				const timeout = items.length < 10 ? 0 : 700;
 
 				searchTimeoutRef.current = setTimeout(() => {
@@ -355,6 +364,8 @@ export default createPrompt(
 				game.audio.playSFX("input.backspace");
 				rl.clearLine(0);
 			} else if (searchEnabled) {
+				game.audio.playSFX("input.type");
+
 				const searchTerm = rl.line.toLowerCase();
 				const matchIndex = items.findIndex((item) => {
 					if (Separator.isSeparator(item) || !isSelectable(item)) return false;
@@ -363,7 +374,6 @@ export default createPrompt(
 				});
 
 				if (matchIndex !== -1) {
-					game.audio.playSFX("input.type");
 					setActive(matchIndex);
 				}
 
