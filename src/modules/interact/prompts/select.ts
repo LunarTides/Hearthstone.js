@@ -293,16 +293,16 @@ export default createPrompt(
 				let newTab = tab;
 
 				if (isRight || (isTab && !key.shift)) {
-					newTab = Math.max(Math.min(tab + 1, maxTab), 0);
+					newTab++;
 
-					if (tab === maxTab && tab === oldTab) {
+					if (newTab > maxTab) {
 						// Reached right boundary.
 						newTab = 0;
 					}
 				} else if (isLeft || (isTab && key.shift)) {
-					newTab = Math.max(Math.min(tab - 1, maxTab), 0);
+					newTab--;
 
-					if (tab === 0 && tab === oldTab) {
+					if (tab <= 0) {
 						// Reached left boundary.
 						newTab = maxTab;
 					}
