@@ -14,8 +14,9 @@ import {
 	UseLocationError,
 } from "@Game/types.ts";
 import { Separator } from "@inquirer/core";
-import { checkbox, confirm, number, select } from "@inquirer/prompts";
+import { checkbox, confirm, number } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
+import select from "./prompts/select.ts";
 
 export const UILoopDefaultOptions = {
 	callbackBefore: (() => Promise.resolve()) as () => Promise<void>,
@@ -57,7 +58,7 @@ export const prompt = {
 	 * @param array The array it should ask the user to select from.
 	 * @param options Any options.
 	 * @param otherChoices Add choices other than the ones supplied from the array.
-	 * @returns The answer that the user chose.
+	 * @returns The index of the answer that the user chose, seperators included.
 	 */
 	// TODO: Rewrite this function. Holy crap...
 	async customSelect(
@@ -228,6 +229,7 @@ export const prompt = {
 			// Find an existing back option.
 			const backOption = choices.find(
 				(choice) =>
+					// TODO: Replace with `Separator.isSeparator()`
 					!(choice instanceof Separator) &&
 					choice !== false &&
 					choice.name === options.backButtonText,
