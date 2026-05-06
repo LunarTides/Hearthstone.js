@@ -259,8 +259,6 @@ export default createPrompt(
 					game.audio.playSFX("error");
 					setError(theme.i18n.disabledError);
 				} else {
-					// TODO: Check if this actually sounds good.
-					game.audio.playSFX("input.enter");
 					setStatus("done");
 					done(selectedChoice.value);
 				}
@@ -272,9 +270,9 @@ export default createPrompt(
 					(isDown && active !== bounds.last)
 				) {
 					if (isUp) {
-						game.audio.playSFX("input.arrow.up");
+						game.audio.playSFX("input.select.arrow.up");
 					} else if (isDown) {
-						game.audio.playSFX("input.arrow.down");
+						game.audio.playSFX("input.select.arrow.down");
 					}
 
 					const offset = isUp ? -1 : 1;
@@ -286,7 +284,7 @@ export default createPrompt(
 				} else {
 					// Hit boundary.
 					// TODO: Make a new SFX for this.
-					game.audio.playSFX("input.backspace");
+					game.audio.playSFX("input.select.hit_boundary");
 				}
 			} else if (isRight || isLeft || isTab) {
 				const oldTab = tab;
@@ -309,9 +307,7 @@ export default createPrompt(
 				}
 
 				if (oldTab !== newTab) {
-					// TODO: Add
-					// game.audio.playSFX("input.tab.switch");
-					game.audio.playSFX("input.tab");
+					game.audio.playSFX("input.select.tab.switch");
 					setActive(bounds.first);
 				} else {
 					// TODO: Maybe add a less obstructive `input.error`.
@@ -324,9 +320,7 @@ export default createPrompt(
 				const newTab = Number(rl.line);
 
 				if (newTab > 0 && newTab <= maxTab) {
-					// TODO: Add
-					// game.audio.playSFX("input.tab.switch");
-					game.audio.playSFX("input.tab");
+					game.audio.playSFX("input.select.tab.switch");
 					setTab(newTab);
 				} else {
 					// TODO: Maybe add a less obstructive `input.error`.
@@ -346,6 +340,7 @@ export default createPrompt(
 
 				const item = items[position];
 				if (item != null && isSelectable(item)) {
+					game.audio.playSFX("input.select.number_key");
 					setActive(position);
 				}
 
@@ -368,6 +363,7 @@ export default createPrompt(
 				});
 
 				if (matchIndex !== -1) {
+					game.audio.playSFX("input.type");
 					setActive(matchIndex);
 				}
 

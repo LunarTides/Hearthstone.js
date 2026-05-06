@@ -124,6 +124,40 @@ export const sfx = {
 		await game.audio.playWave("sine", 880, 10, 0.3, 0, 0.0, options);
 	},
 
+	"input.select.arrow.up": async (info: any, options: WaveOptions) => {
+		await game.audio.playWave(
+			"sine",
+			octaves[5].A_SHARP,
+			10,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
+	},
+	"input.select.arrow.down": async (info: any, options: WaveOptions) => {
+		await game.audio.playWave("sine", octaves[5].A, 10, 0.3, 0, 0.0, options);
+	},
+	"input.select.hit_boundary": async (info: any, options: WaveOptions) => {
+		await game.audio.playWave(
+			"triangle",
+			octaves[1].A,
+			10,
+			0.3,
+			0,
+			0.0,
+			options,
+		);
+	},
+	"input.select.number_key": async (info: any, options: WaveOptions) => {
+		await game.audio.playWave("sine", octaves[6].F, 10, 0.3, 0, 0.0, options);
+	},
+	"input.select.tab.switch": async (info: any, options: WaveOptions) => {
+		await game.audio.playWave("sine", octaves[4].A, 20, 0.3, 30, 0.0, options);
+		// await game.audio.playWave("sine", octaves[5].C, 20, 0.3, 0, 0.0, options);
+		await game.audio.playWave("sine", octaves[5].A, 20, 0.3, 0, 0.0, options);
+	},
+
 	"game.playCard": async (info: any, options: WaveOptions) => {
 		// TODO: Make less obnoxious.
 		await game.audio.playWave(
