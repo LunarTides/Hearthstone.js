@@ -204,7 +204,17 @@ class Moon {
 	suspiciousness: number = 0;
 	imports: Record<string, (typeof defaultImportObject)[]> = {};
 	// TODO: Get dependencies.
-	dependencies: { cardIds: string[] };
+	dependencies: {
+		components: {
+			ids: string;
+			authorName: string;
+			packName: string;
+			resourceName: string;
+			index: number;
+			raw: string;
+		};
+		id: string | undefined;
+	}[];
 	errors: { message: string; labels: ErrorLabel[] }[] = [];
 	predictions = {
 		networking: {
@@ -420,6 +430,227 @@ class Moon {
 
 	async getDependencies(result: ParseResult, content: string) {
 		// TODO: Check `game.ids` references and find the actual id from the `ids.ts` file.
+		//
+		// Solution (See output):
+		// Find `MemberExpression` objects. Find an expression with property name "ids" and object name "game".
+		// Handle the `ids` object being split somehow. Or just increase suspiciousness if that's detected if the former is too hard.
+		// Search for the author name, pack name, resource name, and index. Use that information to find the id in `ids.ts`.
+		// If the id isn't there, express that somehow. Dependency object:
+		// {
+		//   components: {
+		//     ids: "game.ids",
+		//     authorName: "Official",
+		//     packName: "builtin",
+		//     resourceName: "the_coin",
+		//     index: 0,
+		//     raw: "game.ids.Official.builtin.the_coin[0]",
+		//   },
+		//   id: uuidv7 | undefined, // Undefined if not found in `ids.ts`
+		// }
+		//
+		// Input:
+		// const coin = game.ids.Official.builtin.the_coin[0];
+		// console.log(await coin.readable());
+		//
+		// Output (result.program):
+		// {
+		//     "type": "Program",
+		//     "start": 1,
+		//     "end": 89,
+		//     "body": [
+		//       {
+		//         "type": "VariableDeclaration",
+		//         "start": 1,
+		//         "end": 52,
+		//         "kind": "const",
+		//         "declarations": [
+		//           {
+		//             "type": "VariableDeclarator",
+		//             "start": 7,
+		//             "end": 51,
+		//             "id": {
+		//               "type": "Identifier",
+		//               "start": 7,
+		//               "end": 11,
+		//               "decorators": [],
+		//               "name": "coin",
+		//               "optional": false,
+		//               "typeAnnotation": null
+		//             },
+		//             "init": {
+		//               "type": "MemberExpression",
+		//               "start": 14,
+		//               "end": 51,
+		//               "object": {
+		//                 "type": "MemberExpression",
+		//                 "start": 14,
+		//                 "end": 48,
+		//                 "object": {
+		//                   "type": "MemberExpression",
+		//                   "start": 14,
+		//                   "end": 39,
+		//                   "object": {
+		//                     "type": "MemberExpression",
+		//                     "start": 14,
+		//                     "end": 31,
+		//                     "object": {
+		//                       "type": "MemberExpression",
+		//                       "start": 14,
+		//                       "end": 22,
+		//                       "object": {
+		//                         "type": "Identifier",
+		//                         "start": 14,
+		//                         "end": 18,
+		//                         "decorators": [],
+		//                         "name": "game",
+		//                         "optional": false,
+		//                         "typeAnnotation": null
+		//                       },
+		//                       "property": {
+		//                         "type": "Identifier",
+		//                         "start": 19,
+		//                         "end": 22,
+		//                         "decorators": [],
+		//                         "name": "ids",
+		//                         "optional": false,
+		//                         "typeAnnotation": null
+		//                       },
+		//                       "optional": false,
+		//                       "computed": false
+		//                     },
+		//                     "property": {
+		//                       "type": "Identifier",
+		//                       "start": 23,
+		//                       "end": 31,
+		//                       "decorators": [],
+		//                       "name": "Official",
+		//                       "optional": false,
+		//                       "typeAnnotation": null
+		//                     },
+		//                     "optional": false,
+		//                     "computed": false
+		//                   },
+		//                   "property": {
+		//                     "type": "Identifier",
+		//                     "start": 32,
+		//                     "end": 39,
+		//                     "decorators": [],
+		//                     "name": "builtin",
+		//                     "optional": false,
+		//                     "typeAnnotation": null
+		//                   },
+		//                   "optional": false,
+		//                   "computed": false
+		//                 },
+		//                 "property": {
+		//                   "type": "Identifier",
+		//                   "start": 40,
+		//                   "end": 48,
+		//                   "decorators": [],
+		//                   "name": "the_coin",
+		//                   "optional": false,
+		//                   "typeAnnotation": null
+		//                 },
+		//                 "optional": false,
+		//                 "computed": false
+		//               },
+		//               "property": {
+		//                 "type": "Literal",
+		//                 "start": 49,
+		//                 "end": 50,
+		//                 "value": 0,
+		//                 "raw": "0"
+		//               },
+		//               "optional": false,
+		//               "computed": true
+		//             },
+		//             "definite": false
+		//           }
+		//         ],
+		//         "declare": false
+		//       },
+		//       {
+		//         "type": "ExpressionStatement",
+		//         "start": 53,
+		//         "end": 88,
+		//         "expression": {
+		//           "type": "CallExpression",
+		//           "start": 53,
+		//           "end": 87,
+		//           "callee": {
+		//             "type": "MemberExpression",
+		//             "start": 53,
+		//             "end": 64,
+		//             "object": {
+		//               "type": "Identifier",
+		//               "start": 53,
+		//               "end": 60,
+		//               "decorators": [],
+		//               "name": "console",
+		//               "optional": false,
+		//               "typeAnnotation": null
+		//             },
+		//             "property": {
+		//               "type": "Identifier",
+		//               "start": 61,
+		//               "end": 64,
+		//               "decorators": [],
+		//               "name": "log",
+		//               "optional": false,
+		//               "typeAnnotation": null
+		//             },
+		//             "optional": false,
+		//             "computed": false
+		//           },
+		//           "typeArguments": null,
+		//           "arguments": [
+		//             {
+		//               "type": "AwaitExpression",
+		//               "start": 65,
+		//               "end": 86,
+		//               "argument": {
+		//                 "type": "CallExpression",
+		//                 "start": 71,
+		//                 "end": 86,
+		//                 "callee": {
+		//                   "type": "MemberExpression",
+		//                   "start": 71,
+		//                   "end": 84,
+		//                   "object": {
+		//                     "type": "Identifier",
+		//                     "start": 71,
+		//                     "end": 75,
+		//                     "decorators": [],
+		//                     "name": "coin",
+		//                     "optional": false,
+		//                     "typeAnnotation": null
+		//                   },
+		//                   "property": {
+		//                     "type": "Identifier",
+		//                     "start": 76,
+		//                     "end": 84,
+		//                     "decorators": [],
+		//                     "name": "readable",
+		//                     "optional": false,
+		//                     "typeAnnotation": null
+		//                   },
+		//                   "optional": false,
+		//                   "computed": false
+		//                 },
+		//                 "typeArguments": null,
+		//                 "arguments": [],
+		//                 "optional": false
+		//               }
+		//             }
+		//           ],
+		//           "optional": false
+		//         },
+		//         "directive": null
+		//       }
+		//     ],
+		//     "sourceType": "module",
+		//     "hashbang": null
+		//   }
 	}
 
 	async makePredictions(result: ParseResult, content: string) {
