@@ -574,7 +574,7 @@ export const deckcode = {
 					vanillaCard.referencesTags = undefined;
 				}
 
-				const chosen = await game.prompt.customSelect(
+				const result = await game.prompt.customSelect(
 					`Multiple cards with the name '</yellow>${matches[0].name}<yellow>' detected! Please choose one.`,
 					matches.map((m) => JSON.stringify(m)),
 					{
@@ -583,7 +583,7 @@ export const deckcode = {
 					},
 				);
 
-				match = matches[parseInt(chosen, 10)];
+				match = matches[parseInt(result.value, 10)];
 			} else {
 				match = matches[0];
 			}

@@ -163,7 +163,10 @@ export const isLeftKey = (
 	(keybindings.includes("emacs") && key.ctrl && key.name === "b");
 
 export default createPrompt(
-	<const Value>(config: SelectConfig<Value>, done: (value: Value) => void) => {
+	<const Value>(
+		config: SelectConfig<Value>,
+		done: (value: { tab: number; value: Value }) => void,
+	) => {
 		const { loop = true, pageSize = 7 } = config;
 		const theme = makeTheme<SelectTheme>(selectTheme, config.theme);
 		const { keybindings } = theme;
@@ -177,20 +180,20 @@ export default createPrompt(
 		const searchEnabled = !keybindings.includes("vim");
 
 		// NOTE: For debugging. Places a third tab.
-		config.choices.push({
-			tab: {
-				index: 3,
-				name: "Other",
-			},
-			items: [
-				config.choices[0].items[0],
-				new Separator(),
-				{
-					value: "Test" as any,
-					disabled: true,
-				},
-			],
-		});
+		// config.choices.push({
+		// 	tab: {
+		// 		index: 3,
+		// 		name: "Other",
+		// 	},
+		// 	items: [
+		// 		config.choices[0].items[0],
+		// 		new Separator(),
+		// 		{
+		// 			value: "Test" as any,
+		// 			disabled: true,
+		// 		},
+		// 	],
+		// });
 
 		// Get the highest tab count from the items.
 		const maxTab = useMemo(
@@ -270,7 +273,10 @@ export default createPrompt(
 					setError(theme.i18n.disabledError);
 				} else {
 					setStatus("done");
-					done(selectedChoice.value);
+					done({
+						tab,
+						value: selectedChoice.value,
+					});
 				}
 			} else if (isUp || isDown) {
 				rl.clearLine(0);

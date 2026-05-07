@@ -22,22 +22,30 @@ export async function main() {
 		},
 		async () => [
 			{
-				name: "Import a Vanilla Card",
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
-					await vcc.main();
-					return true;
+				tab: {
+					index: 1,
+					name: "Manage Resources",
 				},
-			},
-			{
-				name: "Create a Class",
-				defaultSound: false,
-				onSelect: async (answer: number) => {
-					game.audio.playSFX("ui.leaveLoop");
-					await classCreator.main();
-					return true;
-				},
+				items: [
+					{
+						name: "Import a Vanilla Card",
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
+							await vcc.main();
+							return true;
+						},
+					},
+					{
+						name: "Create a Class",
+						defaultSound: false,
+						onSelect: async (answer: number) => {
+							game.audio.playSFX("ui.leaveLoop");
+							await classCreator.main();
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);

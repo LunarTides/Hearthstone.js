@@ -192,15 +192,15 @@ export const commands: CommandList = {
 			titanIds.map(async (id) => Card.create(id, game.player, true)),
 		);
 
-		const choice = await game.prompt.customSelect(
+		const result = await game.prompt.customSelect(
 			"Which ability do you want to trigger?",
 			await game.card.readables(titanCards),
 		);
-		if (choice === "Back") {
+		if (result.value === "Back") {
 			return false;
 		}
 
-		const abilityIndex = parseInt(choice, 10);
+		const abilityIndex = parseInt(result.value, 10);
 		const ability = titanCards[abilityIndex];
 
 		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
@@ -656,15 +656,15 @@ export const debugCommands: CommandList = {
 
 		// If there are multiple cards with the same name, ask the user to choose one.
 		if (cards.length > 1) {
-			const choice = await game.prompt.customSelect(
+			const result = await game.prompt.customSelect(
 				`Multiple cards matching '${cardName}' found. Select one.`,
 				await game.card.readables(cards),
 			);
-			if (choice === "Back") {
+			if (result.value === "Back") {
 				return false;
 			}
 
-			card = cards[parseInt(choice, 10)];
+			card = cards[parseInt(result.value, 10)];
 		}
 
 		if (!card) {
