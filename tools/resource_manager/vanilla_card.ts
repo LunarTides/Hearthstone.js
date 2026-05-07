@@ -57,21 +57,25 @@ export async function main(debug = false): Promise<boolean> {
 	while (true) {
 		hub.watermark(false);
 
-		const cardType = await game.prompt.customSelectEnum(
+		const typeResult = await game.prompt.customSelectEnum(
 			"Choose a type to filter the card using.",
 			[...Object.keys(Type).filter((t) => t !== "Undefined"), "Unknown (Slow)"],
 		);
+		const cardType = typeResult.value;
 		if (cardType === "Back") {
 			return false;
 		}
 
-		const answer = await game.prompt.customSelect(
+		const costResult = await game.prompt.customSelect(
 			"Do you want to filter by cost?",
 			["Type in cost", "Unknown (Slow)"],
 		);
-		let cardCost: number | undefined;
+		if (costResult.value === "Back") {
+			return false;
+		}
 
-		if (answer === "0") {
+		let cardCost: number | undefined;
+		if (costResult.value === "0") {
 			cardCost = await number({
 				message: "How much does the card cost?",
 			});

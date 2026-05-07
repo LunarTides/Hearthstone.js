@@ -84,6 +84,13 @@ export const config: GameConfig = {
 				// "input.arrow.down",
 				// "input.enter",
 				//
+				// Select
+				// "input.select.arrow.up"
+				// "input.select.arrow.down"
+				// "input.select.hit_boundary"
+				// "input.select.tab.switch"
+				// "input.select.number_key"
+				//
 				// Game Feedback
 				// "game.playCard",
 				// "game.endTurn",

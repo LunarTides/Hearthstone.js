@@ -42,15 +42,15 @@ let lastPickedOption: string | undefined;
 async function askClass(): Promise<Class | undefined> {
 	hub.watermark(false);
 
-	const chosen = await game.prompt.customSelectEnum<Class>(
+	const result = await game.prompt.customSelectEnum<Class>(
 		`What class do you want to choose?`,
 		Object.values(Class).filter((c) => c !== Class.Neutral),
 	);
-	if (chosen === ("Back" as Class)) {
+	if (result.value === ("Back" as Class)) {
 		return undefined;
 	}
 
-	player.heroClass = chosen;
+	player.heroClass = result.value;
 	if (player.canUseRunes()) {
 		await game.prompt.configureArrayEnum(
 			player.runes,
@@ -277,10 +277,12 @@ export async function main(): Promise<void> {
 
 			commands = game.data.alignColumns(commands, "-");
 
-			let command = await game.prompt.customSelect(
+			const result = await game.prompt.customSelect(
 				"Which command do you want to run?",
 				commands,
 			);
+
+			let command = result.value;
 			if (command === "Back") {
 				continue;
 			}

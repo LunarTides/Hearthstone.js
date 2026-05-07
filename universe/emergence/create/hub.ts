@@ -12,39 +12,46 @@ export async function takeover() {
 				hub.watermark();
 			},
 		},
-		async () =>
-			Object.keys(lib.resourceTypeHooks).map((resourceType) => ({
-				name: `${resourceType}`,
-				callback: async () => {
-					// Ask the user to configure the resource.
-					const resource = await frontend.configure(
-						resourceType as keyof typeof lib.resourceTypeHooks,
-					);
-					if (!resource) {
-						return true;
-					}
-
-					// Actually create the resource.
-					const result = await lib.create(
-						resourceType as keyof typeof lib.resourceTypeHooks,
-						resource,
-					);
-					await lib.postCreate(
-						resourceType as keyof typeof lib.resourceTypeHooks,
-						resource,
-					);
-
-					if (
-						resourceType !== "card" ||
-						(resource as BlueprintWithOptional).text !== ""
-					) {
-						// Open the resource in the user's editor.
-						game.os.runCommand(
-							`${game.config.general.editor} "${result.path}"`,
-						);
-					}
-					return true;
+		async () => [
+			{
+				tab: {
+					index: 1,
+					name: "[emergence/create]",
 				},
-			})),
+				items: Object.keys(lib.resourceTypeHooks).map((resourceType) => ({
+					name: `${resourceType}`,
+					onSelect: async () => {
+						// Ask the user to configure the resource.
+						const resource = await frontend.configure(
+							resourceType as keyof typeof lib.resourceTypeHooks,
+						);
+						if (!resource) {
+							return true;
+						}
+
+						// Actually create the resource.
+						const result = await lib.create(
+							resourceType as keyof typeof lib.resourceTypeHooks,
+							resource,
+						);
+						await lib.postCreate(
+							resourceType as keyof typeof lib.resourceTypeHooks,
+							resource,
+						);
+
+						if (
+							resourceType !== "card" ||
+							(resource as BlueprintWithOptional).text !== ""
+						) {
+							// Open the resource in the user's editor.
+							game.os.runCommand(
+								`${game.config.general.editor} "${result.path}"`,
+							);
+						}
+						return true;
+					},
+				})),
+			},
+		],
 	);
 }

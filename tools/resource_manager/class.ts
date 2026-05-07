@@ -47,134 +47,142 @@ async function configure(
 		},
 		async () => [
 			{
-				name: "Class Name",
-				description: "The name of the class. Example: GnomeHunter",
-				callback: async () => {
-					const className = (await game.input({
-						message: "Set the name of the class.",
-						default: heroBlueprint.classes.at(0) ?? "ChangeMe",
-						validate: (value) => !value.includes(" "),
-					})) as Class;
-
-					heroBlueprint.classes = [className];
-					heropowerBlueprint.classes = [className];
-
-					const classNameText =
-						className[0].toUpperCase() +
-						game.lodash.startCase(className).slice(1).toLowerCase();
-					heroBlueprint.text = `${classNameText} starting hero`;
-
-					dirty = true;
-					return true;
+				tab: {
+					index: 1,
+					name: "Configure Class",
 				},
-			},
-			new Separator(),
-			{
-				name: "Hero Name",
-				description:
-					"The name of the default hero. Example: Hunter Gnomingstein",
-				callback: async () => {
-					heroBlueprint.name = await game.input({
-						message: "Set the name of the default hero.",
-						default: heroBlueprint.name,
-					});
+				items: [
+					{
+						name: "Class Name",
+						description: "The name of the class. Example: GnomeHunter",
+						onSelect: async () => {
+							const className = (await game.input({
+								message: "Set the name of the class.",
+								default: heroBlueprint.classes.at(0) ?? "ChangeMe",
+								validate: (value) => !value.includes(" "),
+							})) as Class;
 
-					dirty = true;
-					return true;
-				},
-			},
-			new Separator(),
-			{
-				name: "Heropower Name",
-				description:
-					"The name of the default hero's heropower. Example: Hunt Gnome",
-				callback: async () => {
-					heropowerBlueprint.name = await game.input({
-						message: "Set the name of the default hero's heropower.",
-						default: heropowerBlueprint.name,
-					});
+							heroBlueprint.classes = [className];
+							heropowerBlueprint.classes = [className];
 
-					dirty = true;
-					return true;
-				},
-			},
-			{
-				name: "Heropower Description",
-				description:
-					"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
-				callback: async () => {
-					heropowerBlueprint.text = await game.input({
-						message: "Set the description of the default hero's heropower.",
-						default: heropowerBlueprint.text,
-					});
+							const classNameText =
+								className[0].toUpperCase() +
+								game.lodash.startCase(className).slice(1).toLowerCase();
+							heroBlueprint.text = `${classNameText} starting hero`;
 
-					dirty = true;
-					return true;
-				},
-			},
-			{
-				name: "Heropower Cost",
-				description: "The cost of the default hero's heropower. Default: 2",
-				callback: async () => {
-					// TODO: Use `game.input` instead of `number`.
-					heropowerBlueprint.cost = await number({
-						message: "Set the cost of the default hero's heropower.",
-						default: heropowerBlueprint.cost,
-						required: true,
-					});
+							dirty = true;
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "Hero Name",
+						description:
+							"The name of the default hero. Example: Hunter Gnomingstein",
+						onSelect: async () => {
+							heroBlueprint.name = await game.input({
+								message: "Set the name of the default hero.",
+								default: heroBlueprint.name,
+							});
 
-					dirty = true;
-					return true;
-				},
-			},
-			new Separator(),
-			{
-				name: "Cancel",
-				description: "Cancel changes to the class.",
-				callback: async () => {
-					if (!dirty) {
-						// No changes have been made.
-						result = false;
-						return false;
-					}
+							dirty = true;
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "Heropower Name",
+						description:
+							"The name of the default hero's heropower. Example: Hunt Gnome",
+						onSelect: async () => {
+							heropowerBlueprint.name = await game.input({
+								message: "Set the name of the default hero's heropower.",
+								default: heropowerBlueprint.name,
+							});
 
-					const done = await confirm({
-						message:
-							"Are you sure you want to cancel configuring the class? Your changes will be lost.",
-						default: false,
-					});
+							dirty = true;
+							return true;
+						},
+					},
+					{
+						name: "Heropower Description",
+						description:
+							"The description of the default hero's heropower. Example: Deal 2 damage to a random enemy minion.",
+						onSelect: async () => {
+							heropowerBlueprint.text = await game.input({
+								message: "Set the description of the default hero's heropower.",
+								default: heropowerBlueprint.text,
+							});
 
-					if (done) {
-						result = false;
-						return false;
-					}
+							dirty = true;
+							return true;
+						},
+					},
+					{
+						name: "Heropower Cost",
+						description: "The cost of the default hero's heropower. Default: 2",
+						onSelect: async () => {
+							// TODO: Use `game.input` instead of `number`.
+							heropowerBlueprint.cost = await number({
+								message: "Set the cost of the default hero's heropower.",
+								default: heropowerBlueprint.cost,
+								required: true,
+							});
 
-					return true;
-				},
-			},
-			{
-				name: "Done",
-				description: "Done configuring class.",
-				callback: async () => {
-					let message = "Are you sure you are done configuring the class?";
+							dirty = true;
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "Cancel",
+						description: "Cancel changes to the class.",
+						onSelect: async () => {
+							if (!dirty) {
+								// No changes have been made.
+								result = false;
+								return false;
+							}
 
-					if (heroBlueprint.classes[0] === ("ChangeMe" as Class)) {
-						message = parseTags(
-							"<yellow>You haven't changed the class name. Continue anyway?</yellow>",
-						);
-					}
+							const done = await confirm({
+								message:
+									"Are you sure you want to cancel configuring the class? Your changes will be lost.",
+								default: false,
+							});
 
-					const done = await confirm({
-						message,
-						default: false,
-					});
+							if (done) {
+								result = false;
+								return false;
+							}
 
-					if (done) {
-						return false;
-					}
+							return true;
+						},
+					},
+					{
+						name: "Done",
+						description: "Done configuring class.",
+						onSelect: async () => {
+							let message = "Are you sure you are done configuring the class?";
 
-					return true;
-				},
+							if (heroBlueprint.classes[0] === ("ChangeMe" as Class)) {
+								message = parseTags(
+									"<yellow>You haven't changed the class name. Continue anyway?</yellow>",
+								);
+							}
+
+							const done = await confirm({
+								message,
+								default: false,
+							});
+
+							if (done) {
+								return false;
+							}
+
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);

@@ -13,40 +13,48 @@ export async function takeover() {
 		},
 		async () => [
 			{
-				name: "create",
-				callback: async () => {
-					await create.takeover();
-					return true;
+				tab: {
+					index: 1,
+					name: "[emergence]",
 				},
-			},
-			{
-				name: "edit",
-				disabled: true,
-				callback: async () => {
-					return true;
-				},
-			},
-			{
-				name: "delete",
-				disabled: true,
-				callback: async () => {
-					return true;
-				},
-			},
-			new Separator(),
-			{
-				name: "register",
-				disabled: true,
-				callback: async () => {
-					return true;
-				},
-			},
-			{
-				name: "reload",
-				disabled: true,
-				callback: async () => {
-					return true;
-				},
+				items: [
+					{
+						name: "create",
+						onSelect: async () => {
+							await create.takeover();
+							return true;
+						},
+					},
+					{
+						name: "edit",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+					{
+						name: "delete",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "register",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+					{
+						name: "reload",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);
