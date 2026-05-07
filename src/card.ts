@@ -1896,15 +1896,15 @@ export class Card {
 		];
 
 		const values = game.lodash.sampleSize(possibleCards, 3);
-		const user = await game.prompt.customSelect(
+		const result = await game.prompt.customSelect(
 			prompt,
 			values.map((v) => `${v[0]}: ${v[1]}`),
 		);
-		if (user === "Back") {
+		if (result.value === "Back") {
 			return Card.REFUND;
 		}
 
-		const choice = values[parseInt(user, 10)][0];
+		const choice = values[parseInt(result.value, 10)][0];
 
 		switch (choice) {
 			case "Crackling Shield": {

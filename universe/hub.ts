@@ -11,25 +11,33 @@ export async function takeover() {
 		},
 		async () => [
 			{
-				name: "[emergence]",
-				onSelect: async () => {
-					await emergence.takeover();
-					return true;
+				tab: {
+					index: 1,
+					name: "[universe]",
 				},
-			},
-			{
-				name: "[observatory]",
-				disabled: true,
-				onSelect: async () => {
-					return true;
-				},
-			},
-			{
-				name: "[telescope]",
-				disabled: true,
-				onSelect: async () => {
-					return true;
-				},
+				items: [
+					{
+						name: "[emergence]",
+						onSelect: async () => {
+							await emergence.takeover();
+							return true;
+						},
+					},
+					{
+						name: "[observatory]",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+					{
+						name: "[telescope]",
+						disabled: true,
+						onSelect: async () => {
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);

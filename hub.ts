@@ -69,16 +69,23 @@ export const watermark = (showCards = true) => {
 export async function createUILoop(
 	rawOptions: Partial<typeof UILoopDefaultOptions> = UILoopDefaultOptions,
 	choicesGenerator: () => Promise<
-		(
-			| Separator
-			| {
-					name: string;
-					description?: string;
-					disabled?: boolean;
-					defaultSound?: boolean;
-					onSelect?: (value: number) => Promise<boolean>;
-			  }
-		)[]
+		{
+			tab: {
+				index: number;
+				name?: string;
+			};
+			items: (
+				| Separator
+				| {
+						name: string;
+						description?: string;
+						disabled?: boolean;
+						defaultSound?: boolean;
+						onSelect?: (value: number) => Promise<boolean>;
+				  }
+				| false
+			)[];
+		}[]
 	>,
 ) {
 	return await game.prompt.createUILoop(
@@ -100,88 +107,96 @@ export async function devmode() {
 		},
 		async () => [
 			{
-				name: "Manage Resources",
-				onSelect: async () => {
-					game.interest("Loading Resource Manager...");
-					await rm.main();
-					game.interest("Loading Resource Manager...OK");
-
-					return true;
+				tab: {
+					index: 1,
+					name: "Developer Options",
 				},
-			},
-			new Separator(),
-			{
-				name: "Test Cards",
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
+				items: [
+					{
+						name: "Manage Resources",
+						onSelect: async () => {
+							game.interest("Loading Resource Manager...");
+							await rm.main();
+							game.interest("Loading Resource Manager...OK");
 
-					game.interest("Starting Card Test...");
-					await cardTest.main();
-					game.interest("Starting Card Test...OK");
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "Test Cards",
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
 
-					return true;
-				},
-			},
-			{
-				name: "Test Crash",
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
+							game.interest("Starting Card Test...");
+							await cardTest.main();
+							game.interest("Starting Card Test...OK");
 
-					game.interest("Starting Crash Test...");
-					await crashTest.main();
-					game.interest("Starting Crash Test...OK");
+							return true;
+						},
+					},
+					{
+						name: "Test Crash",
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
 
-					return true;
-				},
-			},
-			{
-				name: "Test Sounds",
-				// NOTE: The user should be able to choose this option and see the resulting error,
-				// therefore, the following line is commented out.
-				// disabled: game.config.audio.disable,
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
+							game.interest("Starting Crash Test...");
+							await crashTest.main();
+							game.interest("Starting Crash Test...OK");
 
-					game.interest("Starting Sound Test...");
-					await soundTest.main();
-					game.interest("Starting Sound Test...OK");
+							return true;
+						},
+					},
+					{
+						name: "Test Sounds",
+						// NOTE: The user should be able to choose this option and see the resulting error,
+						// therefore, the following line is commented out.
+						// disabled: game.config.audio.disable,
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
 
-					return true;
-				},
-			},
-			{
-				name: "Generate Vanilla Cards",
-				onSelect: async () => {
-					// TODO: Move this to the tool.
-					if (!game.config.networking.allow.game) {
-						console.error(
-							"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
-						);
-						console.error();
-						await game.pause();
-						return true;
-					}
+							game.interest("Starting Sound Test...");
+							await soundTest.main();
+							game.interest("Starting Sound Test...OK");
 
-					const sure = await confirm({
-						message:
-							"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
-						default: false,
-					});
-					if (!sure) {
-						return true;
-					}
+							return true;
+						},
+					},
+					{
+						name: "Generate Vanilla Cards",
+						onSelect: async () => {
+							// TODO: Move this to the tool.
+							if (!game.config.networking.allow.game) {
+								console.error(
+									"<red>Networking access denied. Please enable 'Networking > Allow > Game' to continue. Aborting.</red>",
+								);
+								console.error();
+								await game.pause();
+								return true;
+							}
 
-					game.audio.playSFX("ui.leaveLoop");
+							const sure = await confirm({
+								message:
+									"Are you sure you want to generate the vanilla cards? Doing this will query an API.",
+								default: false,
+							});
+							if (!sure) {
+								return true;
+							}
 
-					game.interest("Generating vanilla cards...");
-					await generateVanilla.main();
-					game.interest("Generating vanilla cards...OK");
+							game.audio.playSFX("ui.leaveLoop");
 
-					return true;
-				},
+							game.interest("Generating vanilla cards...");
+							await generateVanilla.main();
+							game.interest("Generating vanilla cards...OK");
+
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);
@@ -195,65 +210,73 @@ export async function main() {
 		},
 		async () => [
 			{
-				name: "Play",
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
-
-					game.interest("Starting Game...");
-					await src.main();
-
-					/*
-					 * This line will never be seen in the log file, since the log file gets generated before this line.
-					 * All the other similar lines are fine, since only the game generates log files for now.
-					 */
-					game.interest("Starting Game...OK");
-					return true;
+				tab: {
+					index: 1,
+					name: "Options",
 				},
-			},
-			{
-				name: "Create a Deck",
-				defaultSound: false,
-				onSelect: async () => {
-					game.audio.playSFX("ui.leaveLoop");
+				items: [
+					{
+						name: "Play",
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
 
-					game.interest("Starting Deck Creator...");
-					await dc.main();
-					game.interest("Starting Deck Creator...OK");
+							game.interest("Starting Game...");
+							await src.main();
 
-					return true;
-				},
-			},
-			new Separator(),
-			{
-				name: "Pack Options",
-				onSelect: async () => {
-					game.interest("Starting Packager...");
-					await pkgr.main();
-					game.interest("Starting Packager...OK");
+							/*
+							 * This line will never be seen in the log file, since the log file gets generated before this line.
+							 * All the other similar lines are fine, since only the game generates log files for now.
+							 */
+							game.interest("Starting Game...OK");
+							return true;
+						},
+					},
+					{
+						name: "Create a Deck",
+						defaultSound: false,
+						onSelect: async () => {
+							game.audio.playSFX("ui.leaveLoop");
 
-					return true;
-				},
-			},
-			{
-				name: "Universe",
-				onSelect: async () => {
-					game.interest("Starting [universe] takeover...");
-					await universe.takeover();
-					game.interest("Starting [universe] takeover...OK");
+							game.interest("Starting Deck Creator...");
+							await dc.main();
+							game.interest("Starting Deck Creator...OK");
 
-					return true;
-				},
-			},
-			{
-				name: "Developer Options",
-				onSelect: async () => {
-					game.interest("Loading Developer Mode options...");
-					await devmode();
-					game.interest("Loading Developer Mode options...OK");
+							return true;
+						},
+					},
+					new Separator(),
+					{
+						name: "Pack Options",
+						onSelect: async () => {
+							game.interest("Starting Packager...");
+							await pkgr.main();
+							game.interest("Starting Packager...OK");
 
-					return true;
-				},
+							return true;
+						},
+					},
+					{
+						name: "Universe",
+						onSelect: async () => {
+							game.interest("Starting [universe] takeover...");
+							await universe.takeover();
+							game.interest("Starting [universe] takeover...OK");
+
+							return true;
+						},
+					},
+					{
+						name: "Developer Options",
+						onSelect: async () => {
+							game.interest("Loading Developer Mode options...");
+							await devmode();
+							game.interest("Loading Developer Mode options...OK");
+
+							return true;
+						},
+					},
+				],
 			},
 		],
 	);
