@@ -81,19 +81,26 @@ export const prompt = {
 			resetCursor?: boolean;
 			default?: unknown;
 		},
-		...otherChoices: (
-			| Separator
-			| string
-			| {
-					name?: string;
-					value: string;
-					description?: string;
-					disabled?: boolean;
-			  }
-			| false
-		)[]
+		...otherChoices: {
+			tab: {
+				index: number;
+				name?: string;
+			};
+			items: (
+				| Separator
+				| string
+				| {
+						name?: string;
+						value: string;
+						description?: string;
+						disabled?: boolean;
+				  }
+				| false
+			)[];
+		}[]
 	) {
 		const choices = [];
+
 		for (const [i, element] of Object.entries(array)) {
 			const choice = (await options?.arrayTransform?.(
 				parseInt(i, 10),
@@ -103,60 +110,75 @@ export const prompt = {
 				value: i,
 			};
 
-			if (choice.addSeperatorBefore) {
-				choices.push(new Separator());
+			if (choices.length <= 0) {
+				choices.push({
+					tab: {
+						index: 1,
+						// TODO: Add name,
+					},
+					items: [] as any[],
+				});
 			}
 
-			choices.push(choice);
+			if (choice.addSeperatorBefore) {
+				choices[0].items.push(new Separator());
+			}
+
+			choices[0].items.push(choice);
 
 			if (choice.addSeperatorAfter) {
-				choices.push(new Separator());
+				choices[0].items.push(new Separator());
 			}
 		}
 
 		if (!options?.hideBack) {
-			choices.push(new Separator());
-			choices.push({
+			choices[0].items.push(new Separator());
+			choices[0].items.push({
 				value: "Back",
 			});
 		}
 
-		for (const element of otherChoices) {
-			// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
-			if (element === false || element === "") {
-				continue;
-			}
+		for (const choice of otherChoices) {
+			for (const element of choice.items) {
+				// Allow doing stuff like `allowAddAndDelete && "Add"` in choices.
+				if (element === false || element === "") {
+					continue;
+				}
 
-			if (element instanceof Separator) {
-				choices.push(element);
-				continue;
-			}
+				if (!choices.some((c) => c.tab.index === choice.tab.index)) {
+					choices.push({
+						tab: choice.tab,
+						items: [] as any[],
+					});
+				}
 
-			if (typeof element === "string") {
-				choices.push({
-					name: parseTags(element),
-					value: element.toLowerCase(),
+				const newChoice = choices.find(
+					(c) => c.tab.index === choice.tab.index,
+				)!;
+
+				if (element instanceof Separator) {
+					newChoice.items.push(element);
+					continue;
+				}
+
+				if (typeof element === "string") {
+					newChoice.items.push({
+						name: parseTags(element),
+						value: element.toLowerCase(),
+					});
+					continue;
+				}
+
+				newChoice.items.push({
+					...element,
+					name: element.name && parseTags(element.name),
 				});
-				continue;
 			}
-
-			choices.push({
-				...element,
-				name: element.name && parseTags(element.name),
-			});
 		}
 
 		const answer = await select({
 			message,
-			choices: [
-				{
-					tab: {
-						index: 1,
-						name: message,
-					},
-					items: choices,
-				},
-			],
+			choices,
 			default:
 				options?.default ??
 				(options?.resetCursor ? undefined : selectValues[message]),
@@ -264,18 +286,27 @@ export const prompt = {
 							? options.default.toString()
 							: ((await options.default?.())?.toString() ?? undefined),
 				},
-				...choices.map((choice, i) => ({
-					...choice,
-					value: i.toString(),
-				})),
-				options.seperatorBeforeBackButton &&
-					options.backButtonText &&
-					new Separator(),
-				!backOption &&
-					options.backButtonText && {
-						name: options.backButtonText,
-						value: "back",
+				{
+					tab: {
+						index: 1,
+						// TODO: Change
+						name: options.message,
 					},
+					items: [
+						...choices.map((choice, i) => ({
+							...choice,
+							value: i.toString(),
+						})),
+						options.seperatorBeforeBackButton &&
+							options.backButtonText &&
+							new Separator(),
+						!backOption &&
+							options.backButtonText && {
+								name: options.backButtonText,
+								value: "back",
+							},
+					],
+				},
 			);
 
 			const choseBack = answer === "back";
@@ -1320,7 +1351,12 @@ export const prompt = {
 						// TODO: Consider resetting the cursor here.
 						//resetCursor: true,
 					},
-					...choices,
+					{
+						tab: {
+							index: 1,
+						},
+						items: choices,
+					},
 				);
 			}
 

@@ -401,7 +401,7 @@ export default createPrompt(
 
 		// If there are more than 1 tabs, show a little tab switcher thingy right above the help line.
 		let tabLine = "";
-		if (maxTab > 1) {
+		if (maxTab > 0) {
 			for (let i = 0; i <= maxTab; i++) {
 				const tabInfo = config.choices.find(
 					(choice) => choice.tab.index - 1 === i,

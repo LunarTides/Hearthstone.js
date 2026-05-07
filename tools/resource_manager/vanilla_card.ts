@@ -69,8 +69,11 @@ export async function main(debug = false): Promise<boolean> {
 			"Do you want to filter by cost?",
 			["Type in cost", "Unknown (Slow)"],
 		);
-		let cardCost: number | undefined;
+		if (answer === "Back") {
+			return false;
+		}
 
+		let cardCost: number | undefined;
 		if (answer === "0") {
 			cardCost = await number({
 				message: "How much does the card cost?",
