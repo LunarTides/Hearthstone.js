@@ -191,13 +191,16 @@ export const prompt = {
 			typeof answer === "string" &&
 			["back", "done", "cancel"].includes(answer.toLowerCase())
 		) {
-			const selectedChoiceItems = choices[result.tab].items;
+			const selectedChoiceItems = choices.find(
+				(choice) => choice.tab.index === result.tab,
+			)?.items;
 
 			// Go back to the first option. The next time.
 			selectValues[message] =
-				typeof selectedChoiceItems[0] === "string"
+				typeof selectedChoiceItems?.[0] === "string"
 					? selectedChoiceItems[0]
-					: otherChoices[result.tab].items[0];
+					: otherChoices.find((choice) => choice.tab.index === result.tab)
+							?.items[0];
 		} else {
 			// Remember the cursor position.
 			selectValues[message] = answer;
