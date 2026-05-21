@@ -86,6 +86,7 @@ const resourceTypeHooks = {
 
 			return {
 				exclude: ["id", ...unwantedEntries],
+				disable: [],
 				split: [
 					{ key: "tags", relativePosition: +1 },
 					{ key: "keywords", relativePosition: -1 },
@@ -177,6 +178,7 @@ const resourceTypeHooks = {
 		entries: async (resource: Command) => {
 			return {
 				exclude: ["id"],
+				disable: [],
 				split: [],
 				enums: {
 					exclude: [],
@@ -197,6 +199,7 @@ const resourceTypeHooks = {
 		entries: async (resource: SFX) => {
 			return {
 				exclude: ["id"],
+				disable: [],
 				split: [],
 				enums: {
 					exclude: [],

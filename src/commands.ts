@@ -31,6 +31,7 @@ export const helpColumns = [
 	"titan - Use a titan card.",
 	"concede - Forfeit the game.",
 	"detail - Toggle showing more details about the game.",
+	"config - Edit configuration options.",
 	"version - Show information about the version, branch, and settings of the game.",
 	"help - Show information about the different commands.",
 	"license - Open a link to this project's license.",
@@ -269,6 +270,149 @@ export const commands: CommandList = {
 
 	async detail(): Promise<boolean> {
 		game.player.detailedView = !game.player.detailedView;
+		return true;
+	},
+
+	async config(): Promise<boolean> {
+		const debugEnabled = game.isDebugSettingEnabled(game.config.debug.commands);
+
+		const config = await game.prompt.configureObjectV2(game.config, {
+			casing: "Start Case",
+			maxObjectLength: 0,
+			descriptionMap: {
+				// General
+				general: "General",
+				editor:
+					"General > Editor - The editor that gets launched whenever the game wants to launch a code / text editor.",
+				maxBoardSpace:
+					"General > Max Board Space - How many cards can be on a player's board at once.",
+				maxHandLength:
+					"General > Max Hand Length - The maximum amount of cards that is allowed in a hand. Don't go under 4 or the game will crash on start.",
+				disableEvents:
+					"General > Disable Events - Disable time-based events, like the pride events, or the anniversary.",
+				disableFunFacts:
+					"General > Disable Fun Facts - Disable the fun fact text in the watermark.",
+				repositoryUrl:
+					"General > Repository Url - The url to this project's repository.",
+				registryUrl:
+					"General > Registry Url - The url to the registry. This is so that is can use the registry's API. Leave this as is unless you have a reason to change it.",
+				topicBranchWarning:
+					"General > Topic Branch Warning - If the game should warn you about being on a topic branch.",
+
+				// Decks
+				decks: "Decks",
+				validate: "Decks > Validate - If the game should validate deck codes.",
+				minLength:
+					"Decks > Min Length - The minimum amount of cards allowed in a deck.",
+				maxLength:
+					"Decks > Max Length - The maximum amount of cards allowed in a deck.",
+				maxOfOneCard:
+					"Decks > Max Of One Card - How many copies of a card is allowed in a deck. For example, you are only allowed up to x2 Sheep in a deck by default.",
+				maxOfOneLegendary:
+					"Decks > Max Of One Legendary - How many copies of a legendary card is allowed in a deck. For example, you are only allowed x1 Brann Bronzebeard by default.",
+
+				// Audio
+				audio: "Audio",
+				disable: "Audio > Disable - Globally disable playing audio.",
+				sfx: "Audio > SFX - Sound effect options.",
+				enable: "Audio > SFX - Enable playing sound effects.",
+				blacklist:
+					"Audio > SFX > Blacklist - Blacklist certain sound effects from playing based on their keys.",
+
+				// Networking
+				networking: "Networking",
+				allow: "Networking > Allow - TODO",
+				game: "Networking > Allow > Game - TODO",
+				packs: "Networking > Allow > Packs - TODO",
+
+				// Debug
+				debug: "Debug",
+				all: "Debug > All - TODO",
+				commands: "Debug > Commands - TODO",
+				commandPrefix: "Debug > Command Prefix - TODO",
+				allowTestDeck: "Debug > Allow Test Deck - TODO",
+				hideLicense: "Debug > Hide License - TODO",
+				additionalInfoInReadable: "Debug > Additional Info In Readable - TODO",
+				showCommitHash: "Debug > Show Commit Hash - TODO",
+
+				// AI
+				ai: "Ai",
+				player1: "Ai > Player 1 - TODO",
+				player2: "Ai > Player 2 - TODO",
+				random: "Ai > Random - TODO",
+				// TODO: Make this enum rather than string somehow
+				player1Model: "Ai > Player 1 Model - TODO",
+				player2Model: "Ai > Player 2 Model - TODO",
+				// TODO: Add rest of AI field descriptions.
+
+				// Advanced
+				advanced: "Advanced",
+				spawnInDiyCards: "Advanced > Spawn In Diy Cards - TODO",
+				diyCardSpawnChance: "Advanced > Diy Card Spawn Chance - TODO",
+				gameloopUseOldUserInterface:
+					"Advanced > Gameloop Use Old User Interface - TODO",
+				deckcreatorShowUncollectible:
+					"Advanced > Deckcreator Show Uncollectible - TODO",
+				cardReadableNoRecursion: "Advanced > Card Readable No Recursion - TODO",
+				cardReadableAlwaysShowFullCard:
+					"Advanced > Card Readable Always Show Full Card - TODO",
+				cardReadableMaxDepth: "Advanced > Card Readable Max Depth - TODO",
+				forgetfulRandomTargetFailAmount:
+					"Advanced > Forgetful Random Target Fail Amount - TODO",
+				uncancellableAbilities: "Advanced > Uncancellable Abilities - TODO",
+				noBounceOnCancelAbilities:
+					"Advanced > No Bounce On Cancel Abilities - TODO",
+				whitelistedHistoryKeys: "Advanced > Whitelisted History Keys - TODO",
+				hideValueHistoryKeys: "Advanced > Hide Value History Keys - TODO",
+			},
+			entryOptions: async () => {
+				return {
+					disable: !debugEnabled
+						? [
+								"decks",
+								"debug",
+								"ai",
+								"maxBoardSpace",
+								"maxHandLength",
+								"uncancellableAbilities",
+								"noBounceOnCancelAbilities",
+								"whitelistedHistoryKeys",
+								"hideValueHistoryKeys",
+							]
+						: [],
+					exclude: [],
+					split: [],
+					enums: { exclude: [] },
+				};
+			},
+			callbackBefore: async () => {
+				await game.interact.print.gameState(game.player);
+				console.log();
+
+				// TODO: Remove
+				console.log(
+					"<yellow>This command is a work-in-progress. It should work, but it doesn't persistantly save your changes to the 'config.ts' file yet.</yellow>",
+				);
+
+				if (!debugEnabled) {
+					console.log(
+						"<yellow>Some options are locked. Enable debug commands or edit the 'config.ts' file directly to edit all options.</yellow>",
+					);
+					// TODO: Add back when no longer WIP.
+					//console.log();
+				}
+
+				// TODO: Remove
+				console.log();
+			},
+		});
+		if (!config) {
+			return true;
+		}
+
+		game.config = config;
+		// TODO: Save to `config.ts` file.
+
 		return true;
 	},
 

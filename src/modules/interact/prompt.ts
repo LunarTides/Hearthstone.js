@@ -36,15 +36,26 @@ export const ConfigureObjectV2DefaultOptions = {
 	callbackBefore: (object: any) => Promise.resolve(),
 	callbackAfter: (object: any) => Promise.resolve(),
 	disableCancelling: false,
+	hideCancelButton: false,
 	confirmWhenCancellingIfDirty: true,
 	confirmWhenDone: true,
+	casing: "lowercase" as
+		| "lowercase"
+		| "UPPERCASE"
+		| "snake_case"
+		| "camelCase"
+		| "Start Case"
+		| ((str: string) => string),
+	maxObjectLength: Infinity,
 	entryOptions: async (object: any) => ({
 		exclude: [] as string[],
+		disable: [] as string[],
 		split: [] as { key: string; relativePosition: number }[],
 		enums: {
 			exclude: [] as string[],
 		},
 	}),
+	descriptionMap: {} as Record<string, string>,
 	enumMappings: {} as Record<string, { name: string; enum: any }>,
 };
 
@@ -858,7 +869,7 @@ export const prompt = {
 			// It's an object.
 			const newValue = await game.prompt.configureObjectV2(value, {
 				...options,
-				disableCancelling: true,
+				hideCancelButton: true,
 				confirmWhenDone: false,
 			});
 			dirty ||= !game.lodash.isEqual(object, newValue);
@@ -900,34 +911,75 @@ export const prompt = {
 			>[0]["items"] = Object.entries(resource)
 				// Don't include excluded entries.
 				.filter(([key, value]) => !entryOptions.exclude.includes(key))
-				.map(([key, value]) => ({
-					name: `${key}: ${JSON.stringify(value).replaceAll('","', '", "')}`,
-					onSelect: async () => {
-						const result = await game.prompt._configureObjectV2HandleEntry(
-							object,
-							key,
-							value,
-							options,
-							async () => {
-								await options.callbackBefore(resource);
-								// TODO: Is this a good idea?
-								await options.callbackAfter(resource);
-							},
-							dirty,
-						);
-						if (result.newValue !== undefined) {
-							const oldValue = value;
-							resource[key as keyof typeof resource] = result.newValue as any;
+				.map(([key, value]) => {
+					// Handle different casings.
+					let keyWithCasing = key;
+					switch (options.casing) {
+						case "lowercase":
+							keyWithCasing = key.toLowerCase();
+							break;
+						case "UPPERCASE":
+							keyWithCasing = key.toUpperCase();
+							break;
+						case "camelCase":
+							keyWithCasing = game.lodash.camelCase(key);
+							break;
+						case "snake_case":
+							keyWithCasing = game.lodash.snakeCase(key);
+							break;
+						case "Start Case":
+							keyWithCasing = game.lodash.startCase(key);
+							break;
+					}
 
-							if (resource[key as keyof typeof resource] !== oldValue) {
-								dirty = true;
+					if (typeof options.casing === "function") {
+						keyWithCasing = options.casing(key);
+					}
+
+					// Only show object if the length is not too long. (Configurable)
+					let displayedValue = `: ${JSON.stringify(value).replaceAll('","', '", "')}`;
+					if (
+						typeof value === "object" &&
+						displayedValue.length - 2 > options.maxObjectLength
+					) {
+						displayedValue = "";
+					}
+
+					// TODO: Make this more specific for more complex objects.
+					const description = options.descriptionMap[key];
+					const disabled = entryOptions.disable.includes(key);
+
+					return {
+						name: `${keyWithCasing}${displayedValue}`,
+						description,
+						disabled,
+						onSelect: async () => {
+							const result = await game.prompt._configureObjectV2HandleEntry(
+								object,
+								key,
+								value,
+								options,
+								async () => {
+									await options.callbackBefore(resource);
+									// TODO: Is this a good idea?
+									await options.callbackAfter(resource);
+								},
+								dirty,
+							);
+							if (result.newValue !== undefined) {
+								const oldValue = value;
+								resource[key as keyof typeof resource] = result.newValue as any;
+
+								if (resource[key as keyof typeof resource] !== oldValue) {
+									dirty = true;
+								}
 							}
-						}
 
-						dirty ||= result.dirty;
-						return true;
-					},
-				}));
+							dirty ||= result.dirty;
+							return true;
+						},
+					};
+				});
 
 			// Add seperators.
 			for (const split of entryOptions.split) {
@@ -959,7 +1011,7 @@ export const prompt = {
 					items: [
 						...entries,
 						new Separator(),
-						{
+						!options.hideCancelButton && {
 							name: "Cancel",
 							disabled: options.disableCancelling,
 							onSelect: async () => {
