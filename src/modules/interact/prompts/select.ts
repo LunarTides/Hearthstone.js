@@ -162,6 +162,7 @@ export const isLeftKey = (
 	// Emacs keybinding: Ctrl+B means "backward" in Emacs navigation conventions
 	(keybindings.includes("emacs") && key.ctrl && key.name === "b");
 
+// TODO: Put cursor on first non-disabled option by default.
 export default createPrompt(
 	<const Value>(
 		config: SelectConfig<Value>,
@@ -368,7 +369,10 @@ export default createPrompt(
 
 				// add timeout when we have 10 or more items.
 				// this is so the user has time to type multiple numbers.
-				const timeout = items.length < 10 ? 0 : 700;
+				const timeout =
+					items.filter((item) => !Separator.isSeparator(item)).length < 10
+						? 0
+						: 700;
 
 				searchTimeoutRef.current = setTimeout(() => {
 					rl.clearLine(0);

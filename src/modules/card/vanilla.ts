@@ -99,7 +99,7 @@ export const vanilla = {
 		// Book of mercenaries
 		vanillaCards = vanillaCards.filter((a) => !a.id.startsWith("BOM_"));
 		vanillaCards = vanillaCards.filter(
-			(a) => !a.mechanics || !a.mechanics.includes("DUNGEON_PASSIVE_BUFF"),
+			(a) => !a.mechanics?.includes("DUNGEON_PASSIVE_BUFF"),
 		);
 		vanillaCards = vanillaCards.filter(
 			(a) =>
