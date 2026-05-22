@@ -391,8 +391,6 @@ export const prompt = {
 				dynamicChoices: true,
 				callbackBefore: async () => {
 					await onLoop?.();
-					console.log(JSON.stringify(array, null, 4));
-					console.log();
 				},
 			},
 			async () => [
@@ -403,7 +401,7 @@ export const prompt = {
 					},
 					items: [
 						...array.map((element, i) => ({
-							name: `Element ${i}`,
+							name: JSON.stringify(element),
 							onSelect: async (answer: number) => {
 								const newValue = await game.input({
 									message: "What will you change this value to?",
@@ -478,8 +476,6 @@ export const prompt = {
 				dynamicChoices: true,
 				callbackBefore: async () => {
 					await onLoop?.();
-					console.log(JSON.stringify(array, null, 4));
-					console.log();
 
 					// Refresh
 					allowEdit =
@@ -496,7 +492,7 @@ export const prompt = {
 					},
 					items: [
 						...array.map((element, i) => ({
-							name: `Element ${i}`,
+							name: JSON.stringify(element),
 							onSelect: async (answer: number) => {
 								if (!allowEdit) {
 									return true;
@@ -554,16 +550,22 @@ export const prompt = {
 										},
 									},
 									async () => [
-										...filtered.map((element: any) => ({
-											name: element,
-											onSelect: async (answer: number) => {
-												const value = filtered[answer];
-
-												(array as unknown[]).push(value);
-												dirty = true;
-												return false;
+										{
+											tab: {
+												index: 1,
+												name: "New",
 											},
-										})),
+											items: filtered.map((element: any) => ({
+												name: element,
+												onSelect: async (answer: number) => {
+													const value = filtered[answer];
+
+													(array as unknown[]).push(value);
+													dirty = true;
+													return false;
+												},
+											})),
+										},
 									],
 								);
 

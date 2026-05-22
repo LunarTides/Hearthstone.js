@@ -276,7 +276,9 @@ export const commands: CommandList = {
 	async config(): Promise<boolean> {
 		const debugEnabled = game.isDebugSettingEnabled(game.config.debug.commands);
 
+		// TODO: Fix cursor on wrong place when going back.
 		const config = await game.prompt.configureObjectV2(game.config, {
+			message: "Config",
 			casing: "Start Case",
 			maxObjectLength: 0,
 			descriptionMap: {
