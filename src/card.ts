@@ -1077,6 +1077,10 @@ export class Card {
 
 		if (location === Location.None) {
 			game.data.remove(game.activeCards, this);
+
+			game.data.remove(this.owner.hand, this);
+			game.data.remove(this.owner.board, this);
+			game.data.remove(this.owner.graveyard, this);
 		} else if (!game.activeCards.includes(this)) {
 			game.activeCards.push(this);
 		}
@@ -1401,9 +1405,6 @@ export class Card {
 				continue;
 			}
 
-			// If the return value is Card.REFUND, refund the card.
-			await game.event.broadcast(Event.CancelCard, [this, key], this.owner);
-
 			returnValue = Card.REFUND;
 			this.owner[this.costType] += this.cost;
 
@@ -1416,6 +1417,9 @@ export class Card {
 					this.owner.addToHand(this),
 				);
 			}
+
+			// If the return value is Card.REFUND, refund the card.
+			await game.event.broadcast(Event.CancelCard, [this, key], this.owner);
 		}
 
 		return returnValue;

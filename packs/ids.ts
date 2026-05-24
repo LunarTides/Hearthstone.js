@@ -147,6 +147,7 @@ export default {
 				passive_example: ["019bc665-4f80-700f-b567-cdb0e340c7f1"],
 				placeholder_example: ["019bc665-4f80-701f-91dd-c8902a010f0d"],
 				quest_example: ["019bc665-4f80-7013-90e9-46b595d9a1e6"],
+				remove_conditionally_example: ["019e5a5c-1855-700a-954f-5437491bde27"],
 				right_arm: ["019bc665-4f81-7004-97b1-2971ddb6a2f5", "019bc665-4f81-7008-a1d2-e9cb03cb8a67"],
 				rune_example: ["019bc665-4f80-7029-bba5-ff3c29ecef49"],
 				simple_card_reference_example: ["019bc665-4f80-7007-8422-d43e647ca813"],
@@ -319,5 +320,6 @@ export default {
 		treant_019bc665_4f82_7020_acf5_5269d2a84a58: "019bc665-4f82-7020-acf5-5269d2a84a58",
 		discombobulate_019dc4ee_04af_7000_9df0_3fc4093e65a7: "019dc4ee-04af-7000-9df0-3fc4093e65a7",
 		discombobulate_019dc4f5_da95_7481_b31a_2623bd71665c: "019dc4f5-da95-7481-b31a-2623bd71665c",
+		remove_conditionally_example_019e5a5c_1855_700a_954f_5437491bde27: "019e5a5c-1855-700a-954f-5437491bde27",
 	},
 };
