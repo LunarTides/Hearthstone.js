@@ -46,60 +46,74 @@ export default defineConfig({
 							],
 						},
 						{
-							label: 'Creating',
-							collapsed: true,
+							label: 'Create',
 							items: [
+  							{
+  								label: 'Resource',
+                  collapsed: true,
+  								items: [
+  									{ label: "Introduction", slug: 'guides/create/resource/introduction' },
+  									{ label: 'IDs, UUIDs, and Names', slug: 'guides/create/resource/ids' },
+  									{ label: 'Color Tags', slug: 'guides/create/resource/color-tags' },
+  									{
+  										label: 'Card',
+  										items: [
+   											{ label: "Introduction", slug: 'guides/create/resource/card/introduction' },
+   											{ label: "Creating", slug: 'guides/create/resource/card/creating' },
+                          {
+       											label: 'Adding Logic',
+       											items: [
+        												{ label: 'The Blueprint', slug: 'guides/create/resource/card/logic/blueprint' },
+        												{ label: 'Abilities', slug: 'guides/create/resource/card/logic/abilities' },
+        												{ label: 'Card-to-Card Interaction', slug: 'guides/create/resource/card/logic/card-to-card' },
+        												{ label: 'Game Modules', slug: 'guides/create/resource/card/logic/modules' },
+        												{ label: 'Passives', slug: 'guides/create/resource/card/logic/passives' },
+        												{
+       													label: 'Concepts',
+         													items: [
+          														{ label: 'The Event System', slug: 'guides/create/resource/card/logic/concepts/event-system' },
+         													],
+        												},
+       											],
+      										},
+  										],
+  									},
+  									{
+  										label: 'Command',
+  										items: [
+   											{ label: "Introduction", slug: 'guides/create/resource/command/introduction' },
+  										],
+  									},
+  									{
+  										label: 'SFX',
+  										items: [
+   											{ label: "Introduction", slug: 'guides/create/resource/sfx/introduction' },
+  										],
+  									},
+  									{
+  										label: 'Packs',
+  										items: [
+  											{ label: 'Introduction', slug: 'guides/create/resource/packs/introduction' },
+  											{ label: 'Exporting a Pack', slug: 'guides/create/resource/packs/export' },
+  											{ label: 'Importing a Pack', slug: 'guides/create/resource/packs/import' },
+  											{ label: 'Registry', slug: 'guides/create/resource/packs/registry' },
+  										],
+  									},
+  								],
+  							},
 								{
-									label: 'Decks',
+									label: 'Deck',
+									collapsed: true,
 									items: [
-										{ label: 'Using the Deck Creator', slug: 'guides/creating/decks/use' },
-										{ label: 'Commands', slug: 'guides/creating/decks/commands' },
+										{ label: 'Using the Deck Creator', slug: 'guides/create/deck/use' },
+										{ label: 'Commands', slug: 'guides/create/deck/commands' },
 									],
 								},
 								{
-									label: 'Cards',
+									label: 'Class',
+									collapsed: true,
 									items: [
-										{ label: "Introduction", slug: 'guides/creating/cards/introduction' },
-										{
-											label: 'Generators',
-											items: [
-												{ label: 'Custom', slug: 'guides/creating/cards/generators/custom' },
-												{ label: 'Vanilla', slug: 'guides/creating/cards/generators/vanilla' },
-											],
-										},
-										{ label: 'Color Tags', slug: 'guides/creating/cards/color-tags' },
-										{
-											label: 'Adding Logic',
-											items: [
-												{ label: 'The Blueprint', slug: 'guides/creating/cards/logic/blueprint' },
-												{ label: 'Abilities', slug: 'guides/creating/cards/logic/abilities' },
-												{ label: 'Card-to-Card Interaction', slug: 'guides/creating/cards/logic/card-to-card' },
-												{ label: 'Game Modules', slug: 'guides/creating/cards/logic/modules' },
-												{ label: 'Passives', slug: 'guides/creating/cards/logic/passives' },
-												{
-													label: 'Concepts',
-													items: [
-														{ label: 'The Event System', slug: 'guides/creating/cards/logic/concepts/event-system' },
-													],
-												},
-											],
-										},
-										{ label: 'IDs, UUIDs, and Names', slug: 'guides/creating/cards/ids' },
-										{
-											label: 'Packs',
-											items: [
-												{ label: 'Introduction', slug: 'guides/creating/cards/packs/introduction' },
-												{ label: 'Exporting a Pack', slug: 'guides/creating/cards/packs/export' },
-												{ label: 'Importing a Pack', slug: 'guides/creating/cards/packs/import' },
-												{ label: 'Registry', slug: 'guides/creating/cards/packs/registry' },
-											],
-										},
-									],
-								},
-								{
-									label: 'Classes',
-									items: [
-										{ label: 'Using the Class Creator', slug: 'guides/creating/classes/use' },
+										{ label: 'Using the Class Creator', slug: 'guides/create/class/use' },
 									],
 								},
 							],
@@ -147,7 +161,7 @@ export default defineConfig({
 				},
 				{
 					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					items: [{ autogenerate: { directory: 'reference' } }],
 				},
 			],
 			plugins: [

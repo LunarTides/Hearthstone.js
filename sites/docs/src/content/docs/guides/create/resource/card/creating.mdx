@@ -1,5 +1,5 @@
 ---
-title: Custom Card Creator
+title: Creating a Card
 description: TODO
 sidebar:
     badge:
@@ -16,22 +16,14 @@ Any information on this page may not be accurate.
 
 import { Steps } from '@astrojs/starlight/components';
 
-This is the generator you'll likely use the most. It allows you to create a custom card.
-
-## Running
-To run the custom card creator, do the following steps:
+## Starting emergence
+To create a card, do the following steps:
 
 <Steps>
-
-1. From the HUB, select `Developer Options`:
-![Selecting "Developer Options" from the HUB.](../../../../../../assets/guides/creating/cards/developer-options.webp)
-
-2. Then select `Create a Card`:
-![Selecting "Create a Card" from the HUB.](../../../../../../assets/guides/creating/cards/create-a-card.webp)
-
-3. Then select `Create a Custom Card`:
-![Selecting "Create a Custom Card" from the HUB.](../../../../../../assets/guides/creating/cards/custom/create-a-custom-card.webp)
-
+1. From the HUB, select `Universe`
+2. Then select `[emergence]`
+3. Then select `create`
+4. Then select `card`
 </Steps>
 
 This will take you to a screen that looks like this:
@@ -80,7 +72,7 @@ If the card should be collectible. If true, the card can be added to decks.
 If this is false, the game won't add the card to any lists unless explicitly asked to include uncollectible cards.
 
 ### Tags
-Tags add some information to the card. This is used by the game and can be used by cards. The game / cards can easily get all cards with a specific tag. Like classes, this uses the [Array Customizer.](#array-customizer)
+Tags add some information to the card. This is used by the game and can be used by cards. The game / cards can easily get all cards with a specific tag. **Be careful when adding a tag since the game might make assumptions about the card based on its tags.** Like classes, this uses the [Array Customizer.](#array-customizer)
 
 - StartingHero - Marks the hero as a starting hero associated with its class.
 - Galakrond - Marks the hero as a galakrond hero associated with its class.
