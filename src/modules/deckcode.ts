@@ -55,7 +55,21 @@ export const deckcode = {
 		// We don't convert the code in the try-catch block, since this function could throw an error which would be ignored
 		if (vanilla) {
 			actualCode = await this.fromVanilla(player, actualCode);
+		} else {
+			// Decompress
+			try {
+				const decoded = Uint8Array.fromBase64(actualCode);
+				const uncompressed = Bun.gunzipSync(decoded);
+
+				const decoder = new TextDecoder();
+				actualCode = decoder.decode(uncompressed);
+			} catch (error) {
+				await panic(`COULDNOTDECOMPRESS ${error}`);
+				return;
+			}
 		}
+
+		actualCode = actualCode.trim();
 
 		// BFU
 		const runeRegex = /\[[BFU]{3}]/;
@@ -66,16 +80,16 @@ export const deckcode = {
 		const runesExists =
 			runeRegex.test(actualCode) || runeRegexAlternative.test(actualCode);
 
-		let sep = " /";
+		let sep = "/";
 
 		if (runesExists) {
-			sep = " [";
+			sep = "[";
 		}
 
 		let hero = actualCode.split(sep)[0];
 
 		hero = hero.trim();
-		actualCode = sep[1] + actualCode.split(sep)[1];
+		actualCode = sep + actualCode.split(sep).slice(1).join(sep);
 
 		if (!(await game.card.getClasses()).includes(hero)) {
 			await panic("INVALIDHERO");
@@ -108,7 +122,7 @@ export const deckcode = {
 			// [3B]
 			const rune = actualCode[2];
 
-			actualCode = actualCode.slice(5);
+			actualCode = actualCode.slice(4);
 			await addRunes(rune.repeat(3));
 		} else if (runeRegex.test(actualCode)) {
 			// [BFU]
@@ -118,7 +132,7 @@ export const deckcode = {
 				runes += actualCode[i];
 			}
 
-			actualCode = actualCode.slice(6);
+			actualCode = actualCode.slice(5);
 			await addRunes(runes);
 		} else if (runeClass) {
 			await game.pause(
@@ -127,7 +141,7 @@ export const deckcode = {
 		}
 
 		// Find /3:5,2:8,1/
-		const copyDefinitionFormat = /\/(\d+:\d+,)*\d+\/ /;
+		const copyDefinitionFormat = /\/(\d+:\d+,)*\d+\//;
 		if (!copyDefinitionFormat.test(actualCode)) {
 			await panic("COPYDEFNOTFOUND");
 			return;
@@ -158,7 +172,7 @@ export const deckcode = {
 			for (const id of cards) {
 				const blueprint = await Card.fromID(id);
 				if (!blueprint) {
-					await panic("NONEXISTANTCARD", id.toString());
+					await panic("NONEXISTANTCARD", id);
 					returnValueInvalid = true;
 					continue;
 				}
@@ -348,14 +362,14 @@ export const deckcode = {
 			return { code: "", error };
 		}
 
-		let deckcode = `${heroClass} `;
+		let deckcode = `${heroClass}`;
 
 		if (runes.length > 0) {
 			// If the runes is 3 of one type, write, for example, 3B instead of BBB
 			deckcode +=
 				new Set(runes).size === 1
-					? `[3${runes[0][0]}] `
-					: `[${runes.map((r) => r[0]).join("")}] `;
+					? `[3${runes[0][0]}]`
+					: `[${runes.map((r) => r[0]).join("")}]`;
 		}
 
 		deckcode += "/";
@@ -420,11 +434,14 @@ export const deckcode = {
 			deckcode += last ? copies : `${copies}:${amount},`;
 		}
 
-		deckcode += "/ ";
-
+		deckcode += "/";
 		deckcode += cards.map((c) => c[0].id).join(",");
 
-		return { code: deckcode, error };
+		// Compress
+		const compressed = Bun.gzipSync(deckcode, { level: 9 });
+		const encoded = compressed.toBase64();
+
+		return { code: encoded, error };
 	},
 
 	/**
@@ -444,7 +461,7 @@ export const deckcode = {
 		/*
 		 * HACK: Jank code ahead. Beware!
 		 *
-		 * Reference: Death Knight [3B] /1:4,2/ 3f,5f,6f...
+		 * Reference: Death Knight[3B]/1:4,2/3f,5f,6f...
 		 */
 
 		const deck: deckstrings.DeckDefinition = {
@@ -483,7 +500,7 @@ export const deckcode = {
 		codeSplit.splice(0, 1);
 
 		// Remove runes
-		if (codeSplit[0].endsWith("] ")) {
+		if (codeSplit[0].endsWith("]")) {
 			codeSplit.splice(0, 1);
 		}
 
@@ -713,7 +730,7 @@ export const deckcode = {
 		newDeck = newDeck.sort((a, b) => a[1] - b[1]);
 
 		// Assemble Hearthstone.js deckcode.
-		let deckcode = `${heroClassName} `;
+		let deckcode = `${heroClassName}`;
 
 		// Generate runes
 		let runes = "";
@@ -762,7 +779,7 @@ export const deckcode = {
 				runes = `3${runes[0]}`;
 			}
 
-			deckcode += `[${runes}] `;
+			deckcode += `[${runes}]`;
 		}
 
 		deckcode += "/";
@@ -775,7 +792,7 @@ export const deckcode = {
 			deckcode += amounts[parseInt(key, 10) + 1] ? `${key}:${amount},` : key;
 		}
 
-		deckcode += "/ ";
+		deckcode += "/";
 		deckcode += newDeck.map((c) => c[0].id).join(",");
 
 		return deckcode;

@@ -207,6 +207,7 @@ export async function main(): Promise<void> {
 		if (!deckcode.error) {
 			console.log("<bright:green>Valid deck!</bright:green>");
 			console.log(deckcode.code);
+			console.log();
 		}
 
 		console.log(`Cards: ${cardsToShow.filter(filterCards).length}`);
