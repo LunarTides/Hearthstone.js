@@ -37,45 +37,6 @@ interface Metadata {
 	};
 }
 
-function parseCardField(content: string, name: string) {
-	const split = content.split(`${name}: `);
-	if (split.length <= 1) {
-		return undefined;
-	}
-
-	let values = [split[1].split(",")[0]];
-	const matches = values[0].matchAll(/[A-Z][a-z]*\.([A-Z][a-z]*)/g);
-
-	const isArray = values[0].startsWith("[");
-	if (isArray) {
-		values = [];
-	}
-
-	for (const match of matches) {
-		if (match.length <= 1) {
-			continue;
-		}
-
-		if (name === "enchantmentPriority") {
-			// TODO: Parse enchantment priority correctly.
-		}
-
-		const parsed = `"${match[1]}"`;
-
-		if (isArray) {
-			values.push(parsed);
-		} else {
-			values[0] = parsed;
-		}
-	}
-
-	if (isArray) {
-		return values.map((v) => JSON.parse(v));
-	}
-
-	return JSON.parse(values[0]);
-}
-
 // TODO: Use hemming distance on the pack name to prevent confusion.
 export async function POST(event) {
 	const user = event.locals.user;
@@ -245,7 +206,7 @@ export async function POST(event) {
 		);
 	}
 
-	// TODO: Delete pack from db if adding cards goes wrong.
+	// TODO: Delete pack from db if adding resources goes wrong.
 	const pack: Pack[] = await db
 		.insert(table.pack)
 		.values({
@@ -268,64 +229,54 @@ export async function POST(event) {
 		})
 		.returning();
 
-	// Parse cards.
+	// Parse resources.
 	for (const file of files) {
 		if (!file.name.endsWith(".ts")) {
 			continue;
 		}
 
-		const abilityRegex = /\tasync (\w+).*? {/g;
-		const content = await file.text();
-
-		const abilities = [];
-		for (const match of content.matchAll(abilityRegex)) {
-			if (match.length <= 1) {
-				continue;
-			}
-
-			const ability = match[1];
-			abilities.push(ability);
+		// Get resource type
+		let type: "card" | "command" | "sfx" = "card";
+		if (file.name.endsWith(".command.ts")) {
+			type = "command";
+		} else if (file.name.endsWith(".sfx.ts")) {
+			type = "sfx";
 		}
 
+		const content = await file.text();
 		const filePath = file.name.replaceAll("\\", "/");
 
-		const f = parseCardField.bind(null, content);
-		const card: InferInsertModel<typeof table.card> = {
-			uuid: f("id"),
-			abilities,
+		// Get data from the resource.
+		const data: Record<string, any> = {};
+
+		const fieldRegex = /(?:\t| {4})(.+): (.+),\n/g;
+		for (const match of content.matchAll(fieldRegex)) {
+			const key = match[1].trim();
+			let value = match[2].trim();
+
+			// FIXME: This isn't sustainable.
+			const enumRegex = /[A-Z][a-z]+\.([A-Z][a-z]+)/;
+			value = value.replace(enumRegex, '"$1"');
+
+			data[key] = JSON.parse(value);
+		}
+
+		const resource: InferInsertModel<typeof table.resource> = {
+			uuid: data.id,
+			type,
 			packId: pack[0].id,
 
-			name: f("name"),
-			text: f("text"),
-			cost: f("cost"),
-			type: f("type"),
-			classes: f("classes"),
-			rarity: f("rarity"),
-			collectible: f("collectible"),
-			tags: f("tags"),
-
-			attack: f("attack"),
-			health: f("health"),
-			tribes: f("tribes"),
-
-			spellSchools: f("spellSchools"),
-
-			durability: f("durability"),
-			cooldown: f("cooldown"),
-
-			armor: f("armor"),
-			heropowerId: f("heropowerId"),
-
-			enchantmentPriority: f("enchantmentPriority"),
+			name: data.name,
+			json: JSON.stringify(data),
 
 			approved: !settings.upload.requireApproval,
 			isLatestVersion: false,
 			filePath,
 		};
 
-		// TODO: Validate c using zod.
+		// TODO: Validate resource using zod.
 
-		await db.insert(table.card).values(card);
+		await db.insert(table.resource).values(resource);
 	}
 
 	await setLatestVersion(username, packName);

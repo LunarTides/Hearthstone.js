@@ -117,30 +117,30 @@ export async function setLatestVersion(ownerName: string, name: string) {
 		return;
 	}
 
-	// Demote other packs / cards.
+	// Demote other packs / resources.
 	await db
 		.update(table.pack)
 		.set({ isLatestVersion: false })
 		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
-	const cards = await db
+	const resources = await db
 		.select()
-		.from(table.card)
-		.innerJoin(table.pack, eq(table.pack.id, table.card.packId))
+		.from(table.resource)
+		.innerJoin(table.pack, eq(table.pack.id, table.resource.packId))
 		.where(and(eq(table.pack.ownerName, ownerName), eq(table.pack.name, latest.name)));
-	for (const c of cards) {
-		// TODO: Should the latest version of a card be true if there is no earlier version of that card even though that version isn't the latest version?
-		if (c.card.packId !== latest.id) {
+	for (const r of resources) {
+		// TODO: Should the latest version of a resource be true if there is no earlier version of that resource even though that version isn't the latest version?
+		if (r.resource.packId !== latest.id) {
 			await db
-				.update(table.card)
+				.update(table.resource)
 				.set({ isLatestVersion: false })
-				.where(eq(table.card.id, c.card.id));
+				.where(eq(table.resource.id, r.resource.id));
 		}
 	}
 
 	// Promote currnet (latest) pack.
 	await db.update(table.pack).set({ isLatestVersion: true }).where(eq(table.pack.id, latest.id));
 	await db
-		.update(table.card)
+		.update(table.resource)
 		.set({ isLatestVersion: true })
-		.where(eq(table.card.packId, latest.id));
+		.where(eq(table.resource.packId, latest.id));
 }

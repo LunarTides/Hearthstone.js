@@ -1,13 +1,13 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import type { Card } from "$lib/db/schema.js";
+import type { Resource } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack.js";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 
-const getCards = async (event: ServerLoadEvent, pack: CensoredPack) => {
-	const response = await requestAPI<Card[]>(
+const getResources = async (event: ServerLoadEvent, pack: CensoredPack) => {
+	const response = await requestAPI<Resource[]>(
 		event,
-		resolve("/api/next/@[username]/-[packName]/v[version]/cards", {
+		resolve("/api/next/@[username]/-[packName]/v[version]/resources", {
 			username: pack.ownerName,
 			packName: pack.name,
 			version: pack.packVersion,
@@ -34,10 +34,10 @@ export const load = async (event) => {
 	}
 
 	const { latest, outdated } = packResponse.json;
-	const latestCards = await getCards(event, latest);
+	const latestResources = await getResources(event, latest);
 
 	return {
 		versions: [latest, ...outdated],
-		latestCards,
+		latestResources,
 	};
 };

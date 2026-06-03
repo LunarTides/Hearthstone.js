@@ -17,21 +17,21 @@ export async function GET(event) {
 
 	const pageSize = (await getSetting("api.pageSize")) as number;
 
-	const cards = await db
+	const resources = await db
 		.select()
-		.from(table.card)
+		.from(table.resource)
 		// TODO: Ignore caps.
 		// TODO: Make this smarter.
 		.where(
 			and(
-				like(table.card.name, `%${query}%`),
+				like(table.resource.name, `%${query}%`),
 				eq(table.pack.approved, true),
-				eq(table.card.isLatestVersion, true),
+				eq(table.resource.isLatestVersion, true),
 			),
 		)
-		.innerJoin(table.pack, eq(table.card.packId, table.pack.id))
+		.innerJoin(table.pack, eq(table.resource.packId, table.pack.id))
 		.limit(pageSize)
 		.offset((page - 1) * pageSize);
 
-	return json(cards);
+	return json(resources);
 }

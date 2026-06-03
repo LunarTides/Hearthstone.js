@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import type { Card } from "$lib/db/schema.js";
-	import CardBig from "$lib/components/card-big.svelte";
+	import type { Resource } from "$lib/db/schema.js";
 	import { Highlight, LineNumbers } from "svelte-highlight";
 	import { typescript } from "svelte-highlight/languages/typescript";
 	import { resolve } from "$app/paths";
 	import { superForm } from "sveltekit-superforms";
 	import Comment from "$lib/components/comment.svelte";
 	import Section from "$lib/components/section.svelte";
+	import ResourceBig from "$lib/components/resource-big.svelte";
 
 	let { data } = $props();
 	const { form, errors, constraints, message, enhance } = $derived(superForm(data.form));
@@ -15,27 +15,27 @@
 	let versionsOpen = $state(page.url.hash.startsWith("#version"));
 
 	// TODO: Move this to server-side.
-	const getPack = (cards: Awaited<typeof data.relevantCards>, card: Card) => {
-		return cards.packs.all.find((p) => p.id === card.packId)!;
+	const getPack = (resources: Awaited<typeof data.relevantResources>, resource: Resource) => {
+		return resources.packs.all.find((p) => p.id === resource.packId)!;
 	};
 </script>
 
-{#await data.relevantCards}
+{#await data.relevantResources}
 	<p>Loading...</p>
-{:then cards}
-	<CardBig card={cards.current} pack={cards.currentPack} />
+{:then resources}
+	<ResourceBig resource={resources.current} pack={resources.currentPack} />
 
 	<!-- Versions -->
-	<Section details open={versionsOpen} summary={`Versions (${cards.all.length})`}>
+	<Section details open={versionsOpen} summary={`Versions (${resources.all.length})`}>
 		<div class="m-1 flex flex-col gap-2">
 			<a
 				id="version-latest"
 				class="bg-background p-2 text-center rounded-full text-xl text-white target:outline-1"
-				href={resolve("/@[username]/-[packName]/v[version]/cards/[uuid]", {
+				href={resolve("/@[username]/-[packName]/v[version]/resources/[uuid]", {
 					username: page.params.username!,
 					packName: page.params.packName!,
-					version: cards.packs.latest.packVersion,
-					uuid: cards.current.uuid,
+					version: resources.packs.latest.packVersion,
+					uuid: resources.current.uuid,
 				})}
 			>
 				Latest
@@ -43,25 +43,25 @@
 
 			<hr class="border" style="border-color: var(--color-background);" />
 
-			{#each cards.all.toSorted( (a, b) => getPack(cards, b).packVersion.localeCompare(getPack(cards, a).packVersion), ) as card (card.id)}
+			{#each resources.all.toSorted( (a, b) => getPack(resources, b).packVersion.localeCompare(getPack(resources, a).packVersion), ) as resource (resource.id)}
 				<a
-					id={`version-${card.id}`}
-					href={resolve("/@[username]/-[packName]/v[version]/cards/[uuid]", {
+					id={`version-${resource.id}`}
+					href={resolve("/@[username]/-[packName]/v[version]/resources/[uuid]", {
 						username: page.params.username!,
 						packName: page.params.packName!,
-						version: getPack(cards, card).packVersion,
-						uuid: card.uuid,
+						version: getPack(resources, resource).packVersion,
+						uuid: resource.uuid,
 					})}
 					class="bg-background p-2 rounded-full text-xl text-center text-white target:outline-1"
 				>
-					{getPack(cards, card).packVersion}
+					{getPack(resources, resource).packVersion}
 				</a>
 			{/each}
 		</div>
 	</Section>
 
 	<div class="m-1">
-		<Highlight language={typescript} code={cards.file.content} let:highlighted>
+		<Highlight language={typescript} code={resources.file.content} let:highlighted>
 			<LineNumbers class="rounded-md" {highlighted} />
 		</Highlight>
 	</div>
@@ -106,7 +106,7 @@
 				></textarea>
 				{#if $errors.text}<span class="text-red-500">{$errors.text}</span>{/if}
 
-				<input name="filePath" type="hidden" value={data.relevantCards.current.filePath} />
+				<input name="filePath" type="hidden" value={data.relevantResources.current.filePath} />
 
 				<button
 					type="submit"

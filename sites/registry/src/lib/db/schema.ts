@@ -15,6 +15,7 @@ import type { CensoredGroup } from "$lib/group";
 import type { CensoredPack } from "$lib/pack";
 
 export const rolesEnum = pgEnum("roles", ["User", "Moderator", "Admin"]);
+export const resourceType = pgEnum("resourceType", ["card", "command", "sfx"]);
 export const packMessageType = pgEnum("messageType", ["public", "internal"]);
 
 export const user = pgTable("user", {
@@ -135,39 +136,18 @@ export const packLink = pgTable("packLink", {
 	value: text("value").notNull(),
 });
 
-export const card = pgTable("card", {
+export const resource = pgTable("resource", {
 	id: uuid("id")
 		.primaryKey()
 		.default(sql`uuidv7()`),
 	uuid: uuid("uuid").notNull(),
-	abilities: text("abilities").array().notNull(),
-
 	packId: uuid("pack_id")
 		.notNull()
 		.references(() => pack.id, { onDelete: "cascade" }),
+	type: resourceType("type").notNull().default("card"),
 
 	name: text("name").notNull(),
-	text: text("text").notNull(),
-	cost: integer("cost").notNull(),
-	type: text("type").notNull(),
-	classes: text("classes").array().notNull(),
-	rarity: text("rarity").notNull(),
-	collectible: boolean("collectible").notNull(),
-	tags: text("tags").array().notNull(),
-
-	attack: integer("attack"),
-	health: integer("health"),
-	tribes: text("tribes").array(),
-
-	spellSchools: text("spellSchools").array(),
-
-	durability: integer("durability"),
-	cooldown: integer("cooldown"),
-
-	armor: integer("armor"),
-	heropowerId: uuid("heropower_id"),
-
-	enchantmentPriority: integer("enchantment_priority"),
+	json: text("json").notNull(),
 
 	approved: boolean("approved").notNull(),
 	isLatestVersion: boolean("is_latest_version").notNull().default(true),
@@ -253,7 +233,7 @@ export type GroupProfile = typeof groupProfile.$inferSelect;
 export type GroupMember = typeof groupMember.$inferSelect;
 
 export type Pack = typeof pack.$inferSelect;
-export type Card = typeof card.$inferSelect;
+export type Resource = typeof resource.$inferSelect;
 
 export type Comment = typeof comment.$inferSelect;
 export type PackMessage = typeof packMessage.$inferSelect;

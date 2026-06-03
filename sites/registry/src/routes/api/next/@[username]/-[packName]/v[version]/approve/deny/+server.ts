@@ -69,9 +69,9 @@ export async function POST(event) {
 		.where(eq(table.pack.id, pack.id));
 
 	await db
-		.update(table.card)
+		.update(table.resource)
 		.set({ approved: false, isLatestVersion: false })
-		.where(eq(table.card.packId, pack.id));
+		.where(eq(table.resource.packId, pack.id));
 
 	await setLatestVersion(username, packName);
 

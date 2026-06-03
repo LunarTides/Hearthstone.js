@@ -31,7 +31,9 @@ export async function GET(event) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	const cards = await db.select().from(table.card).where(eq(table.card.packId, pack.id));
-
-	return json(cards);
+	const resources = await db
+		.select()
+		.from(table.resource)
+		.where(eq(table.resource.packId, pack.id));
+	return json(resources);
 }

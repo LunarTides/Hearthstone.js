@@ -9,35 +9,35 @@ export async function GET(event) {
 
 	const { username, packName, version, uuid } = event.params;
 
-	const card = (
+	const resource = (
 		await db
 			.select()
-			.from(table.card)
-			.fullJoin(table.pack, eq(table.pack.id, table.card.packId))
+			.from(table.resource)
+			.fullJoin(table.pack, eq(table.pack.id, table.resource.packId))
 			.where(
 				and(
 					eq(table.pack.ownerName, username),
 					eq(table.pack.name, packName),
 					eq(table.pack.packVersion, version),
-					eq(table.card.uuid, uuid),
+					eq(table.resource.uuid, uuid),
 				),
 			)
 			.limit(1)
 	).at(0);
-	if (!card) {
-		return json({ message: "Card not found." }, { status: 404 });
+	if (!resource) {
+		return json({ message: "Resource not found." }, { status: 404 });
 	}
 
-	if (!card.pack || !card.card) {
-		return json({ message: "Card object is invalid for some reason." }, { status: 500 });
+	if (!resource.pack || !resource.resource) {
+		return json({ message: "Resource object is invalid for some reason." }, { status: 500 });
 	}
 
 	if (
-		!card.pack.approved &&
+		!resource.pack.approved &&
 		!(await isUserMemberOfGroup(clientUser, clientUser?.username, username))
 	) {
 		return json({ message: "Version not found." }, { status: 404 });
 	}
 
-	return json(card.card);
+	return json(resource.resource);
 }

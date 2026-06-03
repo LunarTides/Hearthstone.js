@@ -3,22 +3,21 @@ import type { LayoutParams } from "$app/types";
 import { requestAPI } from "$lib/api/helper.js";
 import { approveSchema } from "./schema";
 import type { FileTree } from "$lib/api/types";
-import type { Card, PackWithExtras } from "$lib/db/schema";
+import type { Resource, PackWithExtras } from "$lib/db/schema";
 import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
 import type { LayoutRouteId, LayoutServerParentData, RouteId } from "./$types.js";
-import type { CensoredPack } from "$lib/pack.js";
 import { isUserMemberOfGroup } from "$lib/server/db/group.js";
 
-const getCards = async (
+const getResources = async (
 	event: ServerLoadEvent<LayoutParams<RouteId>, LayoutServerParentData, LayoutRouteId>,
 ) => {
 	const { username, packName, version } = event.params;
 
-	const response = await requestAPI<Card[]>(
+	const response = await requestAPI<Resource[]>(
 		event,
-		resolve("/api/next/@[username]/-[packName]/v[version]/cards", {
+		resolve("/api/next/@[username]/-[packName]/v[version]/resources", {
 			username,
 			packName,
 			version,
@@ -69,14 +68,22 @@ export const load = async (event) => {
 		return error(fileResponse.error.status, { message: fileResponse.error.message });
 	}
 
-	const cards = (await getCards(event)) as Card[];
+	const resources = (await getResources(event)) as Resource[];
+	resources.sort((a, b) => {
+		if (a.type !== b.type) {
+			return a.type.localeCompare(b.type);
+		}
+
+		return a.name.localeCompare(b.name);
+	});
+
 	const form = await superValidate(zod4(approveSchema));
 
 	return {
 		form,
 		files: fileResponse.json,
 		formattedPacks,
-		cards,
+		resources,
 		canEditPack,
 	};
 };

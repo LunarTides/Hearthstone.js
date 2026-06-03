@@ -3,7 +3,20 @@
 	import Tab from "$lib/components/tab.svelte";
 	import Tabs from "$lib/components/tabs.svelte";
 	import { satisfiesRole } from "$lib/user";
-	import { Cog, FolderCode, History, Info, MessageSquare, Parentheses } from "lucide-svelte";
+	import {
+		Circle,
+		Cog,
+		Component,
+		FolderCode,
+		Gamepad2,
+		Hammer,
+		Hexagon,
+		History,
+		Info,
+		MessageSquare,
+		Parentheses,
+		Shapes,
+	} from "lucide-svelte";
 	import { superForm } from "sveltekit-superforms";
 
 	let { data, form: rawForm, children } = $props();
@@ -35,12 +48,12 @@
 			<FolderCode />
 			Code
 		</Tab>
-		<Tab href="/@[username]/-[packName]/v[version]/cards">
-			<Parentheses />
-			{#await data.cards}
-				Cards (...)
-			{:then cards}
-				Cards ({cards.length})
+		<Tab href="/@[username]/-[packName]/v[version]/resources">
+			<Shapes />
+			{#await data.resources}
+				Resources (...)
+			{:then resources}
+				Resources ({resources.length})
 			{/await}
 		</Tab>
 		<Tab href="/@[username]/-[packName]/v[version]/comments">

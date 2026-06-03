@@ -25,7 +25,7 @@ export const load = async (event) => {
 	if (packs.length <= 0) {
 		return {
 			packs: [],
-			cards: [],
+			resources: [],
 		};
 	}
 

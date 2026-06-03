@@ -1,5 +1,5 @@
 <script lang="ts">
-	import CardSmall from "$lib/components/card-small.svelte";
+	import ResourceSmall from "$lib/components/resource-small.svelte";
 	import Section from "$lib/components/section.svelte";
 
 	let { data } = $props();
@@ -8,13 +8,13 @@
 {#await data.formattedPacks}
 	<p>Loading...</p>
 {:then versions}
-	{#await data.cards}
+	{#await data.resources}
 		<p>Loading...</p>
-	{:then cards}
+	{:then resources}
 		<Section>
 			<div class="flex flex-wrap gap-1">
-				{#each cards as card (card.id)}
-					<CardSmall {card} pack={versions.current} />
+				{#each resources as resource (resource.id)}
+					<ResourceSmall {resource} pack={versions.current} />
 				{/each}
 			</div>
 		</Section>

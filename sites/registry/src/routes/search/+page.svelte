@@ -1,6 +1,6 @@
 <script lang="ts">
-	import CardSmall from "$lib/components/card-small.svelte";
 	import PackSmall from "$lib/components/pack-small.svelte";
+	import ResourceSmall from "$lib/components/resource-small.svelte";
 
 	let { data } = $props();
 
@@ -28,18 +28,18 @@
 	</div>
 
 	<div class="mr-3">
-		<p class="text-xl m-2 ml-0 border-b text-center">Cards</p>
+		<p class="text-xl m-2 ml-0 border-b text-center">Resources</p>
 		<div class="flex flex-col mt-2 gap-1">
-			{#await data.cards}
+			{#await data.resources}
 				<p>Loading...</p>
-			{:then cards}
-				{#if cards.length <= 0}
+			{:then resources}
+				{#if resources.length <= 0}
 					<p>No results.</p>
 				{/if}
 
 				<div class="flex flex-wrap gap-1 ml-1">
-					{#each cards as c (c.card.id)}
-						<CardSmall card={c.card} pack={c.pack} />
+					{#each resources as r (r.resource.id)}
+						<ResourceSmall resource={r.resource} pack={r.pack} />
 					{/each}
 				</div>
 			{/await}

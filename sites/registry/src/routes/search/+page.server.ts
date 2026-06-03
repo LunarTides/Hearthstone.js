@@ -1,6 +1,6 @@
 import { resolve } from "$app/paths";
 import { requestAPI } from "$lib/api/helper.js";
-import type { Card, PackWithExtras } from "$lib/db/schema.js";
+import type { Resource, PackWithExtras } from "$lib/db/schema.js";
 import { error } from "@sveltejs/kit";
 
 export const load = (event) => {
@@ -21,16 +21,16 @@ export const load = (event) => {
 			error(packsResponse.error.status, { message: packsResponse.error.message });
 		}
 
-		const cardsResponse = await requestAPI<{ card: Card; pack: PackWithExtras }[]>(
+		const resourcesResponse = await requestAPI<{ resource: Resource; pack: PackWithExtras }[]>(
 			event,
-			resolve("/api/next/search/cards") + `?q=${event.url.searchParams.get("q")}&page=${page}`,
+			resolve("/api/next/search/resources") + `?q=${event.url.searchParams.get("q")}&page=${page}`,
 		);
-		// if (cardsResponse.status !== 200) {
-		// 	error(cardsResponse.status, { message: cards.message });
+		// if (resourcesResponse.status !== 200) {
+		// 	error(resourcesResponse.status, { message: resourcesResponse.message });
 		// }
 
 		return {
-			cards: cardsResponse.error ? [] : cardsResponse.json,
+			resources: resourcesResponse.error ? [] : resourcesResponse.json,
 			packs: packsResponse.json,
 		};
 	};

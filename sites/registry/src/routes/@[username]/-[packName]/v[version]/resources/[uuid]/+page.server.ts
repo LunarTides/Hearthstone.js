@@ -2,7 +2,7 @@ import { error, type ServerLoadEvent } from "@sveltejs/kit";
 import { requestAPI } from "$lib/api/helper";
 import { resolve } from "$app/paths";
 import type { File } from "$lib/api/types";
-import type { Card, CommentWithExtras } from "$lib/db/schema.js";
+import type { Resource, CommentWithExtras } from "$lib/db/schema.js";
 import type { CensoredPack } from "$lib/pack.js";
 import { superValidate } from "sveltekit-superforms";
 import { zod4 } from "sveltekit-superforms/adapters";
@@ -27,45 +27,45 @@ const getComments = async (event: ServerLoadEvent, filePath: string) => {
 	return { comments: response.json, amount };
 };
 
-const getCards = async (event: ServerLoadEvent) => {
+const getResources = async (event: ServerLoadEvent) => {
 	const { username, packName, version, uuid } = event.params;
 
-	const cardResponse = await requestAPI<{
+	const resourceResponse = await requestAPI<{
 		latest: {
-			card: Card;
+			resource: Resource;
 			pack: CensoredPack;
 		};
 		outdated: {
-			card: Card;
+			resource: Resource;
 			pack: CensoredPack;
 		}[];
 	}>(
 		event,
-		resolve("/api/next/cards/all/[uuid]", {
+		resolve("/api/next/resources/all/[uuid]", {
 			uuid: uuid!,
 		}),
 	);
-	if (cardResponse.error) {
-		return error(cardResponse.error.status, { message: cardResponse.error.message });
+	if (resourceResponse.error) {
+		return error(resourceResponse.error.status, { message: resourceResponse.error.message });
 	}
 
-	const cards = cardResponse.json;
-	const currentCard = [cards.latest, ...cards.outdated].find(
+	const resources = resourceResponse.json;
+	const currentResource = [resources.latest, ...resources.outdated].find(
 		(c) =>
 			c.pack.ownerName === username && c.pack.name === packName && c.pack.packVersion === version,
 	);
-	if (!currentCard) {
-		return error(404, { message: "This card doesn't exist." });
+	if (!currentResource) {
+		return error(404, { message: "This resource doesn't exist." });
 	}
 
 	const fileResponse = await requestAPI<File>(
 		event,
 		resolve("/api/next/@[username]/-[packName]/v[version]/files/[...path]", {
-			username: currentCard.pack.ownerName,
-			packName: currentCard.pack.name,
-			version: currentCard.pack.packVersion,
+			username: currentResource.pack.ownerName,
+			packName: currentResource.pack.name,
+			version: currentResource.pack.packVersion,
 			// Remove leading slash.
-			path: currentCard.card.filePath.replace(/^\//, ""),
+			path: currentResource.resource.filePath.replace(/^\//, ""),
 		}),
 	);
 	if (fileResponse.error) {
@@ -74,26 +74,26 @@ const getCards = async (event: ServerLoadEvent) => {
 
 	return {
 		packs: {
-			latest: cards.latest.pack,
-			all: [cards.latest, ...cards.outdated].map((c) => c.pack),
+			latest: resources.latest.pack,
+			all: [resources.latest, ...resources.outdated].map((c) => c.pack),
 		},
-		latest: cards.latest.card,
-		all: [cards.latest, ...cards.outdated].map((c) => c.card),
+		latest: resources.latest.resource,
+		all: [resources.latest, ...resources.outdated].map((c) => c.resource),
 		file: fileResponse.json,
-		current: currentCard.card,
-		currentPack: currentCard.pack,
+		current: currentResource.resource,
+		currentPack: currentResource.pack,
 	};
 };
 
 export const load = async (event) => {
 	// TODO: Make this proper async.
 	const form = await superValidate(zod4(postSchema));
-	const relevantCards = await getCards(event);
-	const commentsObject = await getComments(event, relevantCards.current.filePath);
+	const relevantResources = await getResources(event);
+	const commentsObject = await getComments(event, relevantResources.current.filePath);
 
 	return {
 		form,
-		relevantCards,
+		relevantResources: relevantResources,
 		commentsObject,
 	};
 };
