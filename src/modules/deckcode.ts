@@ -591,21 +591,33 @@ export const deckcode = {
 					vanillaCard.referencesTags = undefined;
 				}
 
-				const result = await game.prompt.customSelect(
-					`Multiple cards with the name '</yellow>${matches[0].name}<yellow>' detected! Please choose one.`,
-					matches.map((m) => JSON.stringify(m)),
+				await game.prompt.createUILoop(
 					{
-						arrayTransform: undefined,
-						hideBack: true,
+						message: `Multiple cards with the name '<yellow>${matches[0].name}</yellow>' detected! Please choose one.`,
+						seperatorBeforeBackButton: false,
+						backButtonText: "",
 					},
+					async () => [
+						{
+							tab: {
+								index: 1,
+								name: "Choose Vanilla Card",
+							},
+							items: matches.map((m) => ({
+								name: JSON.stringify(m),
+								onSelect: async () => {
+									match = m;
+									return false;
+								},
+							})),
+						},
+					],
 				);
-
-				match = matches[parseInt(result.value, 10)];
 			} else {
 				match = matches[0];
 			}
 
-			newCards.push([match.dbfId, amount]);
+			newCards.push([match!.dbfId, amount]);
 		}
 
 		deck.cards = newCards;

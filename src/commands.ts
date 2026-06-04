@@ -193,31 +193,50 @@ export const commands: CommandList = {
 			titanIds.map(async (id) => Card.create(id, game.player, true)),
 		);
 
-		const result = await game.prompt.customSelect(
-			"Which ability do you want to trigger?",
-			await game.card.readables(titanCards),
+		const { backedOut } = await game.prompt.createUILoop(
+			{
+				message: "Which ability do you want to trigger?",
+			},
+			async () => [
+				{
+					tab: {
+						index: 1,
+						name: "Titan",
+					},
+					items: await Promise.all(
+						titanCards.map(async (ability) => ({
+							name: await ability.readable(),
+							onSelect: async () => {
+								if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
+									return false;
+								}
+
+								const abilityIndex = titanCards.indexOf(ability);
+								titanIds.splice(abilityIndex, 1);
+								card.setKeyword(Keyword.Titan, titanIds);
+
+								if (titanIds.length <= 0) {
+									card.removeKeyword(Keyword.Titan);
+								} else {
+									card.exhaust();
+								}
+
+								await game.event.broadcast(
+									Event.Titan,
+									[card, ability],
+									game.player,
+								);
+								return false;
+							},
+						})),
+					),
+				},
+			],
 		);
-		if (result.value === "Back") {
+		if (backedOut) {
 			return false;
 		}
 
-		const abilityIndex = parseInt(result.value, 10);
-		const ability = titanCards[abilityIndex];
-
-		if ((await ability.trigger(Ability.Cast)) === Card.REFUND) {
-			return false;
-		}
-
-		titanIds.splice(abilityIndex, 1);
-		card.setKeyword(Keyword.Titan, titanIds);
-
-		if (titanIds.length <= 0) {
-			card.removeKeyword(Keyword.Titan);
-		} else {
-			card.exhaust();
-		}
-
-		await game.event.broadcast(Event.Titan, [card, ability], game.player);
 		return true;
 	},
 
@@ -802,15 +821,31 @@ export const debugCommands: CommandList = {
 
 		// If there are multiple cards with the same name, ask the user to choose one.
 		if (cards.length > 1) {
-			const result = await game.prompt.customSelect(
-				`Multiple cards matching '${cardName}' found. Select one.`,
-				await game.card.readables(cards),
+			const { backedOut } = await game.prompt.createUILoop(
+				{
+					message: `Multiple cards matching '${cardName}' found. Select one.`,
+				},
+				async () => [
+					{
+						tab: {
+							index: 1,
+							name: "Select Card",
+						},
+						items: await Promise.all(
+							cards.map(async (c) => ({
+								name: await c.readable(),
+								onSelect: async () => {
+									card = c;
+									return false;
+								},
+							})),
+						),
+					},
+				],
 			);
-			if (result.value === "Back") {
+			if (backedOut) {
 				return false;
 			}
-
-			card = cards[parseInt(result.value, 10)];
 		}
 
 		if (!card) {

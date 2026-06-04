@@ -1881,10 +1881,11 @@ export class Card {
 	 * Asks the user a `prompt` and show 3 choices for the player to choose, and do something to the minion based on the choice.
 	 *
 	 * @param prompt The prompt to ask the user
-	 * @returns The name of the adapt chosen, or -1 if the user cancelled.
+	 * @returns The name of the adapt chosen, or undefined if the user cancelled.
 	 */
-	async adapt(prompt = "Choose One:"): Promise<string | -1> {
+	async adapt(prompt = "Choose One:"): Promise<string | undefined> {
 		await game.interact.print.gameState(game.player);
+		console.log();
 
 		const possibleCards = [
 			["Crackling Shield", "Divine Shield"],
@@ -1900,79 +1901,95 @@ export class Card {
 		];
 
 		const values = game.lodash.sampleSize(possibleCards, 3);
-		const result = await game.prompt.customSelect(
-			prompt,
-			values.map((v) => `${v[0]}: ${v[1]}`),
+
+		let choice: string | undefined;
+		await game.prompt.createUILoop(
+			{
+				message: prompt,
+			},
+			async () => [
+				{
+					tab: {
+						index: 1,
+						name: "Adapt",
+					},
+					items: values.map((v) => ({
+						name: `${v[0]}: ${v[1]}`,
+						onSelect: async () => {
+							choice = v[0];
+
+							switch (choice) {
+								case "Crackling Shield": {
+									this.addKeyword(Keyword.DivineShield);
+									break;
+								}
+
+								case "Flaming Claws": {
+									await this.addStats(3, 0);
+									break;
+								}
+
+								case "Living Spores": {
+									this.addAbility(Ability.Deathrattle, async (_, owner) => {
+										owner.summon(
+											await Card.create(
+												game.ids.Official.builtin.card.plant[0],
+												owner,
+											),
+										);
+										owner.summon(
+											await Card.create(
+												game.ids.Official.builtin.card.plant[0],
+												owner,
+											),
+										);
+									});
+									break;
+								}
+
+								case "Lightning Speed": {
+									this.addKeyword(Keyword.Windfury);
+									break;
+								}
+
+								case "Liquid Membrane": {
+									this.addKeyword(Keyword.Elusive);
+									break;
+								}
+
+								case "Massive": {
+									this.addKeyword(Keyword.Taunt);
+									break;
+								}
+
+								case "Volcanic Might": {
+									await this.addStats(1, 1);
+									break;
+								}
+
+								case "Rocky Carapace": {
+									await this.addStats(0, 3);
+									break;
+								}
+
+								case "Shrouding Mist": {
+									this.addKeyword(Keyword.Stealth);
+									this.setStealthDuration(1);
+									break;
+								}
+
+								case "Poison Spit": {
+									this.addKeyword(Keyword.Poisonous);
+									break;
+								}
+							}
+
+							return false;
+						},
+					})),
+				},
+			],
 		);
-		if (result.value === "Back") {
-			return Card.REFUND;
-		}
-
-		const choice = values[parseInt(result.value, 10)][0];
-
-		switch (choice) {
-			case "Crackling Shield": {
-				this.addKeyword(Keyword.DivineShield);
-				break;
-			}
-
-			case "Flaming Claws": {
-				await this.addStats(3, 0);
-				break;
-			}
-
-			case "Living Spores": {
-				this.addAbility(Ability.Deathrattle, async (_, owner) => {
-					owner.summon(
-						await Card.create(game.ids.Official.builtin.card.plant[0], owner),
-					);
-					owner.summon(
-						await Card.create(game.ids.Official.builtin.card.plant[0], owner),
-					);
-				});
-				break;
-			}
-
-			case "Lightning Speed": {
-				this.addKeyword(Keyword.Windfury);
-				break;
-			}
-
-			case "Liquid Membrane": {
-				this.addKeyword(Keyword.Elusive);
-				break;
-			}
-
-			case "Massive": {
-				this.addKeyword(Keyword.Taunt);
-				break;
-			}
-
-			case "Volcanic Might": {
-				await this.addStats(1, 1);
-				break;
-			}
-
-			case "Rocky Carapace": {
-				await this.addStats(0, 3);
-				break;
-			}
-
-			case "Shrouding Mist": {
-				this.addKeyword(Keyword.Stealth);
-				this.setStealthDuration(1);
-				break;
-			}
-
-			case "Poison Spit": {
-				this.addKeyword(Keyword.Poisonous);
-				break;
-			}
-
-			default: {
-				break;
-			}
-		}
 
 		return choice;
 	}

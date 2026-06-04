@@ -278,30 +278,37 @@ export async function main(): Promise<void> {
 
 			commands = game.data.alignColumns(commands, "-");
 
-			const result = await game.prompt.customSelect(
-				"Which command do you want to run?",
-				commands,
+			let exit = false;
+			await game.prompt.createUILoop(
+				{
+					message: "Which command do you want to run?",
+				},
+				async () => [
+					{
+						tab: {
+							index: 1,
+							name: "Commands",
+						},
+						items: commands.map((command) => ({
+							name: command,
+							onSelect: async () => {
+								if (command.startsWith("exit")) {
+									exit = true;
+									return false;
+								}
+
+								await handleCmds(command);
+								return false;
+							},
+						})),
+					},
+				],
 			);
 
-			let command = result.value;
-			if (command === "Back") {
-				continue;
-			}
-
-			command = commands[parseInt(command, 10)].split(" ")[0].toLowerCase();
-			if (command === "exit") {
+			if (exit) {
 				break;
 			}
 
-			if (["import", "eval"].includes(command)) {
-				const args = await game.input({
-					message: command,
-				});
-
-				command = `${command} ${args}`;
-			}
-
-			await handleCmds(command);
 			continue;
 		}
 
@@ -367,7 +374,9 @@ const commands: CommandList = {
 		return true;
 	},
 	async import(args): Promise<boolean> {
-		const deckcode = args.join(" ");
+		const deckcode = await game.input({
+			message: "import ",
+		});
 
 		game.config.decks.validate = false;
 		let newDeck: Card[] | undefined;
@@ -421,7 +430,10 @@ const commands: CommandList = {
 		return true;
 	},
 	async eval(args): Promise<boolean> {
-		const code = await game.interact.parseEvalArgs(args);
+		const input = await game.input({
+			message: "eval ",
+		});
+		const code = await game.interact.parseEvalArgs(input.split(" "));
 
 		try {
 			// biome-ignore lint/security/noGlobalEval: This is a security issue yes, but it's a debug command.

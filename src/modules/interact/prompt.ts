@@ -267,6 +267,10 @@ export const prompt = {
 			...rawOptions,
 		};
 
+		const returnData = {
+			backedOut: false,
+		};
+
 		let choices = await choicesGenerator();
 
 		// Filter out invalid options.
@@ -343,6 +347,7 @@ export const prompt = {
 			const choseBack = answer === "back";
 			if (choseBack && !backOption) {
 				game.audio.playSFX("ui.back");
+				returnData.backedOut = true;
 				break;
 			}
 
@@ -370,6 +375,8 @@ export const prompt = {
 				break;
 			}
 		}
+
+		return returnData;
 	},
 
 	/**

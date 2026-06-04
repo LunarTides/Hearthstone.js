@@ -66,19 +66,40 @@ export async function main(debug = false): Promise<boolean> {
 			return false;
 		}
 
-		const costResult = await game.prompt.customSelect(
-			"Do you want to filter by cost?",
-			["Type in cost", "Unknown (Slow)"],
-		);
-		if (costResult.value === "Back") {
-			return false;
-		}
-
 		let cardCost: number | undefined;
-		if (costResult.value === "0") {
-			cardCost = await number({
-				message: "How much does the card cost?",
-			});
+
+		const { backedOut } = await game.prompt.createUILoop(
+			{
+				message: "Do you want to filter by cost?",
+			},
+			async () => [
+				{
+					tab: {
+						index: 1,
+						name: "Filter Type",
+					},
+					items: [
+						{
+							name: "Type in cost",
+							onSelect: async () => {
+								cardCost = await number({
+									message: "How much does the card cost?",
+								});
+								return false;
+							},
+						},
+						{
+							name: "Unknown (Slow)",
+							onSelect: async () => {
+								return false;
+							},
+						},
+					],
+				},
+			],
+		);
+		if (backedOut) {
+			return false;
 		}
 
 		let dbfId = await search({
