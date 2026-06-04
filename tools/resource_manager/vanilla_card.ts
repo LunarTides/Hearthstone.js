@@ -2,11 +2,11 @@ import { createGame } from "@Game/game.ts";
 import { Type, type VanillaCard } from "@Game/types.ts";
 import { number, Separator, search } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
+import * as hub from "../../hub.ts";
 import {
 	create as createResource,
 	postCreate,
-} from "universe/emergence/create/lib.ts";
-import * as hub from "../../hub.ts";
+} from "../../universe/emergence/create/lib.ts";
 
 if (import.meta.main) {
 	await createGame();

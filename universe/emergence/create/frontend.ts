@@ -13,7 +13,7 @@ import {
 } from "@Game/types.ts";
 import boxen from "boxen";
 import { parseTags } from "chalk-tags";
-import * as hub from "hub.ts";
+import * as hub from "../../../hub.ts";
 import { EMERGENCE_VERSION } from "../lib.ts";
 import {
 	resourceTypeHooks as libResourceTypeHooks,

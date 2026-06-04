@@ -8,7 +8,7 @@ import fs from "node:fs/promises";
 import { resolve } from "node:path";
 import { confirm } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { validate } from "tools/id/lib.ts";
+import { validate } from "../id/lib.ts";
 import { configureMetadata, main as prompt } from "./prompt.ts";
 import { RegBot } from "./regbot.ts";
 

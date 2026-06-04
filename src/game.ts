@@ -19,8 +19,8 @@ import {
 } from "@Game/types.ts";
 
 import _ from "lodash";
-import { register } from "universe/emergence/register/lib.ts";
 import ids from "../packs/ids.ts";
+import { register } from "../universe/emergence/register/lib.ts";
 import { attack } from "./modules/attack.ts";
 import { audio } from "./modules/audio/audio.ts";
 import { card } from "./modules/card/index.ts";
@@ -133,7 +133,9 @@ export class Game {
 	 *
 	 * Look in the `config` folder.
 	 */
-	config: GameConfig; /**
+	config!: GameConfig;
+
+	/**
 	 * All of the blueprints cards that have been implemented so far.
 	 * Don't use this if you don't know what you're doing.
 	 *

@@ -23,7 +23,7 @@ export class SimulationAI {
 	config: typeof game.config.ai.simulation;
 
 	// TODO: Replace with a better history.
-	history: [];
+	history = [];
 
 	constructor(player: Player) {
 		this.player = player;

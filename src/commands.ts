@@ -13,7 +13,7 @@ import {
 } from "@Game/types.ts";
 import boxen from "boxen";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
-import { reload } from "universe/emergence/reload/lib.ts";
+import { reload } from "../universe/emergence/reload/lib.ts";
 import { readableHistory } from "./modules/event.ts";
 
 /*

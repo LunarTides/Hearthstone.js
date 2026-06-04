@@ -2,7 +2,7 @@ import type { Metadata } from "@Game/types/pack.ts";
 import { confirm, Separator } from "@inquirer/prompts";
 import { semver } from "bun";
 import { parseTags } from "chalk-tags";
-import * as hub from "hub.ts";
+import * as hub from "../../hub.ts";
 import {
 	compressPack,
 	exportPack,

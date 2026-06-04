@@ -181,7 +181,7 @@ export class Player {
 	 * await player.hero.activate(Ability.Heropower);
 	 * ```
 	 */
-	hero: Card;
+	hero!: Card;
 
 	/**
 	 * The class the player is. This is set to either: Mage, Priest, Warlock, Warrior, ...

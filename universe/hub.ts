@@ -1,4 +1,4 @@
-import * as hub from "hub.ts";
+import * as hub from "../hub.ts";
 import * as emergence from "./emergence/hub.ts";
 
 export async function takeover() {

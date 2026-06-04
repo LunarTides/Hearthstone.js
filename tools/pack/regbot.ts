@@ -113,24 +113,24 @@ export class RegBot {
 }
 
 class Pack {
-	id: string;
-	ownerName: string;
-	name: string;
-	metadataVersion: number;
-	gameVersion: string;
-	packVersion: string;
-	description: string;
-	license: string;
-	author: string;
-	permissions: string[];
-	downloadCount: number;
-	unpackedSize: number;
-	isLatestVersion: boolean;
-	approved: boolean;
-	approvedBy: string;
-	approvedAt: string;
-	denied: boolean;
-	createdAt: string;
+	id!: string;
+	ownerName!: string;
+	name!: string;
+	metadataVersion!: number;
+	gameVersion!: string;
+	packVersion!: string;
+	description!: string;
+	license!: string;
+	author!: string;
+	permissions!: string[];
+	downloadCount!: number;
+	unpackedSize!: number;
+	isLatestVersion!: boolean;
+	approved!: boolean;
+	approvedBy!: string;
+	approvedAt!: string;
+	denied!: boolean;
+	createdAt!: string;
 
 	constructor(data: any) {
 		for (const [key, value] of Object.entries(data)) {
@@ -212,15 +212,15 @@ class Pack {
 }
 
 class FullPack extends Pack {
-	owner: User | Group;
-	totalDownloadCount: number;
-	likes: {
+	owner!: User | Group;
+	totalDownloadCount: number = 0;
+	likes!: {
 		positive: number;
 		hasLiked: boolean;
 		negative: number;
 		hasDisliked: boolean;
 	};
-	approvedByUser: User;
+	approvedByUser!: User;
 	// TODO: Add comments.
 
 	constructor(data: any) {
@@ -231,7 +231,7 @@ class FullPack extends Pack {
 		}
 	}
 
-	display(formatOptions?: BoxenOptions) {
+	override display(formatOptions?: BoxenOptions) {
 		let result = "";
 
 		result += `${this.name} (${this.packVersion})\n`;
@@ -246,12 +246,12 @@ class FullPack extends Pack {
 }
 
 class PackOwner {
-	username: string;
+	username: string = "";
 	karma?: number;
 }
 
 class User extends PackOwner {
-	role: string;
+	role: string = "";
 }
 
 class Group extends PackOwner {}

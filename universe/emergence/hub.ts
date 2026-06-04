@@ -1,5 +1,5 @@
 import { Separator } from "@inquirer/prompts";
-import * as hub from "hub.ts";
+import * as hub from "../../hub.ts";
 import * as create from "./create/hub.ts";
 import { EMERGENCE_VERSION } from "./lib.ts";
 

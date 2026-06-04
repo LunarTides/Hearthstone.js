@@ -76,7 +76,7 @@ export class Card {
 	 * Might include color tags like `Example <red>Example 2</red>`.
 	 * Use `game.color.stripAll` to remove these.
 	 */
-	text: string;
+	text = "";
 
 	/**
 	 * The cost of the card.
@@ -269,12 +269,12 @@ export class Card {
 	/**
 	 * The turn that the card was played.
 	 */
-	turnPlayed: number;
+	turnPlayed: number | undefined;
 
 	/**
 	 * The turn that the card was killed.
 	 */
-	turnKilled: number;
+	turnKilled: number | undefined;
 
 	/**
 	 * The card's active enchantments.
@@ -311,7 +311,7 @@ export class Card {
 	/**
 	 * The card's uuid. Gets randomly generated when the card gets created.
 	 */
-	uuid: string;
+	uuid = Bun.randomUUIDv7();
 
 	/**
 	 * Where the card currently is.
@@ -373,8 +373,6 @@ export class Card {
 		// Set maxHealth if the card is a minion or weapon
 		this.maxHealth = this.blueprint.health;
 		this.owner = owner;
-
-		this.randomizeUUID();
 
 		game.activeCards.push(this);
 	}

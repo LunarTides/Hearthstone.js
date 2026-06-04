@@ -3,8 +3,8 @@ import { createGame } from "@Game/game.ts";
 import { type Blueprint, type Class, Rarity, Tag, Type } from "@Game/types.ts";
 import { confirm, number, Separator } from "@inquirer/prompts";
 import { parseTags } from "chalk-tags";
-import { create, postCreate } from "universe/emergence/create/lib.ts";
 import * as hub from "../../hub.ts";
+import { create, postCreate } from "../../universe/emergence/create/lib.ts";
 
 if (import.meta.main) {
 	await createGame();
