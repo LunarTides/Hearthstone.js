@@ -6,14 +6,16 @@ import {
 	type Command,
 	type CommandList,
 	Event,
+	GameAttackReturn,
 	type HistoryObject,
 	Keyword,
+	type Target,
 	Type,
-	UseLocationError,
 } from "@Game/types.ts";
 import boxen from "boxen";
 import { parseTags, resumeTagParsing, stopTagParsing } from "chalk-tags";
 import { reload } from "../universe/emergence/reload/lib.ts";
+import { SentimentAI } from "./ai.ts";
 import { readableHistory } from "./modules/event.ts";
 
 /*
@@ -124,47 +126,182 @@ export const commands: CommandList = {
 	},
 
 	async attack(): Promise<boolean> {
-		await game.prompt.gameloopAttack();
-		return true;
-	},
+		let attacker: Target | -1 | null;
+		let target: Target | -1 | null;
 
-	async use(): Promise<boolean> {
-		// Use location
-		const errorCode = await game.prompt.useLocation();
-		if (
-			errorCode === UseLocationError.Success ||
-			errorCode === UseLocationError.Refund ||
-			game.player.ai
-		) {
+		if (game.player.ai) {
+			let aiSelections: Array<-1 | Target> = [];
+
+			if (game.player.ai instanceof SentimentAI) {
+				const alternativeModel = `legacyAttack${game.config.ai.sentiment.attackModel}`;
+
+				// Run the correct ai attack model
+				const model = game.player.ai[alternativeModel as keyof SentimentAI];
+				aiSelections = model
+					? (model as () => Array<-1 | Target>)()
+					: await game.player.ai.attack();
+			} else {
+				// Simulation AI.
+				const result = await game.player.ai.attack();
+				aiSelections = [result.attacker, result.target];
+			}
+
+			attacker = aiSelections[0];
+			target = aiSelections[1];
+
+			if (attacker === -1 || target === -1) {
+				return false;
+			}
+
+			if (!attacker || !target) {
+				return false;
+			}
+		} else {
+			attacker = await game.prompt.target(
+				"Which target do you want to attack with?",
+				undefined,
+				{ alignment: Alignment.Friendly },
+				async (target: Target) => {
+					if (target instanceof Card) {
+						return !target.canAttack();
+					}
+
+					return !target.canActuallyAttack();
+				},
+			);
+			if (!attacker) {
+				return false;
+			}
+
+			target = await game.prompt.target(
+				"Which target do you want to attack?",
+				undefined,
+				{ alignment: Alignment.Enemy },
+				async (target: Target) => !target.canBeAttacked(),
+			);
+			if (!target) {
+				return false;
+			}
+		}
+
+		const errorCode = await game.attack(attacker, target);
+
+		const ignore = [GameAttackReturn.DivineShield];
+		if (errorCode === GameAttackReturn.Success || ignore.includes(errorCode)) {
 			return true;
 		}
 
 		let error: string;
 
 		switch (errorCode) {
-			case UseLocationError.NoLocationsFound: {
-				error = "You have no location cards";
+			case GameAttackReturn.Taunt: {
+				error = "There is a minion with taunt in the way";
 				break;
 			}
 
-			case UseLocationError.InvalidType: {
-				error = "That card is not a location card";
+			case GameAttackReturn.Stealth: {
+				error = "That minion has stealth";
 				break;
 			}
 
-			case UseLocationError.Cooldown: {
-				error = "That location is on cooldown";
+			case GameAttackReturn.Frozen: {
+				error = "That minion is frozen";
+				break;
+			}
+
+			case GameAttackReturn.PlayerNoAttack: {
+				error = "You don't have any attack";
+				break;
+			}
+
+			case GameAttackReturn.CardNoAttack: {
+				error = "That minion has no attack";
+				break;
+			}
+
+			case GameAttackReturn.PlayerHasAttacked: {
+				error = "Your hero has already attacked this turn";
+				break;
+			}
+
+			case GameAttackReturn.CardHasAttacked: {
+				error = "That minion has already attacked this turn";
+				break;
+			}
+
+			case GameAttackReturn.Exhausted: {
+				error = "That minion is exhausted";
+				break;
+			}
+
+			case GameAttackReturn.CantAttackHero: {
+				error = "That minion cannot attack heroes";
+				break;
+			}
+
+			case GameAttackReturn.Immune: {
+				error = "That minion is immune";
+				break;
+			}
+
+			case GameAttackReturn.Dormant: {
+				error = "That minion is dormant";
+				break;
+			}
+
+			case GameAttackReturn.Titan: {
+				error = "That minion has titan abilities that hasn't been used";
 				break;
 			}
 
 			default: {
-				error = `An unknown error occourred. Error code: UnexpectedUseLocationResult@${errorCode}`;
+				error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorCode}`;
+
 				break;
 			}
 		}
 
 		console.log(`<red>${error}.</red>`);
-		await game.pause();
+		await game.pause("");
+		return true;
+	},
+
+	async use(): Promise<boolean> {
+		const location = await game.prompt.targetCard(
+			"Which location do you want to use?",
+			undefined,
+			{
+				alignment: Alignment.Friendly,
+				allowLocations: true,
+			},
+			async (target) => target.type !== Type.Location || target.cooldown > 0,
+		);
+		if (!location) {
+			return false;
+		}
+
+		if (location.type !== Type.Location) {
+			console.log(`<red>That card is not a location card.</red>`);
+			await game.pause();
+			return false;
+		}
+
+		if (location.cooldown > 0) {
+			console.log(`<red>That location is on cooldown.</red>`);
+			await game.pause();
+			return false;
+		}
+
+		if ((await location.trigger(Ability.Use)) === Card.REFUND) {
+			return false;
+		}
+
+		if (location.durability === undefined) {
+			throw new Error("Location card's durability is undefined");
+		}
+
+		location.durability -= 1;
+		location.cooldown = location.backups.init.cooldown;
 		return true;
 	},
 
@@ -497,7 +634,8 @@ export const commands: CommandList = {
 		strbuilder += `, on build <yellow>${build}</yellow>`;
 		strbuilder += `, with latest commit hash <yellow>${game.info.latestCommit()}</yellow>.`;
 
-		console.log(`${strbuilder}.\n`);
+		console.log(strbuilder);
+		console.log();
 		console.log("Version Description:");
 
 		let introText: string;

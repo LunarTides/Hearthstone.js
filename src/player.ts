@@ -699,6 +699,7 @@ export class Player {
 	}
 
 	/**
+	 * Draws `amount` cards from the top of this player's deck.
 	 * Removes and pushes the last `amount` cards from the deck to this player's hand.
 	 * Broadcasts the `DrawCard` event for each card drawn
 	 *

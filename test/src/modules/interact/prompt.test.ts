@@ -12,9 +12,7 @@ describe("src/modules/interact/prompt", () => {
 	test.todo("targetPlayer", async () => {});
 	test.todo("targetCard", async () => {});
 	test.todo("target", async () => {});
-	test.todo("useLocation", async () => {});
 	test.todo("mulligan", async () => {});
 	test.todo("dredge", async () => {});
 	test.todo("discover", async () => {});
-	test.todo("gameloopAttack", async () => {});
 });

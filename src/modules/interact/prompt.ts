@@ -1,17 +1,13 @@
-import { SentimentAI } from "@Game/ai.ts";
 import { Card } from "@Game/card.ts";
 import type { Player } from "@Game/player.ts";
 import {
-	Ability,
 	Alignment,
 	Event,
-	GameAttackReturn,
 	Keyword,
 	type Target,
 	type TargetFlags,
 	TargetType,
 	Type,
-	UseLocationError,
 } from "@Game/types.ts";
 import { Separator } from "@inquirer/core";
 import { checkbox, confirm, number } from "@inquirer/prompts";
@@ -1557,52 +1553,6 @@ export const prompt = {
 	},
 
 	/**
-	 * Asks the user to select a location card to use, and activate it.
-	 *
-	 * @returns Success
-	 */
-	async useLocation(): Promise<UseLocationError> {
-		const locations = game.player.board.filter((m) => m.type === Type.Location);
-		if (locations.length <= 0) {
-			return UseLocationError.NoLocationsFound;
-		}
-
-		const location = await this.targetCard(
-			"Which location do you want to use?",
-			undefined,
-			{
-				alignment: Alignment.Friendly,
-				allowLocations: true,
-			},
-			async (target) => target.type !== Type.Location || target.cooldown > 0,
-		);
-
-		if (!location) {
-			return UseLocationError.Refund;
-		}
-
-		if (location.type !== Type.Location) {
-			return UseLocationError.InvalidType;
-		}
-
-		if (location.cooldown > 0) {
-			return UseLocationError.Cooldown;
-		}
-
-		if ((await location.trigger(Ability.Use)) === Card.REFUND) {
-			return UseLocationError.Refund;
-		}
-
-		if (location.durability === undefined) {
-			throw new Error("Location card's durability is undefined");
-		}
-
-		location.durability -= 1;
-		location.cooldown = location.backups.init.cooldown;
-		return UseLocationError.Success;
-	},
-
-	/**
 	 * Asks the player to mulligan their cards
 	 *
 	 * @param player The player to ask
@@ -1750,154 +1700,5 @@ export const prompt = {
 
 		const card = cards[parseInt(result.value, 10)];
 		return card.perfectCopy();
-	},
-
-	/**
-	 * Asks the user to attack a minion or hero. Used in the gameloop.
-	 * I don't recommend using this function.
-	 *
-	 * @returns Cancel | Success
-	 */
-	async gameloopAttack() {
-		let attacker: Target | -1 | null;
-		let target: Target | -1 | null;
-
-		if (game.player.ai) {
-			let aiSelections: Array<-1 | Target> = [];
-
-			if (game.player.ai instanceof SentimentAI) {
-				const alternativeModel = `legacyAttack${game.config.ai.sentiment.attackModel}`;
-
-				// Run the correct ai attack model
-				const model = game.player.ai[alternativeModel as keyof SentimentAI];
-				aiSelections = model
-					? (model as () => Array<-1 | Target>)()
-					: await game.player.ai.attack();
-			} else {
-				// Simulation AI.
-				const result = await game.player.ai.attack();
-				aiSelections = [result.attacker, result.target];
-			}
-
-			attacker = aiSelections[0];
-			target = aiSelections[1];
-
-			if (attacker === -1 || target === -1) {
-				return -1;
-			}
-
-			if (!attacker || !target) {
-				return -1;
-			}
-		} else {
-			attacker = await this.target(
-				"Which target do you want to attack with?",
-				undefined,
-				{ alignment: Alignment.Friendly },
-				async (target: Target) => {
-					if (target instanceof Card) {
-						return !target.canAttack();
-					}
-
-					return !target.canActuallyAttack();
-				},
-			);
-
-			if (!attacker) {
-				return -1;
-			}
-
-			target = await this.target(
-				"Which target do you want to attack?",
-				undefined,
-				{ alignment: Alignment.Enemy },
-				async (target: Target) => !target.canBeAttacked(),
-			);
-
-			if (!target) {
-				return -1;
-			}
-		}
-
-		const errorCode = await game.attack(attacker, target);
-
-		const ignore = [GameAttackReturn.DivineShield];
-		if (errorCode === GameAttackReturn.Success || ignore.includes(errorCode)) {
-			return { attacker, target };
-		}
-
-		let error: string;
-
-		switch (errorCode) {
-			case GameAttackReturn.Taunt: {
-				error = "There is a minion with taunt in the way";
-				break;
-			}
-
-			case GameAttackReturn.Stealth: {
-				error = "That minion has stealth";
-				break;
-			}
-
-			case GameAttackReturn.Frozen: {
-				error = "That minion is frozen";
-				break;
-			}
-
-			case GameAttackReturn.PlayerNoAttack: {
-				error = "You don't have any attack";
-				break;
-			}
-
-			case GameAttackReturn.CardNoAttack: {
-				error = "That minion has no attack";
-				break;
-			}
-
-			case GameAttackReturn.PlayerHasAttacked: {
-				error = "Your hero has already attacked this turn";
-				break;
-			}
-
-			case GameAttackReturn.CardHasAttacked: {
-				error = "That minion has already attacked this turn";
-				break;
-			}
-
-			case GameAttackReturn.Exhausted: {
-				error = "That minion is exhausted";
-				break;
-			}
-
-			case GameAttackReturn.CantAttackHero: {
-				error = "That minion cannot attack heroes";
-				break;
-			}
-
-			case GameAttackReturn.Immune: {
-				error = "That minion is immune";
-				break;
-			}
-
-			case GameAttackReturn.Dormant: {
-				error = "That minion is dormant";
-				break;
-			}
-
-			case GameAttackReturn.Titan: {
-				error = "That minion has titan abilities that hasn't been used";
-				break;
-			}
-
-			default: {
-				error = `An unknown error occurred. Error code: UnexpectedAttackingResult@${errorCode}`;
-
-				break;
-			}
-		}
-
-		console.log(`<red>${error}.</red>`);
-		await game.pause("");
-		return new Error(error);
 	},
 };

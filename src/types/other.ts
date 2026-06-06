@@ -98,14 +98,6 @@ export interface GameAttackFlags {
 	spellDamage?: boolean;
 }
 
-export enum UseLocationError {
-	Success = "Success",
-	NoLocationsFound = "NoLocationsFound",
-	InvalidType = "InvalidType",
-	Cooldown = "Cooldown",
-	Refund = "Refund",
-}
-
 export interface Command {
 	name: Lowercase<string>;
 	description: string;
