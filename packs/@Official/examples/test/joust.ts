@@ -5,7 +5,6 @@ import {
 	Class,
 	EventListenerMessage,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -22,7 +21,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// Reveal a minion from each player's deck. If yours costs more, gain +1/+1.

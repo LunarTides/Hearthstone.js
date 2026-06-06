@@ -7,7 +7,6 @@ import {
 	Class,
 	EventListenerMessage,
 	Rarity,
-	SpellSchool,
 	Type,
 } from "@Game/types.ts";
 
@@ -22,7 +21,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7016-b55e-04654406a57d",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Force each enemy minion to attack a random enemy minion.

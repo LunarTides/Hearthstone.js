@@ -9,7 +9,6 @@ import {
 	EventListenerMessage,
 	Keyword,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -27,7 +26,7 @@ export const blueprint: Blueprint = {
 	// TODO: Show titan stats in `Card.readable`
 	attack: 7,
 	health: 5,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async create(self, owner) {
 		// Add additional fields here

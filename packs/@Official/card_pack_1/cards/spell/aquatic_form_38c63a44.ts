@@ -1,13 +1,6 @@
 // Created by the Vanilla Card Creator
 
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -21,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7018-a79d-38c63a44853e",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Dredge. If you have the Mana to play the card this turn, draw it.

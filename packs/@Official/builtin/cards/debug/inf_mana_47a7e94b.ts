@@ -8,7 +8,6 @@ import {
 	Event,
 	GamePlayCardReturn,
 	Rarity,
-	SpellSchool,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -24,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f7f-700b-95f9-47a7e94be383",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Fill up your mana. For the rest of the game, your mana never decreases.

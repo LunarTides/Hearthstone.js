@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -16,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async tick(self, owner) {
 		// Disable your hero power.

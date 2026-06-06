@@ -3,14 +3,7 @@
 // This is the Yogg-Saron, Unleashed Tentacle Swarm card.
 
 import { Card } from "@Game/card.ts";
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -24,7 +17,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7017-912f-291d65cf901d",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Fill your hand with 1/1 Chaotic Tendrils.

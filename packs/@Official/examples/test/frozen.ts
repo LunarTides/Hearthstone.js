@@ -6,7 +6,6 @@ import {
 	Event,
 	GameAttackReturn,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -24,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async create(self, owner) {
 		await self.freeze();

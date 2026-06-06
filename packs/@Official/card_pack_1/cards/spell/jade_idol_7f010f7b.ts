@@ -1,13 +1,6 @@
 // Created by the Vanilla Card Creator
 
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -21,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-700f-9709-7f010f7b4e89",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Choose One - Summon a Jade Golem; or Shuffle 3 copies of this card into your deck.

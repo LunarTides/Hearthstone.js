@@ -10,7 +10,6 @@ import {
 	EventListenerMessage,
 	Keyword,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -27,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	attack: 7,
 	health: 5,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// If you've cast 10 spells this game, spin the Wheel of Yogg-Saron. ({amount} left!)

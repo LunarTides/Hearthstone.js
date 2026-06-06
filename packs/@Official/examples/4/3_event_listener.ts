@@ -7,7 +7,6 @@ import {
 	Event,
 	EventListenerMessage,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -24,7 +23,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// For the rest of the game, your battlecries trigger twice.

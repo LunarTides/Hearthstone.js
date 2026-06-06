@@ -1,13 +1,6 @@
 // Created by the Custom Card Creator
 
-import {
-	type Blueprint,
-	Class,
-	Keyword,
-	Rarity,
-	Tribe,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Keyword, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -23,7 +16,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async create(self, owner) {
 		// Can attack any number of times.

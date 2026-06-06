@@ -6,7 +6,6 @@ import {
 	EventListenerMessage,
 	Keyword,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 8,
 	health: 8,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async create(self, owner) {
 		/*

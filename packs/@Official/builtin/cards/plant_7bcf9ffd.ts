@@ -2,7 +2,7 @@
 
 // This is used in Adapt
 
-import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Plant",
@@ -17,5 +17,5 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 };

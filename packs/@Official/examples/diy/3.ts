@@ -7,7 +7,6 @@ import {
 	Event,
 	EventListenerMessage,
 	Rarity,
-	SpellSchool,
 	Tag,
 	TargetType,
 	Type,
@@ -24,7 +23,7 @@ export const blueprint: Blueprint = {
 	tags: [Tag.DIY],
 	id: "019bc665-4f80-700b-8d85-2fd08381c2e0",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Choose a minion to kill.

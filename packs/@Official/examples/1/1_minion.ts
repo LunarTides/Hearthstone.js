@@ -1,6 +1,6 @@
 // Created by Hand
 
-import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	/*
@@ -61,5 +61,5 @@ export const blueprint: Blueprint = {
 	health: 1,
 
 	// The tribes of the minion. E.g. `Undead`, `Naga`, `Beast`, etc...
-	tribes: [Tribe.None],
+	tribes: [],
 };

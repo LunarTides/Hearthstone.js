@@ -6,7 +6,6 @@ import {
 	type Blueprint,
 	Class,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -40,7 +39,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	// If the function is named correctly, you can just write the name of the ability.
 	battlecry,

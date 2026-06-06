@@ -3,7 +3,7 @@ import {
 	Class,
 	EnchantmentPriority,
 	Rarity,
-	SpellSchool,
+	type SpellSchool,
 	type Tribe,
 	Type,
 	type VanillaCard,
@@ -193,7 +193,7 @@ export const vanilla = {
 		}
 
 		// Spell info
-		let spellSchools = [SpellSchool.None];
+		let spellSchools: SpellSchool[] = [];
 		if (card.spellSchool) {
 			spellSchools = [game.lodash.startCase(card.spellSchool) as SpellSchool];
 		}

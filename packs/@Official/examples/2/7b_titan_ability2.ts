@@ -1,13 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -21,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f80-702f-aa1a-88585939e5af",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Heal 3 damage.

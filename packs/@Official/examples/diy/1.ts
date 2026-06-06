@@ -1,13 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	Rarity,
-	Tag,
-	Tribe,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tag, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "DIY 1",
@@ -22,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	attack: 0,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// Give this minion +1/+1.

@@ -9,7 +9,6 @@ import {
 	Keyword,
 	Rarity,
 	Tag,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -27,7 +26,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// Give a friendly minion +1 Attack and Rush.

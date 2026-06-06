@@ -1,13 +1,6 @@
 // Created by Hand (before the Card Creator Existed)
 
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -21,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f7f-7003-9fbe-be72400ab84e",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Gain 1 Mana Crystal this turn only.

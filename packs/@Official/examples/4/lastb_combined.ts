@@ -8,7 +8,6 @@ import {
 	EventListenerMessage,
 	QuestType,
 	Rarity,
-	SpellSchool,
 	Tag,
 	Type,
 } from "@Game/types.ts";
@@ -25,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [Tag.Quest],
 	id: "019bc665-4f80-7016-9d85-e5cb6c7e3b20",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		const success = await owner.addQuest(

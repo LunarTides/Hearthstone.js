@@ -7,7 +7,6 @@ import {
 	Class,
 	Rarity,
 	Tag,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -25,7 +24,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// Summon a random 2-Cost minion.

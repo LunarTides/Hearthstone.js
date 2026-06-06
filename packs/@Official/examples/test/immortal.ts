@@ -5,7 +5,6 @@ import {
 	Class,
 	Rarity,
 	RemoveReason,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async remove(self, owner, key) {
 		// This minion cannot be removed from the battlefield.

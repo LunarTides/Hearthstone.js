@@ -7,7 +7,6 @@ import {
 	type Blueprint,
 	Class,
 	Rarity,
-	SpellSchool,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f7f-7011-81af-dde076586bb3",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Select a friendly minion. Give it +1 Attack and +2 Health.

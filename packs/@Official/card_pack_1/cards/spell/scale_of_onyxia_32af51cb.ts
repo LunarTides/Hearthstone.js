@@ -1,14 +1,7 @@
 // Created by the Vanilla Card Creator
 
 import { Card } from "@Game/card.ts";
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 // TODO: Sometimes, the whelps don't take damage when attacking.
@@ -23,7 +16,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7006-983a-32af51cb4013",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Fill your board with 2/1 Whelps with Rush.

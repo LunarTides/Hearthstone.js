@@ -11,7 +11,6 @@ import {
 	QuestType,
 	Rarity,
 	Rune,
-	SpellSchool,
 	Tag,
 	type Target,
 	Type,
@@ -828,7 +827,7 @@ describe("src/player", () => {
 			tags: [Tag.Quest],
 			id: game.ids.null,
 
-			spellSchools: [SpellSchool.None],
+			spellSchools: [],
 
 			async cast(self, owner) {
 				await owner.addQuest(

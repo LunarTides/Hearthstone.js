@@ -106,7 +106,6 @@ export enum CostType {
  * The school of the spell.
  */
 export enum SpellSchool {
-	None = "None",
 	Arcane = "Arcane",
 	Fel = "Fel",
 	Fire = "Fire",
@@ -120,7 +119,6 @@ export enum SpellSchool {
  * The tribe of the minion.
  */
 export enum Tribe {
-	None = "None",
 	All = "All",
 	Beast = "Beast",
 	Demon = "Demon",

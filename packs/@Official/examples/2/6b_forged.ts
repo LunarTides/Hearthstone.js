@@ -1,6 +1,6 @@
 // Created by the Custom Card Creator
 
-import { type Blueprint, Class, Rarity, Tribe, Type } from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	// This is just an ordinary card.
@@ -16,5 +16,5 @@ export const blueprint: Blueprint = {
 
 	attack: 2,
 	health: 2,
-	tribes: [Tribe.None],
+	tribes: [],
 };

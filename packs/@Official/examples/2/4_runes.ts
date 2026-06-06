@@ -6,7 +6,6 @@ import {
 	EventListenerMessage,
 	Rarity,
 	Rune,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -23,7 +22,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 2,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async create(self, owner) {
 		// You need 2 frost runes and 1 blood rune to use this card.

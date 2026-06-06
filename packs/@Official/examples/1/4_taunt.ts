@@ -1,13 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	Keyword,
-	Rarity,
-	Tribe,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Keyword, Rarity, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "Taunt Example",
@@ -22,7 +15,7 @@ export const blueprint: Blueprint = {
 
 	cost: 1,
 	type: Type.Minion,
-	tribes: [Tribe.None],
+	tribes: [],
 	classes: [Class.Neutral],
 	rarity: Rarity.Free,
 	collectible: false,

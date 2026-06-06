@@ -1,13 +1,6 @@
 // Created by Hand
 
-import {
-	Ability,
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { Ability, type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -21,7 +14,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f7f-700c-b159-4571a8aa01f0",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Gain 10 Mana.

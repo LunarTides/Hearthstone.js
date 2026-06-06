@@ -8,7 +8,6 @@ import {
 	Class,
 	Rarity,
 	Tag,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -26,7 +25,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	async battlecry(self, owner) {
 		// Transform a friendly minion into one that costs (1) more.

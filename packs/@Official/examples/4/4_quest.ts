@@ -8,7 +8,6 @@ import {
 	EventListenerMessage,
 	QuestType,
 	Rarity,
-	SpellSchool,
 	Tag,
 	Type,
 } from "@Game/types.ts";
@@ -34,7 +33,7 @@ export const blueprint: Blueprint = {
 
 	id: "019bc665-4f80-7013-90e9-46b595d9a1e6",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Quest: Play 3 cards. Reward: Return those cards back to your hand.

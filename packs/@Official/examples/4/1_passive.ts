@@ -7,7 +7,6 @@ import {
 	Event,
 	EventListenerMessage,
 	Rarity,
-	Tribe,
 	Type,
 } from "@Game/types.ts";
 
@@ -28,7 +27,7 @@ export const blueprint: Blueprint = {
 
 	attack: 1,
 	health: 1,
-	tribes: [Tribe.None],
+	tribes: [],
 
 	/*
 	 * Note the new `key`, `value` and `eventPlayer` arguments.

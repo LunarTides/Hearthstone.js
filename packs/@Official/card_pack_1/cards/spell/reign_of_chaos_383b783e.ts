@@ -9,7 +9,6 @@ import {
 	type Blueprint,
 	Class,
 	Rarity,
-	SpellSchool,
 	Type,
 } from "@Game/types.ts";
 import assert from "node:assert";
@@ -25,7 +24,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f82-7015-a844-383b783e6f58",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Take control of an enemy minion.

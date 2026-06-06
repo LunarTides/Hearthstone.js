@@ -1,13 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Tag,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Tag, Type } from "@Game/types.ts";
 
 export const blueprint: Blueprint = {
 	name: "DIY 2",
@@ -20,7 +13,7 @@ export const blueprint: Blueprint = {
 	tags: [Tag.DIY],
 	id: "019bc665-4f80-700a-9b52-080f58ca71cd",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Restore 3 health to the hero.

@@ -1,12 +1,6 @@
 // Created by Hand
 
-import {
-	type Blueprint,
-	Class,
-	Rarity,
-	SpellSchool,
-	Type,
-} from "@Game/types.ts";
+import { type Blueprint, Class, Rarity, Type } from "@Game/types.ts";
 import assert from "node:assert";
 
 export const blueprint: Blueprint = {
@@ -23,7 +17,7 @@ export const blueprint: Blueprint = {
 	tags: [],
 	id: "019bc665-4f80-701f-91dd-c8902a010f0d",
 
-	spellSchools: [SpellSchool.None],
+	spellSchools: [],
 
 	async cast(self, owner) {
 		// Gain mana equal to the turn counter.
