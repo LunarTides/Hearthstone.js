@@ -59,7 +59,7 @@ export async function main(debug = false): Promise<boolean> {
 
 		const typeResult = await game.prompt.customSelectEnum(
 			"Choose a type to filter the card using.",
-			[...Object.keys(Type).filter((t) => t !== "Undefined"), "Unknown (Slow)"],
+			[...Object.keys(Type), "Unknown (Slow)"],
 		);
 		const cardType = typeResult.value;
 		if (cardType === "Back") {

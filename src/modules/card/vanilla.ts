@@ -289,8 +289,7 @@ export const vanilla = {
 				break;
 			}
 
-			case Type.HeroPower:
-			case Type.Undefined: {
+			case Type.HeroPower: {
 				break;
 			}
 		}

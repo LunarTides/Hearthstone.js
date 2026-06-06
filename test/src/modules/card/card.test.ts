@@ -211,16 +211,6 @@ describe("src/modules/card", () => {
 		expect(cardFunctions.validateBlueprint(card)).toEqual(
 			"<bold>'attack' SHOULD NOT</bold> exist on card type Enchantment.",
 		);
-
-		// Undefined
-		reset(Type.Undefined);
-
-		expect(cardFunctions.validateBlueprint(card)).toEqual(true);
-
-		card.attack = 1;
-		expect(cardFunctions.validateBlueprint(card)).toEqual(
-			"<bold>'attack' SHOULD NOT</bold> exist on card type Undefined.",
-		);
 	});
 
 	test.todo("generateIdsFile", async () => {});

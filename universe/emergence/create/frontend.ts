@@ -35,7 +35,6 @@ const cardTypeSpecific: {
 	[Type.Hero]: ["armor"],
 	[Type.HeroPower]: [],
 	[Type.Enchantment]: ["enchantmentPriority"],
-	[Type.Undefined]: [],
 };
 
 const resourceTypeHooks = {
@@ -92,7 +91,7 @@ const resourceTypeHooks = {
 					{ key: "keywords", relativePosition: -1 },
 				],
 				enums: {
-					exclude: ["Undefined"],
+					exclude: [],
 				},
 			};
 		},

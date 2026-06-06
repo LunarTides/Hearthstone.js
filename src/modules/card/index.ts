@@ -130,7 +130,6 @@ export const card = {
 				Ability.EnchantmentApply,
 				Ability.EnchantmentRemove,
 			],
-			[Type.Undefined]: [],
 		};
 
 		// We trust the typescript compiler to do most of the work for us, but the type specific code is handled here.
@@ -139,7 +138,6 @@ export const card = {
 		// NOTE: I don't know why Object.keys returns `string[]` here but ok.
 		const unwanted = Object.keys(requiredFieldsTable) as unknown as Type[];
 		game.data.remove(unwanted, blueprint.type);
-		game.data.remove(unwanted, Type.Undefined);
 
 		let result: string | boolean = true;
 		for (const field of required) {

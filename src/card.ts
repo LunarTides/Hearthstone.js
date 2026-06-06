@@ -91,7 +91,7 @@ export class Card {
 	/**
 	 * This is the type of card, e.g. "Spell" or "Minion".
 	 */
-	type = Type.Undefined;
+	type = Type.Spell;
 
 	/**
 	 * This is the rarity of the card. E.g. Common, Rare, etc...

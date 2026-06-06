@@ -61,7 +61,6 @@ export enum Type {
 	Location = "Location",
 	HeroPower = "HeroPower",
 	Enchantment = "Enchantment",
-	Undefined = "Undefined",
 }
 
 /**
