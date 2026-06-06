@@ -405,4 +405,22 @@ export const print = {
 			}
 		}
 	},
+
+	/**
+	 * Log a message as the arbiter to the console. Doesn't do anything if either player is controlled by an AI, or the `General > Enable Arbiter` setting is `false`.
+	 *
+	 * @param message The message to log.
+	 * @param pauseMessage The message to override the `Press enter to continue...` message.
+	 */
+	async arbiterMessage(message: string, pauseMessage?: string) {
+		if (
+			game.config.general.enableArbiter &&
+			!game.player1.ai &&
+			!game.player2.ai
+		) {
+			this.watermark();
+			console.log(`\n<cyan>[Arbiter]</cyan> ${message}`);
+			await game.pause(pauseMessage);
+		}
+	},
 };

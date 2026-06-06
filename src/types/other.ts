@@ -152,6 +152,7 @@ export type GameConfig = {
 		maxHandLength: number;
 		disableEvents: boolean;
 		disableFunFacts: boolean;
+		enableArbiter: boolean;
 		repositoryUrl: string;
 		registryUrl: string;
 		topicBranchWarning: boolean;

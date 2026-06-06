@@ -22,6 +22,13 @@ export const config: GameConfig = {
 		// you can set this to `true` to disable fun facts. You monster...
 		disableFunFacts: false,
 
+		// The arbiter's job is to make sure that two players playing locally don't cheat.
+		// If this is enabled, there will be a message in-between turns, and during the game setup, that shows what should happen next.
+		// Players can use this to make sure that they aren't cheated.
+		//
+		// The arbiter is automatically disabled if either player is controlled by an AI.
+		enableArbiter: true,
+
 		// The url to this project's repository.
 		repositoryUrl: "https://git.lunartides.dev/LunarTides/Hearthstone.js",
 

@@ -8,7 +8,7 @@ import { createGame } from "@Game/game.ts";
  * Starts the game.
  */
 export async function main(): Promise<void> {
-	const { player1, player2 } = await createGame();
+	await createGame();
 	game.interest("Creating game...OK");
 
 	game.interact.print.watermark();
@@ -16,10 +16,14 @@ export async function main(): Promise<void> {
 	// Ask the players for deck codes.
 	game.interest("Asking players for deck codes...");
 
-	for (const player of [player1, player2]) {
+	for (const player of [game.player1, game.player2]) {
 		if (player.deck.length > 0) {
 			continue;
 		}
+
+		await game.interact.print.arbiterMessage(
+			`${player.getName()} will now enter their deckcode.`,
+		);
 
 		// Put this in a while loop to make sure the function repeats if it fails.
 		while (!(await game.prompt.deckcode(player))) {
@@ -34,12 +38,20 @@ export async function main(): Promise<void> {
 	game.interest("Starting game...OK");
 
 	game.interest("Performing mulligan...");
-	await game.prompt.mulligan(player1);
-	await game.prompt.mulligan(player2);
+	for (const player of [game.player1, game.player2]) {
+		await game.interact.print.arbiterMessage(
+			`${player.getName()} will now mulligan their cards.`,
+		);
+		await game.prompt.mulligan(player);
+	}
 	game.interest("Performing mulligan...OK");
 
 	game.interest("Finished setting up game.");
 	game.interest("Starting game loop...");
+
+	await game.interact.print.arbiterMessage(
+		`The game will now begin. ${game.player1.getName()} will start.`,
+	);
 
 	try {
 		// Game loop

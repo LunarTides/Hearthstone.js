@@ -81,6 +81,10 @@ export const commands: CommandList = {
 		game.audio.playSFX("game.endTurn");
 
 		await game.endTurn();
+		await game.interact.print.arbiterMessage(
+			`${game.opponent.getName()} ended their turn (Turn ${game.turn - 1})`,
+			`${game.player.getName()}, please press enter...`,
+		);
 		return true;
 	},
 

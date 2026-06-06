@@ -7,4 +7,5 @@ describe("src/modules/interact/print", () => {
 	test.todo("playerStats", async () => {});
 	test.todo("board", async () => {});
 	test.todo("hand", async () => {});
+	test.todo("arbiterMessage", async () => {});
 });
