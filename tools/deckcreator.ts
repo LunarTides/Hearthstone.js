@@ -292,7 +292,7 @@ export async function main(): Promise<void> {
 						items: commands.map((command) => ({
 							name: command,
 							onSelect: async () => {
-								if (command.startsWith("exit")) {
+								if (command.toLowerCase().startsWith("exit")) {
 									exit = true;
 									return false;
 								}
@@ -304,7 +304,6 @@ export async function main(): Promise<void> {
 					},
 				],
 			);
-
 			if (exit) {
 				break;
 			}

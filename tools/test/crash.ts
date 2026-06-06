@@ -9,8 +9,6 @@ if (import.meta.main) {
 
 const blueprints = game.blueprints;
 
-const cards = await Card.all(true, false);
-
 const gamesEnv = process.env.GAMES ?? "";
 let games = parseInt(gamesEnv, 10);
 games = Number.isNaN(games) ? 10 : games;
@@ -22,6 +20,8 @@ export async function main(): Promise<void> {
 	// Do this, otherwise `game` isn't recognized.
 	const hub = await import("../../hub.ts");
 	hub.watermark(false);
+
+	const cards = await Card.all(true, false);
 
 	console.warn("Looking for crashes... This might take a while...");
 	if (!gamesEnv) {

@@ -13,7 +13,7 @@ if (import.meta.main) {
 }
 
 const blueprints = game.blueprints;
-const cards = await Card.all(true, false);
+let cards: Card[];
 
 function calculatePercentage(x: number, subtract = 0) {
 	return Math.round((x / (cards.length - subtract)) * 100);
@@ -23,6 +23,8 @@ export async function main(): Promise<void> {
 	// Do this, otherwise `game` isn't recognized.
 	const hub = await import("../../hub.ts");
 	hub.watermark(false);
+
+	cards = await Card.all(true, false);
 
 	let passed = 0;
 	let fails = 0;
