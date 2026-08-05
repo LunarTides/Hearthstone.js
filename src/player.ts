@@ -949,6 +949,8 @@ export class Player {
 			return false;
 		}
 
+		this.mana -= this.hero.heropower!.cost;
+
 		if (
 			(await this.hero.heropower?.trigger(Ability.HeroPower)) === Card.REFUND
 		) {
@@ -959,7 +961,6 @@ export class Player {
 			await card.trigger(Ability.Inspire);
 		}
 
-		this.mana -= this.hero.heropower!.cost;
 		this.hasUsedHeroPowerThisTurn = true;
 
 		await game.event.broadcast(Event.HeroPower, this.hero.heropower, this);
