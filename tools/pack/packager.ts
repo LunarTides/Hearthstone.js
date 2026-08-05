@@ -302,7 +302,7 @@ export async function exportPack(pack?: Pack) {
 
 export async function compressPack(path: string) {
 	const stats = await game.fs.call("stat", path);
-	if (!stats.isDirectory()) {
+	if (!stats?.isDirectory()) {
 		return;
 	}
 
@@ -330,7 +330,7 @@ export async function compressPack(path: string) {
 
 export async function extractPack(path: string) {
 	const stats = await game.fs.call("stat", path);
-	if (!stats.isFile()) {
+	if (!stats?.isFile()) {
 		return;
 	}
 

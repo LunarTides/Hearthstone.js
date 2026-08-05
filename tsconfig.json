@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
 		// Environment setup & latest features
-		"lib": ["ESNext"],
+		"lib": ["ESNext", "ES2024"],
 		"target": "ESNext",
-		"module": "Preserve",
+		"module": "nodenext",
 		"moduleDetection": "force",
 		"types": ["bun"],
 		"paths": {
@@ -11,9 +11,9 @@
 		},
 
 		// Bundler mode
-		"moduleResolution": "bundler",
+		"moduleResolution": "nodenext",
 		"allowImportingTsExtensions": true,
-		"verbatimModuleSyntax": true,
+		"verbatimModuleSyntax": false,
 		"noEmit": true,
 
 		// Best practices

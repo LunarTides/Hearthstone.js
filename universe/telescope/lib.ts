@@ -12,7 +12,7 @@ export const TELESCOPE_VERSION = "0.1.0";
 
 // Root
 export class Universe {
-	galaxies: Galaxy[];
+	galaxies: Galaxy[] = [];
 
 	static async discover(): Promise<Universe> {
 		const universe = new Universe();
@@ -47,7 +47,7 @@ export class Universe {
 
 // TBD
 export class Galaxy {
-	starClusters: StarCluster[];
+	starClusters: StarCluster[] = [];
 
 	universe: Universe | undefined;
 
@@ -65,7 +65,7 @@ export class Galaxy {
 
 // TBD
 export class StarCluster {
-	starSystems: StarSystem[];
+	starSystems: StarSystem[] = [];
 
 	galaxy: Galaxy | undefined;
 
@@ -83,8 +83,9 @@ export class StarCluster {
 
 // Packs belonging to a specific author.
 export class StarSystem {
+	// @ts-expect-error This *will* be assigned a star. It's fine.
 	star: Star;
-	planets: Planet[];
+	planets: Planet[] = [];
 
 	starCluster: StarCluster | undefined;
 
@@ -125,7 +126,7 @@ export class StarSystem {
 
 // Author Info
 export class Star {
-	name: string;
+	name: string = "";
 
 	starSystem: StarSystem | undefined;
 
@@ -136,8 +137,8 @@ export class Star {
 
 // Pack
 export class Planet {
-	name: string;
-	moons: Moon[];
+	name: string = "";
+	moons: Moon[] = [];
 
 	starSystem: StarSystem | undefined;
 
@@ -250,12 +251,12 @@ const defaultImportObject = {
 
 // Pack Resource
 export class Moon {
-	name: string;
+	name: string = "";
 	// TODO: Implement.
-	id: string;
-	type: Resource;
+	id: string = "";
+	type: Resource = "card";
 
-	bytes: number;
+	bytes: number = 0;
 	violations: Record<string, number | "reject"> = {};
 	imports: Record<string, (typeof defaultImportObject)[]> = {};
 	dependencies: {
@@ -280,6 +281,7 @@ export class Moon {
 		},
 	};
 
+	// @ts-expect-error This *will* be assigned a planet. It's fine.
 	planet: Planet;
 
 	/**
@@ -450,9 +452,11 @@ export class Moon {
 				// PERF: Oof.
 				for (const [_, objects] of Object.entries(this.imports)) {
 					for (const obj of objects) {
-						if (record.condition.keys?.includes(obj.key)) {
-							includesKey = true;
-							break;
+						if (Object.hasOwn(record, "keys")) {
+							if ((record.condition as any).keys?.includes(obj.key)) {
+								includesKey = true;
+								break;
+							}
 						}
 					}
 				}
@@ -505,7 +509,7 @@ export class Moon {
 		const idReferenceWithPackRegex =
 			/game\s*\.\s*ids\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\[\s*(\d+?)\s*\]/gm;
 		// TODO: Handle this general index.
-		const idReferenceGeneralRegex = /game\s*\.\s*ids\s*\.\s*all\s*\.\s*(.*)/gm;
+		const _idReferenceGeneralRegex = /game\s*\.\s*ids\s*\.\s*all\s*\.\s*(.*)/gm;
 
 		for (const match of content.matchAll(idReferenceWithPackRegex)) {
 			const authorName = match[1];

@@ -57,7 +57,7 @@ async function status() {
 		invalidateCache = false;
 
 		const stats = await game.fs.call("stat", "/universe/universe.json");
-		mapSize = stats.size as number;
+		mapSize = stats?.size as number;
 	}
 
 	const statusMessage = universe ? `DISCOVERED` : "UNDISCOVERED";
