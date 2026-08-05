@@ -596,7 +596,7 @@ export const commands: CommandList = {
 
 	async license(): Promise<boolean> {
 		game.os.openInBrowser(
-			`${game.config.general.repositoryUrl}/blob/main/LICENSE`,
+			`${game.config.general.repositoryUrl}/src/branch/main/LICENSE`,
 		);
 		return true;
 	},
