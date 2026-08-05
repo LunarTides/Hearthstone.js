@@ -1,4 +1,3 @@
-import { createGame } from "@Game/game.ts";
 import pathUtils from "node:path";
 import {
 	type ErrorLabel,
@@ -8,11 +7,10 @@ import {
 } from "oxc-parser";
 import type { Resource } from "universe/emergence/create/lib.ts";
 
-// TODO: Remove.
-await createGame(false);
+// TODO: Don't import resources until *after* this tools is run. Otherwise, it's kinda pointless. Oh, no! This resource is suspicious, oh I gotta warn— and they're dead.
 
 // Root
-class Universe {
+export class Universe {
 	galaxies: Galaxy[];
 
 	static async discover(): Promise<Universe> {
@@ -47,7 +45,7 @@ class Universe {
 }
 
 // TBD
-class Galaxy {
+export class Galaxy {
 	starClusters: StarCluster[];
 
 	universe: Universe | undefined;
@@ -65,8 +63,8 @@ class Galaxy {
 }
 
 // TBD
-class StarCluster {
-	solarSystems: SolarSystem[];
+export class StarCluster {
+	starSystems: StarSystem[];
 
 	galaxy: Galaxy | undefined;
 
@@ -75,7 +73,7 @@ class StarCluster {
 
 		const starCluster = new StarCluster();
 		starCluster.galaxy = galaxy;
-		starCluster.solarSystems = await SolarSystem.discoverAll(starCluster);
+		starCluster.starSystems = await StarSystem.discoverAll(starCluster);
 		starClusters.push(starCluster);
 
 		return starClusters;
@@ -83,14 +81,14 @@ class StarCluster {
 }
 
 // Packs belonging to a specific author.
-class SolarSystem {
+export class StarSystem {
 	star: Star;
 	planets: Planet[];
 
 	starCluster: StarCluster | undefined;
 
-	static async discoverAll(starCluster?: StarCluster): Promise<SolarSystem[]> {
-		const solarSystems: SolarSystem[] = [];
+	static async discoverAll(starCluster?: StarCluster): Promise<StarSystem[]> {
+		const starSystems: StarSystem[] = [];
 
 		await game.fs.searchFolder(
 			"/packs",
@@ -104,31 +102,31 @@ class SolarSystem {
 				}
 
 				// New author.
-				const solarSystem = new SolarSystem();
-				solarSystem.starCluster = starCluster;
+				const starSystem = new StarSystem();
+				starSystem.starCluster = starCluster;
 
 				const star = new Star();
-				star.solarSystem = solarSystem;
+				star.starSystem = starSystem;
 				await star.scan(path);
 
-				solarSystem.star = star;
-				solarSystem.planets = await Planet.discoverAll(solarSystem);
-				solarSystems.push(solarSystem);
+				starSystem.star = star;
+				starSystem.planets = await Planet.discoverAll(starSystem);
+				starSystems.push(starSystem);
 			},
 			false,
 		);
 
-		return solarSystems.toSorted((a, b) =>
+		return starSystems.toSorted((a, b) =>
 			a.star.name.localeCompare(b.star.name),
 		);
 	}
 }
 
 // Author Info
-class Star {
+export class Star {
 	name: string;
 
-	solarSystem: SolarSystem | undefined;
+	starSystem: StarSystem | undefined;
 
 	async scan(path: string) {
 		this.name = pathUtils.basename(path).slice(1);
@@ -136,31 +134,29 @@ class Star {
 }
 
 // Pack
-class Planet {
+export class Planet {
 	name: string;
-	baseSuspiciousness: number = 0;
-	combinedSuspiciousness: number = 0;
 	moons: Moon[];
 
-	solarSystem: SolarSystem | undefined;
+	starSystem: StarSystem | undefined;
 
 	/**
 	 *
-	 * @param solarSystem
-	 * @param star If `solarSystem` isn't set, you need to set the star here.
+	 * @param starSystem
+	 * @param star If `starSystem` isn't set, you need to set the star here.
 	 * @returns
 	 */
 	static async discoverAll(
-		solarSystem?: SolarSystem,
+		starSystem?: StarSystem,
 		star?: Star,
 	): Promise<Planet[]> {
-		if (!solarSystem && !star) {
+		if (!starSystem && !star) {
 			throw new Error(
 				"Planet isn't specified a solar system or a star. One of these need to be specified.",
 			);
 		}
 
-		const authorName = (star ?? solarSystem?.star)?.name as string;
+		const authorName = (star ?? starSystem?.star)?.name as string;
 
 		const planets: Planet[] = [];
 
@@ -172,7 +168,7 @@ class Planet {
 				}
 
 				const planet = new Planet();
-				planet.solarSystem = solarSystem;
+				planet.starSystem = starSystem;
 				await planet.scan(path);
 				planet.moons = await Moon.discoverAll(planet);
 				planets.push(planet);
@@ -186,6 +182,62 @@ class Planet {
 	async scan(path: string) {
 		this.name = pathUtils.basename(path);
 	}
+
+	get suspiciousness() {
+		let suspiciousness = 0;
+		for (const moon of this.moons) {
+			for (const susp of Object.values(moon.violations)) {
+				if (typeof susp === "number") {
+					suspiciousness += susp;
+				}
+			}
+		}
+
+		return suspiciousness;
+	}
+
+	get violations() {
+		let violations = 0;
+		for (const moon of this.moons) {
+			violations += Object.keys(moon.violations).length;
+		}
+
+		return violations;
+	}
+
+	get rejected() {
+		const rejected = [];
+		for (const moon of this.moons) {
+			if (rejected.length > 0) break;
+
+			for (const suspiciousness of Object.values(moon.violations)) {
+				if (suspiciousness === "reject") {
+					rejected.push(moon);
+					break;
+				}
+			}
+		}
+
+		return rejected;
+	}
+
+	get errors() {
+		let errors = 0;
+		for (const moon of this.moons) {
+			errors += Object.keys(moon.errors).length;
+		}
+
+		return errors;
+	}
+
+	get bytes() {
+		let bytes = 0;
+		for (const moon of this.moons) {
+			bytes += moon.bytes;
+		}
+
+		return bytes;
+	}
 }
 
 const defaultImportObject = {
@@ -196,25 +248,27 @@ const defaultImportObject = {
 };
 
 // Pack Resource
-class Moon {
+export class Moon {
 	name: string;
+	// TODO: Implement.
+	id: string;
 	type: Resource;
 
 	bytes: number;
-	suspiciousness: number = 0;
+	violations: Record<string, number | "reject"> = {};
 	imports: Record<string, (typeof defaultImportObject)[]> = {};
-	// TODO: Get dependencies.
 	dependencies: {
 		components: {
 			ids: string;
 			authorName: string;
 			packName: string;
+			resourceType: string;
 			resourceName: string;
 			index: number;
 			raw: string;
 		};
 		id: string | undefined;
-	}[];
+	}[] = [];
 	errors: { message: string; labels: ErrorLabel[] }[] = [];
 	predictions = {
 		networking: {
@@ -234,7 +288,7 @@ class Moon {
 	 * @returns
 	 */
 	static async discoverAll(planet: Planet, star?: Star): Promise<Moon[]> {
-		const authorName = (star ?? planet?.solarSystem?.star)?.name as string;
+		const authorName = (star ?? planet?.starSystem?.star)?.name as string;
 
 		const moons: Moon[] = [];
 
@@ -309,8 +363,10 @@ class Moon {
 		}
 
 		// Increase suspiciousness based on certain imports.
-		const importRecords = [
+		// TODO: Add more rules.
+		const importRules = [
 			{
+				ruleName: "imports.file_system",
 				condition: {
 					// TODO: Check that this can't be bypassed by doing something like `import "f"+"s";`
 					// or `import String.fromCharCode(0x66) + String.fromCharCode(0x73);` or something like that.
@@ -322,8 +378,17 @@ class Moon {
 				activateOn: "success",
 			},
 			{
+				ruleName: "imports.http",
 				condition: {
-					sources: ["https", "node:https", "axios"],
+					sources: [
+						"http",
+						"http2",
+						"https",
+						"node:http",
+						"node:http2",
+						"node:https",
+						"axios",
+					],
 				},
 				// TODO: Is this an okay amount of suspiciousness?
 				suspiciousness: +5,
@@ -331,25 +396,18 @@ class Moon {
 				activateOn: "success",
 			},
 			// TODO: Remove
-			{
-				condition: {
-					keys: ["Keyword"],
-				},
-				suspiciousness: -2,
-				activateOn: "failure",
-			},
-			// TODO: Remove
-			{
-				condition: {
-					sources: ["assert", "node:assert"],
-				},
-				suspiciousness: 1,
-				activateOn: "success",
-			},
+			// {
+			// 	ruleName: "imports.assert",
+			// 	condition: {
+			// 		keys: ["EventListenerMessage"],
+			// 	},
+			// 	suspiciousness: "reject",
+			// 	activateOn: "success",
+			// },
 		];
 
 		const handleImportRecord = (
-			record: (typeof importRecords)[0],
+			record: (typeof importRules)[0],
 			result: boolean,
 		) => {
 			if (
@@ -360,7 +418,10 @@ class Moon {
 			}
 
 			if (Object.hasOwn(record, "suspiciousness")) {
-				this.suspiciousness += (record as any).suspiciousness;
+				this.addViolation(
+					record.ruleName,
+					record.suspiciousness as number | "reject",
+				);
 			}
 			if (Object.hasOwn(record, "set")) {
 				const set: string[] = (record as any).set;
@@ -376,9 +437,9 @@ class Moon {
 			applied.push(record);
 		};
 
-		const applied: (typeof importRecords)[0][] = [];
+		const applied: (typeof importRules)[0][] = [];
 		for (const [source, _objects] of Object.entries(this.imports)) {
-			for (const record of importRecords) {
+			for (const record of importRules) {
 				if (applied.includes(record)) {
 					// The record has already been applied.
 					continue;
@@ -400,6 +461,17 @@ class Moon {
 					record.condition.sources?.includes(source) || includesKey,
 				);
 			}
+		}
+	}
+
+	addViolation(key: string, value: number | "reject") {
+		if (
+			!Object.keys(this.violations).includes(key) ||
+			typeof value === "number"
+		) {
+			this.violations[key] = value;
+		} else {
+			this.violations[key] += value;
 		}
 	}
 
@@ -429,228 +501,69 @@ class Moon {
 	}
 
 	async getDependencies(result: ParseResult, content: string) {
-		// TODO: Check `game.ids` references and find the actual id from the `ids.ts` file.
-		//
-		// Solution (See output):
-		// Find `MemberExpression` objects. Find an expression with property name "ids" and object name "game".
-		// Handle the `ids` object being split somehow. Or just increase suspiciousness if that's detected if the former is too hard.
-		// Search for the author name, pack name, resource name, and index. Use that information to find the id in `ids.ts`.
-		// If the id isn't there, express that somehow. Dependency object:
-		// {
-		//   components: {
-		//     ids: "game.ids",
-		//     authorName: "Official",
-		//     packName: "builtin",
-		//     resourceName: "the_coin",
-		//     index: 0,
-		//     raw: "game.ids.Official.builtin.the_coin[0]",
-		//   },
-		//   id: uuidv7 | undefined, // Undefined if not found in `ids.ts`
-		// }
-		//
-		// Input:
-		// const coin = game.ids.Official.builtin.the_coin[0];
-		// console.log(await coin.readable());
-		//
-		// Output (result.program):
-		// {
-		//     "type": "Program",
-		//     "start": 1,
-		//     "end": 89,
-		//     "body": [
-		//       {
-		//         "type": "VariableDeclaration",
-		//         "start": 1,
-		//         "end": 52,
-		//         "kind": "const",
-		//         "declarations": [
-		//           {
-		//             "type": "VariableDeclarator",
-		//             "start": 7,
-		//             "end": 51,
-		//             "id": {
-		//               "type": "Identifier",
-		//               "start": 7,
-		//               "end": 11,
-		//               "decorators": [],
-		//               "name": "coin",
-		//               "optional": false,
-		//               "typeAnnotation": null
-		//             },
-		//             "init": {
-		//               "type": "MemberExpression",
-		//               "start": 14,
-		//               "end": 51,
-		//               "object": {
-		//                 "type": "MemberExpression",
-		//                 "start": 14,
-		//                 "end": 48,
-		//                 "object": {
-		//                   "type": "MemberExpression",
-		//                   "start": 14,
-		//                   "end": 39,
-		//                   "object": {
-		//                     "type": "MemberExpression",
-		//                     "start": 14,
-		//                     "end": 31,
-		//                     "object": {
-		//                       "type": "MemberExpression",
-		//                       "start": 14,
-		//                       "end": 22,
-		//                       "object": {
-		//                         "type": "Identifier",
-		//                         "start": 14,
-		//                         "end": 18,
-		//                         "decorators": [],
-		//                         "name": "game",
-		//                         "optional": false,
-		//                         "typeAnnotation": null
-		//                       },
-		//                       "property": {
-		//                         "type": "Identifier",
-		//                         "start": 19,
-		//                         "end": 22,
-		//                         "decorators": [],
-		//                         "name": "ids",
-		//                         "optional": false,
-		//                         "typeAnnotation": null
-		//                       },
-		//                       "optional": false,
-		//                       "computed": false
-		//                     },
-		//                     "property": {
-		//                       "type": "Identifier",
-		//                       "start": 23,
-		//                       "end": 31,
-		//                       "decorators": [],
-		//                       "name": "Official",
-		//                       "optional": false,
-		//                       "typeAnnotation": null
-		//                     },
-		//                     "optional": false,
-		//                     "computed": false
-		//                   },
-		//                   "property": {
-		//                     "type": "Identifier",
-		//                     "start": 32,
-		//                     "end": 39,
-		//                     "decorators": [],
-		//                     "name": "builtin",
-		//                     "optional": false,
-		//                     "typeAnnotation": null
-		//                   },
-		//                   "optional": false,
-		//                   "computed": false
-		//                 },
-		//                 "property": {
-		//                   "type": "Identifier",
-		//                   "start": 40,
-		//                   "end": 48,
-		//                   "decorators": [],
-		//                   "name": "the_coin",
-		//                   "optional": false,
-		//                   "typeAnnotation": null
-		//                 },
-		//                 "optional": false,
-		//                 "computed": false
-		//               },
-		//               "property": {
-		//                 "type": "Literal",
-		//                 "start": 49,
-		//                 "end": 50,
-		//                 "value": 0,
-		//                 "raw": "0"
-		//               },
-		//               "optional": false,
-		//               "computed": true
-		//             },
-		//             "definite": false
-		//           }
-		//         ],
-		//         "declare": false
-		//       },
-		//       {
-		//         "type": "ExpressionStatement",
-		//         "start": 53,
-		//         "end": 88,
-		//         "expression": {
-		//           "type": "CallExpression",
-		//           "start": 53,
-		//           "end": 87,
-		//           "callee": {
-		//             "type": "MemberExpression",
-		//             "start": 53,
-		//             "end": 64,
-		//             "object": {
-		//               "type": "Identifier",
-		//               "start": 53,
-		//               "end": 60,
-		//               "decorators": [],
-		//               "name": "console",
-		//               "optional": false,
-		//               "typeAnnotation": null
-		//             },
-		//             "property": {
-		//               "type": "Identifier",
-		//               "start": 61,
-		//               "end": 64,
-		//               "decorators": [],
-		//               "name": "log",
-		//               "optional": false,
-		//               "typeAnnotation": null
-		//             },
-		//             "optional": false,
-		//             "computed": false
-		//           },
-		//           "typeArguments": null,
-		//           "arguments": [
-		//             {
-		//               "type": "AwaitExpression",
-		//               "start": 65,
-		//               "end": 86,
-		//               "argument": {
-		//                 "type": "CallExpression",
-		//                 "start": 71,
-		//                 "end": 86,
-		//                 "callee": {
-		//                   "type": "MemberExpression",
-		//                   "start": 71,
-		//                   "end": 84,
-		//                   "object": {
-		//                     "type": "Identifier",
-		//                     "start": 71,
-		//                     "end": 75,
-		//                     "decorators": [],
-		//                     "name": "coin",
-		//                     "optional": false,
-		//                     "typeAnnotation": null
-		//                   },
-		//                   "property": {
-		//                     "type": "Identifier",
-		//                     "start": 76,
-		//                     "end": 84,
-		//                     "decorators": [],
-		//                     "name": "readable",
-		//                     "optional": false,
-		//                     "typeAnnotation": null
-		//                   },
-		//                   "optional": false,
-		//                   "computed": false
-		//                 },
-		//                 "typeArguments": null,
-		//                 "arguments": [],
-		//                 "optional": false
-		//               }
-		//             }
-		//           ],
-		//           "optional": false
-		//         },
-		//         "directive": null
-		//       }
-		//     ],
-		//     "sourceType": "module",
-		//     "hashbang": null
-		//   }
+		const idReferenceWithPackRegex =
+			/game\s*\.\s*ids\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\.\s*(.*?)\s*\[\s*(\d+?)\s*\]/gm;
+		// TODO: Handle this general index.
+		const idReferenceGeneralRegex = /game\s*\.\s*ids\s*\.\s*all\s*\.\s*(.*)/gm;
+
+		for (const match of content.matchAll(idReferenceWithPackRegex)) {
+			const authorName = match[1];
+			const packName = match[2];
+			const resourceType = match[3];
+			const resourceName = match[4];
+			const index = parseInt(match[5], 10);
+
+			// Check if the dependency already exists
+			const dependencyExists = this.dependencies.some(
+				(dependency) =>
+					dependency.components.authorName === authorName &&
+					dependency.components.packName === packName &&
+					dependency.components.resourceType === resourceType &&
+					dependency.components.resourceName === resourceName &&
+					dependency.components.index === index,
+			);
+			if (dependencyExists) {
+				continue;
+			}
+
+			// Find id from `game.ids`. Do a bunch of validation.
+			let id: string | undefined;
+			if (Object.keys(game.ids).includes(authorName)) {
+				const author = game.ids[authorName as keyof typeof game.ids];
+				if (Object.keys(author).includes(packName)) {
+					const packs = author[packName as keyof typeof author];
+					if (Object.keys(packs).includes(resourceType)) {
+						const resources = packs[resourceType];
+						for (const rName of Object.keys(resources as any)) {
+							if (rName !== resourceName) {
+								// Not the correct resource. Keep looking.
+								continue;
+							}
+
+							// This is all ids for that resource name.
+							const ids: string[] = resources[rName];
+							if (ids.length >= index + 1) {
+								id = ids[index];
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			this.dependencies.push({
+				components: {
+					ids: "game.ids",
+					authorName,
+					packName,
+					resourceType,
+					resourceName,
+					index,
+					raw: `game.ids.${authorName}.${packName}.${resourceName}[${index}]`,
+				},
+				id,
+			});
+		}
 	}
 
 	async makePredictions(result: ParseResult, content: string) {
@@ -661,7 +574,7 @@ class Moon {
 			if (!this.predictions.fileSystem.using) {
 				// If we haven't detected file system usage before, add to suspiciousness.
 				// This is so we don't double the suspiciousness accidentally.
-				this.suspiciousness += 3;
+				this.addViolation("imports.file_system", 3);
 			}
 
 			this.predictions.fileSystem.using = true;
@@ -669,8 +582,14 @@ class Moon {
 	}
 }
 
-console.log("Discovering universe...");
-const universe = await Universe.discover();
-console.log("Exporting universe...");
-const result = await universe.export();
-console.log(`Exported universe to '${result.path}'`);
+export async function discover() {
+	console.log("Discovering universe...");
+	const universe = await Universe.discover();
+	console.log("Mapping universe...");
+	const result = await universe.export();
+	console.log(`Universe mapped to '${result.path}'`);
+}
+
+if (import.meta.main) {
+	await discover();
+}
