@@ -1,5 +1,4 @@
-import * as hub from "hub.ts";
-import { EMERGENCE_VERSION } from "universe/emergence/lib.ts";
+import * as hub from "../../hub.ts";
 import type { Universe } from "./lib.ts";
 import * as lib from "./lib.ts";
 
@@ -8,7 +7,7 @@ let invalidateCache = false;
 export async function takeover() {
 	await game.prompt.createUILoop(
 		{
-			message: `[universe/telescope] v${EMERGENCE_VERSION}`,
+			message: `[universe/telescope] v${lib.TELESCOPE_VERSION}`,
 			callbackBefore: async () => {
 				hub.watermark();
 
