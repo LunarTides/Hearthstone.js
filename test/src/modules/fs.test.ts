@@ -1,5 +1,6 @@
 import { fileSystem as fs } from "@Game/modules/fs.ts";
 import { describe, expect, test } from "bun:test";
+import { normalize } from "node:path";
 
 describe("src/modules/fs", () => {
 	test.todo("fs", async () => {});
@@ -8,7 +9,9 @@ describe("src/modules/fs", () => {
 
 	test("restrictPath", async () => {
 		const match = (path: string) => {
-			expect(fs.restrictPath(path)).toEqual(`${fs.dirname()}/packs/`);
+			expect(fs.restrictPath(path)).toEqual(
+				normalize(`${fs.dirname()}/packs/`),
+			);
 		};
 
 		// All of these should resolve to "(Path to the folder where hearthstone.js is stored)/Hearthstone.js/packs/"
