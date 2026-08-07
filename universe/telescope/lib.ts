@@ -6,6 +6,15 @@ import {
 	Severity,
 } from "oxc-parser";
 import type { Resource } from "../emergence/create/lib.ts";
+import {
+	Blueprint,
+	Class,
+	Command,
+	Rarity,
+	SFX,
+	Tribe,
+	Type,
+} from "@Game/types.ts";
 
 // TODO: Don't import resources until *after* this tools is run. Otherwise, it's kinda pointless. Oh, no! This resource is suspicious, oh I gotta warn— and they're dead.
 export const TELESCOPE_VERSION = "0.1.0";
@@ -252,9 +261,11 @@ const defaultImportObject = {
 // Pack Resource
 export class Moon {
 	name: string = "";
-	// TODO: Implement.
-	id: string = "";
 	type: Resource = "card";
+
+	blueprint?: Blueprint;
+	command?: Command;
+	sfx?: SFX;
 
 	bytes: number = 0;
 	violations: Record<string, number | "reject"> = {};
@@ -335,10 +346,49 @@ export class Moon {
 			}
 		}
 
+		await this.getBlueprint(result, content);
+
 		// Handle imports.
 		await this.scanImports(result, content);
 		await this.getDependencies(result, content);
 		await this.makePredictions(result, content);
+	}
+
+	async getBlueprint(result: ParseResult, content: string) {
+		// TODO: Actually get real blueprint / command / sfx.
+		if (this.type === "card") {
+			this.blueprint = {
+				name: "Sheep",
+				text: "",
+				cost: 1,
+				type: Type.Minion,
+				classes: [Class.Neutral],
+				rarity: Rarity.Free,
+				collectible: false,
+				tags: [],
+				id: "019bc665-4f7f-7002-8cd4-7c81ad4e65c6",
+
+				attack: 1,
+				health: 1,
+				tribes: [Tribe.Beast],
+			};
+		} else if (this.type === "command") {
+			this.command = {
+				name: "command",
+				description: "Example command.",
+				debug: false,
+				id: "019bc665-4f7f-7002-8af5-2a5bc8d2e95c",
+
+				run: async () => true,
+			};
+		} else if (this.type === "sfx") {
+			this.sfx = {
+				name: "sfx",
+				id: "019bc665-4f7f-7002-8af5-72c96a787e82",
+
+				play: async () => {},
+			};
+		}
 	}
 
 	async scanImports(result: ParseResult, content: string) {
