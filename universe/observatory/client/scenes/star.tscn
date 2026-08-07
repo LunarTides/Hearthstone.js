@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://b1h588am46qma"]
+
+[ext_resource type="Shader" uid="uid://yjnpcg8rxmh7" path="res://shaders/star.gdshader" id="1_j6vao"]
+[ext_resource type="Script" uid="uid://42uodxiws66y" path="res://scenes/star.gd" id="1_mcqwg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ef0hr"]
+shader = ExtResource("1_j6vao")
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5xele"]
+radius = 9.055386
+
+[node name="Star" type="CharacterBody2D" unique_id=841448585]
+material = SubResource("ShaderMaterial_ef0hr")
+position = Vector2(2.1802769, -13.63777)
+input_pickable = true
+script = ExtResource("1_mcqwg")
+connection_color = null
+push_box_visible_in_editor = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=746950478]
+visible = false
+shape = SubResource("CircleShape2D_5xele")
+
+[node name="Label" type="Label" parent="." unique_id=537548223]
+offset_right = 40.0
+offset_bottom = 23.0

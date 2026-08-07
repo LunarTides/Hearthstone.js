@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://i3dmukspifco"]
+
+[ext_resource type="Script" uid="uid://cawivj40jy4jy" path="res://scenes/moon.gd" id="1_530pw"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5xele"]
+radius = 9.055386
+
+[node name="Moon" type="CharacterBody2D" unique_id=928515951]
+position = Vector2(-1.846985, -4.668744)
+script = ExtResource("1_530pw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=746950478]
+shape = SubResource("CircleShape2D_5xele")

@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://btpy1p26l4j67"]
+
+[ext_resource type="Script" uid="uid://ck3s1jjlfw7dt" path="res://scenes/star_system.gd" id="1_a3lru"]
+
+[node name="StarSystem" type="Node2D" unique_id=1047647363]
+script = ExtResource("1_a3lru")

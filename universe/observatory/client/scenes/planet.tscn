@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://6uoa2o4iso6l"]
+
+[ext_resource type="Script" uid="uid://bo356wf5b0rth" path="res://scenes/planet.gd" id="1_cktii"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5xele"]
+radius = 9.055386
+
+[node name="Planet" type="CharacterBody2D" unique_id=124575484]
+position = Vector2(-1.0253541, -9.776607)
+script = ExtResource("1_cktii")
+is_pushed_away_by_others = null
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=746950478]
+shape = SubResource("CircleShape2D_5xele")

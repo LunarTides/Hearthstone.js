@@ -1,0 +1,6901 @@
+[gd_resource type="Resource" script_class="UniverseRes" format=3 uid="uid://chi2xj6qx1yc3"]
+
+[ext_resource type="Script" uid="uid://cqwas2vgk65u6" path="res://resources/galaxy.gd" id="1_0nukh"]
+[ext_resource type="Script" uid="uid://bbcc2oibhmww5" path="res://resources/star_cluster.gd" id="2_qtda3"]
+[ext_resource type="Script" uid="uid://bg44c0o2pt2cw" path="res://resources/star_system.gd" id="3_v5w1x"]
+[ext_resource type="Script" uid="uid://bboxprv72h13j" path="res://resources/planet.gd" id="4_girui"]
+[ext_resource type="Script" uid="uid://lk1ar2tk6u4n" path="res://resources/moon.gd" id="5_8bb3i"]
+[ext_resource type="Script" uid="uid://b8wt4jolkxmk1" path="res://resources/moon_blueprint.gd" id="6_d6w1f"]
+[ext_resource type="Script" uid="uid://cdaf008yw75fs" path="res://resources/moon_dependency.gd" id="7_5l543"]
+[ext_resource type="Script" uid="uid://dc08kiwrjnh7u" path="res://resources/moon_error.gd" id="8_kgd4b"]
+[ext_resource type="Script" uid="uid://dyiyjxv16eqhn" path="res://resources/moon_dependency_components.gd" id="9_jrc5e"]
+[ext_resource type="Script" uid="uid://dypap2lwujcvb" path="res://resources/moon_command.gd" id="10_34oay"]
+[ext_resource type="Script" uid="uid://ih4d1is0soi5" path="res://resources/moon_sfx.gd" id="11_vtg6m"]
+[ext_resource type="Script" uid="uid://bon4xykqr7j8r" path="res://resources/star.gd" id="12_13snq"]
+[ext_resource type="Script" uid="uid://c8ke7yu66x80d" path="res://resources/universe.gd" id="13_fs6ou"]
+
+[sub_resource type="Resource" id="Resource_wqm21"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_8g2xs"]
+script = ExtResource("5_8bb3i")
+name = "10_mana_4571a8aa"
+type = "card"
+bytes = 583
+blueprint = SubResource("Resource_wqm21")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_6d8my"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_jk8vm"]
+script = ExtResource("5_8bb3i")
+name = "brewing_storm_7522b155"
+type = "card"
+bytes = 528
+blueprint = SubResource("Resource_6d8my")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_uu80x"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_rcu0t"]
+script = ExtResource("5_8bb3i")
+name = "draconic_imp_0c66ec8b"
+type = "card"
+bytes = 412
+blueprint = SubResource("Resource_uu80x")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_sf1tb"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_2dxac"]
+script = ExtResource("5_8bb3i")
+name = "dragon_claw_118bbb61"
+type = "card"
+bytes = 366
+blueprint = SubResource("Resource_sf1tb")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_e4ryp"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_85e18"]
+script = ExtResource("5_8bb3i")
+name = "ethereal_0f815252"
+type = "card"
+bytes = 1395
+blueprint = SubResource("Resource_e4ryp")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_r3xtl"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_i0xy0"]
+script = ExtResource("5_8bb3i")
+name = "faceless_23778cd5"
+type = "card"
+bytes = 1239
+blueprint = SubResource("Resource_r3xtl")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_f0qt0"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_0c211"]
+script = ExtResource("5_8bb3i")
+name = "frail_ghoul_7f2dc33c"
+type = "card"
+bytes = 1527
+blueprint = SubResource("Resource_f0qt0")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_rhv3r"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_7r0s8"]
+script = ExtResource("5_8bb3i")
+name = "galakronds_blessing_4db1245f"
+type = "card"
+bytes = 1056
+blueprint = SubResource("Resource_rhv3r")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EnchantmentPriority"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_yjdjx"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_i7vys"]
+script = ExtResource("5_8bb3i")
+name = "goblin_ddbf2495"
+type = "card"
+bytes = 1442
+blueprint = SubResource("Resource_yjdjx")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"key": "Alignment"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_s13sd"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_emkc2"]
+script = ExtResource("5_8bb3i")
+name = "healing_totem_1ffd58a2"
+type = "card"
+bytes = 2147
+blueprint = SubResource("Resource_s13sd")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_anony"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_2iwvj"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "demon_claws"
+raw = "game.ids.Official.builtin.demon_claws[0]"
+
+[sub_resource type="Resource" id="Resource_eq0mx"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_2iwvj")
+id = "019bc665-4f81-702c-bbba-187394fa2e11"
+
+[sub_resource type="Resource" id="Resource_ixvix"]
+script = ExtResource("5_8bb3i")
+name = "hero_01340fb5"
+type = "card"
+bytes = 468
+blueprint = SubResource("Resource_anony")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_eq0mx")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_fer1u"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_fsjee"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "fireblast"
+raw = "game.ids.Official.builtin.fireblast[0]"
+
+[sub_resource type="Resource" id="Resource_beqb3"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_fsjee")
+id = "019bc665-4f81-7021-a0e4-15625f88ce10"
+
+[sub_resource type="Resource" id="Resource_ussfm"]
+script = ExtResource("5_8bb3i")
+name = "hero_03df1993"
+type = "card"
+bytes = 450
+blueprint = SubResource("Resource_fer1u")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_beqb3")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_d27rs"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_qikio"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_guile"
+raw = "game.ids.Official.builtin.galakronds_guile[0]"
+
+[sub_resource type="Resource" id="Resource_2hp8y"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_qikio")
+id = "019bc665-4f81-701b-9fdb-9e9392321c64"
+
+[sub_resource type="Resource" id="Resource_oresj"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_blessing"
+raw = "game.ids.Official.builtin.galakronds_blessing[0]"
+
+[sub_resource type="Resource" id="Resource_quac3"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_oresj")
+id = "019bc665-4f81-7019-9257-4db1245fb572"
+
+[sub_resource type="Resource" id="Resource_tu7b5"]
+script = ExtResource("5_8bb3i")
+name = "hero_0405c89e"
+type = "card"
+bytes = 1537
+blueprint = SubResource("Resource_d27rs")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_2hp8y"), SubResource("Resource_quac3")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_i0fc8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_rp6c1"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_fury"
+raw = "game.ids.Official.builtin.galakronds_fury[0]"
+
+[sub_resource type="Resource" id="Resource_ra4f6"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_rp6c1")
+id = "019bc665-4f81-700a-bd27-2600dc1b8cb1"
+
+[sub_resource type="Resource" id="Resource_6lpxm"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "brewing_storm"
+raw = "game.ids.Official.builtin.brewing_storm[0]"
+
+[sub_resource type="Resource" id="Resource_yfujb"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_6lpxm")
+id = "019bc665-4f7f-7009-b00f-7522b1557a9f"
+
+[sub_resource type="Resource" id="Resource_yhjjw"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "dragon_claw"
+raw = "game.ids.Official.builtin.dragon_claw[0]"
+
+[sub_resource type="Resource" id="Resource_tsn6k"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_yhjjw")
+id = "019bc665-4f7f-700a-96cc-118bbb61d378"
+
+[sub_resource type="Resource" id="Resource_aelr2"]
+script = ExtResource("5_8bb3i")
+name = "hero_07c9242e"
+type = "card"
+bytes = 1829
+blueprint = SubResource("Resource_i0fc8")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ra4f6"), SubResource("Resource_yfujb"), SubResource("Resource_tsn6k")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_c52ry"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_nhk1n"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "ghoul_charge"
+raw = "game.ids.Official.builtin.ghoul_charge[0]"
+
+[sub_resource type="Resource" id="Resource_ksjrw"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_nhk1n")
+id = "019bc665-4f82-7002-ad5c-d2adeca7ffd1"
+
+[sub_resource type="Resource" id="Resource_hqbg6"]
+script = ExtResource("5_8bb3i")
+name = "hero_1322e201"
+type = "card"
+bytes = 465
+blueprint = SubResource("Resource_c52ry")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ksjrw")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_jglqm"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_yhu7a"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "life_tap"
+raw = "game.ids.Official.builtin.life_tap[0]"
+
+[sub_resource type="Resource" id="Resource_ma8iy"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_yhu7a")
+id = "019bc665-4f80-7018-aee6-35de1d03fc12"
+
+[sub_resource type="Resource" id="Resource_7puv3"]
+script = ExtResource("5_8bb3i")
+name = "hero_16ac6fc8"
+type = "card"
+bytes = 446
+blueprint = SubResource("Resource_jglqm")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ma8iy")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_archw"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_505qb"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "lesser_heal"
+raw = "game.ids.Official.builtin.lesser_heal[0]"
+
+[sub_resource type="Resource" id="Resource_isfey"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_505qb")
+id = "019bc665-4f81-700f-baf6-98a416f07ccc"
+
+[sub_resource type="Resource" id="Resource_eodtk"]
+script = ExtResource("5_8bb3i")
+name = "hero_16b99a54"
+type = "card"
+bytes = 452
+blueprint = SubResource("Resource_archw")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_isfey")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_71yfg"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_j0853"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "armor_up"
+raw = "game.ids.Official.builtin.armor_up[0]"
+
+[sub_resource type="Resource" id="Resource_i2mvf"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_j0853")
+id = "019bc665-4f80-700d-a7e4-ddb165cabcb1"
+
+[sub_resource type="Resource" id="Resource_cch0n"]
+script = ExtResource("5_8bb3i")
+name = "hero_1fa2f862"
+type = "card"
+bytes = 457
+blueprint = SubResource("Resource_71yfg")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_i2mvf")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_a3dms"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_nyr1a"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_might"
+raw = "game.ids.Official.builtin.galakronds_might[0]"
+
+[sub_resource type="Resource" id="Resource_4w4ep"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_nyr1a")
+id = "019bc665-4f80-701a-bf0f-7d1c04488013"
+
+[sub_resource type="Resource" id="Resource_b52cm"]
+script = ExtResource("5_8bb3i")
+name = "hero_371512da"
+type = "card"
+bytes = 1445
+blueprint = SubResource("Resource_a3dms")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_4w4ep")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_85ivw"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_j1k1l"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "dagger_mastery"
+raw = "game.ids.Official.builtin.dagger_mastery[0]"
+
+[sub_resource type="Resource" id="Resource_oqbu5"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_j1k1l")
+id = "019bc665-4f81-700d-a506-ab6b58fb0eea"
+
+[sub_resource type="Resource" id="Resource_rplg7"]
+script = ExtResource("5_8bb3i")
+name = "hero_3ac70bfb"
+type = "card"
+bytes = 458
+blueprint = SubResource("Resource_85ivw")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_oqbu5")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_qdjiv"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_f5foo"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "reinforce"
+raw = "game.ids.Official.builtin.reinforce[0]"
+
+[sub_resource type="Resource" id="Resource_kngkh"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_f5foo")
+id = "019bc665-4f81-701e-9b97-cfefb8e48128"
+
+[sub_resource type="Resource" id="Resource_xpibb"]
+script = ExtResource("5_8bb3i")
+name = "hero_4ae00820"
+type = "card"
+bytes = 458
+blueprint = SubResource("Resource_qdjiv")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_kngkh")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_u0ynx"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_jypqa"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_malice"
+raw = "game.ids.Official.builtin.galakronds_malice[0]"
+
+[sub_resource type="Resource" id="Resource_snv4j"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_jypqa")
+id = "019bc665-4f80-7021-896a-55feca3670b0"
+
+[sub_resource type="Resource" id="Resource_kcuca"]
+script = ExtResource("5_8bb3i")
+name = "hero_5bd43365"
+type = "card"
+bytes = 1461
+blueprint = SubResource("Resource_u0ynx")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_snv4j")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5rge7"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_offpw"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "shapeshift"
+raw = "game.ids.Official.builtin.shapeshift[0]"
+
+[sub_resource type="Resource" id="Resource_ssat6"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_offpw")
+id = "019bc665-4f81-7029-8820-5fe5ff46bf13"
+
+[sub_resource type="Resource" id="Resource_cww8y"]
+script = ExtResource("5_8bb3i")
+name = "hero_75f1c140"
+type = "card"
+bytes = 456
+blueprint = SubResource("Resource_5rge7")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ssat6")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5xn3e"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_b1taa"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "totemic_call"
+raw = "game.ids.Official.builtin.totemic_call[0]"
+
+[sub_resource type="Resource" id="Resource_yhedx"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_b1taa")
+id = "019bc665-4f80-7024-ba8b-78e125a21f37"
+
+[sub_resource type="Resource" id="Resource_yrlah"]
+script = ExtResource("5_8bb3i")
+name = "hero_ce063152"
+type = "card"
+bytes = 447
+blueprint = SubResource("Resource_5xn3e")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_yhedx")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_1bffv"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_lhydr"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "galakronds_wit"
+raw = "game.ids.Official.builtin.galakronds_wit[0]"
+
+[sub_resource type="Resource" id="Resource_b6mvy"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_lhydr")
+id = "019bc665-4f81-701f-861c-e8d65e18c517"
+
+[sub_resource type="Resource" id="Resource_okscl"]
+script = ExtResource("5_8bb3i")
+name = "hero_f04f92da"
+type = "card"
+bytes = 1587
+blueprint = SubResource("Resource_1bffv")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_b6mvy")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_vr0sp"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_mcm65"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "steady_shot"
+raw = "game.ids.Official.builtin.steady_shot[0]"
+
+[sub_resource type="Resource" id="Resource_e0c4w"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_mcm65")
+id = "019bc665-4f81-7028-a3a3-8e79692d8c16"
+
+[sub_resource type="Resource" id="Resource_r8pok"]
+script = ExtResource("5_8bb3i")
+name = "hero_f16803fe"
+type = "card"
+bytes = 446
+blueprint = SubResource("Resource_vr0sp")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_e0c4w")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_1bsiw"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_dkb2y"]
+script = ExtResource("5_8bb3i")
+name = "heropower_15625f88"
+type = "card"
+bytes = 1005
+blueprint = SubResource("Resource_1bsiw")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_luvtb"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_avgoo"]
+script = ExtResource("5_8bb3i")
+name = "heropower_187394fa"
+type = "card"
+bytes = 866
+blueprint = SubResource("Resource_luvtb")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gh151"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_wpbl4"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "windswept_elemental"
+raw = "game.ids.Official.builtin.windswept_elemental[0]"
+
+[sub_resource type="Resource" id="Resource_ji582"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_wpbl4")
+id = "019bc665-4f81-7009-b923-b20c63416603"
+
+[sub_resource type="Resource" id="Resource_aq7ck"]
+script = ExtResource("5_8bb3i")
+name = "heropower_2600dc1b"
+type = "card"
+bytes = 802
+blueprint = SubResource("Resource_gh151")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ji582")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_quyc4"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_prxog"]
+script = ExtResource("5_8bb3i")
+name = "heropower_35de1d03"
+type = "card"
+bytes = 999
+blueprint = SubResource("Resource_quyc4")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_k7mwx"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_212j1"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "draconic_imp"
+raw = "game.ids.Official.builtin.draconic_imp[0]"
+
+[sub_resource type="Resource" id="Resource_5yu34"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_212j1")
+id = "019bc665-4f80-7017-9193-0c66ec8bce41"
+
+[sub_resource type="Resource" id="Resource_hlco4"]
+script = ExtResource("5_8bb3i")
+name = "heropower_55feca36"
+type = "card"
+bytes = 1089
+blueprint = SubResource("Resource_k7mwx")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_5yu34")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_05dul"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_tcm4r"]
+script = ExtResource("5_8bb3i")
+name = "heropower_5fe5ff46"
+type = "card"
+bytes = 1009
+blueprint = SubResource("Resource_05dul")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_oc3i6"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_1ij8g"]
+script = ExtResource("5_8bb3i")
+name = "heropower_78e125a2"
+type = "card"
+bytes = 2212
+blueprint = SubResource("Resource_oc3i6")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}, {
+"key": "CardError"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_1fotn"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_8u51r"]
+script = ExtResource("5_8bb3i")
+name = "heropower_7d1c0448"
+type = "card"
+bytes = 672
+blueprint = SubResource("Resource_1fotn")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_8kddf"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_4tic0"]
+script = ExtResource("5_8bb3i")
+name = "heropower_8e79692d"
+type = "card"
+bytes = 974
+blueprint = SubResource("Resource_8kddf")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_xskno"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_q7sey"]
+script = ExtResource("5_8bb3i")
+name = "heropower_98a416f0"
+type = "card"
+bytes = 1094
+blueprint = SubResource("Resource_xskno")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_r3gqq"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_n16r0"]
+script = ExtResource("5_8bb3i")
+name = "heropower_9e939232"
+type = "card"
+bytes = 788
+blueprint = SubResource("Resource_r3gqq")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_pv6we"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_0oe32"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "wicked_knife"
+raw = "game.ids.Official.builtin.wicked_knife[0]"
+
+[sub_resource type="Resource" id="Resource_33ukf"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_0oe32")
+id = "019bc665-4f81-700c-9393-55d79a04e156"
+
+[sub_resource type="Resource" id="Resource_xfjjw"]
+script = ExtResource("5_8bb3i")
+name = "heropower_ab6b58fb"
+type = "card"
+bytes = 1024
+blueprint = SubResource("Resource_pv6we")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_33ukf")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_qnxnv"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_4s4kd"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "silver_hand_recruit"
+raw = "game.ids.Official.builtin.silver_hand_recruit[0]"
+
+[sub_resource type="Resource" id="Resource_s8vfq"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_4s4kd")
+id = "019bc665-4f81-701c-bbae-d8d57613e566"
+
+[sub_resource type="Resource" id="Resource_dqhty"]
+script = ExtResource("5_8bb3i")
+name = "heropower_cfefb8e4"
+type = "card"
+bytes = 1088
+blueprint = SubResource("Resource_qnxnv")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_s8vfq")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_vljd7"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_25owx"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "frail_ghoul"
+raw = "game.ids.Official.builtin.frail_ghoul[0]"
+
+[sub_resource type="Resource" id="Resource_4ml4h"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_25owx")
+id = "019bc665-4f82-7003-b1c0-7f2dc33c14bc"
+
+[sub_resource type="Resource" id="Resource_el2ej"]
+script = ExtResource("5_8bb3i")
+name = "heropower_d2adeca7"
+type = "card"
+bytes = 1231
+blueprint = SubResource("Resource_vljd7")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_4ml4h")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gmsa4"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_o2r1r"]
+script = ExtResource("5_8bb3i")
+name = "heropower_ddb165ca"
+type = "card"
+bytes = 719
+blueprint = SubResource("Resource_gmsa4")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ilk1y"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_2qltx"]
+script = ExtResource("5_8bb3i")
+name = "heropower_e8d65e18"
+type = "card"
+bytes = 721
+blueprint = SubResource("Resource_ilk1y")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gwicl"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_763wb"]
+script = ExtResource("5_8bb3i")
+name = "inf_mana_47a7e94b"
+type = "card"
+bytes = 1333
+blueprint = SubResource("Resource_gwicl")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "GamePlayCardReturn"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_j5iii"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_hpt68"]
+script = ExtResource("5_8bb3i")
+name = "jade_golem_2944338e"
+type = "card"
+bytes = 378
+blueprint = SubResource("Resource_j5iii")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_4gkei"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_okwn4"]
+script = ExtResource("5_8bb3i")
+name = "kobold_81733797"
+type = "card"
+bytes = 1041
+blueprint = SubResource("Resource_4gkei")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_6u5ir"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_kau72"]
+script = ExtResource("5_8bb3i")
+name = "plant_7bcf9ffd"
+type = "card"
+bytes = 413
+blueprint = SubResource("Resource_6u5ir")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_7kei0"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_isnsn"]
+script = ExtResource("5_8bb3i")
+name = "searing_totem_94c9fa32"
+type = "card"
+bytes = 438
+blueprint = SubResource("Resource_7kei0")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5306c"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_6xvpk"]
+script = ExtResource("5_8bb3i")
+name = "sheep_7c81ad4e"
+type = "card"
+bytes = 405
+blueprint = SubResource("Resource_5306c")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_y2i6h"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_dlghr"]
+script = ExtResource("5_8bb3i")
+name = "silver_hand_recruit_d8d57613"
+type = "card"
+bytes = 401
+blueprint = SubResource("Resource_y2i6h")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_v4i5m"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_nnc0s"]
+script = ExtResource("5_8bb3i")
+name = "stoneclaw_totem_5c0d2972"
+type = "card"
+bytes = 530
+blueprint = SubResource("Resource_v4i5m")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_jiyhf"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_u2ub6"]
+script = ExtResource("5_8bb3i")
+name = "strength_totem_afade6ed"
+type = "card"
+bytes = 2706
+blueprint = SubResource("Resource_jiyhf")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_kn2b6"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_6oqhv"]
+script = ExtResource("5_8bb3i")
+name = "the_coin_be72400a"
+type = "card"
+bytes = 1113
+blueprint = SubResource("Resource_kn2b6")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_4ar2g"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_kqkc8"]
+script = ExtResource("5_8bb3i")
+name = "wicked_knife_55d79a04"
+type = "card"
+bytes = 379
+blueprint = SubResource("Resource_4ar2g")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_t6ro8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_x6wjd"]
+script = ExtResource("5_8bb3i")
+name = "windswept_elemental_b20c6341"
+type = "card"
+bytes = 512
+blueprint = SubResource("Resource_t6ro8")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_kbpiw"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_6tdnh"]
+script = ExtResource("5_8bb3i")
+name = "witchy_6def0f51"
+type = "card"
+bytes = 2294
+blueprint = SubResource("Resource_kbpiw")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"key": "Alignment"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_woxih"]
+script = ExtResource("4_girui")
+name = "builtin"
+moons = Array[ExtResource("5_8bb3i")]([SubResource("Resource_8g2xs"), SubResource("Resource_jk8vm"), SubResource("Resource_rcu0t"), SubResource("Resource_2dxac"), SubResource("Resource_85e18"), SubResource("Resource_i0xy0"), SubResource("Resource_0c211"), SubResource("Resource_7r0s8"), SubResource("Resource_i7vys"), SubResource("Resource_emkc2"), SubResource("Resource_ixvix"), SubResource("Resource_ussfm"), SubResource("Resource_tu7b5"), SubResource("Resource_aelr2"), SubResource("Resource_hqbg6"), SubResource("Resource_7puv3"), SubResource("Resource_eodtk"), SubResource("Resource_cch0n"), SubResource("Resource_b52cm"), SubResource("Resource_rplg7"), SubResource("Resource_xpibb"), SubResource("Resource_kcuca"), SubResource("Resource_cww8y"), SubResource("Resource_yrlah"), SubResource("Resource_okscl"), SubResource("Resource_r8pok"), SubResource("Resource_dkb2y"), SubResource("Resource_avgoo"), SubResource("Resource_aq7ck"), SubResource("Resource_prxog"), SubResource("Resource_hlco4"), SubResource("Resource_tcm4r"), SubResource("Resource_1ij8g"), SubResource("Resource_8u51r"), SubResource("Resource_4tic0"), SubResource("Resource_q7sey"), SubResource("Resource_n16r0"), SubResource("Resource_xfjjw"), SubResource("Resource_dqhty"), SubResource("Resource_el2ej"), SubResource("Resource_o2r1r"), SubResource("Resource_2qltx"), SubResource("Resource_763wb"), SubResource("Resource_hpt68"), SubResource("Resource_okwn4"), SubResource("Resource_kau72"), SubResource("Resource_isnsn"), SubResource("Resource_6xvpk"), SubResource("Resource_dlghr"), SubResource("Resource_nnc0s"), SubResource("Resource_u2ub6"), SubResource("Resource_6oqhv"), SubResource("Resource_kqkc8"), SubResource("Resource_x6wjd"), SubResource("Resource_6tdnh")])
+
+[sub_resource type="Resource" id="Resource_vkley"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_uykgl"]
+script = ExtResource("5_8bb3i")
+name = "aquatic_form_38c63a44"
+type = "card"
+bytes = 1093
+blueprint = SubResource("Resource_vkley")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3rvfw"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_vu5ja"]
+script = ExtResource("5_8bb3i")
+name = "archmage_vargoth_44a677d3"
+type = "card"
+bytes = 1295
+blueprint = SubResource("Resource_3rvfw")
+imports = {
+"@Game/card.ts": [{
+"isType": true,
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_tccwl"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_vqx4n"]
+script = ExtResource("5_8bb3i")
+name = "branching_paths_32e14d5e"
+type = "card"
+bytes = 1653
+blueprint = SubResource("Resource_tccwl")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_pc10p"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_u60jn"]
+script = ExtResource("5_8bb3i")
+name = "chaotic_tendril_cefc7053"
+type = "card"
+bytes = 936
+blueprint = SubResource("Resource_pc10p")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_qxw7i"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_fqoe6"]
+script = ExtResource("5_8bb3i")
+name = "dew_process_d3c49d26"
+type = "card"
+bytes = 1267
+blueprint = SubResource("Resource_qxw7i")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_2fgx0"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_k2ads"]
+script = ExtResource("5_8bb3i")
+name = "fates_blessing_2f314ce9"
+type = "card"
+bytes = 1128
+blueprint = SubResource("Resource_2fgx0")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EnchantmentPriority"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_alxcu"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_myn0k"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "orca"
+raw = "game.ids.Official.card_pack_1.orca[0]"
+
+[sub_resource type="Resource" id="Resource_1ctgs"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_myn0k")
+id = "019bc665-4f82-701d-a79d-05954dd2e75b"
+
+[sub_resource type="Resource" id="Resource_wj6v8"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "otter"
+raw = "game.ids.Official.card_pack_1.otter[0]"
+
+[sub_resource type="Resource" id="Resource_yh3yn"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_wj6v8")
+id = "019bc665-4f82-701f-8a59-68f61ccb4e4a"
+
+[sub_resource type="Resource" id="Resource_6xgdc"]
+script = ExtResource("5_8bb3i")
+name = "flipper_friends_e0a49e09"
+type = "card"
+bytes = 2030
+blueprint = SubResource("Resource_alxcu")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_1ctgs"), SubResource("Resource_yh3yn")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_1my24"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_huoqo"]
+script = ExtResource("5_8bb3i")
+name = "floops_glorious_gloop_415fafdd"
+type = "card"
+bytes = 1044
+blueprint = SubResource("Resource_1my24")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_wc132"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_lfvea"]
+script = ExtResource("5_8bb3i")
+name = "frost_lotus_seedling_ff467fc9"
+type = "card"
+bytes = 1866
+blueprint = SubResource("Resource_wc132")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_p5fkl"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_jhywy"]
+script = ExtResource("5_8bb3i")
+name = "induce_insanity_04654406"
+type = "card"
+bytes = 1011
+blueprint = SubResource("Resource_p5fkl")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_2fldx"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_c47ln"]
+script = ExtResource("5_8bb3i")
+name = "injured_marauder_96e78e2a"
+type = "card"
+bytes = 824
+blueprint = SubResource("Resource_2fldx")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_2o20e"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_48p5m"]
+script = ExtResource("5_8bb3i")
+name = "invigorate_d06ac4d8"
+type = "card"
+bytes = 1261
+blueprint = SubResource("Resource_2o20e")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_g5vws"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_4um0l"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "jade_golem"
+raw = "game.ids.Official.builtin.jade_golem[0]"
+
+[sub_resource type="Resource" id="Resource_t3juc"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_4um0l")
+id = "019bc665-4f7f-7001-b06d-2944338e60c8"
+
+[sub_resource type="Resource" id="Resource_v1y4i"]
+script = ExtResource("5_8bb3i")
+name = "jade_idol_7f010f7b"
+type = "card"
+bytes = 1532
+blueprint = SubResource("Resource_g5vws")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_t3juc")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_t26wv"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_l3w4w"]
+script = ExtResource("5_8bb3i")
+name = "moonlit_guidance_a398394a"
+type = "card"
+bytes = 1405
+blueprint = SubResource("Resource_t26wv")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_hyaco"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_gykb1"]
+script = ExtResource("5_8bb3i")
+name = "nurture_f9640e88"
+type = "card"
+bytes = 1218
+blueprint = SubResource("Resource_hyaco")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_vbfqi"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_si78w"]
+script = ExtResource("5_8bb3i")
+name = "oaken_summons_fbd36320"
+type = "card"
+bytes = 1147
+blueprint = SubResource("Resource_vbfqi")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_2t5a7"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_0i41e"]
+script = ExtResource("5_8bb3i")
+name = "onyxian_whelp_b6b98e79"
+type = "card"
+bytes = 526
+blueprint = SubResource("Resource_2t5a7")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ewtnb"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_yrwys"]
+script = ExtResource("5_8bb3i")
+name = "orca_05954dd2"
+type = "card"
+bytes = 558
+blueprint = SubResource("Resource_ewtnb")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_nks4m"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_5ficj"]
+script = ExtResource("5_8bb3i")
+name = "otter_68f61ccb"
+type = "card"
+bytes = 558
+blueprint = SubResource("Resource_nks4m")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_l0vyp"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_r0bmm"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "treant"
+raw = "game.ids.Official.card_pack_1.treant[0]"
+
+[sub_resource type="Resource" id="Resource_ndflv"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_r0bmm")
+id = "019bc665-4f82-7020-acf5-5269d2a84a58"
+
+[sub_resource type="Resource" id="Resource_g0fqm"]
+script = ExtResource("5_8bb3i")
+name = "poison_seeds_ccd24f04"
+type = "card"
+bytes = 1420
+blueprint = SubResource("Resource_l0vyp")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ndflv")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_02r5h"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_uu52u"]
+script = ExtResource("5_8bb3i")
+name = "prison_of_yogg_saron_4acf26df"
+type = "card"
+bytes = 1118
+blueprint = SubResource("Resource_02r5h")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3tyr3"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_rcplx"]
+script = ExtResource("5_8bb3i")
+name = "pyroblast_bcab506e"
+type = "card"
+bytes = 1175
+blueprint = SubResource("Resource_3tyr3")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3l1i3"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_u0b8p"]
+script = ExtResource("5_8bb3i")
+name = "reign_of_chaos_383b783e"
+type = "card"
+bytes = 1707
+blueprint = SubResource("Resource_3l1i3")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"key": "Alignment"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3lysb"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_qdler"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "onyxian_whelp"
+raw = "game.ids.Official.card_pack_1.onyxian_whelp[0]"
+
+[sub_resource type="Resource" id="Resource_k8pdl"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_qdler")
+id = "019bc665-4f82-701a-a865-b6b98e79c765"
+
+[sub_resource type="Resource" id="Resource_rq40b"]
+script = ExtResource("5_8bb3i")
+name = "scale_of_onyxia_32af51cb"
+type = "card"
+bytes = 1306
+blueprint = SubResource("Resource_3lysb")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_k8pdl")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_2gn3e"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_e4c33"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "chaotic_tendril"
+raw = "game.ids.Official.card_pack_1.chaotic_tendril[0]"
+
+[sub_resource type="Resource" id="Resource_fjr2y"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_e4c33")
+id = "019bc665-4f82-7009-a883-cefc7053b9d8"
+
+[sub_resource type="Resource" id="Resource_hf0df"]
+script = ExtResource("5_8bb3i")
+name = "tentacle_swarm_291d65cf"
+type = "card"
+bytes = 1252
+blueprint = SubResource("Resource_2gn3e")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_fjr2y")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_j7gdt"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_yc42b"]
+script = ExtResource("5_8bb3i")
+name = "treant_5269d2a8"
+type = "card"
+bytes = 372
+blueprint = SubResource("Resource_j7gdt")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_amrs8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_q5xnt"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "nurture"
+raw = "game.ids.Official.card_pack_1.nurture[0]"
+
+[sub_resource type="Resource" id="Resource_3evm4"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_q5xnt")
+id = "019bc665-4f82-7014-ac98-f9640e8850da"
+
+[sub_resource type="Resource" id="Resource_jijo1"]
+script = ExtResource("5_8bb3i")
+name = "wildheart_guff_c1c97539"
+type = "card"
+bytes = 1098
+blueprint = SubResource("Resource_amrs8")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_3evm4")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_nkv1q"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_h8j3s"]
+script = ExtResource("5_8bb3i")
+name = "yogg_saron_hopes_end_6df3ab53"
+type = "card"
+bytes = 1124
+blueprint = SubResource("Resource_nkv1q")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_0sobj"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_1th7o"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "fates_blessing"
+raw = "game.ids.Official.card_pack_1.fates_blessing[0]"
+
+[sub_resource type="Resource" id="Resource_o54hp"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_1th7o")
+id = "019bc665-4f82-701e-b736-2f314ce994a5"
+
+[sub_resource type="Resource" id="Resource_hcmv1"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "yogg_saron_hopes_end"
+raw = "game.ids.Official.card_pack_1.yogg_saron_hopes_end[0]"
+
+[sub_resource type="Resource" id="Resource_qabka"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_hcmv1")
+id = "019bc665-4f82-700e-b3d6-6df3ab53ce5b"
+
+[sub_resource type="Resource" id="Resource_xn8wo"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "pyroblast"
+raw = "game.ids.Official.card_pack_1.pyroblast[0]"
+
+[sub_resource type="Resource" id="Resource_vytm3"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_xn8wo")
+id = "019bc665-4f82-7004-b8bc-bcab506e7313"
+
+[sub_resource type="Resource" id="Resource_nqdo8"]
+script = ExtResource("5_8bb3i")
+name = "yogg_saron_master_of_fate_dccbf5f5"
+type = "card"
+bytes = 4614
+blueprint = SubResource("Resource_0sobj")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/player.ts": [{
+"key": "Player"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_o54hp"), SubResource("Resource_qabka"), SubResource("Resource_vytm3")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ndjo8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_maedj"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "induce_insanity"
+raw = "game.ids.Official.card_pack_1.induce_insanity[0]"
+
+[sub_resource type="Resource" id="Resource_q1bob"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_maedj")
+id = "019bc665-4f82-7016-b55e-04654406a57d"
+
+[sub_resource type="Resource" id="Resource_demng"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "reign_of_chaos"
+raw = "game.ids.Official.card_pack_1.reign_of_chaos[0]"
+
+[sub_resource type="Resource" id="Resource_80ml1"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_demng")
+id = "019bc665-4f82-7015-a844-383b783e6f58"
+
+[sub_resource type="Resource" id="Resource_5etmk"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "card_pack_1"
+resource_type = "card"
+moon_resource_name = "tentacle_swarm"
+raw = "game.ids.Official.card_pack_1.tentacle_swarm[0]"
+
+[sub_resource type="Resource" id="Resource_pcks0"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_5etmk")
+id = "019bc665-4f82-7017-912f-291d65cf901d"
+
+[sub_resource type="Resource" id="Resource_wr6bn"]
+script = ExtResource("5_8bb3i")
+name = "yogg_saron_unleashed_422d6dd4"
+type = "card"
+bytes = 1412
+blueprint = SubResource("Resource_ndjo8")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_q1bob"), SubResource("Resource_80ml1"), SubResource("Resource_pcks0")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_078xg"]
+script = ExtResource("4_girui")
+name = "card_pack_1"
+moons = Array[ExtResource("5_8bb3i")]([SubResource("Resource_uykgl"), SubResource("Resource_vu5ja"), SubResource("Resource_vqx4n"), SubResource("Resource_u60jn"), SubResource("Resource_fqoe6"), SubResource("Resource_k2ads"), SubResource("Resource_6xgdc"), SubResource("Resource_huoqo"), SubResource("Resource_lfvea"), SubResource("Resource_jhywy"), SubResource("Resource_c47ln"), SubResource("Resource_48p5m"), SubResource("Resource_v1y4i"), SubResource("Resource_l3w4w"), SubResource("Resource_gykb1"), SubResource("Resource_si78w"), SubResource("Resource_0i41e"), SubResource("Resource_yrwys"), SubResource("Resource_5ficj"), SubResource("Resource_g0fqm"), SubResource("Resource_uu52u"), SubResource("Resource_rcplx"), SubResource("Resource_u0b8p"), SubResource("Resource_rq40b"), SubResource("Resource_hf0df"), SubResource("Resource_yc42b"), SubResource("Resource_jijo1"), SubResource("Resource_h8j3s"), SubResource("Resource_nqdo8"), SubResource("Resource_wr6bn")])
+
+[sub_resource type="Resource" id="Resource_qv0v6"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_lmylv"]
+script = ExtResource("5_8bb3i")
+name = "1"
+type = "card"
+bytes = 1076
+blueprint = SubResource("Resource_qv0v6")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_8vqda"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_1fcgf"]
+script = ExtResource("5_8bb3i")
+name = "1_location"
+type = "card"
+bytes = 1049
+blueprint = SubResource("Resource_8vqda")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_20gst"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_wey7q"]
+script = ExtResource("5_8bb3i")
+name = "1_manathirst"
+type = "card"
+bytes = 2762
+blueprint = SubResource("Resource_20gst")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"key": "Alignment"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3w4is"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_brpm1"]
+script = ExtResource("5_8bb3i")
+name = "1_minion"
+type = "card"
+bytes = 2132
+blueprint = SubResource("Resource_3w4is")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_v4dae"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_ljcuv"]
+script = ExtResource("5_8bb3i")
+name = "1_passive"
+type = "card"
+bytes = 3300
+blueprint = SubResource("Resource_v4dae")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_vhtit"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_hco7m"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "builtin"
+resource_type = "card"
+moon_resource_name = "the_coin"
+raw = "game.ids.Official.builtin.the_coin[0]"
+
+[sub_resource type="Resource" id="Resource_nnxgn"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_hco7m")
+id = "019bc665-4f7f-7003-9fbe-be72400ab84e"
+
+[sub_resource type="Resource" id="Resource_n7634"]
+script = ExtResource("5_8bb3i")
+name = "1_simple_reference"
+type = "card"
+bytes = 1119
+blueprint = SubResource("Resource_vhtit")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_nnxgn")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_amgnh"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_jqsty"]
+script = ExtResource("5_8bb3i")
+name = "2"
+type = "card"
+bytes = 1726
+blueprint = SubResource("Resource_amgnh")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_aj6qo"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_aesyu"]
+script = ExtResource("5_8bb3i")
+name = "2_circular_reference"
+type = "card"
+bytes = 819
+blueprint = SubResource("Resource_aj6qo")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_dols1"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_gxvpg"]
+script = ExtResource("5_8bb3i")
+name = "2_discover"
+type = "card"
+bytes = 1479
+blueprint = SubResource("Resource_dols1")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5u1w5"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_uyk31"]
+script = ExtResource("5_8bb3i")
+name = "2_spell"
+type = "card"
+bytes = 632
+blueprint = SubResource("Resource_5u1w5")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "SpellSchool"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_of45o"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_xcv1i"]
+script = ExtResource("5_8bb3i")
+name = "2a_enchantment"
+type = "card"
+bytes = 2569
+blueprint = SubResource("Resource_of45o")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EnchantmentPriority"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_n1diq"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_2gtct"]
+script = ExtResource("5_8bb3i")
+name = "2a_heropower"
+type = "card"
+bytes = 739
+blueprint = SubResource("Resource_n1diq")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5vbwc"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_y47r0"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "enchantment_example"
+raw = "game.ids.Official.examples.enchantment_example[0]"
+
+[sub_resource type="Resource" id="Resource_fq2fm"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_y47r0")
+id = "019bc665-4f80-7010-8ed9-99808369532e"
+
+[sub_resource type="Resource" id="Resource_365w0"]
+script = ExtResource("5_8bb3i")
+name = "2b_enchantment_apply"
+type = "card"
+bytes = 2169
+blueprint = SubResource("Resource_5vbwc")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_fq2fm")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gac16"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_2npoy"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "heropower_example"
+raw = "game.ids.Official.examples.heropower_example[0]"
+
+[sub_resource type="Resource" id="Resource_3sbn7"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_2npoy")
+id = "019bc665-4f80-7026-b3ab-aa5a664f5024"
+
+[sub_resource type="Resource" id="Resource_wra1t"]
+script = ExtResource("5_8bb3i")
+name = "2b_hero"
+type = "card"
+bytes = 1750
+blueprint = SubResource("Resource_gac16")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_3sbn7")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_il5jp"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_hd6kp"]
+script = ExtResource("5_8bb3i")
+name = "3"
+type = "card"
+bytes = 2907
+blueprint = SubResource("Resource_il5jp")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "TargetType"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_mkbcu"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_36y61"]
+script = ExtResource("5_8bb3i")
+name = "3_condition"
+type = "card"
+bytes = 1877
+blueprint = SubResource("Resource_mkbcu")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_hkw0r"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_35nsv"]
+script = ExtResource("5_8bb3i")
+name = "3_dormant"
+type = "card"
+bytes = 981
+blueprint = SubResource("Resource_hkw0r")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_iyv8a"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_7xxjc"]
+script = ExtResource("5_8bb3i")
+name = "3_event_listener"
+type = "card"
+bytes = 2989
+blueprint = SubResource("Resource_iyv8a")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_og260"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_kknwi"]
+script = ExtResource("5_8bb3i")
+name = "3_remove_conditionally"
+type = "card"
+bytes = 2143
+blueprint = SubResource("Resource_og260")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_bqcd5"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_og3jl"]
+script = ExtResource("5_8bb3i")
+name = "3_weapon"
+type = "card"
+bytes = 500
+blueprint = SubResource("Resource_bqcd5")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_mnofg"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_dautb"]
+script = ExtResource("5_8bb3i")
+name = "4"
+type = "card"
+bytes = 1806
+blueprint = SubResource("Resource_mnofg")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_0215v"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_alyyc"]
+script = ExtResource("5_8bb3i")
+name = "4_placeholder"
+type = "card"
+bytes = 2613
+blueprint = SubResource("Resource_0215v")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_g550h"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_6w7rq"]
+script = ExtResource("5_8bb3i")
+name = "4_quest"
+type = "card"
+bytes = 4205
+blueprint = SubResource("Resource_g550h")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "QuestType"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ve4u0"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_84qm1"]
+script = ExtResource("5_8bb3i")
+name = "4_runes"
+type = "card"
+bytes = 682
+blueprint = SubResource("Resource_ve4u0")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Rune"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_e5e5s"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_we7d5"]
+script = ExtResource("5_8bb3i")
+name = "4_taunt"
+type = "card"
+bytes = 1270
+blueprint = SubResource("Resource_e5e5s")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_lsnv1"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_ggkfo"]
+script = ExtResource("5_8bb3i")
+name = "5_battlecry"
+type = "card"
+bytes = 2146
+blueprint = SubResource("Resource_lsnv1")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_s7v0q"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_m416r"]
+script = ExtResource("5_8bb3i")
+name = "5_tick_hook"
+type = "card"
+bytes = 2294
+blueprint = SubResource("Resource_s7v0q")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "GamePlayCardReturn"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ariw2"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_inrwa"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "corrupted_example"
+raw = "game.ids.Official.examples.corrupted_example[0]"
+
+[sub_resource type="Resource" id="Resource_ok5dq"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_inrwa")
+id = "019bc665-4f80-702b-9638-5a8b8e46ef3a"
+
+[sub_resource type="Resource" id="Resource_3a6ns"]
+script = ExtResource("5_8bb3i")
+name = "5a_corrupt"
+type = "card"
+bytes = 816
+blueprint = SubResource("Resource_ariw2")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_ok5dq")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_smn4r"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_obqgo"]
+script = ExtResource("5_8bb3i")
+name = "5b_corrupted"
+type = "card"
+bytes = 410
+blueprint = SubResource("Resource_smn4r")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_q4bv1"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_5yr1l"]
+script = ExtResource("5_8bb3i")
+name = "6_dredge"
+type = "card"
+bytes = 1005
+blueprint = SubResource("Resource_q4bv1")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_stnex"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_sugmd"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "forged_example"
+raw = "game.ids.Official.examples.forged_example[0]"
+
+[sub_resource type="Resource" id="Resource_yoo4f"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_sugmd")
+id = "019bc665-4f80-702d-8e24-acd80e92ea08"
+
+[sub_resource type="Resource" id="Resource_tkndp"]
+script = ExtResource("5_8bb3i")
+name = "6a_forge"
+type = "card"
+bytes = 723
+blueprint = SubResource("Resource_stnex")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_yoo4f")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5jkd1"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_l0f28"]
+script = ExtResource("5_8bb3i")
+name = "6b_forged"
+type = "card"
+bytes = 416
+blueprint = SubResource("Resource_5jkd1")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_opk43"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_qst3i"]
+script = ExtResource("5_8bb3i")
+name = "7_another-ability"
+type = "card"
+bytes = 1151
+blueprint = SubResource("Resource_opk43")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "AbilityCallback"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_4kn4r"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_u6taw"]
+script = ExtResource("5_8bb3i")
+name = "7a_titan_ability1"
+type = "card"
+bytes = 1519
+blueprint = SubResource("Resource_4kn4r")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_shef1"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_ns8we"]
+script = ExtResource("5_8bb3i")
+name = "7b_titan_ability2"
+type = "card"
+bytes = 662
+blueprint = SubResource("Resource_shef1")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_tp11o"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_k0uug"]
+script = ExtResource("5_8bb3i")
+name = "7c_titan_ability3"
+type = "card"
+bytes = 685
+blueprint = SubResource("Resource_tp11o")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3c6hg"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_e6kq0"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "ability_1"
+raw = "game.ids.Official.examples.ability_1[0]"
+
+[sub_resource type="Resource" id="Resource_fpgo0"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_e6kq0")
+id = "019bc665-4f80-702e-803a-28c25a963fff"
+
+[sub_resource type="Resource" id="Resource_hpl7x"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "ability_2"
+raw = "game.ids.Official.examples.ability_2[0]"
+
+[sub_resource type="Resource" id="Resource_ift34"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_hpl7x")
+id = "019bc665-4f80-702f-aa1a-88585939e5af"
+
+[sub_resource type="Resource" id="Resource_wgo34"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "ability_3"
+raw = "game.ids.Official.examples.ability_3[0]"
+
+[sub_resource type="Resource" id="Resource_fht3f"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_wgo34")
+id = "019bc665-4f80-7030-81b2-752f0b48159f"
+
+[sub_resource type="Resource" id="Resource_qoxcp"]
+script = ExtResource("5_8bb3i")
+name = "7d_titan"
+type = "card"
+bytes = 819
+blueprint = SubResource("Resource_3c6hg")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_fpgo0"), SubResource("Resource_ift34"), SubResource("Resource_fht3f")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_plo3b"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_lkw66"]
+script = ExtResource("5_8bb3i")
+name = "8_spelldamage"
+type = "card"
+bytes = 1299
+blueprint = SubResource("Resource_plo3b")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ocpc5"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_11bqs"]
+script = ExtResource("5_8bb3i")
+name = "9a_colossal_left"
+type = "card"
+bytes = 422
+blueprint = SubResource("Resource_ocpc5")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_dm317"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_jx83h"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "left_arm"
+raw = "game.ids.Official.examples.left_arm[0]"
+
+[sub_resource type="Resource" id="Resource_43wg8"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_jx83h")
+id = "019bc665-4f81-7002-90e0-0fb2951fa210"
+
+[sub_resource type="Resource" id="Resource_i3acc"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "right_arm"
+raw = "game.ids.Official.examples.right_arm[0]"
+
+[sub_resource type="Resource" id="Resource_kx52d"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_i3acc")
+id = "019bc665-4f81-7004-97b1-2971ddb6a2f5"
+
+[sub_resource type="Resource" id="Resource_rsofi"]
+script = ExtResource("5_8bb3i")
+name = "9b_colossal_main"
+type = "card"
+bytes = 1315
+blueprint = SubResource("Resource_dm317")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_43wg8"), SubResource("Resource_kx52d")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_rtm8l"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_qvroi"]
+script = ExtResource("5_8bb3i")
+name = "9c_colossal_right"
+type = "card"
+bytes = 423
+blueprint = SubResource("Resource_rtm8l")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_kxo75"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_yx4oj"]
+script = ExtResource("5_8bb3i")
+name = "cant_attack"
+type = "card"
+bytes = 829
+blueprint = SubResource("Resource_kxo75")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_cxqxc"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_m2gcw"]
+script = ExtResource("5_8bb3i")
+name = "deathrattle"
+type = "card"
+bytes = 1116
+blueprint = SubResource("Resource_cxqxc")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_fd5m5"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_hmi3k"]
+script = ExtResource("5_8bb3i")
+name = "disable_heropower"
+type = "card"
+bytes = 1005
+blueprint = SubResource("Resource_fd5m5")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_yf62i"]
+script = ExtResource("10_34oay")
+name = "command"
+description = "Example command."
+id = "019bc665-4f7f-7002-8af5-2a5bc8d2e95c"
+
+[sub_resource type="Resource" id="Resource_a24pf"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "sfx"
+moon_resource_name = "discombobulate"
+raw = "game.ids.Official.examples.discombobulate[0]"
+
+[sub_resource type="Resource" id="Resource_530rt"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_a24pf")
+id = "019dc4f5-da95-7481-b31a-2623bd71665c"
+
+[sub_resource type="Resource" id="Resource_ixade"]
+script = ExtResource("5_8bb3i")
+name = "discombobulate"
+type = "command"
+bytes = 574
+command = SubResource("Resource_yf62i")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Command"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_530rt")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_grvdd"]
+script = ExtResource("11_vtg6m")
+name = "sfx"
+id = "019bc665-4f7f-7002-8af5-72c96a787e82"
+
+[sub_resource type="Resource" id="Resource_tqkcc"]
+script = ExtResource("5_8bb3i")
+name = "discombobulate"
+type = "sfx"
+bytes = 1157
+sfx = SubResource("Resource_grvdd")
+imports = {
+"@Game/modules/audio/audio.ts": [{
+"key": "octaves"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "SFX"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_aai3i"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_4immf"]
+script = ExtResource("5_8bb3i")
+name = "divine_shield"
+type = "card"
+bytes = 1049
+blueprint = SubResource("Resource_aai3i")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_0gybm"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_7lfut"]
+script = ExtResource("5_8bb3i")
+name = "enchantment"
+type = "card"
+bytes = 742
+blueprint = SubResource("Resource_0gybm")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EnchantmentPriority"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_66rc6"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_fsd3s"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "enchantment_test"
+raw = "game.ids.Official.examples.enchantment_test[0]"
+
+[sub_resource type="Resource" id="Resource_6dwyo"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_fsd3s")
+id = "019bc665-4f7f-7012-a8c3-818e01ca1c52"
+
+[sub_resource type="Resource" id="Resource_5a4ye"]
+script = ExtResource("5_8bb3i")
+name = "enchantment_apply"
+type = "card"
+bytes = 1763
+blueprint = SubResource("Resource_66rc6")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"key": "Alignment"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_6dwyo")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_ih3ik"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_e8shk"]
+script = ExtResource("5_8bb3i")
+name = "force_attack"
+type = "card"
+bytes = 1944
+blueprint = SubResource("Resource_ih3ik")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_f1v0w"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_02l2q"]
+script = ExtResource("5_8bb3i")
+name = "forgetful"
+type = "card"
+bytes = 1067
+blueprint = SubResource("Resource_f1v0w")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_peylj"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_l2dqc"]
+script = ExtResource("5_8bb3i")
+name = "frozen"
+type = "card"
+bytes = 1085
+blueprint = SubResource("Resource_peylj")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "GameAttackReturn"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5nggu"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_yqyau"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "heropower_example"
+raw = "game.ids.Official.examples.heropower_example[0]"
+
+[sub_resource type="Resource" id="Resource_tfcnh"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_yqyau")
+id = "019bc665-4f80-7026-b3ab-aa5a664f5024"
+
+[sub_resource type="Resource" id="Resource_470dt"]
+script = ExtResource("5_8bb3i")
+name = "hero_passive"
+type = "card"
+bytes = 1092
+blueprint = SubResource("Resource_5nggu")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_tfcnh")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_sf6x6"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_c0u6x"]
+script = ExtResource("5_8bb3i")
+name = "immortal"
+type = "card"
+bytes = 1000
+blueprint = SubResource("Resource_sf6x6")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "RemoveReason"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_q4c4m"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_t75mg"]
+script = ExtResource("5_8bb3i")
+name = "joust"
+type = "card"
+bytes = 883
+blueprint = SubResource("Resource_q4c4m")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5kidm"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_y4kmi"]
+script = ExtResource("5_8bb3i")
+name = "last_combined"
+type = "card"
+bytes = 1479
+blueprint = SubResource("Resource_5kidm")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tribe"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gl370"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_gdatd"]
+script = ExtResource("5_8bb3i")
+name = "last_combined"
+type = "card"
+bytes = 2302
+blueprint = SubResource("Resource_gl370")
+imports = {
+"@Game/types.ts": [{
+"key": "Ability"
+}, {
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_yj1gv"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_foydv"]
+script = ExtResource("5_8bb3i")
+name = "lasta_enchantment"
+type = "card"
+bytes = 789
+blueprint = SubResource("Resource_yj1gv")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EnchantmentPriority"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_j5yqy"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_5vrw5"]
+script = ExtResource("5_8bb3i")
+name = "lasta_left"
+type = "card"
+bytes = 356
+blueprint = SubResource("Resource_j5yqy")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_3pjcr"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_s2kpb"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "combined_example_4_enchantment"
+raw = "game.ids.Official.examples.combined_example_4_enchantment[0]"
+
+[sub_resource type="Resource" id="Resource_lcc3r"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_s2kpb")
+id = "019bc665-4f80-7015-8f6c-4f249bfadbb1"
+
+[sub_resource type="Resource" id="Resource_ftfsq"]
+script = ExtResource("5_8bb3i")
+name = "lastb_combined"
+type = "card"
+bytes = 3514
+blueprint = SubResource("Resource_3pjcr")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Event"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "QuestType"
+}, {
+"key": "Rarity"
+}, {
+"key": "Tag"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_lcc3r")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_gkdnh"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_rcmkh"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "left_arm"
+index = 1
+raw = "game.ids.Official.examples.left_arm[1]"
+
+[sub_resource type="Resource" id="Resource_tysmq"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_rcmkh")
+id = "019bc665-4f81-7005-b675-5fa77378254f"
+
+[sub_resource type="Resource" id="Resource_a262i"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "right_arm"
+index = 1
+raw = "game.ids.Official.examples.right_arm[1]"
+
+[sub_resource type="Resource" id="Resource_6lpwf"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_a262i")
+id = "019bc665-4f81-7008-a1d2-e9cb03cb8a67"
+
+[sub_resource type="Resource" id="Resource_bb6iy"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "combined_example_2_corrupted"
+raw = "game.ids.Official.examples.combined_example_2_corrupted[0]"
+
+[sub_resource type="Resource" id="Resource_c1q27"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_bb6iy")
+id = "019bc665-4f81-7007-a2cb-2144aff06a6e"
+
+[sub_resource type="Resource" id="Resource_alvo4"]
+script = ExtResource("5_8bb3i")
+name = "lastb_main"
+type = "card"
+bytes = 1020
+blueprint = SubResource("Resource_gkdnh")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Rune"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_tysmq"), SubResource("Resource_6lpwf"), SubResource("Resource_c1q27")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_wvvap"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_vk7m8"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "left_arm"
+raw = "game.ids.Official.examples.left_arm[0]"
+
+[sub_resource type="Resource" id="Resource_flyku"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_vk7m8")
+id = "019bc665-4f81-7002-90e0-0fb2951fa210"
+
+[sub_resource type="Resource" id="Resource_8n2tf"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "right_arm"
+raw = "game.ids.Official.examples.right_arm[0]"
+
+[sub_resource type="Resource" id="Resource_lstgy"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_8n2tf")
+id = "019bc665-4f81-7004-97b1-2971ddb6a2f5"
+
+[sub_resource type="Resource" id="Resource_yhc6u"]
+script = ExtResource("5_8bb3i")
+name = "lastc_main-corrupted"
+type = "card"
+bytes = 881
+blueprint = SubResource("Resource_wvvap")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "EventListenerMessage"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_flyku"), SubResource("Resource_lstgy")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_1trq8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_26oeq"]
+script = ExtResource("5_8bb3i")
+name = "lastd_right"
+type = "card"
+bytes = 357
+blueprint = SubResource("Resource_1trq8")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_doxt8"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_whprt"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "left_arm"
+raw = "game.ids.Official.examples.left_arm[0]"
+
+[sub_resource type="Resource" id="Resource_nficq"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_whprt")
+id = "019bc665-4f81-7002-90e0-0fb2951fa210"
+
+[sub_resource type="Resource" id="Resource_etc6h"]
+script = ExtResource("9_jrc5e")
+ids = "game.ids"
+author_name = "Official"
+pack_name = "examples"
+resource_type = "card"
+moon_resource_name = "right_arm"
+raw = "game.ids.Official.examples.right_arm[0]"
+
+[sub_resource type="Resource" id="Resource_aosna"]
+script = ExtResource("7_5l543")
+components = SubResource("Resource_etc6h")
+id = "019bc665-4f81-7004-97b1-2971ddb6a2f5"
+
+[sub_resource type="Resource" id="Resource_1mb2r"]
+script = ExtResource("5_8bb3i")
+name = "summon_on_draw"
+type = "card"
+bytes = 1535
+blueprint = SubResource("Resource_doxt8")
+imports = {
+"@Game/card.ts": [{
+"key": "Card"
+}],
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+dependencies = Array[ExtResource("7_5l543")]([SubResource("Resource_nficq"), SubResource("Resource_aosna")])
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_hex2s"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_g3hwa"]
+script = ExtResource("5_8bb3i")
+name = "unbreakable"
+type = "card"
+bytes = 765
+blueprint = SubResource("Resource_hex2s")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_d8r8q"]
+script = ExtResource("6_d6w1f")
+name = "Sheep"
+cost = 1
+type = "Minion"
+classes = PackedStringArray("Neutral")
+rarity = "Free"
+id = "019bc665-4f7f-7002-8cd4-7c81ad4e65c6"
+attack = 1
+tribes = PackedStringArray("Beast")
+
+[sub_resource type="Resource" id="Resource_f0wcl"]
+script = ExtResource("5_8bb3i")
+name = "unlimited_attacks"
+type = "card"
+bytes = 933
+blueprint = SubResource("Resource_d8r8q")
+imports = {
+"@Game/types.ts": [{
+"isType": true,
+"key": "Blueprint"
+}, {
+"key": "Class"
+}, {
+"key": "Keyword"
+}, {
+"key": "Rarity"
+}, {
+"key": "Type"
+}],
+"node:assert": [{
+"isDefault": true,
+"key": "assert"
+}]
+}
+predictions = {
+"fileSystem": {},
+"networking": {}
+}
+
+[sub_resource type="Resource" id="Resource_5lgmf"]
+script = ExtResource("4_girui")
+name = "examples"
+moons = Array[ExtResource("5_8bb3i")]([SubResource("Resource_lmylv"), SubResource("Resource_1fcgf"), SubResource("Resource_wey7q"), SubResource("Resource_brpm1"), SubResource("Resource_ljcuv"), SubResource("Resource_n7634"), SubResource("Resource_jqsty"), SubResource("Resource_aesyu"), SubResource("Resource_gxvpg"), SubResource("Resource_uyk31"), SubResource("Resource_xcv1i"), SubResource("Resource_2gtct"), SubResource("Resource_365w0"), SubResource("Resource_wra1t"), SubResource("Resource_hd6kp"), SubResource("Resource_36y61"), SubResource("Resource_35nsv"), SubResource("Resource_7xxjc"), SubResource("Resource_kknwi"), SubResource("Resource_og3jl"), SubResource("Resource_dautb"), SubResource("Resource_alyyc"), SubResource("Resource_6w7rq"), SubResource("Resource_84qm1"), SubResource("Resource_we7d5"), SubResource("Resource_ggkfo"), SubResource("Resource_m416r"), SubResource("Resource_3a6ns"), SubResource("Resource_obqgo"), SubResource("Resource_5yr1l"), SubResource("Resource_tkndp"), SubResource("Resource_l0f28"), SubResource("Resource_qst3i"), SubResource("Resource_u6taw"), SubResource("Resource_ns8we"), SubResource("Resource_k0uug"), SubResource("Resource_qoxcp"), SubResource("Resource_lkw66"), SubResource("Resource_11bqs"), SubResource("Resource_rsofi"), SubResource("Resource_qvroi"), SubResource("Resource_yx4oj"), SubResource("Resource_m2gcw"), SubResource("Resource_hmi3k"), SubResource("Resource_ixade"), SubResource("Resource_tqkcc"), SubResource("Resource_4immf"), SubResource("Resource_7lfut"), SubResource("Resource_5a4ye"), SubResource("Resource_e8shk"), SubResource("Resource_02l2q"), SubResource("Resource_l2dqc"), SubResource("Resource_470dt"), SubResource("Resource_c0u6x"), SubResource("Resource_t75mg"), SubResource("Resource_y4kmi"), SubResource("Resource_gdatd"), SubResource("Resource_foydv"), SubResource("Resource_5vrw5"), SubResource("Resource_ftfsq"), SubResource("Resource_alvo4"), SubResource("Resource_yhc6u"), SubResource("Resource_26oeq"), SubResource("Resource_1mb2r"), SubResource("Resource_g3hwa"), SubResource("Resource_f0wcl")])
+
+[sub_resource type="Resource" id="Resource_5nlyj"]
+script = ExtResource("12_13snq")
+name = "Official"
+
+[sub_resource type="Resource" id="Resource_1lhaf"]
+script = ExtResource("3_v5w1x")
+star = SubResource("Resource_5nlyj")
+planets = Array[ExtResource("4_girui")]([SubResource("Resource_woxih"), SubResource("Resource_078xg"), SubResource("Resource_5lgmf")])
+
+[sub_resource type="Resource" id="Resource_01kxx"]
+script = ExtResource("2_qtda3")
+star_systems = Array[ExtResource("3_v5w1x")]([SubResource("Resource_1lhaf")])
+
+[sub_resource type="Resource" id="Resource_v1qqq"]
+script = ExtResource("1_0nukh")
+star_clusters = Array[ExtResource("2_qtda3")]([SubResource("Resource_01kxx")])
+
+[resource]
+script = ExtResource("13_fs6ou")
+galaxies = Array[ExtResource("1_0nukh")]([SubResource("Resource_v1qqq")])
