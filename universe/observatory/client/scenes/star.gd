@@ -2,6 +2,8 @@
 extends AstronomicalBody
 class_name Star
 
+const STAR_VIEWER = preload("uid://oltbsj8m0syp")
+
 @export var star: StarRes:
 	set(value):
 		star = value
@@ -30,7 +32,7 @@ func _draw() -> void:
 	if hovering:
 		color = color.darkened(0.2)
 	
-	draw_circle(Vector2.ZERO, 8, color, true, -1, true)
+	draw_circle(Vector2.ZERO, 32, color, true, -1, true)
 
 
 func _get_color() -> Color:
@@ -40,6 +42,16 @@ func _get_color() -> Color:
 
 func _on_click(mouse_button: MouseButton):
 	if mouse_button == MOUSE_BUTTON_LEFT:
-		# TODO: Show panel.
 		print("clicka on star %s" % name)
 		Socket.send("query star %s" % name)
+
+
+func _open_viewer() -> void:
+	if Engine.is_editor_hint():
+		return
+	
+	super()
+	viewer = STAR_VIEWER.instantiate()
+	viewer.star = star
+	add_child(viewer)
+	viewer.global_position = get_global_mouse_position()

@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://cyqlp5w1mtig2"]
+
+[ext_resource type="Script" uid="uid://btp84kicki580" path="res://scenes/ui/viewer.gd" id="1_38vrs"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wviju"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hakx0"]
+font_color = Color(0.95392805, 0.6997261, 0, 1)
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wviju"]
+font_size = 12
+
+[node name="Viewer" type="PanelContainer" unique_id=605864254]
+z_index = 2
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wviju")
+script = ExtResource("1_38vrs")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1635787470]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1267660218]
+custom_minimum_size = Vector2(200, 100)
+layout_mode = 2
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=425264459]
+layout_mode = 2
+text = "Resource"
+label_settings = SubResource("LabelSettings_hakx0")
+horizontal_alignment = 1
+
+[node name="NameLabel" type="Label" parent="MarginContainer/VBoxContainer" unique_id=1123657328]
+layout_mode = 2
+text = "Name"
+label_settings = SubResource("LabelSettings_wviju")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=1580180968]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=593494867]
+layout_mode = 2
+text = "Button 1"
+
+[node name="Button2" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1908859867]
+layout_mode = 2
+text = "Button 2"

@@ -2,6 +2,8 @@
 extends AstronomicalBody
 class_name Moon
 
+const MOON_VIEWER = preload("uid://n30ggui1hxc2")
+
 @export var moon: MoonRes:
 	set(value):
 		moon = value
@@ -35,6 +37,17 @@ func _draw() -> void:
 func _get_color() -> Color:
 	# TODO: Color based on properties.
 	return Color.WHITE
+
+
+func _open_viewer() -> void:
+	if Engine.is_editor_hint():
+		return
+	
+	super()
+	viewer = MOON_VIEWER.instantiate()
+	viewer.moon = moon
+	add_child(viewer)
+	viewer.global_position = get_global_mouse_position()
 
 
 func _on_click(mouse_button: MouseButton):

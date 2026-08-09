@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://n30ggui1hxc2"]
+
+[ext_resource type="PackedScene" uid="uid://cyqlp5w1mtig2" path="res://scenes/ui/viewer.tscn" id="1_2ste0"]
+[ext_resource type="Script" uid="uid://rqxcctc132r4" path="res://scenes/ui/moon_viewer.gd" id="2_ckpst"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_ckpst"]
+font_color = Color(0.7238802, 0.7487999, 0.7917716, 1)
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wviju"]
+font_size = 12
+
+[node name="MoonViewer" unique_id=605864254 node_paths=PackedStringArray("name_label", "bytes_label") instance=ExtResource("1_2ste0")]
+script = ExtResource("2_ckpst")
+moon = null
+name_label = NodePath("MarginContainer/VBoxContainer/NameLabel")
+bytes_label = NodePath("MarginContainer/VBoxContainer/BytesLabel")
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1267660218) index="0" unique_id=425264459]
+text = "Moon"
+label_settings = SubResource("LabelSettings_ckpst")
+
+[node name="BytesLabel" type="Label" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1267660218) index="2" unique_id=2024808195]
+layout_mode = 2
+text = "Type"
+label_settings = SubResource("LabelSettings_wviju")

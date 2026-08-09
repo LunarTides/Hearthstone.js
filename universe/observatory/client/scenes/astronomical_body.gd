@@ -35,6 +35,7 @@ var frame_counter := 0
 var lines: Array[Line2D]
 var push_box: Area2D
 var name_label: Label
+var viewer: Control
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -44,6 +45,11 @@ func _ready() -> void:
 	mouse_exited.connect(_on_mouse_exited)
 	input_event.connect(_on_input_event)
 	renamed.connect(queue_redraw)
+	
+	clicked.connect(func(mouse_button: MouseButton) -> void:
+		if mouse_button == MOUSE_BUTTON_LEFT:
+			_open_viewer()
+	)
 	
 	create_name_label()
 	create_push_box()
@@ -84,6 +90,11 @@ func _draw() -> void:
 
 func _get_color() -> Color:
 	return Color.WHITE
+
+
+func _open_viewer() -> void:
+	if is_instance_valid(viewer):
+		viewer.queue_free()
 
 
 func _on_mouse_entered() -> void:

@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://b06r7q1qdupwm"]
+
+[ext_resource type="PackedScene" uid="uid://cyqlp5w1mtig2" path="res://scenes/ui/viewer.tscn" id="1_ymwd0"]
+[ext_resource type="Script" uid="uid://bfuhddoss16jg" path="res://scenes/ui/planet_viewer.gd" id="2_2q5sf"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_2q5sf"]
+font_color = Color(0.38418517, 0.8006428, 0.99999994, 1)
+outline_size = 1
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_wviju"]
+font_size = 12
+
+[node name="PlanetViewer" unique_id=605864254 node_paths=PackedStringArray("name_label", "moons_label") instance=ExtResource("1_ymwd0")]
+script = ExtResource("2_2q5sf")
+planet = null
+name_label = NodePath("MarginContainer/VBoxContainer/NameLabel")
+moons_label = NodePath("MarginContainer/VBoxContainer/MoonsLabel")
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1267660218) index="0" unique_id=425264459]
+text = "Planet"
+label_settings = SubResource("LabelSettings_2q5sf")
+
+[node name="MoonsLabel" type="Label" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1267660218) index="2" unique_id=1072958677]
+layout_mode = 2
+text = "0 Moons"
+label_settings = SubResource("LabelSettings_wviju")

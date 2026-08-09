@@ -2,6 +2,7 @@
 extends AstronomicalBody
 class_name Planet
 
+const PLANET_VIEWER = preload("uid://b06r7q1qdupwm")
 const MOON = preload("uid://i3dmukspifco")
 
 @export var planet: PlanetRes:
@@ -35,7 +36,7 @@ func _draw() -> void:
 	if hovering:
 		color = color.darkened(0.2)
 	
-	draw_circle(Vector2.ZERO, 8, color, true, -1, true)
+	draw_circle(Vector2.ZERO, 16, color, true, -1, true)
 
 
 func _get_color() -> Color:
@@ -48,6 +49,17 @@ func _on_click(mouse_button: MouseButton):
 		# TODO: Show panel.
 		print("clicka on planet %s" % name)
 		Socket.send("query planet %s" % name)
+
+
+func _open_viewer() -> void:
+	if Engine.is_editor_hint():
+		return
+	
+	super()
+	viewer = PLANET_VIEWER.instantiate()
+	viewer.planet = planet
+	add_child(viewer)
+	viewer.global_position = get_global_mouse_position()
 
 
 func setup_moons() -> void:

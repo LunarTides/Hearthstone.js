@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://oltbsj8m0syp"]
+
+[ext_resource type="PackedScene" uid="uid://cyqlp5w1mtig2" path="res://scenes/ui/viewer.tscn" id="1_cvhhx"]
+[ext_resource type="Script" uid="uid://b7kmnovi0um0y" path="res://scenes/ui/star_viewer.gd" id="1_wviju"]
+
+[node name="StarViewer" unique_id=605864254 node_paths=PackedStringArray("name_label") instance=ExtResource("1_cvhhx")]
+script = ExtResource("1_wviju")
+star = null
+name_label = NodePath("MarginContainer/VBoxContainer/NameLabel")
+
+[node name="TitleLabel" parent="MarginContainer/VBoxContainer" parent_id_path=PackedInt32Array(1267660218) index="0" unique_id=425264459]
+text = "Star"
