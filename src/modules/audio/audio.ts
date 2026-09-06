@@ -523,7 +523,6 @@ export const audio = {
 					if (key.startsWith("v")) {
 						// Volume.
 						modifiers.volume = Number.parseFloat(val);
-						continue;
 					}
 				}
 			}

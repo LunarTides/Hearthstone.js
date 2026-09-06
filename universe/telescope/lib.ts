@@ -1,3 +1,12 @@
+import {
+	type Blueprint,
+	Class,
+	type Command,
+	Rarity,
+	type SFX,
+	Tribe,
+	Type,
+} from "@Game/types.ts";
 import pathUtils from "node:path";
 import {
 	type ErrorLabel,
@@ -6,15 +15,6 @@ import {
 	Severity,
 } from "oxc-parser";
 import type { Resource } from "../emergence/create/lib.ts";
-import {
-	Blueprint,
-	Class,
-	Command,
-	Rarity,
-	SFX,
-	Tribe,
-	Type,
-} from "@Game/types.ts";
 
 // TODO: Don't import resources until *after* this tools is run. Otherwise, it's kinda pointless. Oh, no! This resource is suspicious, oh I gotta warn— and they're dead.
 export const TELESCOPE_VERSION = "0.1.0";
