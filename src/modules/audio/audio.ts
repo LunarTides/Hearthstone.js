@@ -5,6 +5,7 @@ import { sfx } from "./sfx.ts";
 const PI = Math.PI;
 const TWO_PI = 2 * PI;
 const sampleRate = 48000;
+const channels = 2;
 let speaker: Speaker;
 
 // https://muted.io/note-frequencies/
@@ -258,7 +259,7 @@ export const audio = {
 		try {
 			speaker = new Speaker({
 				sampleRate,
-				channels: 2,
+				channels,
 				bitDepth: 16,
 			});
 		} catch {
@@ -292,7 +293,7 @@ export const audio = {
 	 * @param volume How loud the wave should be. The default should be good.
 	 * @param dutyCycle If you chose to play a square wave, this will be the duty cycle of the wave. You usually want `0.5` or `0.1`.
 	 */
-	// TODO: Make a function to parse this: "triangle(c2 volume:0.3):1000 triangle(d2):1000" (2 seperate notes played sequentially.)
+	// TODO: Make a function to parse this: "@(vol:0.3) tri(c2):1000 tri(d2 vol:0.5):1000" (2 seperate notes played sequentially.)
 	// TODO: Add easing functions to volume and dutyCycle.
 	async playWave(
 		shape:
@@ -326,26 +327,34 @@ export const audio = {
 		}
 
 		const period = 1 / hz;
+		const bytesPerSample = 2; // int16 = 16 bits. 1 byte = 8 bits. 16 / 8 = 2 bytes to store 16 bits.
 
-		const numFrames = Math.floor((durationMs / 1000) * sampleRate);
-		const numSamples = numFrames * 2;
-		const numBytes = numSamples * 2; // 16 bits = 2 bytes
-		const buffer = Buffer.alloc(numBytes);
+		const frames = Math.floor((durationMs / 1000) * sampleRate); // What is a frame? Is it different from a sample?
+		const bytes = frames * bytesPerSample * channels; // One sample is 2 bytes (int16). More channels means more bytes per sample.
+		const buffer = Buffer.alloc(bytes);
 
 		return new Promise((resolve, reject) => {
 			let offset = 0;
-			for (let i = 0; i < numFrames; i++) {
+			// Moving linearly forwards in time.
+			for (let i = 0; i < frames; i++) {
 				const time = i / sampleRate;
-				const phase = (time / period) * TWO_PI;
+				// Get phase to use for sample. Phase is affected by time.
+				// phase(t) = 2pi * frac((t - t₀) / p)
+				// where p is the period, t₀ is the origin value (0), and t is the time.
+				// frac gets the fractional part of the expression, which we can do by doing modulo 1
+				const phase = ((time / period) % 1) * TWO_PI;
 
+				// Sample a point in the wave generator function.
+				// TODO: Reduce popping by using interpolation.
 				let sample = waveGenerator(phase, dutyCycle) * volume;
 				sample = Math.max(-1, Math.min(1, sample));
-				sample = Math.round(sample * 32767);
+				sample = Math.round(sample * 32767); // magic?
 
 				// Write to both channels (stereo)
-				buffer.writeInt16LE(sample, offset);
-				buffer.writeInt16LE(sample, offset + 2);
-				offset += 4;
+				for (let i = 0; i < channels; i++) {
+					buffer.writeInt16LE(sample, offset); // +2 bytes to buffer
+					offset += bytesPerSample;
+				}
 			}
 
 			if (options.sequential) {
@@ -364,6 +373,7 @@ export const audio = {
 					speaker.write(buffer);
 				}
 			} else {
+				// TODO: Make this work.
 				if (speaker.writable) {
 					speaker.write(buffer);
 				}
@@ -413,10 +423,11 @@ export const audio = {
 			volume *= options.multiply.volume;
 		}
 
-		const numFrames = Math.floor((durationMs / 1000) * sampleRate);
-		const numSamples = numFrames * 2; // 16 bits = 2 bytes
-		const numBytes = numSamples * 2;
-		const buffer = Buffer.alloc(numBytes);
+		const bytesPerSample = 2; // int16 = 16 bits. 1 byte = 8 bits. 16 / 8 = 2 bytes to store 16 bits.
+
+		const frames = Math.floor((durationMs / 1000) * sampleRate); // What is a frame? Is it different from a sample?
+		const bytes = frames * bytesPerSample * channels; // One sample is 2 bytes (int16). More channels means more bytes per sample.
+		const buffer = Buffer.alloc(bytes);
 
 		const speaker = this.createSpeaker();
 		if (!speaker) {
@@ -426,23 +437,30 @@ export const audio = {
 		return new Promise((resolve, reject) => {
 			let hz = startHz;
 			let offset = 0;
-			for (let i = 0; i < numFrames; i++) {
+
+			// Moving linearly forwards in time.
+			for (let i = 0; i < frames; i++) {
 				// Reduce hz over time
-				const easingSample = easingFunction(i / numFrames) / numFrames;
+				const easingSample = easingFunction(i / frames) / frames;
 				hz -= (startHz - endHz) * easingSample;
 
 				const period = 1 / hz;
 				const time = i / sampleRate;
-				const phase = (time / period) * TWO_PI;
+				// Get phase to use for sample. Phase is affected by time.
+				// phase(t) = 2pi * frac((t - t₀) / p)
+				// where p is the period, t₀ is the origin value (0), and t is the time.
+				// frac gets the fractional part of the expression, which we can do by doing modulo 1
+				const phase = ((time / period) % 1) * TWO_PI;
 
 				let sample = waveGenerator(phase, dutyCycle) * volume;
 				sample = Math.max(-1, Math.min(1, sample));
-				sample = Math.round(sample * 32767);
+				sample = Math.round(sample * 32767); // magic?
 
 				// Write to both channels (stereo)
-				buffer.writeInt16LE(sample, offset);
-				buffer.writeInt16LE(sample, offset + 2);
-				offset += 4;
+				for (let i = 0; i < channels; i++) {
+					buffer.writeInt16LE(sample, offset); // +2 bytes to buffer
+					offset += bytesPerSample;
+				}
 			}
 
 			if (options.sequential) {
@@ -461,6 +479,7 @@ export const audio = {
 					speaker.write(buffer);
 				}
 			} else {
+				// TODO: Make this work.
 				if (speaker.writable) {
 					speaker.write(buffer);
 				}
