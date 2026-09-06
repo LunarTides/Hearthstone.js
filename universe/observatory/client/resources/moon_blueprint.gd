@@ -85,7 +85,7 @@ class_name MoonBlueprintRes
 		if armor != value:
 			armor = value
 			changed.emit()
-@export var hero_power_id: int:
+@export var hero_power_id: String:
 	set(value):
 		if hero_power_id != value:
 			hero_power_id = value

@@ -3,6 +3,7 @@ declare var self: Worker;
 const websockets: Bun.ServerWebSocket[] = [];
 
 Bun.serve({
+	// TODO: Add this to config.
 	port: 29979,
 	fetch: (req, server) => {
 		if (!server.upgrade(req)) {
