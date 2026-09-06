@@ -4,6 +4,7 @@ import { Tag, type Blueprint } from "@Game/types.ts";
 
 export const MICROSCOPE_VERSION = "0.1.0";
 
+// TODO: Move `validateBlueprint` functionality over.
 const blueprintFunctions = [
 	// Quest.
 	async (blueprint: Blueprint) => {
