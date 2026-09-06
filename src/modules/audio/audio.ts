@@ -293,7 +293,6 @@ export const audio = {
 	 * @param volume How loud the wave should be. The default should be good.
 	 * @param dutyCycle If you chose to play a square wave, this will be the duty cycle of the wave. You usually want `0.5` or `0.1`.
 	 */
-	// TODO: Make a function to parse this: "@(vol:0.3) tri(c2):1000 tri(d2 vol:0.5):1000" (2 seperate notes played sequentially.)
 	// TODO: Add easing functions to volume and dutyCycle.
 	async playWave(
 		shape:
@@ -486,5 +485,91 @@ export const audio = {
 				resolve();
 			}
 		});
+	},
+
+	async playAudioCode(code: string) {
+		// Example @(vol:0.3) tri(c2):1000 wait:500 tri(d2,vol:0.5):1000
+		// first, simple soundbyte. tri(c4):1000
+
+		for (const soundbyte of code.split(" ")) {
+			const waveform = soundbyte.split(/[(:]/)[0];
+			const modifiers = {
+				note: "",
+				volume: 0.3,
+			};
+
+			// Get duration.
+			const afterModifiersArray = soundbyte.split(")");
+			let afterModifiers = "";
+			if (afterModifiersArray.length > 1) {
+				afterModifiers = afterModifiersArray[1];
+			} else {
+				afterModifiers = afterModifiersArray[0];
+			}
+			const durationMs = parseInt(afterModifiers.split(":")[1], 10);
+
+			// Get modifiers.
+			const soundbyteModifiers = soundbyte.split("(")[1]?.split(")")[0];
+			if (soundbyteModifiers) {
+				for (const modifier of soundbyteModifiers.split(",")) {
+					const [key, val] = modifier.split(":");
+
+					if (val === undefined) {
+						// This is the note. `key` is actually the value here.
+						modifiers.note = key;
+						continue;
+					}
+
+					if (key.startsWith("v")) {
+						// Volume.
+						modifiers.volume = Number.parseFloat(val);
+						continue;
+					}
+				}
+			}
+
+			// Turn waveform into actual waveform key.
+			let shape: keyof typeof waveTypeFunctions = "sine";
+			for (const key of Object.keys(waveTypeFunctions)) {
+				if (key.startsWith(waveform)) {
+					shape = key as keyof typeof waveTypeFunctions;
+					break;
+				}
+			}
+
+			if (!shape) {
+				throw new Error(`${waveform} is not a valid waveform.`);
+			}
+
+			// Turn note into hz.
+			let hz = 440;
+			if (Number.isNaN(Number.parseInt(modifiers.note, 10))) {
+				// Turn note into proper note that can be used here.
+				let [note, sharp, octave] = modifiers.note.split("");
+				if (sharp !== "#") octave = sharp;
+
+				note = note.toUpperCase();
+				if (sharp === "#") {
+					note += "_SHARP";
+				}
+
+				const oct = octaves[parseInt(octave, 10) as keyof typeof octaves];
+				hz = oct[note as keyof typeof oct];
+			} else {
+				hz = parseInt(modifiers.note, 10);
+			}
+
+			// TODO: Look forwards and see if there's a wait.
+
+			this.playWave(shape, hz, durationMs, modifiers.volume, 50, 0.5, {
+				// TODO: Uhhh...
+				sequential: true,
+				multiply: {
+					duration: 1,
+					hz: 1,
+					volume: 1,
+				},
+			});
+		}
 	},
 };

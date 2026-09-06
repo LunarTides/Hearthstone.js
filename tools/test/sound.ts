@@ -45,6 +45,11 @@ export async function main() {
 					name: key,
 					value: `sfx:${key}`,
 				})),
+				new Separator(),
+				{
+					name: "Soundbyte 1",
+					value: "soundbyte1",
+				},
 			],
 			pageSize: 15,
 			default: lastPlayed,
@@ -62,6 +67,13 @@ export async function main() {
 			await game.prompt.configureObject(options, false, async () => {
 				hub.watermark(false);
 			});
+			continue;
+		}
+		if (sound === "soundbyte1") {
+			const soundbyte = "tri(c4,vol:0.5):1000 sin(c4,vol:0.3):500";
+			console.log(`Playing: ${soundbyte}`);
+			game.audio.playAudioCode(soundbyte);
+			await game.pause();
 			continue;
 		}
 
