@@ -17,6 +17,7 @@ import {
 import type { Resource } from "../emergence/create/lib.ts";
 
 // TODO: Don't import resources until *after* this tools is run. Otherwise, it's kinda pointless. Oh, no! This resource is suspicious, oh I gotta warn— and they're dead.
+// FIXME: ^ THIS IS CRITICAL AND HUGE. WE MUST ENSURE THAT THE RESOURCES *AREN'T* IMPORTED AT THIS POINT. maybe send a killsignal to emergence?
 export const TELESCOPE_VERSION = "0.1.0";
 
 // Root

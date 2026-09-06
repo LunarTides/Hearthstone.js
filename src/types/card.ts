@@ -180,6 +180,7 @@ export enum Tag {
 	Lackey = "Lackey",
 	DIY = "Diy",
 	Quest = "Quest",
+	NotQuest = "NotQuest",
 }
 
 /**

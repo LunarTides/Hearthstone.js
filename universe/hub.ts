@@ -1,6 +1,7 @@
 import * as hub from "../hub.ts";
 import * as emergence from "./emergence/hub.ts";
 import * as telescope from "./telescope/hub.ts";
+import * as microscope from "./microscope/hub.ts";
 
 export async function takeover() {
 	await game.prompt.createUILoop(
@@ -35,6 +36,13 @@ export async function takeover() {
 						name: "[telescope]",
 						onSelect: async () => {
 							await telescope.takeover();
+							return true;
+						},
+					},
+					{
+						name: "[microscope]",
+						onSelect: async () => {
+							await microscope.takeover();
 							return true;
 						},
 					},
