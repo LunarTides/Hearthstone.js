@@ -21,9 +21,13 @@ export const UILoopDefaultOptions = {
 	) => Promise<void>,
 	message: "Options" as string,
 	seperatorBeforeBackButton: true as boolean,
+	/**
+	 * If this is empty, the back button will be hidden.
+	 */
 	backButtonText: "Back" as string,
 	default: undefined as number | (() => Promise<number>) | undefined,
 	dynamicChoices: false as boolean,
+	resetCursor: false as boolean,
 };
 
 export const ConfigureObjectV2DefaultOptions = {
@@ -309,36 +313,58 @@ export const prompt = {
 				}
 			}
 
-			const result = await game.prompt.customSelect(
-				options.message,
-				[],
-				{
-					hideBack: true,
-					arrayTransform: undefined,
-					default:
-						typeof options.default === "number"
-							? options.default.toString()
-							: ((await options.default?.())?.toString() ?? undefined),
-				},
-				...choices.map((choice) => ({
-					...choice,
-					items: [
-						...choice.items.map((item, i) => ({
-							...item,
-							value: i.toString(),
-						})),
-						options.seperatorBeforeBackButton &&
-							options.backButtonText &&
-							new Separator(),
-						!backOption &&
-							options.backButtonText && {
-								name: options.backButtonText,
-								value: "back",
-							},
-					],
-				})),
-			);
-			const answer = result.value;
+			const formattedChoices = choices.map((choice) => ({
+				...choice,
+				items: [
+					...choice.items.map((item, i) => ({
+						...item,
+						value: i.toString(),
+					})),
+					options.seperatorBeforeBackButton &&
+						options.backButtonText &&
+						new Separator(),
+					!backOption &&
+						options.backButtonText && {
+							name: options.backButtonText,
+							value: "back",
+						},
+				],
+			}));
+
+			for (const choice of formattedChoices) {
+				for (const _ of choice.items) {
+					// Remove all empty and false items.
+					game.data.remove(choice.items, "");
+					game.data.remove(choice.items, false);
+				}
+			}
+
+			const result = await select({
+				message: options.message,
+				choices: formattedChoices as any,
+				default:
+					options?.default ??
+					(options?.resetCursor ? undefined : selectValues[options.message]),
+				loop: false,
+				pageSize: 15,
+			});
+			const answer = result.value as string;
+
+			if (answer === "back") {
+				const selectedChoiceItems = choices.find(
+					(choice) => choice.tab.index === result.tab,
+				)?.items;
+
+				// Go back to the first option. The next time.
+				selectValues[options.message] =
+					typeof selectedChoiceItems?.[0] === "string"
+						? selectedChoiceItems[0]
+						: formattedChoices.find((choice) => choice.tab.index === result.tab)
+								?.items[0];
+			} else {
+				// Remember the cursor position.
+				selectValues[options.message] = answer;
+			}
 
 			const choseBack = answer === "back";
 			if (choseBack && !backOption) {
@@ -1636,22 +1662,36 @@ export const prompt = {
 		await game.interact.print.gameState(game.player);
 		console.log();
 
-		const result = await game.prompt.customSelect(
-			prompt,
-			await game.card.readables(cards),
+		let chosenCard: Card;
+		await game.prompt.createUILoop(
 			{
-				arrayTransform: undefined,
-				hideBack: true,
+				message: prompt,
+				backButtonText: "",
 			},
+			async () => [
+				{
+					tab: {
+						index: 1,
+						name: "Dredge",
+					},
+					items: await Promise.all(
+						cards.map(async (card) => ({
+							name: await card.readable(),
+							onSelect: async () => {
+								chosenCard = card;
+								return false;
+							},
+						})),
+					),
+				},
+			],
 		);
 
-		const card = cards[parseInt(result.value, 10)];
-
 		// Removes the selected card from the players deck.
-		game.data.remove(game.player.deck, card);
-		game.player.addToDeck(card);
+		game.data.remove(game.player.deck, chosenCard!);
+		game.player.addToDeck(chosenCard!);
 
-		return card;
+		return chosenCard!;
 	},
 
 	/**
@@ -1689,16 +1729,31 @@ export const prompt = {
 			return await game.player.ai.discover(cards);
 		}
 
-		const result = await game.prompt.customSelect(
-			prompt,
-			await game.card.readables(cards),
+		let chosenCard: Card;
+		await game.prompt.createUILoop(
 			{
-				arrayTransform: undefined,
-				hideBack: true,
+				message: prompt,
+				backButtonText: "",
 			},
+			async () => [
+				{
+					tab: {
+						index: 1,
+						name: "Discover",
+					},
+					items: await Promise.all(
+						cards.map(async (card) => ({
+							name: await card.readable(),
+							onSelect: async () => {
+								chosenCard = card;
+								return false;
+							},
+						})),
+					),
+				},
+			],
 		);
 
-		const card = cards[parseInt(result.value, 10)];
-		return card.perfectCopy();
+		return chosenCard!.perfectCopy();
 	},
 };
